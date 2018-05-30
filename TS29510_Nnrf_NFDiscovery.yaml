@@ -1,0 +1,339 @@
+openapi: 3.0.0
+info:
+  version: '1.R15.0.0'
+  title: 'NRF NFDiscovery Service'
+  description: 'NRF NFDiscovery  Service'
+security:
+  - oAuth2Clientcredentials: []
+paths:
+  /nf-instances:
+    get:
+      summary: Search a collection of NF Instances
+      operationId: SearchNFInstances
+      tags:
+        - NF Instances (Store)
+      parameters:
+        - name: service-names
+          in: query
+          description: Name of the service offered by the NF
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: target-nf-type
+          in: query
+          description: Type of the target NF
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        - name: requester-nf-type
+          in: query
+          description: Type of the requester NF
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        - name: requester-nf-instance-fqdn
+          in: query
+          description: FQDN of the requester NF
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        - name: target-plmn
+          in: query
+          description: Id of the PLMN where the target NF is located
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: requester-plmn
+          in: query
+          description: Id of the PLMN where the NF issuing the Discovery request is located
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: target-nf-instance-id
+          in: query
+          description: Identity of the NF instance being discovered
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        - name: hnrf-uri
+          in: query
+          description: Uri of the home NRF
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        - name: snssais
+          in: query
+          description: Slice info of the target NF
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        - name: dnn
+          in: query
+          description: Dnn supported by the SMF
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        - name: nsi-list
+          in: query
+          description: NSI IDs that are served by the services being discovered
+          schema:
+            type: array
+            items:
+              type: string
+        - name: smf-serving-area
+          in: query
+          schema:
+            type: string
+        - name: tai
+          in: query
+          description: Tracking Area Identity
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        - name: ecgi
+          in: query
+          description: EPS Cell Global Identity
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        - name: ncgi
+          in: query
+          description: NR Cell Global Identity
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        - name: amf-region-id
+          in: query
+          description: AMF Region Identity
+          schema:
+            type: string
+        - name: amf-set-id
+          in: query
+          description: AMF Set Identity
+          schema:
+            type: string
+        - name: guami
+          in: query
+          description: Guami used to search for an appropriate AMF
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+        - name: supi
+          in: query
+          description: SUPI of the user
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: ue-ipv4-address
+          in: query
+          description: IPv4 address of the UE
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        - name: ue-ipv6-prefix
+          in: query
+          description: IPv6 prefix of the UE
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        - name: pgw
+          in: query	
+          description: PGW FQDN of a combined PGW-C and SMF
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        - name: gpsi
+          in: query
+          description: GPSI of the user
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: external-group-identity
+          in: query
+          description: external group identifier of the user
+          schema:
+            type: string
+        - name: data-set
+          in: query
+          description: data set supported by the NF
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/DataSetId'
+        - name: routing-indicator
+          in: query
+          description: routing indicator in SUCI
+          schema:
+            type: string
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in IETF RFC 7232, 3.2 
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, described in IETF RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3 
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '/oauth2/token'
+          scopes: {}
+  schemas:
+    SearchResult:
+      type: object
+      properties:
+        validityPeriod:
+          type: integer
+        nfInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFProfile'
+    NFProfile:
+      type: object
+      required:
+        - nfInstanceId
+        - nfType
+      properties:
+        nfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        plmn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        sNssais:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        nsiList:
+          type: array
+          items:
+            type: string
+        fqdn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        ipv4Address:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Address:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        ipv6Prefix:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        capacity:
+          type: integer
+        load:
+          type: integer
+          minimum: 0
+          maximum: 100
+        locality:
+          type: string
+        priority:
+          type: integer
+        udrInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/UdrInfo'
+        udmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/UdmInfo'
+        ausfInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/AusfInfo'
+        amfInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/AmfInfo'
+        smfInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/SmfInfo'
+        upfInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/UpfInfo'
+        pcfInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/PcfInfo'
+        bsfInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/BsfInfo'
+        nfServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFService'
+    NFService:
+      type: object
+      required:
+        - serviceInstanceId
+        - serviceName
+        - version
+        - schema
+      properties:
+        serviceInstanceId:
+          type: string
+        serviceName:
+          type: string
+        version:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFServiceVersion'
+        schema:
+          type: string
+        fqdn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        ipEndPoints:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/IpEndPoint'
+        apiPrefix:
+          type: string
+        defaultNotificationSubscriptions:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/DefaultNotificationSubscription'
+        capacity:
+          type: integer
+        load:
+          type: integer
+          minimum: 0
+          maximum: 100
+        priority:
+          type: integer
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/29510-070.zip'
