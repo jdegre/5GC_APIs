@@ -1,0 +1,342 @@
+openapi: 3.0.0
+
+info:
+  version: '1.R15.0.0'
+  title: 'NSSF NSSAI Availability'
+  description: 'NSSF NSSAI Availability Service'
+servers:
+  - url: https://{apiRoot}/nnssf-nssaiavailability/v1
+    variables:
+      apiRoot:
+        default: locahhost:8080
+paths:
+  /nssai-availability/{nfId}:
+    put:
+      summary: Updates/replaces the NSSF with the S-NSSAIs the NF service consumer (e.g AMF)supports per TA
+      tags:
+        - Nnssf_NSSAIAvailability_Update service operation
+      operationId: Update
+      parameters:
+        - name: nfId
+          in: path
+          description: Identifier of the NF service consumer instance
+          required: true
+          schema:
+            
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      requestBody:
+        description: Parameters to update/replace at the NSSF, the S-NSSAIs supported per TA
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NssaiAvailabilityInfo'
+      responses:
+        '200':
+          description: OK (Successful update of SNSSAI information per TA)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizedNssaiAvailabilityInfo'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      
+    patch:
+      summary: Updates an already existing S-NSSAIs per TA provided by the NF service consumer (e.g AMF)
+      tags:
+        - Nnssf_NSSAIAvailability_Update service operation
+      operationId: Update
+      parameters:
+        - name: nfId
+          in: path
+          description: Identifier of the NF service consumer instance
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON Patch instructions to update at the NSSF, the S-NSSAIs supported per TA
+        required: true
+        content:
+          application/json-patch+json::
+            schema:
+              $ref: '#/components/schemas/PatchDocument'
+            
+      responses:
+        '200':
+          description: OK (Successful update of SNSSAI information per TA)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizedNssaiAvailabilityInfo'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+    delete:
+      summary: Deletes an already existing S-NSSAIs per TA provided by the NF service consumer (e.g AMF)
+      tags:
+        - Nnssf_NSSAIAvailability_Update service operation
+      operationId: Update
+      parameters:
+        - name: nfId
+          in: path
+          description: Identifier of the NF service consumer instance
+          required: true
+          schema:
+            type: string
+      
+      responses:
+        '204':
+          description: No Content (Successful deletion of SNSSAI information per TA)
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  
+  /nssai-availability/subscriptions:
+    post:
+      summary: Creates subscriptions for notification about updates to NSSAI availability information
+      tags:
+        - Nnssf_NSSAIAvailability_Update service operation
+      operationId: Subscribe
+      requestBody:
+        description: Subscription for notification about updates to NSSAI availability information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NssfEventSubscriptionCreateData'
+      callbacks:
+        nssaiAvailabilityNotification:
+          '{request.body#/nfNssaiAvailabilityUri}':
+            post:
+              requestBody:  # contents of the callback message
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NssfEventNotification'
+              responses:
+                '204':
+                  description: No Content (successful notification)
+
+      responses:
+        '201':
+          description: Created (Successful creation of subscription for notification)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NssfEventSubscriptionCreatedData'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          
+    delete:
+      summary: Deletes an already existing NSSAI availability notification subscription
+      tags:
+        - Nnssf_NSSAIAvailability_Unsubscribe service operation
+      operationId: Unsubscribe
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription for notification
+          required: true
+          schema:
+            type: string
+      
+      responses:
+        '204':
+          description: No Content (Successful deletion of subscription for NSSAI Availability notification)
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  
+components:
+  schemas:
+    NssaiAvailabilityInfo:
+      type: object
+      required:
+        - supportedNssaiAvailabilityData
+      properties:
+        supportedNssaiAvailabilityData:
+          $ref: '#/components/schemas/SupportedNssaiAvailabilityData'
+        nfNssaiAvailabilityUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    
+    SupportedNssaiAvailabilityData:
+      type: object
+      required:
+        - tai
+        - supportedSNssai
+      properties:
+        tai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        supportedSNssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+    
+    AuthorizedNssaiAvailabilityData:
+      type: object
+      required:
+        - tai
+        - supportedSNssai
+      properties:
+        tai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        supportedSNssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        restrictedSnssai:
+          $ref: '#/components/schemas/RestrictedSnssai'
+    
+    RestrictedSnssai:
+      type: object
+      required:
+        - homePlmnId
+        - sNssai
+      properties:
+        homePlmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        sNssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+    
+    AuthorizedNssaiAvailabilityInfo:
+      type: object
+      required:
+        - authorizedNssaiAvailabilityData
+      properties:
+        authorizedNssaiAvailabilityData:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedNssaiAvailabilityData'
+        nfNssaiAvailabilityUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    
+    NssfEventSubscriptionCreateData:
+      type: object
+      required:
+        - nfNssaiAvailabilityUri
+        - tai
+        - event
+      properties:
+        nfNssaiAvailabilityUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        tai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        event:
+          $ref: '#/components/schemas/NssfEventType'
+    
+    NssfEventSubscriptionCreatedData:
+      type: object
+      required:
+        - subscriptionId
+      properties:
+        subscriptionId:
+          type: string
+        authorizedNssaiAvailabilityData:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedNssaiAvailabilityData'
+    
+    NssfEventNotification:
+      type: object
+      required:
+        - subscriptionId
+        - authorizednssaiAvailabilityData
+      properties:
+        subscriptionId:
+          type: string
+        authorizedNssaiAvailabilityData:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizedNssaiAvailabilityData'
+    NssfEventType:
+      anyOf:
+        - type: string
+          enum:
+          - S-NSSAI_RESTRICTED_REPORT
+        - type: string
+    PatchDocument:
+      type: array
+      items:
+        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.531/'
