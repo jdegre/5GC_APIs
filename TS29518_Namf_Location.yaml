@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  version: 1.R15.0.0
+  title: AMF Location Service
+  description: AMF Location Service
+security:
+  - oAuth2Clientcredentials: []
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/29518-120.zip'
+servers:
+  - url: https://{apiRoot}/namf-loc/v1
+    variables:
+      apiRoot:
+        default: locahhost:8080
+paths:
+  /{ueContextId}/provide:
+    post:
+      summary: Namf_Location ProvideLocation service Operation
+      tags:
+        - Provide Location
+      operationId: ProvideLocation
+      parameters:
+        - name: ueContextId
+          in: path
+          description: UE Context Identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUELocation'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvideUELocation'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          description: Unexpected error
+      callbacks:
+        onUELocationNotification:
+          {$request.body#/locationNotificationUri}:
+            post:
+              requestBody:
+                description: UE Location Event Notification
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifiedUELocation'
+              responses:
+                '204':
+                  description: Expected response to a successful callback processing
+                '403':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/504'
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+  schemas:
+    RequestUELocation:
+      type: object
+      properties:
+        lcsClientType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/ExternalClientType'
+        lcsLocation:
+          $ref: '#/components/schemas/LocationType'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        priority:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/LcsPriority'
+        lcsQoS:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/LocationQoS'
+        velocityRequested:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/VelocityRequested'
+        lcsSupportedGADShapes:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/SupportedGADShapes'
+        locationNotificationUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - lcsClientType
+        - lcsLocation
+    ProvideUELocation:
+      type: object
+      properties:
+        locationEstimate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+        accuracyFulfilmentIndicator:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/AccuracyFulfilmentIndicator'
+        ageOfLocationEstimate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/AgeOfLocationEstimate'
+        velocityEstimate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
+        positioningData:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/PositioningMethodAndUsage'
+          minItems: 0
+          maxItems: 9
+        gnssPositioningData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/GNSSPositioningMethodAndUsage'
+        ecgi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        ncgi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        targetServingNode:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        civicAddress:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
+        barometricPressure:
+          $ref: '#/components/schemas/BarometricPressure'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    NotifiedUELocation:
+      type: object
+      properties:
+        locationEvent:
+          $ref: '#/components/schemas/LocationEvent'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        locationEstimate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+        ageOfLocationEstimate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/AgeOfLocationEstimate'
+        velocityEstimate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
+        positioningData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/PositioningMethodAndUsage'
+        gnssPositioningData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/GNSSPositioningMethodAndUsage'
+        ecgi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        ncgi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        servingNode:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        civicAddress:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
+        barometricPressure:
+          $ref: '#/components/schemas/BarometricPressure'
+      required:
+        - locationEvent
+    BarometricPressure:
+      type: integer
+    LocationType:
+      anyOf:
+      - type: string
+        enum:
+          - CURRENT_LOCATION
+          - CURRENT_OR_LAST_KNOWN_LOCATION
+          - INITIAL_LOCATION
+      - type: string
+    LocationEvent:
+      anyOf:
+      - type: string
+        enum:
+          - EMERGENCY_CALL_ORIGINATION
+          - EMERGENCY_CALL_RELEASE
+          - EMERGENCY_CALL_HANDOVER
+      - type: string
