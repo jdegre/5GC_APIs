@@ -1,0 +1,2043 @@
+openapi: 3.0.0
+
+info:
+  version: "1.PreR15.0.0"
+  title: 'SMF PDU Session'
+  description: 'SMF PDU Session Service'
+
+servers:
+  - url: https://{apiRoot}/nsmf-pdusession/v1
+    variables:
+      apiRoot:
+        default: demohost.com
+        description:  apiRoot as defined in subclause 4.4 of 3GPP TS 29.501 excluding the https// part
+
+security:
+  - oAuth2Clientcredentials: []
+
+paths:
+  /sm-contexts:
+    post:
+      summary:  Create SM Context 
+      tags:
+        - SM contexts collection
+      operationId: PostSmContexts
+      requestBody:
+        description: representation of the SM context to be created in the SMF
+        required: true
+        content:
+          multipart/related:
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/SmContextCreateData'
+                binaryDataN1SmMessage:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataN1SmMessage:
+                contentType:  application/vnd.3gpp.5gnas
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+      callbacks:
+        smContextStatusNotification:
+          '{$request.body#/smContextStatusUri}':
+            post:
+              requestBody:  # contents of the callback message
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/SmContextStatusNotification'
+              responses:
+                '204':
+                  description: successful notification 
+                '400': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '403': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+                '404': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '500': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+
+      responses:
+        '201':
+          description: successful creation of an SM context
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreatedData'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreatedData'
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string  
+        '307':
+          description: temporary redirect
+        '308':
+          description: permanent redirect
+        '400':
+          description: unsuccessful creation of an SM context - bad request
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string  
+        '403':
+          description: unsuccessful creation of an SM context - forbidden
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string 
+        '404':
+          description: unsuccessful creation of an SM context - not found
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string 
+
+        '500':
+          description: unsuccessful creation of an SM context - internal server error
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string 
+            
+        '503':
+          description: unsuccessful creation of an SM context - service unavailable
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string               
+                        
+        '504':
+          description: unsuccessful creation of an SM context - gateway timeout
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string                      
+        default:
+          description: unexpected error
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextCreateError'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextCreateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string                      
+            
+  /sm-contexts/{smContextRef}/retrieve:
+    post:
+      summary:  Retrieve SM Context 
+      tags:
+        - Individual SM context
+      operationId: RetrieveSmContext
+      parameters:
+        - name: smContextRef
+          in: path
+          description:  SM context reference 
+          required: true 
+          schema:
+            type: string 
+      requestBody:
+        description: parameters used to retrieve the SM context
+        required: false
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/SmContextRetrieveData'
+      responses:
+        '200':
+          description: successful retrieval of an SM context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmContextRetrievedData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  
+  /sm-contexts/{smContextRef}/modify:  
+    post:
+      summary:  Update SM Context 
+      tags:
+        - Individual SM context
+      operationId: UpdateSmContext
+      parameters:
+        - name: smContextRef
+          in: path
+          description:  SM context reference 
+          required: true 
+          schema:
+            type: string 
+      requestBody:
+        description: representation of the updates to apply to the SM context
+        required: true
+        content:
+          application/json: # message without binary body part 
+            schema:
+              $ref: '#/components/schemas/SmContextUpdateData'
+          multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateData'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string      
+      responses:
+        '200':
+          description: successful update of an SM context with content in the response
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdatedData'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdatedData'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string      
+        '204':
+          description: successful update of an SM context without content in the response
+        '400':
+          description: unsuccessful update of an SM context - bad request
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdateError' 
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string        
+        '403':
+          description: unsuccessful update of an SM context - forbidden
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdateError' 
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string                        
+        '404':
+          description: unsuccessful update of an SM context - not found
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdateError' 
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string        
+        '500':
+          description: unsuccessful update of an SM context - Internal server error
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdateError' 
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string        
+        '503':
+          description: unsuccessful update of an SM context - Service Unavailable
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdateError' 
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string        
+        default:
+          description: unexpected error
+          content:
+            application/json: # message without binary body part
+              schema:
+                $ref: '#/components/schemas/SmContextUpdateError' 
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextUpdateError'
+                  binaryDataN1SmMessage:
+                    type: string
+                    format: binary
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmMessage:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string   
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string        
+  
+  /sm-contexts/{smContextRef}/release:
+    post:
+      summary:  Release SM Context 
+      tags:
+        - Individual SM context
+      operationId: ReleaseSmContext
+      parameters:
+        - name: smContextRef
+          in: path
+          description:  SM context reference 
+          required: true 
+          schema:
+            type: string 
+      requestBody:
+        description: representation of the data to be sent to the SMF when releasing the SM context
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmContextReleaseData'
+      responses:      
+        '204':
+          description: successful release of an SM context without content in the response
+        default:
+          description: unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+
+  
+  /pdu-sessions:
+    post:
+      summary:  Create  
+      tags:
+        - PDU sessions collection
+      operationId: PostPduSessions
+      requestBody:
+        description: representation of the PDU session to be created in the H-SMF
+        required: true
+        content:
+          application/json: # message without binary body part 
+            schema:
+              $ref: '#/components/schemas/PduSessionCreateData'
+          multipart/related:  # message with binary body part(s)
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/PduSessionCreateData'
+                binaryDataN1SmInfoFromUe:
+                  type: string
+                  format: binary
+                binaryDataUnknownN1SmInfo:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataN1SmInfoFromUe:
+                contentType:  application/vnd.3gpp.5gnas
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string  
+              binaryDataUnknownN1SmInfo:
+                contentType:  application/vnd.3gpp.5gnas
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string  
+      callbacks:
+        statusNotification:
+          '{$request.body#/vsmfPduSessionUri}':
+            post:
+              summary:  Notify Status  
+              tags:
+                - Individual PDU session (V-SMF)
+              operationId: NotifyStatus
+              requestBody:
+                description: representation of the status notification
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/StatusNotification'
+              responses:
+                '204':
+                  description: successful notificationof the status change
+                default:
+                  description: unexpected error
+                  content:
+                    application/problem+json:
+                     schema:
+                      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'  
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '403':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+  
+  
+        update:  
+          '{$request.body#/vsmfPduSessionUri}/modify':
+            post:
+              summary:  Update (initiated by H-SMF)  
+              tags:
+                - Individual PDU session (V-SMF)
+              operationId: ModifyPduSession
+              requestBody:
+                description: representation of updates to apply to the PDU session
+                required: true
+                content:
+                  application/+json: # message without binary body part 
+                    schema:
+                      $ref: '#/components/schemas/VsmfUpdateData'
+                  multipart/related:  # message with binary body part(s)
+                    schema:
+                      type: object
+                      properties: # Request parts
+                        jsonData:
+                          $ref: '#/components/schemas/VsmfUpdateData'
+                        binaryDataN1SmInfoToUe:
+                          type: string
+                          format: binary
+                    encoding:
+                      jsonData:
+                        contentType:  application/json
+                      binaryDataN1SmInfoToUe:
+                        contentType:  application/vnd.3gpp.5gnas
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string  
+              responses:
+                '200':
+                  description: successful update of a PDU session with content in the response
+                  content:
+                    application/json: # message without binary body part 
+                      schema:
+                        $ref: '#/components/schemas/VsmfUpdatedData'
+                    multipart/related:  # message with binary body part(s)
+                      schema:
+                        type: object
+                        properties: # Request parts
+                          jsonData:
+                            $ref: '#/components/schemas/VsmfUpdatedData'
+                          binaryDataN1SmInfoFromUe:
+                            type: string
+                            format: binary
+                          binaryDataUnknownN1SmInfo:
+                            type: string
+                            format: binary
+                      encoding:
+                        jsonData:
+                          contentType:  application/json
+                        binaryDataN1SmInfoFromUe:
+                          contentType:  application/vnd.3gpp.5gnas
+                          headers:
+                            Content-Id:
+                              schema:
+                                type: string  
+                        binaryDataUnknownN1SmInfo:
+                          contentType:  application/vnd.3gpp.5gnas
+                          headers:
+                            Content-Id:
+                              schema:
+                                type: string  
+                '204':
+                  description: successful update of a PDU session without content in the response
+                '400':
+                  $ref: '#/components/responses/VsmfUpdateError'
+                '403':
+                  $ref: '#/components/responses/VsmfUpdateError'
+                '404':
+                 $ref: '#/components/responses/VsmfUpdateError'
+                '500':
+                 $ref: '#/components/responses/VsmfUpdateError'
+                '503':
+                 $ref: '#/components/responses/VsmfUpdateError'
+                '504':
+                 $ref: '#/components/responses/VsmfUpdateError'
+                default:
+                 $ref: '#/components/responses/VsmfUpdateError'
+
+      responses:
+        '201':
+          description: successful creation of a PDU session
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/PduSessionCreatedData'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/PduSessionCreatedData'
+                  binaryDataN1SmInfoToUe:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmInfoToUe:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string  
+        '307':
+          description: temporary redirect
+        '308':
+          description: permanent redirect
+        '400':
+          $ref: '#/components/responses/PduSessionCreateError'
+        '403':
+          $ref: '#/components/responses/PduSessionCreateError'
+        '404':
+          $ref: '#/components/responses/PduSessionCreateError'
+        '500':
+          $ref: '#/components/responses/PduSessionCreateError'
+        '503':
+          $ref: '#/components/responses/PduSessionCreateError'
+        default:
+          $ref: '#/components/responses/PduSessionCreateError'
+  
+  /pdu-sessions/{pduSessionRef}/modify:
+    post:
+      summary:  Update (initiated by V-SMF)
+      tags:
+        - Individual PDU session (H-SMF)
+      operationId: UpdatePduSession
+      parameters:
+        - name: pduSessionRef
+          in: path
+          description:  PDU session reference 
+          required: true 
+          schema:
+            type: string 
+      requestBody:
+        description: representation of the updates to apply to the PDU session
+        required: true
+        content:
+          application/json: # message without binary body part 
+            schema:
+              $ref: '#/components/schemas/HsmfUpdateData'
+          multipart/related:  # message with binary body part(s)
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/HsmfUpdateData'
+                binaryDataN1SmInfoFromUe:
+                  type: string
+                  format: binary
+                binaryDataUnknownN1SmInfo:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataN1SmInfoFromUe:
+                contentType:  application/vnd.3gpp.5gnas
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string  
+              binaryDataUnknownN1SmInfo:
+                contentType:  application/vnd.3gpp.5gnas
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string  
+      responses:
+        '200':
+          description: successful update of a PDU session with content in the response
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/HsmfUpdatedData'
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/HsmfUpdatedData'
+                  binaryDataN1SmInfoToUe:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN1SmInfoToUe:
+                  contentType:  application/vnd.3gpp.5gnas
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string  
+        '204':
+          description: successful update of a PDU session without content in the response
+        '400':
+          $ref: '#/components/responses/HsmfUpdateError'
+        '403':
+          $ref: '#/components/responses/HsmfUpdateError'
+        '404':
+          $ref: '#/components/responses/HsmfUpdateError'
+        '500':
+          $ref: '#/components/responses/HsmfUpdateError'
+        '503':
+          $ref: '#/components/responses/HsmfUpdateError'
+        default:
+          $ref: '#/components/responses/HsmfUpdateError'
+
+  /pdu-sessions/{pduSessionRef}/release:
+    post:
+      summary:  Release  
+      tags:
+        - Individual PDU session (H-SMF)
+      operationId: ReleasePduSession
+      parameters:
+        - name: pduSessionRef
+          in: path
+          description:  PDU session reference 
+          required: true 
+          schema:
+            type: string 
+      requestBody:
+        description: representation of the data to be sent to H-SMF when releasing the PDU session
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseData'
+      responses:
+        '204':
+          description: successful release of a PDU session
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+
+  schemas:
+#
+# STRUCTURED DATA TYPES
+#
+    SmContextCreateData:
+      type: object
+      properties:
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        unauthenticatedSupi:
+          type: boolean
+          default:  false
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        pduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        sNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        hplmnSnssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        servingNfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        guami:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+        requestType:
+          $ref: '#/components/schemas/RequestType'
+        n1SmMsg:
+          'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        anType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        presenceInLadn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml#/components/schemas/PresenceState'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        smContextStatusUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        hSmfUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        additionalHsmfUri:
+          type: array
+          items: 
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        oldPduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        pduSessionsActivateList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+          minItems: 0
+        ueEpsPdnConnection:
+          $ref: '#/components/schemas/EpsPdnCnxContainer'
+        hoState:
+          $ref: '#/components/schemas/HoState'
+        pcfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        selMode:
+          $ref: '#/components/schemas/DnnSelectionMode'
+        backupAmfInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupAmfInfo'
+      required:
+        - servingNfId
+        - anType
+        - smContextStatusUri
+
+    SmContextCreatedData:
+      type: object
+      properties:
+        pduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        sNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        upCnxState:
+          $ref: '#/components/schemas/UpCnxState'
+        n2SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfoType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        allocatedEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EbiArpMapping'
+          minItems: 0
+        hoState:
+          $ref: '#/components/schemas/HoState'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    SmContextUpdateData:
+      type: object
+      properties:
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        servingNfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        guami:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+        backupAmfInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupAmfInfo'
+        anType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        presenceInLadn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml#/components/schemas/PresenceState'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        upCnxState:
+          $ref: '#/components/schemas/UpCnxState'
+        hoState:
+          $ref: '#/components/schemas/HoState'
+        toBeSwitched:
+          type: boolean
+          default: false
+        n1SmMsg:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfoType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        targetServingNfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        smContextStatusUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'        dataForwarding:
+          type: boolean
+          default: false
+        epsBearerSetup:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerContainer'
+          minItems: 0
+        revokeEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerId'
+          minItems: 0
+        release:
+          type: boolean
+          default: false
+        cause:
+          $ref: '#/components/schemas/Cause'
+
+    SmContextUpdatedData:
+      type: object
+      properties:
+        upCnxState:
+          $ref: '#/components/schemas/UpCnxState'
+        hoState:
+          $ref: '#/components/schemas/HoState'
+        releaseEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerId'
+          minItems: 0
+        allocatedEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EbiArpMapping'
+          minItems: 0
+        modifiedEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EbiArpMapping'
+          minItems: 0
+        n1SmMsg:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfoType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'        epsBearerSetup:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerContainer'
+          minItems: 0
+        dataForwarding:
+          type: boolean
+
+    SmContextReleaseData:
+      type: object
+      properties:
+        cause:
+          $ref: '#/components/schemas/Cause'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        vsmfReleaseOnly:
+          type: boolean
+          default: false
+
+      
+    SmContextStatusNotification:
+      type: object
+      properties:
+        statusInfo :
+          $ref: '#/components/schemas/StatusInfo'
+      required:
+        - statusInfo 
+
+    PduSessionCreateData:
+      type: object
+      properties:
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        unauthenticatedSupi:
+          type: boolean
+          default: false
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        pduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        sNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        vsmfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        requestType:
+          $ref: '#/components/schemas/RequestType'
+        epsBearerId:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerId'
+          minItems: 0
+        pgwS8cFteid:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+        vsmfPduSessionUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        vcnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        anType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        n1SmInfoFromUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        unknownN1SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        hPcfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        hoPreparationIndication:
+          type: boolean
+        selMode:
+          $ref: '#/components/schemas/DnnSelectionMode'
+      required:
+        - dnn
+        - vsmfId
+        - vsmfPduSessionUri
+        - vcnTunnelInfo
+        - anType
+
+    PduSessionCreatedData:
+      type: object
+      properties:
+        pduSessionType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+        sscMode:
+          type: string
+        hcnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        sessionAmbr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+        qosFlowsSetupList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowSetupItem'
+          minItems: 1
+        pduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        sNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        enablePauseCharging:
+          type: boolean
+          default: false
+        ueIpv4Address:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ueIpv6Prefix:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        n1SmInfoToUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        epsPdnCnxInfo:
+          $ref: '#/components/schemas/EpsPdnCnxInfo'
+        epsBearerInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerInfo'
+          minItems: 1
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        upSecurity:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UpSecurity'
+      required:
+        - pduSessionType
+        - sscMode
+        - hcnTunnelInfo
+        - sessionAmbr
+        - qosFlowsSetupList
+
+    HsmfUpdateData:
+      type: object
+      properties:
+        requestIndication:
+          $ref: '#/components/schemas/RequestIndication'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        vcnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        anType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        pauseCharging:
+          type: boolean
+        pti:
+          $ref: '#/components/schemas/ProcedureTransactionId'
+        n1SmInfoFromUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        unknownN1SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        qosFlowsRelNotifyList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowItem'
+          minItems: 0
+        qosFlowsNotifyList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowNotifyItem'
+          minItems: 0
+        NotifyList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PduSessionNotifyItem'
+          minItems: 0
+        epsBearerId:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerId'
+          minItems: 0
+        hoPreparationIndication:
+          type: boolean
+        revokeEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerId'
+          minItems: 0        cause:
+          $ref: '#/components/schemas/Cause'
+      required:
+        - requestIndication
+
+    HsmfUpdatedData:
+      type: object
+      properties:
+        n1SmInfoToUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+
+    ReleaseData:
+      type: object
+      properties:
+        cause:
+          $ref: '#/components/schemas/Cause'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    ReleasedData:
+      type: object
+      
+    VsmfUpdateData:
+      type: object
+      properties:
+        requestIndication:
+          $ref: '#/components/schemas/RequestIndication'
+        sessionAmbr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+        qosFlowsAddModRequestList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowAddModifyRequestItem'
+          minItems: 0
+        qosFlowsRelRequestList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowReleaseRequestItem'
+          minItems: 0
+        epsBearerInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerInfo'
+          minItems: 0
+        revokeEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerId'
+          minItems: 0
+        modifiedEbiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EbiArpMapping'
+          minItems: 0
+        pti:
+          $ref: '#/components/schemas/ProcedureTransactionId'
+        n1SmInfoToUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        cause:
+          $ref: '#/components/schemas/Cause'
+      required:
+        - requestIndication
+
+    VsmfUpdatedData:
+      type: object
+      properties:
+        qosFlowsAddModList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowItem'
+          minItems: 0
+        qosFlowsRelList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowItem'
+          minItems: 0
+        qosFlowsFailedtoAddModList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowItem'
+          minItems: 0
+        qosFlowsFailedtoRelList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowItem'
+          minItems: 0
+        n1SmInfoFromUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        unknownN1SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    StatusNotification:
+      type: object
+      properties:
+        statusInfo :
+          $ref: '#/components/schemas/StatusInfo'
+      required:
+        - statusInfo 
+
+    QosFlowItem:
+      type: object
+      properties:
+        qfi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        cause:
+          $ref: '#/components/schemas/Cause'
+      required:
+        - qfi
+    
+    QosFlowSetupItem:
+      type: object
+      properties:
+        qfi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        qosRules:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+        qosFlowProfile:
+          $ref: '#/components/schemas/QosFlowProfile'
+      required:
+        - qfi
+        - qosRules
+    
+    QosFlowAddModifyRequestItem:
+      type: object
+      properties:
+        qfi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        qosRules:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+        qosFlowProfile:
+          $ref: '#/components/schemas/QosFlowProfile'
+      required:
+        - qfi
+    
+    QosFlowReleaseRequestItem:
+      type: object
+      properties:
+        qfi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        qosRules:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+      required:
+        - qfi
+    
+    QosFlowProfile:
+      type: object
+      properties:
+        5qi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5qi'
+        nonDynamic5qi:
+          $ref: '#/components/schemas/NonDynamic5qi'
+        dynamic5qi:
+          $ref: '#/components/schemas/Dynamic5qi'
+        arp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
+        gbrQosFlowInfo:
+          $ref: '#/components/schemas/GbrQosFlowInformation'
+        rqa:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ReflectiveQosAttribute'
+    
+    GbrQosFlowInformation:
+      type: object
+      properties:
+        maxFbrDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxFbrUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        guaFbrDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        guaFbrUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        notifControl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NotificationControl'
+        maxPacketLossRateDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        maxPacketLossRateUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+      required:
+        - maxFbrDl
+        - maxFbrUl
+        - guaFbrDl
+        - guaFbrUl
+    
+    QosFlowNotifyItem:
+      type: object
+      properties:
+        qfi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        notificationCause:
+          $ref: '#/components/schemas/NotificationCause'
+      required:
+        - qfi
+        - notificationCause
+    
+    Dynamic5qi:
+      type: object
+      properties:
+        priorityLevel:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5qiPriorityLevel'
+        packetDelBudget:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        packetErrRate:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
+        delayCritical:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DelayCritical'
+        averWindow:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AverWindow'
+        maxDataBurstVol:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVol'
+      required:
+        - priorityLevel
+        - packetDelBudget
+        - packetErrRate
+    
+    NonDynamic5qi:
+      type: object
+      properties:
+        priorityLevel:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5qiPriorityLevel'
+        averWindow:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AverWindow'
+        maxDataBurstVol:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVol'
+    
+    SmContextRetrieveData:
+      type: object
+      properties:
+        targetMmeCap:
+          $ref: '#/components/schemas/MmeCapabilities'
+
+    SmContextRetrievedData:
+      type: object
+      properties:
+        ueEpsPdnConnection:
+          $ref: '#/components/schemas/EpsPdnCnxContainer'
+      required:
+        - ueEpsPdnConnection
+    
+    MmeCapabilities:
+      type: object
+      properties:
+        nonIpSupported:
+          type: boolean
+          default: false
+
+    TunnelInfo:
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        Ipv6Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv64Addr'
+        gtpTeid:
+          $ref: '#/components/schemas/Teid'
+      required:
+        - gtpTeid
+    
+    StatusInfo:
+      type: object
+      properties:
+        resourceStatus:
+          $ref: '#/components/schemas/ResourceStatus'
+        cause:
+          $ref: '#/components/schemas/Cause'
+      required:
+        - resourceStatus
+    
+   
+    EpsPdnCnxInfo:
+      type: object
+      properties:
+        pgwS8cFteid:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+        pgwNodeName:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+      required:
+        - pgwS8cFteid
+    
+    EpsBearerInfo:
+      type: object
+      properties:
+        ebi:
+          $ref: '#/components/schemas/EpsBearerId'
+        pgwS8uFteid:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+        bearerLevelQoS:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+      required:
+        - ebi
+        - pgwS8uFteid
+        - bearerLevelQoS
+    
+    PduSessionNotifyItem:
+      type: object
+      properties:
+        notificationCause:
+          $ref: '#/components/schemas/NotificationCause'
+      required:
+        - notificationCause
+    
+    EbiArpMapping:
+      type: object
+      properties:
+        epsBearerId:
+          $ref: '#/components/schemas/EpsBearerId'
+        arp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
+      required:
+        - epsBearerId
+        - arp
+    
+    SmContextCreateError:
+      type: object
+      properties:
+        error:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        n1SmMsg:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+      required:
+        - error
+    
+    SmContextUpdateError:
+      type: object
+      properties:
+        error:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        n1SmMsg:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfoType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        upCnxState:
+          $ref: '#/components/schemas/UpCnxState'
+      required:
+        - error
+    
+    PduSessionCreateError:
+      type: object
+      properties:
+        error:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        n1smCause:
+          type: string
+        n1SmInfoToUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+      required:
+        - error
+    
+    HsmfUpdateError:
+      type: object
+      properties:
+        error:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        pti:
+          $ref: '#/components/schemas/ProcedureTransactionId'
+        n1smCause:
+          type: string
+        n1SmInfoToUe:
+          $ref: '#/components/schemas/RefToBinaryData'
+      required:
+        - error
+
+    VsmfUpdateError:
+      type: object
+      properties:
+        error:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        pti:
+          $ref: '#/components/schemas/ProcedureTransactionId'
+        n1smCause:
+          type: string
+        n1SmInfoFromUe:
+          $ref: '#/components/schemas/RefToBinaryData'
+        unknownN1SmInfo:
+          $ref: '#/components/schemas/RefToBinaryData'
+      required:
+        - error
+
+    BackupAmfInfo:
+      type: object
+      properties:
+        backupAmfName:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfName'
+        guamiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+      required:
+        - backupAmfName
+
+#
+# SIMPLE DATA TYPES 
+#
+    ProcedureTransactionId:
+      type: integer
+      format: ProcedureTransactionId
+      minimum: 0
+      maximum: 255
+      
+    EpsBearerId:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      
+    EpsPdnCnxContainer:
+      type: string
+      format: EpsPdnCnxContainer
+     
+    EpsBearerContainer:
+      type: string
+      format: EpsBearerContainer
+    
+    Teid:
+      type: string
+      pattern: '^[A-F0-9]{8}$'
+#
+# ENUMERATIONS
+#
+    UpCnxState:
+      anyOf:
+      - type: string
+        enum:
+          - "ACTIVATED"
+          - "DEACTIVATED"
+          - "ACTIVATING"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "ACTIVATED"
+        - "DEACTIVATED"
+        - "ACTIVATING"
+
+    HoState:
+      anyOf:
+      - type: string
+        enum:
+          - "NONE"
+          - "PREPARING"
+          - "PREPARED"
+          - "COMPLETED"
+          - "CANCELLED"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "NONE"
+        - "PREPARING"
+        - "PREPARED"
+        - "COMPLETED"
+        - "CANCELLED"
+
+    RequestType:
+      anyOf:
+      - type: string
+        enum:
+          - "INITIAL_REQUEST"
+          - "EXISTING_PDU_SESSION"
+          - "INITIAL_EMERGENCY_REQUEST"
+          - "EXISTING_EMERGENCY_PDU_SESSION"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "INITIAL_REQUEST"
+        - "EXISTING_PDU_SESSION"
+        - "INITIAL_EMERGENCY_REQUEST"
+        - "EXISTING_EMERGENCY_PDU_SESSION"
+
+    RequestIndication:
+      anyOf:
+      - type: string
+        enum:
+          - "UE_REQ_PDU_SES_MOD"
+          - "UE_REQ_PDU_SES_REL"
+          - "PDU_SES_MOB"
+          - "NW_REQ_PDU_SES_AUTH"
+          - "NW_REQ_PDU_SES_MOD"
+          - "NW_REQ_PDU_SES_REL"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "UE_REQ_PDU_SES_MOD"
+        - "UE_REQ_PDU_SES_REL"
+        - "PDU_SES_MOB"
+        - "NW_REQ_PDU_SES_AUTH"
+        - "NW_REQ_PDU_SES_MOD"
+        - "NW_REQ_PDU_SES_REL"
+
+    NotificationCause:
+      anyOf:
+      - type: string
+        enum:
+          - "QOS_FULFILLED"
+          - "QOS_NOT_FULFILLED"
+          - "UP_SEC_FULFILLED"
+          - "UP_SEC_NOT_FULFILLED"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "QOS_FULFILLED"
+        - "QOS_NOT_FULFILLED"
+        - "UP_SEC_FULFILLED"
+        - "UP_SEC_NOT_FULFILLED"
+
+    Cause:
+      anyOf:
+      - type: string
+        enum:
+          - "REL_DUE_TO_HO"
+          - "EPS_FALLBACK"
+          - "REL_DUE_TO_UP_SEC"
+          - "DNN_CONGESTION"
+          - "S-NSSAI_CONGESTION"
+          - "REL_DUE_TO_REACIVATION"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "REL_DUE_TO_HO"
+        - "EPS_FALLBACK"
+        - "REL_DUE_TO_UP_SEC"
+        - "DNN_CONGESTION"
+        - "S-NSSAI_CONGESTION"
+        - "REL_DUE_TO_REACIVATION"
+
+    ResourceStatus:
+      anyOf:
+      - type: string
+        enum:
+          - "RELEASED"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "RELEASED"
+
+    DnnSelectionMode:
+      anyOf:
+      - type: string
+        enum:
+          - "VERIFIED"
+          - "UE_DNN_NOT_VERIFIED"
+          - "NW_DNN_NOT_VERIFIED"
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - "VERIFIED"
+        - "UE_DNN_NOT_VERIFIED"
+        - "NW_DNN_NOT_VERIFIED"
+
+#
+# HTTP responses
+#
+  responses:
+    'PduSessionCreateError':      
+      description: unsuccessful creation of a PDU session 
+      content:
+        application/json: # message without binary body part 
+          schema:
+            $ref: '#/components/schemas/PduSessionCreateError'
+        multipart/related:  # message with binary body part(s)
+          schema:
+            type: object
+            properties: # Request parts
+              jsonData:
+                $ref: '#/components/schemas/PduSessionCreateError'
+              binaryDataN1SmInfoToUe:
+                type: string
+                format: binary
+          encoding:
+            jsonData:
+              contentType:  application/json
+            binaryDataN1SmInfoToUe:
+              contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string  
+
+    'HsmfUpdateError':      
+      description: unsuccessful update of a PDU session 
+      content:
+        application/json: # message without binary body part 
+          schema:
+            $ref: '#/components/schemas/HsmfUpdateError'
+        multipart/related:  # message with binary body part(s)
+          schema:
+            type: object
+            properties: # Request parts
+              jsonData:
+                $ref: '#/components/schemas/HsmfUpdateError'
+              binaryDataN1SmInfoToUe:
+                type: string
+                format: binary
+          encoding:
+            jsonData:
+              contentType:  application/json
+            binaryDataN1SmInfoToUe:
+              contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string  
+
+    'VsmfUpdateError':      
+      description: unsuccessful update of a PDU session 
+      content:
+        application/json: # message without binary body part 
+          schema:
+            $ref: '#/components/schemas/VsmfUpdateError'
+        multipart/related:  # message with binary body part(s)
+          schema:
+            type: object
+            properties: # Request parts
+              jsonData:
+                $ref: '#/components/schemas/VsmfUpdateError'
+              binaryDataN1SmInfoFromUe:
+                type: string
+                format: binary
+              binaryDataUnknownN1SmInfo:
+                type: string
+                format: binary
+          encoding:
+            jsonData:
+              contentType:  application/json
+            binaryDataN1SmInfoFromUe:
+              contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string  
+            binaryDataUnknownN1SmInfo:
+              contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string  
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/'
