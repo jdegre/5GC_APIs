@@ -1,0 +1,436 @@
+openapi: 3.0.0
+info:
+  version: 1.R15.0.0
+  title: Namf_EventExposure Service
+  description: AMF Event Exposure Service
+security:
+  - oAuth2Clientcredentials: []
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/29518-120.zip'
+servers:
+  - url: https://{apiRoot}/namf-evts/v1
+    variables:
+      apiRoot:
+        default: locahhost:8080
+paths:
+  /subscriptions:
+    post:
+      summary: Namf_EventExposure Subscribe service Operation
+      tags:
+        - Create Subscription
+      operationId: CreateSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmfCreateEventSubscription'
+        required: true
+      responses:
+        '201':
+          description: Subsription Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmfCreatedEventSubscription'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+      callbacks:
+        onEventReport:
+          {$request.body#/subscription/notifyUri}:
+            post:
+              summary: Event Notificaiton Delivery
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/AmfEventNotification'
+                required: true
+              responses:
+                '204':
+                  description: Successful acknowledgement
+                default:
+                  description: Unexpected error
+  /subscriptions/{subscriptionId}:
+    patch:
+      summary: Namf_EventExposure Subscribe Modify service Operation
+      tags:
+        - Modify Subscription
+      operationId: ModifySubscription
+      parameters:
+        - name: subscriptionId
+          in: path
+          required: true
+          description: Unique ID of the subscription to be modified
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/AmfUpdateEventSubscriptionItem'
+        required: true
+      responses:
+        '200':
+          description: Subsription modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmfUpdatedEventSubscription'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+    delete:
+      summary: Namf_EventExposure Unsubscribe service Operation
+      tags:
+        - Delete Subscription
+      operationId: DeleteSubscription
+      parameters:
+        - name: subscriptionId
+          in: path
+          required: true
+          description: Unique ID of the subscription to be deleted
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Subsription deleted successfully
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          description: Unexpected error
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+  schemas:
+    AmfEventSubscription:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfEvent'
+        eventNotifyUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifyCorrelationId:
+          type: string
+        nfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        subsChangeNotifyUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        groupId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/GroupId'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        anyUE:
+          type: boolean
+      required:
+        - events
+        - eventNotifyUri
+        - notifyCorrelationId
+        - nfId
+    AmfEvent:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/AmfEventType'
+        options:
+          $ref: '#/components/schemas/AmfEventMode'
+        immediateFlag:
+          type: boolean
+        area:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfEventArea'
+          minItems: 0
+        locationFilters:
+          $ref: '#/components/schemas/LocationFilter'
+        subscribedDataFilters:
+          $ref: '#/components/schemas/SubscribedDataFilter'
+      required:
+        - type
+        - options
+    AmfEventNotification:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+        notifCorelationId:
+          type: string
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfEventReport'
+          minItems: 1
+      required:
+        - subscriptionId
+        - notifCorelationId
+    AmfEventReport:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/AmfEventType'
+        state:
+          $ref: '#/components/schemas/AmfEventState'
+        anyUe:
+          type: boolean
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        area:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfEventArea'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        location:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        timezone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        accessTypes:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        rmInfos:
+          $ref: '#/components/schemas/RmInfo'
+        cmInfos:
+          $ref: '#/components/schemas/CmInfo'
+        reachability:
+          $ref: '#/components/schemas/UeReachability'
+        subscribedData:
+          $ref: '#/components/schemas/SubscribedData'
+        commFailure:
+          $ref: '#/components/schemas/CommunicationFailure'
+        numberOfUes:
+          type: integer
+      required:
+        - type
+        - state
+    AmfEventMode:
+      type: object
+      properties:
+        trigger:
+          $ref: '#/components/schemas/AmfEventTrigger'
+        maxReports:
+          type: integer
+        duration:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - trigger
+    AmfEventState:
+      type: object
+      properties:
+        active:
+          type: boolean
+        remainReports:
+          type: integer
+        remainDuration:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - active
+    RmInfo:
+      type: object
+      properties:
+        rmState:
+          $ref: '#/components/schemas/RmState'
+        accessType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+      required:
+        - rmState
+        - accessType
+    CmInfo:
+      type: object
+      properties:
+        cmState:
+          $ref: '#/components/schemas/CmState'
+        accessType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+      required:
+        - cmState
+        - accessType
+    SubscribedData:
+      type: object
+      properties:
+        sari:
+          $ref: '#/components/schemas/Sari'
+        rfspIndex:
+          $ref: '#/components/schemas/RfspIndex'
+    CommunicationFailure:
+      type: object
+      properties:
+        nasReleaseCode:
+          type: string
+        ranReleaseCode:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml#/components/schemas/NgApCause'
+    AmfCreateEventSubscription:
+      type: object
+      properties:
+        subscription:
+          $ref: '#/components/schemas/AmfEventSubscription'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - subscription
+    AmfCreatedEventSubscription:
+      type: object
+      properties:
+        subscription:
+          $ref: '#/components/schemas/AmfEventSubscription'
+        reports:
+          $ref: '#/components/schemas/AmfEventReport'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - subscription
+    AmfUpdateEventSubscriptionItem:
+      type: array
+      items:
+        type: object
+        properties:
+          op:
+            type: string
+            enum:
+              - add
+              - remove
+              - replace
+          path:
+            type: string
+            pattern: '\/events\/[0-]$|\/events\/[1-9][0-9]*$'
+          value:
+            $ref: '#/components/schemas/AmfEvent'
+        required:
+          - op
+          - path
+      minItems: 1
+    AmfUpdatedEventSubscription:
+      type: object
+      properties:
+        subscription:
+          $ref: '#/components/schemas/AmfEventSubscription'
+      required:
+        - subscription
+    AmfEventArea:
+      type: object
+      properties:
+        presence:
+          $ref: '#/components/schemas/PresenceState'
+        trackingAreas:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        areaId:
+          type: string
+        ladn:
+          type: string
+        ecgi:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
+          minItems: 0
+        ncgi:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
+          minItems: 0
+        globalRanNodeId:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml#/components/schemas/GlobalRanNodeId'
+    5gGuti:
+      type: string
+    Sari:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+    RfspIndex:
+      type: integer
+    AmfEventType:
+      anyOf:
+      - type: string
+        enum:
+          - "LOCATION_REPORT"
+          - "PRESENCE_IN_AOI_REPORT"
+          - "TIMEZONE_REPORT"
+          - "ACCESS_TYPE_REPORT"
+          - "REGISTRATION_STATE_REPORT"
+          - "CONNECTIVITY_STATE_REPORT"
+          - "REACHABILITY_REPORT"
+          - "SUBSCRIBED_DATA_REPORT"
+          - "COMMIUNICATION_FAILURE_REPORT"
+          - "UES_IN_AREA_REPORT"
+      - type: string
+    AmfEventTrigger:
+      anyOf:
+      - type: string
+        enum:
+          - "ONE_TIME"
+          - "CONTINUOUS"
+      - type: string
+    LocationFilter :
+      anyOf:
+      - type: string
+        enum:
+          - "TAI"
+          - "CELL_ID"
+          - "N3IWF"
+          - "UE_IP"
+          - "UDP_PORT"
+      - type: string
+    SubscribedDataFilter:
+      anyOf:
+      - type: string
+        enum:
+          - "SARI"
+          - "RFSP_INDEX"
+      - type: string
+    UeReachability:
+      anyOf:
+      - type: string
+        enum:
+          - "UNREACHABLE"
+          - "REACHABLE"
+          - "REGULATORY_ONLY"
+      - type: string
+    PresenceState:
+      anyOf:
+      - type: string
+        enum:
+          - "IN"
+          - "OUT"
+          - "UNKNOWN"
+      - type: string
+    RmState:
+      anyOf:
+      - type: string
+        enum:
+          - "REGISTERED"
+          - "DEREGISTERED"
+      - type: string
+    CmState:
+      anyOf:
+      - type: string
+        enum:
+          - "IDLE"
+          - "CONNECTED"
+      - type: string
