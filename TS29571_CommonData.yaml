@@ -1,0 +1,602 @@
+openapi: 3.0.0
+info:
+  version: '1.R15.0.0'
+  title: 'Common Data Types'
+  description: 'Common Data Types'
+paths: {}
+#
+# Definition based on 3GPP TS 29.571 version 0.7.0
+#
+components:
+  schemas:
+#
+# Common Data Types for  Generic usage definitiones as defined in subclause 5.2
+#
+# COMMON SIMPLE DATA TYPES
+#
+    Binary:
+      format: binary
+      type: string
+    Bytes:
+      format: byte
+      type: string
+    Date:
+      format: date
+      type: string
+    DateTime:
+      format: date-time
+      type: string
+    DiameterIdentity:
+      type: string
+      pattern: '^([A-Za-z0-9]+(-[A-Za-z0-9]+).)+[a-z]{2,}$'
+    Double:
+      format: double
+      type: number
+    DurationSec:
+      type: integer
+    Float:
+      format: float
+      type: number
+    Int32:
+      format: int32
+      type: integer
+    Int64:
+      type: integer
+      format: int64
+    Ipv4Addr:
+      type: string
+    Ipv6Addr:
+      type: string
+    Ipv6Prefix:
+      type: string
+    MacAddr48:
+      type: string
+      pattern: '^([0-9a-fA-F]{2})((-[0-9a-fA-F]{2}){5})$'
+    SupportedFeatures:
+      type: string
+      pattern: '^[A-Fa-f0-9]*$'
+    Uinteger:
+      type: integer
+      minimum: 0
+    Uint16:
+      type: integer
+      minimum: 0
+      maximum: 65535
+    Uint32:
+      format: int32
+      type: integer
+      minimum: 0
+    Uint64:
+      format: int64
+      type: integer
+      minimum: 0
+    Uri:
+      type: string
+    TimeZone:
+      format: TimeZone
+      type: string
+#
+#   ENUMERATED
+#
+    PatchOperation:
+      anyOf:
+      - type: string
+        enum:
+          - "add"
+          - "copy"
+          - "move"
+          - "remove"
+          - "replace"
+          - "test" 
+      - type: string
+#
+#  COMMON STRUCTURED DATA TYPES
+#
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Uri'
+        title:
+          type: string
+        status:
+          type: integer
+        instance:
+          $ref: '#/components/schemas/Uri'
+        cause:
+          type: string
+        invalidParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvalidParam'
+          minItems: 0
+    Link:
+      type: object
+      properties:
+        href:
+          $ref: '#/components/schemas/Uri'
+    PatchItem:
+      type: object
+      properties:
+        op:
+          $ref: '#/components/schemas/PatchOperation'
+        path:
+          type: string
+        from:
+          type: string
+        value: 
+          nullable: true
+      required:
+        - op
+        - path
+    LinksValueSchema:
+      oneOf:
+        - type: array
+          items:
+            $ref: '#/components/schemas/Link'
+          minItems: 1
+        - $ref: '#/components/schemas/Link'
+    SelfLink:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+      required:
+        - self
+    InvalidParam:
+      type: object
+      properties:
+        param:
+          type: string
+        reason:
+          type: string
+      required:
+        - param
+#
+# Data Types related to Subscription, Identification and Numbering as defined in subclause 5.3
+#
+# SIMPLE DATA TYPES
+#
+    Dnn:
+      type: string
+    Gpsi:
+      type: string
+      pattern: '^(msisdn-[0-9]{5,15}|extid-.+|.+)$'
+    GroupId:
+      type: string
+      pattern: '^(groupid-[A-Fa-f0-9]{14,34}|.+)$'
+    Pei:
+      type: string
+      pattern: '^(imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
+    Supi:
+      format: Supi
+      type: string
+      pattern: '^(imsi-[0-9]{5,15}|nai-.+|.+)$'
+    NfInstanceId:
+      type: string
+      format: uuid
+    AmfId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{6}$'
+    RfspIndex:
+      type: integer
+      minimum: 1
+      maximum: 256
+#
+# STRUCTURED DATA TYPES
+#
+    Guami:
+      type: object
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        amfId:
+          $ref: '#/components/schemas/AmfId'
+      required:
+        - plmnId
+        - amfId
+    NetworkId:
+      type: object
+      properties:
+        mnc:
+          $ref: '#/components/schemas/Mnc'
+        mcc:
+          $ref: '#/components/schemas/Mcc'
+      minProperties: 1
+# 
+# Data Types related to 5G Network as defined in subclause 5.4
+#
+# SIMPLE DATA TYPES
+#
+    ApplicationId:
+      type: string
+    PduSessionId:
+      type: integer
+      minimum: 0
+      maximum: 255
+    Mcc:
+      type: string
+      pattern: '^\d{3}$'
+    Mnc:
+      type: string
+      pattern: '^\d{2,3}$'
+    Tac:
+      type: string
+      pattern: '(^[A-Fa-f0-9]{4}$)|(^[A-Fa-f0-9]{6}$)'
+    EutraCellId:
+
+      type: string
+      pattern: '^[A-Fa-f0-9]{7}$'
+    NrCellId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{9}$'
+#
+# Enumerations
+#
+    AccessType:
+      type: string
+      enum:
+      - 3GPP_ACCESS
+      - NON_3GPP_ACCESS
+    RatType:
+      anyOf:
+      - type: string
+        enum:
+          - NR
+          - EUTRA
+          - WLAN
+          - VIRTUAL
+      - type: string
+    PduSessionType:
+      anyOf:
+      - type: string
+        enum:
+          - IPV4V6
+          - IPV4
+          - IPV6
+          - UNSTR
+          - ETHER
+      - type: string
+    UpIntegrity:
+      anyOf:
+      - type: string
+        enum:
+          - "REQUIRED"
+          - "PREFERRED"
+          - "NOT_NEEDED"
+      - type: string
+    UpConfidentiality:
+      anyOf:
+      - type: string
+        enum:
+          - "REQUIRED"
+          - "PREFERRED"
+          - "NOT_NEEDED"
+      - type: string
+    SscMode:
+      anyOf:
+      - type: string
+        enum:
+          - "SSC_MODE_1"
+          - "SSC_MODE_2"
+          - "SSC_MODE_3"
+      - type: string
+#
+# Structured Data Types
+#
+# the following data type is FFS
+    DefaultQosInformation:
+      type: string #FFS
+    Snssai:
+      type: object
+      properties:
+        sst:
+          $ref: '#/components/schemas/Uinteger'
+          minimum: 0
+          maximum: 255
+        sd:
+          type: string
+      required:
+        - sst
+    PlmnId:
+      type: object
+      properties:
+        mcc:
+          $ref: '#/components/schemas/Mcc'
+        mnc:
+          $ref: '#/components/schemas/Mnc'
+      required:
+        - mcc
+        - mnc
+    Tai:
+      type: object
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        tac:
+          $ref: '#/components/schemas/Tac'
+      required:
+        - plmnId
+        - tac
+    Ecgi:
+      type: object
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+          # PLMN Identity
+        eutraCellId:
+          $ref: '#/components/schemas/EutraCellId'
+      required:
+        - plmnId
+        - eutraCellId
+    Ncgi:
+      type: object
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        nrCellId:
+          $ref: '#/components/schemas/NrCellId'
+      required:
+        - plmnId
+        - nrCellId
+    UserLocation:
+      type: object
+      properties:
+        eutraLocation:
+          $ref: '#/components/schemas/EutraLocation'
+        nrLocation:
+          $ref: '#/components/schemas/NrLocation'
+        n3gaLocation:
+          $ref: '#/components/schemas/N3gaLocation'
+    EutraLocation:
+      type: object
+      properties:
+        tai:
+          $ref: '#/components/schemas/Tai'
+        ecgi:
+          $ref: '#/components/schemas/Ecgi'
+      required:
+        - tai
+        - ecgi
+    NrLocation:
+      type: object
+      properties:
+        tai:
+          $ref: '#/components/schemas/Tai'
+        ncgi:
+          $ref: '#/components/schemas/Ncgi'
+      required:
+        - tai
+        - ncgi
+    N3gaLocation:
+      type: object
+      properties:
+        n3gppTai:
+          $ref: '#/components/schemas/Tai'
+        n3IwfId:
+          type: string
+          pattern: '^[A-Fa-f0-9]+$'
+        ueIpv4Addr:
+          $ref: '#/components/schemas/Ipv4Addr'
+        ueIpv6Addr:
+          $ref: '#/components/schemas/Ipv6Addr'
+        portNumber:
+          $ref: '#/components/schemas/Uinteger'
+      required:
+        - n3gppTai
+        - n3IwfId
+    UpSecurity:
+      type: object
+      properties:
+        upIntegr:
+          $ref: '#/components/schemas/UpIntegrity'
+        upConfid:
+          $ref: '#/components/schemas/UpConfidentiality'
+      required:
+        - upIntegr
+        - upConfid
+    RefToBinaryData:
+      type: object
+      properties:
+        contentId:
+          type: string
+      required:
+        - contentId
+#
+# Data related to Data Types related to 5G QoS as defined in subclause 5.5
+#
+#
+# SIMPLE DATA TYPES
+#
+#
+    Qfi:
+      type: integer
+      minimum: 0
+      maximum: 63
+    5qi:
+      type: integer
+      minimum: 0
+      maximum: 255
+    BitRate:
+      type: string
+      pattern: '^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$'
+    ArpPriorityLevel:
+      type: integer
+      minimum: 1
+      maximum: 15
+    5qiPriorityLevel:
+      type: integer
+      minimum: 1
+      maximum: 127
+    PacketDelBudget:
+      type: integer
+      minimum: 1
+    PacketErrRate:
+      type: integer
+    PacketLossRate:
+      type: integer
+      minimum: 0
+      maximum: 1000
+    AverWindow:
+      type: string #FFS
+    MaxDataBurstVol:
+      type: integer
+      minimum: 1
+
+# Enumerations
+#
+    PreemptionCapability:
+      anyOf:
+      - type: string
+        enum:
+          - NOT_PREEMPT
+          - MAY_PREEMPT
+      - type: string
+    DelayCritical:
+      anyOf:
+      - type: string
+        enum:
+          - CRITICAL
+          - NON_CRITICAL
+      - type: string
+    PreemptionVulnerability:
+      anyOf:
+      - type: string
+        enum:
+          - NOT_PREEMPTABLE
+          - PREEMPTABLE
+      - type: string
+    ReflectiveQoSAttributeReflectiveQosAttribute:
+      anyOf:
+      - type: string
+        enum:
+          - RQOS
+          - NO_RQOS
+      - type: string
+    NotificationControl:
+      anyOf:
+      - type: string
+        enum:
+          - REQUESTED
+          - NOT_REQUESTED
+      - type: string
+#
+# Structured Data Types
+#
+    Arp:
+      type: object
+      properties:
+        priorityLevel:
+          $ref: '#/components/schemas/ArpPriorityLevel'
+        preemptCap:
+          $ref: '#/components/schemas/PreemptionCapability'
+        preemptVuln:
+          $ref: '#/components/schemas/PreemptionVulnerability'
+      required:
+        - priorityLevel
+        - preemptCap
+        - preemptVuln
+    Ambr:
+      type: object
+      properties:
+        uplink:
+          $ref: '#/components/schemas/BitRate'
+        downlink:
+          $ref: '#/components/schemas/BitRate'
+      required:
+        - uplink
+        - downlink
+#
+# HTTP responses
+#
+  responses:
+    '400':
+      description: Bad request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '401':
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '403':
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '404':
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '405':
+      description: Method Not Allowed
+    '408':
+      description: Request Timeout
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '409':
+      description: Conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '410':
+      description: Gone
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '411':
+      description: Length Required
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '413':
+      description: Payload Too Large
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '414':
+      description: URI Too Long
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '415':
+      description: Unsupported Media Type
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '500':
+      description: Internal Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '501':
+      description: Not Implemented
+    '503':
+      description: Service Unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    '504':
+      description: Gateway Timeout
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    default:
+      description: Generic Error
