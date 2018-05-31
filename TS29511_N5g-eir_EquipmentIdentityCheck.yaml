@@ -1,0 +1,67 @@
+openapi: 3.0.0
+
+info:
+  version: '1.PreR15.0.0'
+  title: '5G-EIR Equipment Identity Check'
+  description: '5G-EIR Equipment Identity Check Service'
+  
+paths:
+  /equipment-status:
+    get:
+      summary: Retrieves the status of the UE
+      operationId: GetEquipmentStatus
+      tags:
+        - Equipment Status (Document)
+      parameters:
+        - name: pei
+          in: query
+          description: PEI of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei' 
+        - name: supi
+          in: query
+          description: SUPI of the UE
+          required: false
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi' 
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EirResponseData'
+        '404':
+          description: PEI Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                
+components:
+  schemas:
+    EirResponseData:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/EquipmentStatus'
+    EquipmentStatus:
+      type: string
+      enum:
+        - WHITELISTED
+        - BLACKLISTED
+        - GREYLISTED
+        
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.511/'
+ 
