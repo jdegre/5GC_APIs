@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  version: '1.PreR15.0.0'
+  title: 'Nsmsf_SMService Service API'
+  description: 'SMSF SMService Service API'
+security:
+  - oAuth2Clientcredentials: []
+paths:
+  /ue-contexts/{supi}:
+    put:
+      summary: Activate SMS Service for a given UE
+      operationId: SMServiceActivation
+      tags:
+        - UEContext (Document)
+      parameters:
+        - name: supi
+          in: path
+          required: true
+          description: Subscriber Permanent Identifier (SUPI)
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UeSmsContextData'
+        required: true
+      responses:
+        '201':
+          description: UE Context for SMS is created in SMSF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeSmsContextData'
+        '204':
+          description: UE Context for SMS is updated in SMSF
+        '400':
+          description: Invalid Service Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Unable to create/update UE Context for SMS in SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Unable to found subscription for service user or UE Context for SMS in SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      summary: Deactivate SMS Service for a given UE
+      operationId: SMServiceDeactivation
+      tags:
+        - UEContext (Document)
+      parameters:
+        - name: supi
+          in: path
+          required: true
+          description: Subscriber Permanent Identifier (SUPI)
+          schema:
+            type: string
+      responses:
+        '204':
+          description: UE Context for SMS is deleted from SMSF
+        '400':
+          description: Invalid Service Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Unable to found UE Context for SMS in SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /ue-contexts/{supi}/sendsms:
+    post:
+      summary: Send SMS payload for a given UE
+      operationId: SendSMS
+      tags:
+        - UEContext (Document)
+      parameters:
+        - name: supi
+          in: path
+          required: true
+          description: Subscriber Permanent Identifier (SUPI)
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsRecordData'
+        required: true
+      responses:
+        '200':
+          description: SMS payload is received by SMSF, and is being delivered out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsRecordDeliveryData'
+        '400':
+          description: Invalid Service Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Unable to deliver SMS at SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Unable to found UE Context for SMS in SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+  schemas:
+    UeSmsContextData:
+      type: object
+      required:
+        - supi
+        - amfId
+        - accessType
+      properties:
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        amfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        accessType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+    SmsRecordData:
+      type: object
+      required:
+        - smsRecordId
+        - smsPayloads
+      properties:
+        smsRecordId:
+          $ref: '#/components/schemas/RecordId'
+        smsPayloads:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        accessType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        ueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+    RecordId:
+      type: string
+    SmsRecordDeliveryData:
+      type: object
+      required:
+        - smsRecordId
+        - deliveryStatus
+      properties:
+        smsRecordId:
+          $ref: '#/components/schemas/RecordId'
+        deliveryStatus:
+          $ref: '#/components/schemas/SmsDeliveryStatus'
+    SmsDeliveryStatus:
+      type: string
+      enum:
+        - SMS_DELIVERY_PENDING
+        - SMS_DELIVERY_COMPLETED
+        - SMS_DELIVERY_FAILED
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.540/'
