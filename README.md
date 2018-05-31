@@ -29,8 +29,8 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [NS Selection](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml)
 ## SMSF
 * [SM Service](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml)
-## EIR
-* [5G-EIR Equipment Identity Check](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
+## 5G-EIR
+* [Equipment Identity Check](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
 ## Common Data Types
 * [Common Data](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
 
