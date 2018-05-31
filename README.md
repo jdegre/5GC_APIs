@@ -1,4 +1,4 @@
-# 5GC_APIs
+# 5GC APIs (OpenAPI 3)
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each NF service:
 
