@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  version: 1.PreR15.0.0
+  title: AMF MT Service
+  description: AMF Mobile Termination Service
+security:
+  - oAuth2Clientcredentials: []
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/29518-120.zip'
+servers:
+  - url: https://{apiRoot}/namf-mt/v1
+    variables:
+      apiRoot:
+        default: locahhost:8080
+paths:
+  '/ue-contexts/{ueContextId}':
+    get:
+      summary: Namf_MT Provide Domain Selection Info service Operation
+      tags:
+        - Provide Domain Selection Info
+      operationId: Provide Domain Selection Info
+      parameters:
+        - name: ueContextId
+          in: path
+          description: UE Context Identifier
+          required: true
+          schema:
+            type: string
+        - name: info-class
+          in: query
+          description: UE Context Information Class
+          schema:
+            $ref: '#/components/schemas/UeContextInfoClass'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Requested UE Context Information returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeContextInfo'
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/ProblemDetails'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/404'
+        default:
+          description: Unexpected error
+  /ue-contexts/{ueContextId}/ue-reachind:
+    post:
+      summary: Namf_MT EnableUEReachability service Operation
+      tags:
+        - Enable UE Reachability
+      operationId: EnableUeReachability
+      parameters:
+        - name: ueContextId
+          in: path
+          description: UE Context Identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableUeReachabilityReqData'
+        required: true
+      responses:
+        '200':
+          description: UE has become reachable as desired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableUeReachabilityRspData'
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/ProblemDetails'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/503'
+        '504':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/responses/504'
+        default:
+          description: Unexpected error
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+  schemas:
+    EnableUeReachabilityReqData:
+      type: object
+      properties:
+        reachability:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml#/components/schemas/UeReachability'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - reachability
+    EnableUeReachabilityRspData:
+      type: object
+      properties:
+        reachability:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml#/components/schemas/UeReachability'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - reachability
+    UeContextInfo:
+      type: object
+      properties:
+        supportVoPS:
+          type: boolean
+        lastActTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/DateTime'
+        ratType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/RatType'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml.yaml#/components/schemas/SupportedFeatures'
+    UeContextInfoClass:
+      anyOf:
+      - type: string
+        enum:
+          - "TADS"
+      - type: string
