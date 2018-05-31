@@ -1,0 +1,838 @@
+openapi: 3.0.0
+
+info:
+  version: '1.PreR15.0.0'
+  title: 'Nudm_SDM'
+  description: 'Nudm Subscriber Data Management Service'
+
+servers:
+  - url: https://{apiRoot}/nudm-sdm/v1
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+
+security:
+  - oAuth2ClientCredentials: []
+
+paths:
+  /{supi}:
+    get:
+      summary: retrieve multiple data sets
+      operationId: Get
+      tags:
+        - Retrieval of multiple data sets
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: dataset-names
+          in: query
+          description: List of dataset names
+          required: true
+          schema:
+             $ref: '#/components/schemas/DatasetNames'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionDataSets'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/nssai:
+    get:
+      summary: retrieve a UE's subscribed NSSAI
+      operationId: Get
+      tags:
+        - Subscribed Network Slice Selection Assistance Information Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nssai'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/am-data:
+    get:
+      summary: retrieve a UE's Access and Mobility Subscription Data
+      operationId: Get
+      tags:
+        - Access and Mobility Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/smf-select-data:
+    get:
+      summary: retrieve a UE's SMF Selection Subscription Data
+      operationId: Get
+      tags:
+        - SMF Selection Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/ue-context-in-smf-data:
+    get:
+      summary: retrieve a UE's UE Context In SMF Data
+      operationId: Get
+      tags:
+        - UE Context In SMF Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeContextInSmfData'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/sm-data:
+    get:
+      summary: retrieve a UE's Session Management Subscription Data
+      operationId: Get
+      tags:
+        - Session Management Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: singleNssai
+          in: query
+          content:
+            application/json:
+              schema:
+               $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        - name: dnn
+          in: query
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        - name: plmnId
+          in: query
+          content:
+            application/json:
+              schema:
+               $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessionManagementSubscriptionData'
+                minItems: 1
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/sms-data:
+    get:
+      summary: retrieve a UE's SMS Subscription Data
+      operationId: Get
+      tags:
+        - SMS Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmnId
+          in: query
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsSubscriptionData'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/sms-mng-data:
+    get:
+      summary: retrieve a UE's SMS Management Subscription Data
+      operationId: Get
+      tags:
+        - SMS Management Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmnId
+          in: query
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsManagementSubscriptionData'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/sdm-subscriptions:
+    post:
+      summary: subscribe to notifications
+      operationId: Subscribe
+      tags:
+        - Subscription Creation
+      parameters:
+        - name: supi
+          in: path
+          description: SUPI of the user
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SdmSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SdmSubscription'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        datachangeNotification:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/ModificationNotification'
+              responses:
+                '204':
+                  description: Successful Notification response
+  /{supi}/sdm-subscriptions/{subscriptionId}:
+    delete:
+      summary: unsubscribe from notifications
+      operationId: Unsubscribe
+      tags:
+        - Subscription Deletion
+      parameters:
+        - name: supi
+          in: path
+          description: SUPI of the user
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: subscriptionId
+          in: path
+          description: Id of the SDM Subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful response
+  /{gpsi}/id-translation-result:
+    get:
+      summary: retrieve a UE's SUPI
+      operationId: Get
+      tags:
+        - GPSI to SUPI Translation
+      parameters:
+        - name: gpsi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdTranslationResult'
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+
+  schemas:
+
+# COMPLEX TYPES:
+
+    DatasetNames:
+      type: array
+      items: 
+        $ref: '#/components/schemas/DataSetName'
+      minItems: 2
+      uniqueItems: true
+
+    SubscriptionDataSets:
+      type: object
+      properties:
+        amData:
+          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        smfSelData:
+          $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+
+    AccessAndMobilitySubscriptionData:
+      type: object
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        gpsis:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        internalGroupIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalGroupId'
+        subscribedUeAmbr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+        nssai:
+          $ref: '#/components/schemas/Nssai'
+        ratRestrictions:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+        areaRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AreaRestriction'
+        coreNetworkTypeRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoreNetworkType'
+        rfspIndex:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RfspIndex'
+        subsRegTimer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        ueUsageType:
+          $ref: '#/components/schemas/UeUsageType'
+        ladnInformation:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        mpsPriority:
+          $ref: '#/components/schemas/MpsPriorityIndicator'
+        activeTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        dlPacketCount:
+          $ref: '#/components/schemas/DlPacketCount'
+
+    AreaRestriction:
+      type: object
+      required:
+        - restrictionType
+      properties:
+        restrictionType:
+          $ref: '#/components/schemas/RestrictionType'
+        areaInformation:
+          $ref: '#/components/schemas/AreaInformation'
+        ratTypes:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+
+    AreaInformation:
+      type: object
+      properties:
+        tacs:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tac'
+        areaCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AreaCode'
+        maxNumderTAs:
+          type: integer
+
+    SmfSelectionSubscriptionData:
+      type: object
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        subscribedSnssaiInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnssaiInfo'
+
+    SnssaiInfo:
+      type: object
+      required:
+        - singleNssai
+        - dnnInfos
+      properties:
+        singleNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnnInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnnInfo'
+          minItems: 1
+
+    DnnInfo:
+      type: object
+      required:
+        - dnn
+      properties:
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        defaultDnnIndicator:
+          $ref: '#/components/schemas/DnnIndicator'
+        lboRoamingAllowed:
+          $ref: '#/components/schemas/LboRoamingAllowed'
+
+    Nssai:
+      type: object
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        defaultSingleNssais:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          maxItems: 8
+        singleNssais:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+
+    UeContextInSmfData:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/PduSession'
+      minProperties: 1
+        
+    PduSession:
+      type: object
+      required:
+        - pduSessionId
+        - dnn
+        - smfId
+        - smfAddress
+      properties:
+        pduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        smfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        smfAddress:
+          $ref: '#/components/schemas/IpAddress'
+
+    SessionManagementSubscriptionData:
+      type: object
+      required:
+        - singleNssai
+      properties:
+        singleNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnnConfiguration:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DnnConfiguration'
+
+    DnnConfiguration:
+      type: object
+      required:
+        - dnn
+        - pduSessionTypes
+        - sscModes
+      properties:
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        pduSessionTypes:
+          $ref: '#/components/schemas/PduSessionTypes'
+        sscModes:
+          $ref: '#/components/schemas/SscModes'
+        ladnIndicator:
+          $ref: '#/components/schemas/LadnIndicator'
+        5gQosProfile:
+          $ref: '#/components/schemas/5GQosProfile'
+        sessionAmbr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+        3gppChargingCharacteristics:
+          $ref: '#/components/schemas/3GppChargingCharacteristics'
+        staticIpAddress:
+          $ref: '#/components/schemas/IpAddress'
+
+    IpAddress:
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        ipv6Prefix:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+
+    PduSessionTypes:
+      type: object
+      required:
+        - defaultSessionType
+      properties:
+        defaultSessionType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+        allowedSessionTypes:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+
+    SscModes:
+      type: object
+      required:
+        - defaultSscMode
+      properties:
+        defaultSscMode:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SscMode'
+        allowedSscModes:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SscMode'
+          minItems: 0
+          maxItems: 2
+
+    5GQosProfile:
+      type: object
+      required:
+        - 5qi
+      properties:
+        5qi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5qi'
+        arp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
+
+    SmsSubscriptionData:
+      type: object
+      properties:
+        smsSupported:
+          $ref: '#/components/schemas/SmsSupport'
+
+    SmsManagementSubscriptionData:
+      type: object
+      required:
+        - mtSmsSubscribed
+        - moSmsSubscribed
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        mtSmsSubscribed:
+          type: boolean
+        mtSmsBarringAll:
+          type: boolean
+        mtSmsBarringRoaming:
+          type: boolean
+        moSmsSubscribed:
+          type: boolean
+        moSmsBarringAll:
+          type: boolean
+        moSmsBarringRoaming:
+          type: boolean
+
+    SdmSubscription:
+      type: object
+      required:
+        - callbackUri
+        - monitoredResourceUri
+      properties:
+        callbackReference:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        monitoredResourceUris:
+          type: array
+          items: 
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+
+    ModificationNotification:
+      type: object
+      properties:
+        amDataModification:
+          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        smfSelDataModification:
+          $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+        smsMngDataModification:
+          $ref: '#/components/schemas/SmsManagementSubscriptionData'
+        smDataModification:
+          $ref: '#/components/schemas/SessionManagementSubscriptionData'
+
+    IdTranslationResult:
+      type: object
+      required:
+        - supi
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+
+
+# SIMPLE TYPES:
+
+    UeUsageType:
+      type: integer
+
+    MpsPriorityIndicator:
+      type: boolean
+
+    DnnIndicator:
+      type: boolean
+
+    LboRoamingAllowed:
+      type: boolean
+
+    LadnIndicator:
+      type: boolean
+
+    SmsSupport:
+      type: boolean
+
+    3GppChargingCharacteristics:
+      type: string
+
+    DlPacketCount:
+      type: integer
+      minimum: -1
+
+    InternalGroupId:
+      type: string
+
+
+# ENUMS:
+
+    DataSetName:
+      anyOf:
+      - type: string
+        enum:
+        - AM
+        - SMF_SEL
+      - type: string
+
+    RestrictionType:
+      anyOf:
+      - type: string
+        enum:
+        - SAR_ALLOWED_AREA
+        - SAR_NOT_ALLOWED_AREA
+        - FORBIDDEN_AREA
+      - type: string
+
+    CoreNetworkType:
+      anyOf:
+      - type: string
+        enum:
+        - 5GC
+        - EPC
+      - type: string
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
+
+
