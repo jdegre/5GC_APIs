@@ -1,0 +1,272 @@
+openapi: 3.0.0
+info:
+  version: '1.PreR15.0.0'
+  title: 'UDM UE Authenticaton'
+  description: 'UDM UE Authentication Service'
+security:
+  - oAuth2ClientCredentials: []
+paths:
+  /{supiOrSuci}/security-information/generate-auth-data:
+    post:
+      summary: Generate authentication data for the UE
+      operationId: GenerateAuthData
+      tags:
+        - Generate Auth Data
+      parameters:
+        - name: supiOrSuci
+          in: path
+          description: SUPI or SUCI of the user
+          required: true
+          schema:
+            $ref: '#/components/schemas/SupiOrSuci'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationInfoResult'
+        '404':
+          description: User (SUPI or SUCI) does not exist
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /{supi}/auth-events:
+    post:
+      summary: Create a new confirmation event
+      operationId: ConfirmAuth
+      tags:
+        - Confirm Auth
+      parameters:
+        - name: supi
+          in: path
+          description: SUPI of the user
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthEvent'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthEvent'
+        '404':
+          description: User (SUPI) does not exist
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+
+  schemas:
+
+# COMPLEX TYPES:
+
+    AuthenticationInfoRequest:
+      type: object
+      required:
+        - servingNetworkName
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        servingNetworkName:
+          $ref: '#/components/schemas/ServingNetworkName'
+        resynchronizationInfo:
+          $ref: '#/components/schemas/ResynchronizationInfo'
+
+    AuthenticationInfoResult:
+      type: object
+      
+      properties:
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        authenticationVector:
+          $ref: '#/components/schemas/AuthenticationVector'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+
+    AuthenticationVector:
+      oneOf:
+        - $ref: '#/components/schemas/AvEapAkaPrime'
+        - $ref: '#/components/schemas/Av5GHeAka'
+      discriminator:
+        propertyName: avType
+        mapping: 
+          5G_HE_AKA: '#/components/schemas/Av5GHeAka'
+          EAP_AKA_PRIME: '#/components/schemas/AvEapAkaPrime'
+
+    AvEapAkaPrime:
+      type: object
+      required:
+        - avType
+        - rand
+        - xres
+        - autn
+        - ckPrime
+        - ikPrime
+      properties:
+        avType:
+          $ref: '#/components/schemas/AvType'
+        rand:
+          $ref: '#/components/schemas/Rand'
+        xres:
+          $ref: '#/components/schemas/Xres'
+        autn:
+          $ref: '#/components/schemas/Autn'
+        ckPrime:
+          $ref: '#/components/schemas/CkPrime'
+        ikPrime:
+          $ref: '#/components/schemas/IkPrime'
+
+    Av5GHeAka:
+      type: object
+      required:
+        - avType
+        - rand
+        - xresStar
+        - autn
+        - kausf
+      properties:
+        avType:
+          $ref: '#/components/schemas/AvType'
+        rand:
+          $ref: '#/components/schemas/Rand'
+        xresStar:
+          $ref: '#/components/schemas/XresStar'
+        autn:
+          $ref: '#/components/schemas/Autn'
+        kausf:
+          $ref: '#/components/schemas/Kausf'
+
+    ResynchronizationInfo:
+      type: object
+      required:
+        - rand
+        - auts
+      properties:
+        rand:
+          $ref: '#/components/schemas/Rand'
+        auts:
+          $ref: '#/components/schemas/Auts'
+
+    AuthEvent:
+      type: object
+      required:
+        - nfInstanceId
+        - success
+        - timeStamp
+        - authType
+      properties:
+        nfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        success:
+          $ref: '#/components/schemas/Success'
+        timeStamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        authType:
+          $ref: '#/components/schemas/AuthType'
+
+# SIMPLE TYPES:
+
+    Autn:
+      type: string
+      pattern: "^[A-Fa-f0-9]{32}$"
+
+    Auts:
+      type: string
+      pattern: "^[A-Fa-f0-9]{28}$"
+
+    CkPrime:
+      type: string
+      pattern: "^[A-Fa-f0-9]{32}$"
+
+    IkPrime:
+      type: string
+      pattern: "^[A-Fa-f0-9]{32}$"
+
+    Kausf:
+      type: string
+      pattern: "^[A-Fa-f0-9]{64}$"
+
+    Rand:
+      type: string
+      pattern: "^[A-Fa-f0-9]{32}$"
+
+    Xres:
+      type: string
+      pattern: "^[A-Fa-f0-9]{8,32}$"
+
+    XresStar:
+      type: string
+      pattern: "^[A-Fa-f0-9]{32}$"
+
+    SupiOrSuci:
+      type: string
+      pattern: "^(imsi-[0-9]{5,15}|nai-.+|suci-[0-9]{5,6}-[0-9]{1,4}-[a-fA-F0-9]-(NULL|[a-zA-Z0-9]+)-[a-fA-F0-9]+|.+)$"
+
+    ServingNetworkName:
+      type: string
+      pattern: "^5G:mnc[0-9]{3}[.]mcc[0-9]{3}[.]3gppnetwork[.]org$"
+
+    Success:
+      type: boolean
+
+# ENUMS:
+
+    AuthType:
+      anyOf:
+      - type: string
+        enum:
+        - 5G_AKA
+        - EAP_AKA_PRIME
+        - EAP_TLS
+      - type: string
+
+    AvType:
+      anyOf:
+      - type: string
+        enum:
+        - 5G_HE_AKA
+        - EAP_AKA_PRIME
+      - type: string
+
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
+
