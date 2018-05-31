@@ -8,14 +8,12 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 ## LMF
 * [Location](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml)
 ## AMF
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml">Communication</a><br>
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml">Event Exposure</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Location.yaml">Location</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_MT.yaml">MT</a><br>
-<br>
+* [Communication](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml)
+* [Event Exposure](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml)
+* [Location](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Location.yaml)
+* [MT](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_MT.yaml)
 ## SMF
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29502_Nsmf_PDUSession.yaml">PDUSession</a><br>
-<br>
+* [PDU Session](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29502_Nsmf_PDUSession.yaml)
 ## UDM
 <a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml">Subscriber Data Management</a><br>
 <a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml">UE Context Management</a><br>
