@@ -1,0 +1,128 @@
+openapi: 3.0.0
+
+info:
+  version: '1.PreR15.0.0'
+  title: 'Nudm_PP'
+  description: 'Nudm Parameter Provision Service'
+
+servers:
+  - url: https://{apiRoot}/nudm-pp/v1
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+
+security:
+  - oAuth2ClientCredentials: []
+
+paths:
+  /{gpsi}/pp-data:
+    patch:
+      summary: provision parameters
+      operationId: Update
+      tags:
+        - Subscription Data Update
+      parameters:
+        - name: gpsi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/PpData'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+
+components: 
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+
+  schemas:
+
+# COMPLEX TYPES:
+
+    PpData:
+      type: object
+      properties:
+        communicationCharacteristics:
+          $ref: '#/components/schemas/CommunicationCharacteristics'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    CommunicationCharacteristics:
+      type: object
+      properties:
+        ppSubsRegTimer:
+          $ref: '#/components/schemas/PpSubsRegTimer'
+        ppActiveTime:
+          $ref: '#/components/schemas/PpActiveTime'
+        ppDlPacketCount:
+          $ref: '#/components/schemas/PpDlPacketCount'
+
+    PpSubsRegTimer:
+      type: object
+      required:
+        - subsRegTimer
+        - afId
+        - referenceId
+      properties:
+        subsRegTimer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        afId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+      nullable: true
+
+    PpActiveTime:
+      type: object
+      required:
+        - activeTime
+        - afId
+        - referenceId
+      properties:
+        activeTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        afId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+      nullable: true
+
+
+# SIMPLE TYPES:
+
+    ReferenceId:
+      type: integer
+
+    PpDlPacketCount:
+      type: integer
+      nullable: true
+
+
+# ENUMS:
+
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
