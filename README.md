@@ -1,5 +1,6 @@
 # 5GC_APIs
 
+The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each NF service:
 
 NRF:<br>
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml">NF Management</a><br>
