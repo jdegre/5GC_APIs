@@ -1,0 +1,626 @@
+openapi: 3.0.0
+
+info:
+  version: '1.PreR15.0.0'
+  title: 'Nudm_UECM'
+  description: 'Nudm Context Management Service'
+
+servers:
+  - url: https://{apiRoot}/nudm-uecm/v1
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+
+security:
+  - oAuth2ClientCredentials: []
+
+paths:
+  /{ueId}/registrations/amf-3gpp-access:
+    put:
+      summary: register as AMF for 3GPP access
+      operationId: Registration
+      tags:
+        - AMF registration for 3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Amf3GppAccessRegistration'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        deregistrationeNotification:
+          '{request.body#/deregCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/DeregistrationData'
+              responses:
+                '204':
+                  description: Successful Notification response
+    patch:
+      summary: Update a parameter in the AMF registration for 3GPP access
+      operationId: Update
+      tags:
+        - Parameter update in the AMF registration for 3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Amf3GppAccessRegistrationModification'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    get:
+      summary: retrieve the AMF registration for 3GPP access information
+      operationId: Get
+      tags:
+        - AMF 3Gpp-access Registration Info Retrieval
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: '#/components/schemas/Gpsi'
+        - name: supportedFeatures
+          in: query
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Amf3GppAccessRegistration'
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /{ueId}/registrations/amf-non-3gpp-access:
+    put:
+      summary: register as AMF for non-3GPP access
+      operationId: Register
+      tags:
+        - AMF registration for non-3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        deregistrationeNotification:
+          '{request.body#/deregCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/DeregistrationData'
+              responses:
+                '204':
+                  description: Successful Notification response
+    patch:
+      summary: update a parameter in the AMF registration for non-3GPP access
+      operationId: Update
+      tags:
+        - Parameter update in the AMF registration for non-3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AmfNon3GppAccessRegistrationModification'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    get:
+      summary: retrieve the AMF registration for non-3GPP access information
+      operationId: Get
+      tags:
+        - AMF non-3GPP-access Registration Info  Retrieval
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: supportedFeatures
+          in: query
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /{ueId}/registrations/smf-registrations/{pduSessionId}:
+    put:
+      summary: register as SMF
+      operationId: Registration
+      tags:
+        - SMF Registration
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: pduSessionId
+          in: path
+          description: Identifier of the PDU session
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmfRegistration'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfRegistration'   
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        pcscfRestorationNotification:
+          '{request.body#/pcscfRestorationCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PcscfRestorationNotification'
+              responses:
+                '204':
+                  description: Successful Notification response
+    delete:
+      summary: delete an SMF registration
+      operationId: Deregistration
+      tags:
+        - SMF Deregistration
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: pduSessionId
+          in: path
+          description: Identifier of the PDU session
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /{ueId}/registrations/smsf-3gpp-access:
+    put:
+      summary: register as SMSF for 3GPP access
+      operationId: Update SMSF Reg 3GPP
+      tags:
+        - SMSF registration for 3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsfRegistration'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      summary: delete the SMSF registration for 3GPP access
+      operationId: Deregistration
+      tags:
+        - SMSF Deregistration for 3GPP Access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    get:
+      summary: retrieve the SMSF registration for 3GPP access information
+      operationId: Get
+      tags:
+        - SMSF 3GPP access Registration Info Retrieval
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: '#/components/schemas/Gpsi'
+        - name: supportedFeatures
+          in: query
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /{ueId}/registrations/smsf-non-3gpp-access:
+    put:
+      summary: register as SMSF for non-3GPP access
+      operationId: Registration
+      tags:
+        - SMSF registration for non-3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsfRegistration'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      summary: delete SMSF registration for non 3GPP access
+      operationId: Deregistration
+      tags:
+        - SMSF Deregistration for non-3GPP access
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    get:
+      summary: retrieve the SMSF registration for non-3GPP access information
+      operationId: Get
+      tags:
+        - SMSF non-3GPP access Registration Info Retrieval
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: '#/components/schemas/Gpsi'
+        - name: supportedFeatures
+          in: query
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+
+  schemas:
+
+# COMPLEX TYPES:
+
+    Amf3GppAccessRegistration:
+      type: object
+      required:
+        - amfId
+        - deregCallbackUri
+      properties:
+        amfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        purgeFlag:
+          $ref: '#/components/schemas/PurgeFlag'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        imsVoPS:
+          $ref: '#/components/schemas/ImsVoPS'
+        deregCallbackUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        pcscfRestorationCallbackUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+
+    Amf3GppAccessRegistrationModification:
+      type: object
+      properties:
+        purgeFlag:
+          $ref: '#/components/schemas/PurgeFlag'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        imsVoPS:
+          $ref: '#/components/schemas/ImsVoPS'
+
+    AmfNon3GppAccessRegistration:
+      type: object
+      required:
+        - amfId
+        - deregCallbackUri
+      properties:
+        amfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        purgeFlag:
+          $ref: '#/components/schemas/PurgeFlag'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        deregCallbackUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        pcscfRestorationCallbackUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+
+    AmfNon3GppAccessRegistrationModification:
+      type: object
+      properties:
+        purgeFlag:
+          $ref: '#/components/schemas/PurgeFlag'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        
+    SmfRegistration:
+      type: object
+      required:
+        - smfId
+        - pduSessionId
+        - dnn
+      properties:
+        smfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        pduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        pcscfRestorationCallbackUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+
+    SmsfRegistration:
+      type: object
+      required:
+        - smsfId
+      properties:
+        smsfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    DeregistrationData:
+      type: object
+      required:
+        - deregReason
+      properties:
+        deregReason:
+          $ref: '#/components/schemas/DeregistrationReason'
+
+    PcscfRestorationNotification:
+      type: object
+      required:
+        - supi
+      properties:
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+
+# SIMPLE TYPES:
+
+    PurgeFlag:
+      type: boolean
+
+# ENUMS:
+
+    ImsVoPS:
+      anyOf:
+      - type: string
+        enum:
+        - HOMOGENEOUS_SUPPORT
+        - HOMOGENEOUS_NON_SUPPORT
+        - NON_HOMOGENEOUS_OR_UNKNOWN
+      - type: string
+
+    DeregistrationReason:
+      anyOf:
+      - type: string
+        enum:
+        - UE_INITIAL_REGISTRATION
+        - UE_REGISTRATION_AREA_CHANGE
+        - SUBSCRIPTION_WITHDRAWN
+        - 5GS_TO_EPS_MOBILITY
+      - type: string  
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
+
+
+
