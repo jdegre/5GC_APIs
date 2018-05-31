@@ -1,0 +1,206 @@
+openapi: 3.0.0
+
+info:
+  version: '1.PreR15.0.0'
+  title: 'Nudm_EE'
+  description: 'Nudm Event Exposure Service'
+
+servers:
+  - url: https://{apiRoot}/nudm-ee/v1
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+
+security:
+  - oAuth2ClientCredentials: []
+paths:
+  /{gpsi}/ee-subscriptions:
+    post:
+      summary: Subscribe
+      operationId: CreateEeSubscription
+      tags:
+        - Create EE Subscription
+      parameters:
+        - name: gpsi
+          in: path
+          description: GPSI of the user
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EeSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EeSubscription'
+        '404':
+          description: User (GPSI) does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        eventOccurrenceNotification:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/MonitoringReport'
+              responses:
+                '204':
+                  description: Successful Notification response
+
+  /{gpsi}/ee-subscriptions/{subscriptionId}:
+    delete:
+      summary: Unsubscribe
+      operationId: DeleteEeSubscription
+      tags:
+        - Delete EE Subscription
+      parameters:
+        - name: gpsi
+          in: path
+          description: GPSI of the user
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: subscriptionId
+          in: path
+          description: Id of the EE Subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful response
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+
+  schemas:
+
+# COMPLEX TYPES:
+
+    EeSubscription:
+      type: object
+      required:
+        - callbackReference
+        - monitoringConfiguration
+      properties:
+        callbackReference:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        monitoringConfiguration:
+          description : A map (list of key-value pairs where ReferenceId serves as key) of MonitoringConfigurations
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MonitoringConfiguration'
+          minProperties: 1  
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    MonitoringConfiguration:
+      type: object
+      required:
+        - referencId
+        - eventType
+        - reportingOptions
+      properties:
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        eventType:
+          $ref: '#/components/schemas/EventType'
+        reportingOptions:
+          $ref: '#/components/schemas/ReportingOptions'
+
+    ReportingOptions:
+      type: object
+      properties:
+        maxNumOfReports:
+          $ref: '#/components/schemas/MaxNumOfReports'
+        monitoringDuration:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    MonitoringReport:
+      type: object
+      required:
+        - referencId
+        - eventType
+      properties:
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        eventType:
+          $ref: '#/components/schemas/EventType'
+        report:
+          $ref: '#/components/schemas/Report'
+
+    Report:
+      oneOf:
+        - $ref: '#/components/schemas/ChangeOfSupiPeiAssociationReport'
+        - $ref: '#/components/schemas/RoamingStatusReport'
+
+    ChangeOfSupiPeiAssociationReport:
+      type: object
+      required:
+        - newPei
+      properties:
+        newPei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+
+    RoamingStatusReport:
+      type: object
+      required:
+        - roaming
+        - newServingPlmn
+      properties:
+        roaming:
+          type:
+            boolean
+        newServingPlmn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+
+# SIMPLE TYPES:
+
+    ReferenceId:
+      type: integer
+
+    MaxNumOfReports:
+      type: integer
+
+
+# ENUMS:
+
+    EventType:
+      anyOf:
+      - type: string
+        enum:
+        - LOSS_OF_CONNECTIVITY
+        - UE_REACHABILITY_FOR_DATA
+        - UE_REACHABILITY_FOR_SMS
+        - LOCATION_REPORTING
+        - CHANGE_OF_SUPI_PEI_ASSOCIATION
+        - ROAMING_STATUS
+        - COMMUNICATION_FAILURE
+        - AVAILABILITY_AFTER_DNN_FAILURE
+      - type: string
+
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
