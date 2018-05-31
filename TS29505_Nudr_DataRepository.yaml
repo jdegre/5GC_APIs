@@ -1,0 +1,1198 @@
+openapi: 3.0.0
+info:
+  version: 1.PreR15.0.0
+  title: 'UDR Data Repository Service for subscriber data'
+  description: 'UDR Data Repository Service for subscriber data'
+servers:
+  - description: API root
+    url: https://{apiRoot}/nudr-dr/v1
+    variables:
+      apiRoot:
+        default: https://demohost.com
+security:
+  - oAuth2Clientcredentials: []
+paths:
+  /subscription-data/{ueId}/authentication-data:
+    get:
+      summary: Retrieves the authentication data of a UE
+      operationId: QueryAuthData
+      tags:
+        - AuthenticationData
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    patch:
+      summary: modify the authentication data of a UE
+      operationId: ModifyAuthData
+      tags:
+        - PatchItem
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetials'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/{servingPlmnId}/provisioned-data/am-data:
+    get:
+      summary: Retrieves the access and mobility subscription data of a UE
+      operationId: QueryAmData
+      tags:
+        - AccessAndMobilitySubscriptionData
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: servingPlmnId
+          in: path
+          description: PLMN ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/{servingPlmnId}/provisioned-data/smf-selection-subscription-data:
+    get:
+      summary: Retrieves the SMF selection subscription data of a UE
+      operationId: QuerySmfSelectData
+      tags:
+        - SmfSelectionSubscriptionData
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: servingPlmnId
+          in: path
+          description: PLMN ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{supi}/{servingPlmnId}/provisioned-data/sm-data:
+    get:
+      summary: Retrieves the Session Management subscription data of a UE
+      operationId: QuerySmData
+      tags:
+        - SessionManagementSubscriptionData
+      parameters:
+        - name: supi
+          in: path
+          description: SUPI
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: servingPlmnId
+          in: path
+          description: PLMN ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+        - name: singleNssai
+          in: query
+          description: single NSSAI
+          required: false
+          schema:
+            $ref: '#/components/schemas/VarSnssai'
+        - name: dnn
+          in: query
+          description: DNN
+          required: false
+          schema:
+            $ref: '#/components/schemas/Dnn'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionManagementSubscriptionData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/context-data/amf-3gpp-access:
+    put:
+      summary: To store the AMF context data of a UE using 3gpp access in the UDR
+      operationId: CreateAmfContext3gpp
+      tags:
+        - Amf3GppAccessRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Amf3GppAccessRegistration'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    patch:
+      summary: To modify the AMF context data of a UE using 3gpp access in the UDR
+      operationId: AmfContext3gpp
+      tags:
+        - PatchItem
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetials'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/context-data/amf-non-3gpp-access:
+    get:
+      summary: Retrieves the AMF context data of a UE using non-3gpp access
+      operationId: QueryAmfContextNon3gpp
+      tags:
+        - AmfNon3GppAccessRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      summary: To store the AMF context data of a UE using non-3gpp access in the UDR
+      operationId: CreateAmfContextNon3gpp
+      tags:
+        - AmfNon3GppAccessRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    patch:
+      summary: To modify the AMF context data of a UE using non 3gpp access in the UDR
+      operationId: AmfContextNon3gpp
+      tags:
+        - PatchItem
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetials'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/context-data/smf-registrations:
+    get:
+      summary: Retrieves the SMF registration list of a UE
+      operationId: QuerySmfRegList
+      tags:
+        - SmfRegList
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfRegList'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/context-data/smf-registrations/{pduSessionId}:
+    put:
+      summary: To create an individual SMF context data of a UE in the UDR
+      operationId: CreateSmfContextNon3gpp
+      tags:
+        - SmfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: pduSessionId
+          in: path
+          description: PDU session id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmfRegistration'
+      responses:  
+        '201':
+          description: Upon success, a response body containing a representation of the created Individual SmfRegistration resource shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      summary: To remove an individual SMF context data of a UE the UDR
+      operationId: DeleteSmfContext
+      tags:
+        - SmfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: pduSessionId
+          in: path
+          description: PDU session id
+          required: true
+          schema:
+            type: string
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned.
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    get:
+      summary: Retrieves the individual SMF registration of a UE 
+      operationId: QuerySmfRegistration
+      tags:
+        - SmfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: pduSessionId
+          in: path
+          description: PDU session id
+          required: true
+          schema:
+            type: string
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfRegistration'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscriber-data/{ueId}/operator-specific-data:
+    get:
+      summary: Retrieves the operator specific data of a UE 
+      operationId: QueryOperSpecData
+      tags:
+        - OperatorSpecificDataContainer
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorSpecificDataContainer'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    patch:
+      summary: To modify operator specific data of a UE
+      operationId: AmfContext3gpp
+      tags:
+        - PatchItem
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetials'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscriber-data/{ueId}/context-data/smsf-3gpp-access:
+    put:
+      summary: Create the SMSF context data of a UE via 3GPP access 
+      operationId: CreateSmsfContext3gpp
+      tags:
+        - SmsfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsfRegistration'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      summary: To remove the SMSF context data of a UE via 3GPP access 
+      operationId: DeleteSmsfContext3gpp
+      tags:
+        - SmsfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    get:
+      summary: Retrieves the SMSF context data of a UE using 3gpp access
+      operationId: QuerySmsfContext3gpp
+      tags:
+        - SmsfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscriber-data/{ueId}/context-data/smsf-non-3gpp-access:
+    put:
+      summary: Create the SMSF context data of a UE via non-3GPP access 
+      operationId: CreateSmsfContextNon3gpp
+      tags:
+        - SmsfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsfRegistration'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      summary: To remove the SMSF context data of a UE via non-3GPP access 
+      operationId: DeleteSmsfContextNon3gpp
+      tags:
+        - SmsfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    get:
+      summary: Retrieves the SMSF context data of a UE using non-3gpp access
+      operationId: QuerySmsfContextNon3gpp
+      tags:
+        - SmsfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/{servingPlmnId}/provisioned-data/sms-mng-data:
+    get:
+      summary: Retrieves the SMS management subscription data of a UE
+      operationId: QuerySmsMngData
+      tags:
+        - SmsManagementSubscriptionData
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: servingPlmnId
+          in: path
+          description: PLMN ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsManagementSubscriptionData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+                
+  /subscription-data/{ueId}/pp-data:
+    get:
+      summary: Read the profile of a given UE
+      operationId: GetppData
+      tags:
+      - gpsi (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: pp data for a UE
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PpData'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /subscription-data/{ueId}/{servingPlmnId}/provisioned-data/sms-data:
+    get:
+      summary: Retrieves the SMS subscription data of a UE
+      operationId: QuerySmsData
+      tags:
+        - SmsSubscriptionData
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: servingPlmnId
+          in: path
+          description: PLMN ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsSubscriptionData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /subscription-data/{ueId}/context-data/ee-subscriptions:
+    get:
+      summary: Retrieves the ee subscriptions of a UE
+      operationId: Queryeesubscriptions
+      tags:
+        - eeSubscriptions
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/Eesubscription'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+#
+# Create an individual EE subscription
+#
+    post:
+      summary: Create individual ee subscription
+      operationId: CreateEeSubscriptions
+      tags:
+        - ueId 
+      parameters:
+        - name: ueId
+          in: path
+          description: UE ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Eesubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eesubscriptions'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+#
+# update an individual SDM subscription data
+#
+#  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}
+    put:
+      summary: Stores an individual ee subscriptions of a UE
+      operationId: UpdateEesubscriptions
+      tags:
+        - ee subscriptions
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Eesubscriptions'
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+#
+# Delete an individual EE subscription data
+#
+#  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}:  
+    delete:
+      summary: Deletes a eeSubscriptions
+      operationId: RemoveeeSubscriptions
+      tags:
+        - Subscription ID (Document)
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          description: Unique ID of the subscription to remove
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+#
+#----------------------------------------------------------------------------
+# retrieve sdm-subscriptions
+#
+  /subscription-data/{ueId}/context-data/sdm-subscriptions:
+    get:
+      summary: Retrieves the sdm subscriptions of a UE
+      operationId: Querysdmsubscriptions
+      tags:
+        - SdmSubscriptions
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/SdmSubscription'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+#
+# Create an individual SDM subscription
+#
+    post:
+      summary: Create individual sdm subscription
+      operationId: CreateSdmSubscriptions
+      tags:
+        - ueId (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SdmSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SdmSubscription'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+#
+# update an individual SDM subscription data
+#
+#  /subscription-data/{ueId}/context-data/sdm-subscriptions/{subsId}
+    put:
+      summary: Stores an individual sdm subscriptions of a UE
+      operationId: Updatesdmsubscriptions
+      tags:
+        - sdm subscriptions
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SdmSubscription'
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+#
+# Delete an individual SDM subscription data
+#
+  /subscription-data/{ueId}/context-data/sdm-subscriptions/{subsId}:  
+    delete:
+      summary: Deletes a sdmsubscriptions
+      operationId: RemovesdmSubscriptions
+      tags:
+        - Subscription ID (Document)
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          description: Unique ID of the subscription to remove
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+# 
+#
+# update notification to subscription change notification
+#
+  /subscription-data/subs-to-notify:
+    post:
+      summary: Subscription data subscriptions
+      operationId: SubscriptionDataSubscriptions
+      tags:
+        - ueId (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionDataSubscriptions'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionDataSubscriptions'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      callbacks:
+        onDataChange:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/DataChangeNotify'
+              responses:
+                '204':
+                  description: Expected response to a valid request
+##
+  /subscription-data/subs-to-Notify/{subsId}:  
+    delete:
+      summary: Deletes a subscriptionDataSubscriptions
+      operationId: RemovesubscriptionDataSubscriptions
+      tags:
+        - Subscription ID (Document)
+      parameters:
+        - name: subsId
+          in: path
+          required: true
+          description: Unique ID of the subscription to remove
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+#  
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+  schemas:
+    VarUeId:
+      type: string
+      pattern: '(imsi-[0-9]{5,15}|nai-.+|msisdn-[0-9]{5,15}|extid-.+|.+)'
+    AuthenticationData:
+      required:
+        - authenticationMethod
+      properties:
+        authenticationMethod:
+          $ref: '#/components/schemas/AuthMethod'
+        permanentKey:
+          type: string #place holder
+          # data type to be defined in normative text
+        sequenceNumber:
+          type: integer #place holder
+          # data type to be defined in normative text
+    VarPlmnId:
+      type: string
+      pattern: '[0-9]{5,6}'
+    AccessAndMobilitySubscriptionData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/AccessAndMobilitySubscriptionData'
+    SmfSelectionSubscriptionData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SmfSelectionSubscriptionData'
+    VarSnssai:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+    Dnn:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+    SessionManagementSubscriptionData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SessionManagementSubscriptionData'
+    Amf3GppAccessRegistration:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml#/components/schemas/Amf3GppAccessRegistration'
+    AmfNon3GppAccessRegistration:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml#/components/schemas/AmfNon3GppAccessRegistration'
+    SmfRegistration:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml#/components/schemas/SmfRegistration'
+    SmsfRegistration:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml#/components/schemas/SmsfRegistration'
+    SmsManagementSubscriptionData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SmsManagementSubscriptionData'
+    SmsSubscriptionData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SmsSubscriptionData'
+    OperatorSpecificDataContainer:
+      properties:
+        StringTypeElements:
+          type: object
+          additionalProperties:
+            type: string
+        IntegerTypeElements:
+          type: object
+          additionalProperties:
+            type: integer
+        NumberTypeElements:
+          type: object
+          additionalProperties:
+            type: number
+        BooleanTypeElements:
+          type: object
+          additionalProperties:
+            type: boolean
+    AuthMethod:
+      type: string
+      enum:
+        - 5G_AKA
+        - EAP_AKA_PRIME
+    ProblemDetails:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    PpData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_PP.yaml#/components/schemas/PpData'
+    EeSubscription:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_EE.yaml#/components/schemas/EeSubscription'
+    SdmSubscription:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SdmSubscription'
+    SmfRegList:
+      type: array
+      items:
+        $ref: '#/components/schemas/SmfRegistration'
+    SubscriptionDataSubscriptions:
+      type: object
+      required:
+        - ueId
+        - callbackReference
+        - originalCallbackReference
+      properties:
+        ueId:
+          type: string
+        callbackReference:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        originalCallbackReference:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        monitoredResourceUri:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+    DataChangeNotify:
+      type: object
+      properties:
+        originalCallbackReference:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        accessAndMobilitySubscriptionData: 
+          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        smfSelectionSubscriptionData: 
+          $ref: ' #/components/schemas/SmfSelectionSubscriptionData '
+        sessionManagementSubscriptionData: 
+          $ref: ' #/components/schemas/SessionManagementSubscriptionData '
+        amf3GppAccessRegistration: 
+          $ref: '#/components/schemas/Amf3GppAccessRegistration'
+        amfNon3GppAccessRegistration: 
+          $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+        operatorSpecificData:
+          $ref: '#/components/schemas/OperatorSpecificData'
+        smsManagementSubscriptionData: 
+          $ref: '#/components/schemas/SmsManagementSubscriptionData'
+        smsf3GppAccessRegistration:
+          $ref: '#/components/schemas/Smsf3GppAccessRegistration'
+        smsfNon3GppAccessRegistration:
+          $ref: '#/components/schemas/SmsfNon3GppAccessRegistration'
+        eeSubscriptions:
+          $ref: '#/components/schemas/EeSubscriptions'
+        provisionedParamenterData:
+          $ref: '#/components/schemas/ProvisionedParamenterData'
+        smsSubscriptionData:
+          $ref: '#/components/schemas/SmsSubscriptionData'
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
