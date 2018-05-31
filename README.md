@@ -15,28 +15,22 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 ## SMF
 * [PDU Session](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29502_Nsmf_PDUSession.yaml)
 ## UDM
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml">Subscriber Data Management</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml">UE Context Management</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml">UE Authentication</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_EE.yaml">Event Exposure</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_PP.yaml">Parameter Provisioning</a><br>
-<br>
+* [Subscriber Data Management](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml)
+* [UE Context Management](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UECM.yaml)
+* [UE Authentication](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml)
+* [Event Exposure](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_EE.yaml)
+* [Parameter Provisioning](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_PP.yaml)
 ## UDR
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29505_Nudr_DataRepository.yaml">Data Repository</a><br>
-<br>
+* [Data Repository](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29505_Nudr_DataRepository.yaml)
 ## AUSF
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_UEAuthentication.yaml">UE Authentication</a><br>
-<br>
+* [UE Authentication](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_UEAuthentication.yaml)
 ## NSSF
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSAIAvailability.yaml">NSSAI Availability</a><br>
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml">NS Selection</a><br>
-<br>
+* [NSSAI Availability](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSAIAvailability.yaml)
+* [NS Selection](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml)
 ## SMSF
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml">SM Service</a><br>
-<br>
+* [SM Service](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml)
 ## EIR
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml">5G-EIR Equipment Identity Check</a><br>
-<br>
+* [5G-EIR Equipment Identity Check](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
 ## Common Data Types
-<a href="http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml">Common Data</a><br>
+* [Common Data](http://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
 
