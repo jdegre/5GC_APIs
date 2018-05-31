@@ -1,0 +1,242 @@
+openapi: 3.0.0
+info:
+  version: 1.PreR15.0.0
+  title: AUSF API
+  description: OpenAPI specification for AUSF
+servers:
+  - url: 'http://{apiRoot}/nausf-auth/v1'
+paths:
+  /ue-authentications:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationInfo'
+        required: true
+      responses:
+        '201':
+          description: UEAuthenticationCtx
+          content:
+            application/3gppHal+json:
+              schema:
+                $ref: '#/components/schemas/UEAuthenticationCtx'
+        '400':
+          description: Bad Request from the AMF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Fordidden due to serving network not authorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                
+  /ue-authentications/{authCtxId}/5g-aka-confirmation:
+    put:
+      parameters:
+        - name: authCtxId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmationData'
+      responses:
+        '200':
+          description: Request processed (EAP success or Failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmationDataResponse'
+                
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                
+  /ue-authentications/{authCtxId}/eap-session:
+    post:
+      operationId: EapAkaPrime
+      parameters:
+        - name: authCtxId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EapSession'
+      responses:
+        '200':
+          description: Use to handle or close the EAP session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EapSession'
+                
+            application/3gppHal+json:
+              schema:
+                type: object
+                properties:
+                  eapPayload:
+                    $ref: '#/components/schemas/EapPayload'
+                  _links:
+                    type: object
+                    description: 'URI : /{eapSessionUri}'
+                    additionalProperties:
+                      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+                required:
+                  - eapPayload
+                  - _links
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                
+components:
+  schemas:
+  
+    AuthenticationInfo:
+      type: object
+      properties:
+        supiOrSuci:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/SupiOrSuci'
+        servingNetworkName:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ServingNetworkName'
+        resynchronizationInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ResynchronizationInfo'
+      required:
+        - supiOrSuci
+        - servingNetworkName
+        
+    UEAuthenticationCtx:
+      type: object
+      properties:
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        authType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/AuthType'
+        5gAuthData:
+          oneOf:
+            - $ref: '#/components/schemas/Av5gAka'
+            - $ref: '#/components/schemas/EapPayload'
+        _links:
+          type: object
+          additionalProperties:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+        servingNetworkName:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ServingNetworkName'
+      required:
+        - supi
+        - authType
+        - 5gAuthData
+        - _links
+    
+    Av5gAka:
+      type: object
+      required:
+        - rand
+        - hxresStar
+        - autn
+        - kseaf
+      properties:
+        rand:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/Rand'
+        hxresStar:
+          $ref: '#/components/schemas/HxresStar'
+        autn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/Autn'
+        kSeaf:
+          $ref: '#/components/schemas/Kseaf'
+          
+    ConfirmationData:
+      type: object
+      required:
+        - resStar
+      properties:
+        resStar:
+          $ref: '#/components/schemas/ResStar'
+          
+    ConfirmationDataResponse:
+      type: object
+      properties:
+        authResult:
+          $ref: '#/components/schemas/AuthResult'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      required:
+        - authResult
+        
+    EapSession:
+      type: object
+      properties:
+        eapPayload:
+          $ref: '#/components/schemas/EapPayload'
+        kSeaf:
+          $ref: '#/components/schemas/Kseaf'
+        _links:
+          type: object
+          additionalProperties:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      required:
+        - eapPayload
+
+    AuthResult:
+      type: string
+      enum:
+        - AUTHENTICATION_SUCCESS
+        - AUTHENTICATION_FAILURE
+        - AUTHENTICATION_ONGOING
+        
+    EapPayload:
+      type: string
+      format: base64
+      description: contains an EAP packet
+      
+    Kseaf:
+      type: string
+      pattern: '[A-Fa-f0-9]{64}'
+      
+    ResStar:
+      type: string
+      pattern: '[A-Fa-f0-9]{32}'
+      
+    HxresStar:
+      type: string
+      pattern: "[A-Fa-f0-9]{32}"
+
+externalDocs:
+  description: Documentation
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
