@@ -17,7 +17,7 @@ paths:
       summary: Retrieves the authentication data of a UE
       operationId: QueryAuthData
       tags:
-        - AuthenticationData
+        - Authentication Data (Document)
       parameters:
         - name: ueId
           in: path
@@ -42,7 +42,7 @@ paths:
       summary: modify the authentication data of a UE
       operationId: ModifyAuthData
       tags:
-        - PatchItem
+        - Authentication Data (Document)
       parameters:
         - name: ueId
           in: path
@@ -78,7 +78,7 @@ paths:
       summary: Retrieves the access and mobility subscription data of a UE
       operationId: QueryAmData
       tags:
-        - AccessAndMobilitySubscriptionData
+        - Access And Mobility Subscription Data (Document)
       parameters:
         - name: ueId
           in: path
@@ -110,7 +110,7 @@ paths:
       summary: Retrieves the SMF selection subscription data of a UE
       operationId: QuerySmfSelectData
       tags:
-        - SmfSelectionSubscriptionData
+        - SMF Selection Subscription Data (Document)
       parameters:
         - name: ueId
           in: path
@@ -142,7 +142,7 @@ paths:
       summary: Retrieves the Session Management subscription data of a UE
       operationId: QuerySmData
       tags:
-        - SessionManagementSubscriptionData
+        - Session Management Subscription Data
       parameters:
         - name: supi
           in: path
@@ -182,11 +182,37 @@ paths:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /subscription-data/{ueId}/context-data/amf-3gpp-access:
+    get:
+      summary: Retrieves the AMF context data of a UE using 3gpp access
+      operationId: QueryAmfContext3gpp
+      tags:
+        - AMF 3Gpp Access Registration (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Amf3GppAccessRegistration'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
     put:
       summary: To store the AMF context data of a UE using 3gpp access in the UDR
       operationId: CreateAmfContext3gpp
       tags:
-        - Amf3GppAccessRegistration
+        - AMF 3Gpp Access Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -212,7 +238,7 @@ paths:
       summary: To modify the AMF context data of a UE using 3gpp access in the UDR
       operationId: AmfContext3gpp
       tags:
-        - PatchItem
+        - AMF 3Gpp Access Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -248,7 +274,7 @@ paths:
       summary: Retrieves the AMF context data of a UE using non-3gpp access
       operationId: QueryAmfContextNon3gpp
       tags:
-        - AmfNon3GppAccessRegistration
+        - AMF Non-3Gpp Access Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -273,7 +299,7 @@ paths:
       summary: To store the AMF context data of a UE using non-3gpp access in the UDR
       operationId: CreateAmfContextNon3gpp
       tags:
-        - AmfNon3GppAccessRegistration
+        - AMF Non-3Gpp Access Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -299,7 +325,7 @@ paths:
       summary: To modify the AMF context data of a UE using non 3gpp access in the UDR
       operationId: AmfContextNon3gpp
       tags:
-        - PatchItem
+        - AMF Non-3Gpp Access Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -335,7 +361,7 @@ paths:
       summary: Retrieves the SMF registration list of a UE
       operationId: QuerySmfRegList
       tags:
-        - SmfRegList
+        - SMF Registration List (Collection)
       parameters:
         - name: ueId
           in: path
@@ -357,11 +383,42 @@ paths:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /subscription-data/{ueId}/context-data/smf-registrations/{pduSessionId}:
+    get:
+      summary: Retrieves the individual SMF registration of a UE 
+      operationId: QuerySmfRegistration
+      tags:
+        - SMF Registration (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+        - name: pduSessionId
+          in: path
+          description: PDU session id
+          required: true
+          schema:
+            type: string
+      responses:  
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfRegistration'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
     put:
       summary: To create an individual SMF context data of a UE in the UDR
       operationId: CreateSmfContextNon3gpp
       tags:
-        - SmfRegistration
+        - SMF Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -393,7 +450,7 @@ paths:
       summary: To remove an individual SMF context data of a UE the UDR
       operationId: DeleteSmfContext
       tags:
-        - SmfRegistration
+        - SMF Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -416,43 +473,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-    get:
-      summary: Retrieves the individual SMF registration of a UE 
-      operationId: QuerySmfRegistration
-      tags:
-        - SmfRegistration
-      parameters:
-        - name: ueId
-          in: path
-          description: UE id
-          required: true
-          schema:
-            $ref: '#/components/schemas/VarUeId'
-        - name: pduSessionId
-          in: path
-          description: PDU session id
-          required: true
-          schema:
-            type: string
-      responses:  
-        '200':
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SmfRegistration'
-        default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /subscriber-data/{ueId}/operator-specific-data:
     get:
       summary: Retrieves the operator specific data of a UE 
       operationId: QueryOperSpecData
       tags:
-        - OperatorSpecificDataContainer
+        - Operator Specific Data Container (Document)
       parameters:
         - name: ueId
           in: path
@@ -477,7 +503,7 @@ paths:
       summary: To modify operator specific data of a UE
       operationId: AmfContext3gpp
       tags:
-        - PatchItem
+        - Operator Specific Data Container (Document)
       parameters:
         - name: ueId
           in: path
@@ -513,7 +539,7 @@ paths:
       summary: Create the SMSF context data of a UE via 3GPP access 
       operationId: CreateSmsfContext3gpp
       tags:
-        - SmsfRegistration
+        - SMSF 3GPP Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -539,7 +565,7 @@ paths:
       summary: To remove the SMSF context data of a UE via 3GPP access 
       operationId: DeleteSmsfContext3gpp
       tags:
-        - SmsfRegistration
+        - SMSF 3GPP Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -560,7 +586,7 @@ paths:
       summary: Retrieves the SMSF context data of a UE using 3gpp access
       operationId: QuerySmsfContext3gpp
       tags:
-        - SmsfRegistration
+        - SMSF 3GPP Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -586,7 +612,7 @@ paths:
       summary: Create the SMSF context data of a UE via non-3GPP access 
       operationId: CreateSmsfContextNon3gpp
       tags:
-        - SmsfRegistration
+        - SMSF Non-3GPP Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -612,7 +638,7 @@ paths:
       summary: To remove the SMSF context data of a UE via non-3GPP access 
       operationId: DeleteSmsfContextNon3gpp
       tags:
-        - SmsfRegistration
+        - SMSF Non-3GPP Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -633,7 +659,7 @@ paths:
       summary: Retrieves the SMSF context data of a UE using non-3gpp access
       operationId: QuerySmsfContextNon3gpp
       tags:
-        - SmsfRegistration
+        - SMSF Non-3GPP Registration (Document)
       parameters:
         - name: ueId
           in: path
@@ -659,7 +685,7 @@ paths:
       summary: Retrieves the SMS management subscription data of a UE
       operationId: QuerySmsMngData
       tags:
-        - SmsManagementSubscriptionData
+        - SMS Management Subscription Data (Document)
       parameters:
         - name: ueId
           in: path
@@ -686,45 +712,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                
-  /subscription-data/{ueId}/pp-data:
-    get:
-      summary: Read the profile of a given UE
-      operationId: GetppData
-      tags:
-      - gpsi (Document)
-      parameters:
-        - name: ueId
-          in: path
-          description: pp data for a UE
-          required: true
-          schema:
-            $ref: '#/components/schemas/VarUeId'
-      responses:
-        '200':
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PpData'
-        '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /subscription-data/{ueId}/{servingPlmnId}/provisioned-data/sms-data:
     get:
       summary: Retrieves the SMS subscription data of a UE
       operationId: QuerySmsData
       tags:
-        - SmsSubscriptionData
+        - SMS Subscription Data (Document)
       parameters:
         - name: ueId
           in: path
@@ -751,13 +744,44 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-
+  /subscription-data/{ueId}/pp-data:
+    get:
+      summary: Read the profile of a given UE
+      operationId: GetppData
+      tags:
+      - Parameters Provision (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: pp data for a UE
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PpData'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /subscription-data/{ueId}/context-data/ee-subscriptions:
     get:
       summary: Retrieves the ee subscriptions of a UE
       operationId: Queryeesubscriptions
       tags:
-        - eeSubscriptions
+        - Event Exposure Subscriptions (Collection)
       parameters:
         - name: ueId
           in: path
@@ -784,10 +808,10 @@ paths:
 # Create an individual EE subscription
 #
     post:
-      summary: Create individual ee subscription
+      summary: Create individual EE subscription
       operationId: CreateEeSubscriptions
       tags:
-        - ueId 
+        - Event Exposure Subscriptions (Collection)
       parameters:
         - name: ueId
           in: path
@@ -817,12 +841,12 @@ paths:
 #
 # update an individual SDM subscription data
 #
-#  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}
+  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}:
     put:
       summary: Stores an individual ee subscriptions of a UE
       operationId: UpdateEesubscriptions
       tags:
-        - ee subscriptions
+        - Event Exposure Subscriptions (Document)
       parameters:
         - name: ueId
           in: path
@@ -851,12 +875,11 @@ paths:
 #
 # Delete an individual EE subscription data
 #
-#  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}:  
     delete:
       summary: Deletes a eeSubscription
       operationId: RemoveeeSubscriptions
       tags:
-        - Subscription ID (Document)
+        - Event Exposure Subscriptions (Document)
       parameters:
         - name: ueId
           in: path
@@ -881,7 +904,7 @@ paths:
       summary: Retrieves the sdm subscriptions of a UE
       operationId: Querysdmsubscriptions
       tags:
-        - SdmSubscriptions
+        - SDM Subscriptions (Collection)
       parameters:
         - name: ueId
           in: path
@@ -911,7 +934,7 @@ paths:
       summary: Create individual sdm subscription
       operationId: CreateSdmSubscriptions
       tags:
-        - ueId (Document)
+        - SDM Subscriptions (Collection)
       parameters:
         - name: ueId
           in: path
@@ -938,15 +961,13 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-#
-# update an individual SDM subscription data
-#
-#  /subscription-data/{ueId}/context-data/sdm-subscriptions/{subsId}
+
+  /subscription-data/{ueId}/context-data/sdm-subscriptions/{subsId}:  
     put:
       summary: Stores an individual sdm subscriptions of a UE
       operationId: Updatesdmsubscriptions
       tags:
-        - sdm subscriptions
+        - SDM Subscriptions (Collection)
       parameters:
         - name: ueId
           in: path
@@ -972,15 +993,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-#
-# Delete an individual SDM subscription data
-#
-  /subscription-data/{ueId}/context-data/sdm-subscriptions/{subsId}:  
+
     delete:
       summary: Deletes a sdmsubscriptions
       operationId: RemovesdmSubscriptions
       tags:
-        - Subscription ID (Document)
+        - SDM Subscription (Document)
       parameters:
         - name: ueId
           in: path
@@ -996,16 +1014,13 @@ paths:
       responses:
         '204':
           description: Expected response to a successful subscription removal
-# 
-#
-# update notification to subscription change notification
-#
+
   /subscription-data/subs-to-notify:
     post:
       summary: Subscription data subscriptions
       operationId: SubscriptionDataSubscriptions
       tags:
-        - ueId (Document)
+        - Subscriptions (Collection)
       parameters:
         - name: ueId
           in: path
@@ -1045,13 +1060,13 @@ paths:
               responses:
                 '204':
                   description: Expected response to a valid request
-##
+
   /subscription-data/subs-to-Notify/{subsId}:  
     delete:
       summary: Deletes a subscriptionDataSubscriptions
       operationId: RemovesubscriptionDataSubscriptions
       tags:
-        - Subscription ID (Document)
+        - Subscription (Document)
       parameters:
         - name: subsId
           in: path
@@ -1062,7 +1077,7 @@ paths:
       responses:
         '204':
           description: Expected response to a successful subscription removal
-#  
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -1135,8 +1150,6 @@ components:
       enum:
         - 5G_AKA
         - EAP_AKA_PRIME
-    ProblemDetails:
-      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
     PpData:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_PP.yaml#/components/schemas/PpData'
     EeSubscription:
@@ -1195,4 +1208,4 @@ components:
           $ref: '#/components/schemas/SmsSubscriptionData'
 externalDocs:
   description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/29505-040.zip'
