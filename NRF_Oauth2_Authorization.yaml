@@ -1,0 +1,101 @@
+openapi: 3.0.0
+info:
+  version: '1.PreR15.0.0'
+  title: 'NRF OAuth2'
+  description: 'NRF OAuth2 Authorization'
+paths:
+  /oauth2/token:
+    post:
+      summary: Access Token Request
+      operationId: AccessTokenRequest
+      tags:
+        - Access Token Request
+      security:
+        - basic: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - grant_type
+              properties:
+                grant_type:
+                  type: string
+                  enum:
+                    - client_credentials
+                scope:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Successful Access Token Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - access_token
+                  - token_type
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                  expires_in:
+                    type: integer
+                  scope:
+                    type: string
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/cache-control'
+            Pragma:
+              $ref: '#/components/headers/pragma'
+        '400':
+          description: Error in the Access Token Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - error
+                properties:
+                  error:
+                    type: string
+                    enum:
+                      - invalid_request
+                      - invalid_client
+                      - invalid_grant
+                      - unauthorized_client
+                      - unsupported_grant_type
+                      - invalid_sope
+                  error_description:
+                    type: string
+                  error_uri:
+                    type: string
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/cache-control'
+            Pragma:
+              $ref: '#/components/headers/pragma'
+components:
+  securitySchemes:
+    basic:
+      type: http
+      scheme: basic
+  headers:
+    cache-control:
+      required: true
+      schema:
+        type: string
+        enum:
+          - no-store
+    pragma:
+      required: true
+      schema:
+        type: string
+        enum:
+          - no-cache
+externalDocs:
+  description: Documentation
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/29510-070.zip'
