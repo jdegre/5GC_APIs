@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.PreR15.0.0'
+  version: '1.PreR15.1.0'
   title: 'NRF OAuth2'
   description: 'NRF OAuth2 Authorization'
 paths:
@@ -16,16 +16,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              type: object
-              required:
-                - grant_type
-              properties:
-                grant_type:
-                  type: string
-                  enum:
-                    - client_credentials
-                scope:
-                  type: string
+              $ref: '#/components/schemas/AccessTokenReq'
         required: true
       responses:
         '200':
@@ -33,19 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - access_token
-                  - token_type
-                properties:
-                  access_token:
-                    type: string
-                  token_type:
-                    type: string
-                  expires_in:
-                    type: integer
-                  scope:
-                    type: string
+                $ref: '#/components/schemas/AccessTokenRsp'
           headers:
             Cache-Control:
               $ref: '#/components/headers/cache-control'
@@ -56,23 +35,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - error
-                properties:
-                  error:
-                    type: string
-                    enum:
-                      - invalid_request
-                      - invalid_client
-                      - invalid_grant
-                      - unauthorized_client
-                      - unsupported_grant_type
-                      - invalid_sope
-                  error_description:
-                    type: string
-                  error_uri:
-                    type: string
+                $ref: '#/components/schemas/AccessTokenErr'
           headers:
             Cache-Control:
               $ref: '#/components/headers/cache-control'
@@ -96,6 +59,85 @@ components:
         type: string
         enum:
           - no-cache
+  schemas:
+    AccessTokenReq:
+      format: x-www-form-urlencoded
+      required:
+        - grant_type
+        - nfInstanceId
+        - nfType
+        - targetNfType
+        - scope
+      properties:
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
+        nfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        targetNfType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        scope:
+          type: string
+          pattern: '^([a-zA-Z0-9_]*[*]{0,1})$'
+    AccessTokenRsp:
+      type: object
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: JWS Compact Serialized representation of JWS signed JSON object(AccessTokenClaims)
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        scope:
+          type: string
+          pattern: '^([a-zA-Z0-9_]*[*]{0,1})$'
+    AccessTokenClaims:
+      type: object
+      required:
+        - issuer
+        - subject
+        - audience
+        - scope
+        - expiration
+      properties:
+        issuer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        subject:
+          type: string
+        audience:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        scope:
+          type: string
+          pattern: '^([a-zA-Z0-9_]*[*]{0,1})$'
+        expiration:
+          type: integer
+    AccessTokenErr:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          enum:
+            - invalid_request
+            - invalid_client
+            - invalid_grant
+            - unauthorized_client
+            - unsupported_grant_type
+            - invalid_sope
+        error_description:
+          type: string
+        error_uri:
+          type: string
 externalDocs:
   description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/29510-070.zip'
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
