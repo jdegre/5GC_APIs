@@ -1,10 +1,17 @@
 openapi: 3.0.0
 info:
-  version: '1.PreR15.0.0'
+  version: '1.PreR15.1.0'
   title: 'NRF NFManagement Service'
   description: 'NRF NFManagement Service'
+servers:
+  - url: '{apiRoot}/nnrf-nfm/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
 security:
-  - oAuth2Clientcredentials: []
+  - {}
+  - oAuth2ClientCredentials: []
 paths:
   /nf-instances:
     get:
@@ -29,23 +36,37 @@ paths:
         '200':
           description: Expected response to a valid request
           content:
-            application/json:
+            application/3gppHal+json:
               schema:
-                type: array
-                items:
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+                type: object
+                required:
+                  - _links
+                properties:
+                  _links:
+                    type: object
+                    description: 'List of the URI of NF instances. It has two members whose names are item and self. The item one contains an array of URIs.'
+                    additionalProperties:
+                      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
   /nf-instances/{nfInstanceID}:
     get:
       summary: Read the profile of a given NF Instance
@@ -66,18 +87,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NFProfile'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
     put:
       summary: Register a new NF Instance
       operationId: RegisterNFInstance
@@ -110,23 +139,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/NFRegistrationData'
         '400':
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
         '500':
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
     patch:
       summary: Update NF Instance profile
       operationId: UpdateNFInstance
@@ -154,12 +185,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NFProfile'
+        '204':
+          description: Expected response with empty body
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
     delete:
       summary: Deregisters a given NF Instance
       operationId: DeregisterNFInstance
@@ -194,12 +241,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
         onNFStatusEvent:
           '{$request.body#/nfStatusNotificationUri}':
@@ -211,8 +272,28 @@ paths:
                     schema:
                       $ref: '#/components/schemas/NotificationData'
               responses:
-                '200':
+                '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '403':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '501':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
   /subscriptions/{subscriptionID}:
     delete:
       summary: Deletes a subscription
@@ -226,9 +307,30 @@ paths:
           description: Unique ID of the subscription to remove
           schema:
             type: string
+            pattern: '^([0-9]{5,6}-)?[^-]+$'
       responses:
         '204':
           description: Expected response to a successful subscription removal
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -273,12 +375,14 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        ipv6Prefixes:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 65535
         capacity:
           type: integer
+          minimum: 0
+          maximum: 65535
         load:
           type: integer
           minimum: 0
@@ -301,6 +405,10 @@ components:
           $ref: '#/components/schemas/PcfInfo'
         bsfInfo:
           $ref: '#/components/schemas/BsfInfo'
+        customInfo:
+          type: object
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
         nfServices:
           type: array
           items:
@@ -310,19 +418,22 @@ components:
       required:
         - serviceInstanceId
         - serviceName
-        - version
-        - schema
+        - versions
+        - scheme
+        - nfServiceStatus
       properties:
         serviceInstanceId:
           type: string
         serviceName:
-          type: string
-        version:
+          $ref: '#/components/schemas/ServiceName'
+        versions:
           type: array
           items:
             $ref: '#/components/schemas/NFServiceVersion'
-        schema:
-          type: string
+        scheme:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UriScheme'
+        nfServiceStatus:
+          $ref: '#/components/schemas/NFServiceStatus'
         fqdn:
           $ref: '#/components/schemas/Fqdn'
         interPlmnFqdn:
@@ -353,12 +464,20 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 65535
         capacity:
           type: integer
+          minimum: 0
+          maximum: 65535
         load:
           type: integer
           minimum: 0
           maximum: 100
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     NFType:
@@ -385,6 +504,7 @@ components:
             - UDSF
             - BSF
             - CHF
+            - NWDAF
         - type: string
     Fqdn:
       type: string
@@ -395,8 +515,6 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         ipv6Address:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        ipv6Prefix:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
         transport:
           $ref: '#/components/schemas/TransportProtocol'
         port:
@@ -405,29 +523,36 @@ components:
       type: object
       required:
         - nfStatusNotificationUri
+        - subscriptionId
       properties:
         nfStatusNotificationUri:
           type: string
+        subscriptionId:
+          type: string
+          pattern: '^([0-9]{5,6}-)?[^-]+$'
+          readOnly: true
+        validityTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
         reqNotifEvents:
           type: array
           items:
             $ref: '#/components/schemas/NotificationEventType'
         plmnId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
-        subscrCondition:
-          oneOf:
-            - type: object
-              properties:
-                nfInstanceId:
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-            - type: object
-              properties:
-                nfType:
-                  $ref: '#/components/schemas/NFType'
-                serviceName:
-                  type: string
-                nfSetId:
-                  type: string
+        nfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfType:
+          $ref: '#/components/schemas/NFType'
+        serviceName:
+          $ref: '#/components/schemas/ServiceName'
+        amfSetId:
+          type: string
+        amfRegionId:
+          type: string
+        guamiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
     UdrInfo:
       type: object
       properties:
@@ -493,8 +618,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IdentityRange'
-        routingIndicator:
-          type: string
+        routingIndicators:
+          type: array
+          items:
+            type: string
     AusfInfo:
       type: object
       properties:
@@ -504,8 +631,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SupiRange'
-        routingIndicator:
-          type: string
+        routingIndicators:
+          type: array
+          items:
+            type: string
     AmfInfo:
       type: object
       required:
@@ -525,6 +654,10 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
         backupInfoAmfFailure:
           type: array
           items:
@@ -533,6 +666,8 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+        n2InterfaceAmfInfo:
+          $ref: '#/components/schemas/N2InterfaceAmfInfo'
     SmfInfo:
       type: object
       required:
@@ -546,6 +681,10 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
         pgwFqdn:
           $ref: '#/components/schemas/Fqdn'
     UpfInfo:
@@ -601,10 +740,6 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        ipv6EndpointPrefix:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
         endpointFqdn:
             $ref: '#/components/schemas/Fqdn'
         networkInstance:
@@ -624,14 +759,18 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        supiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
     BsfInfo:
       type: object
       properties:
-        ipv4AdddressRanges:
+        ipv4AddressRanges:
           type: array
           items: 
             $ref: '#/components/schemas/Ipv4AddressRange'
-        Ipv6PrefixRanges:
+        ipv6PrefixRanges:
           type: array
           items: 
             $ref: '#/components/schemas/Ipv6PrefixRange'
@@ -670,6 +809,8 @@ components:
             - N1_MESSAGES
             - N2_INFORMATION
             - LOCATION_NOTIFICATION
+            - DATA_REMOVAL_NOTIFICATION
+            - DATA_CHANGE_NOTIFICATION
         - type: string
     TransportProtocol:
       anyOf:
@@ -726,6 +867,83 @@ components:
           type: string
         expiry:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+    ServiceName:
+      anyOf:
+        - type: string
+          enum:
+            - nnrf-nfm
+            - nnrf-disc
+            - nudm-sdm
+            - nudm-uecm
+            - nudm-ueau
+            - nudm-ee
+            - nudm-pp
+            - namf-comm
+            - namf-evts
+            - namf-mt
+            - namf-location
+            - nsmf-pdusession
+            - nsmf-event-exposure
+            - nausf-auth
+            - nausf-sorprotection
+            - nnef-pfdmanagement
+            - npcf-am-policy-control
+            - npcf-smpolicycontrol
+            - npcf-policyauthorization
+            - npcf-bdtpolicycontrol
+            - nsmsf-sms
+            - nnssf-nsselection
+            - nnssf-nssaiavailability
+            - nudr-dr
+            - nlmf-loc
+            - n5g-eir-eic
+            - nbsf-management
+            - nchf-spendinglimitcontrol
+            - nnwdaf-eventsubscription
+            - nnwdaf-analyticsinfo
+        - type: string
+    N2InterfaceAmfInfo:
+      type: object
+      properties:
+        ipv4EndpointAddress:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6EndpointAddress:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        amfName:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfName'
+    NFServiceStatus:
+      anyOf:
+        - type: string
+          enum:
+            - REGISTERED
+            - SUSPENDED
+        - type: string
+    TaiRange:
+      type: object
+      required:
+        - plmnId
+      properties:
+        plmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        tacRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TacRange'    
+    TacRange:
+      type: object
+      properties:
+        start:
+          type: string
+          pattern: '^([A-Fa-f0-9]{4}|[A-Fa-f0-9]{6})$'
+        end:
+          type: string
+          pattern: '^([A-Fa-f0-9]{4}|[A-Fa-f0-9]{6})$'
+        pattern:
+          type: string
 externalDocs:
   description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/29510-070.zip'
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
