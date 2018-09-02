@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.0.0
+  version: 1.PreR15.1.0
   title: AMF Communication Service
   description: AMF Communication Service
 security:
@@ -27,6 +27,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
@@ -94,12 +95,32 @@ paths:
                     Content-Id:
                       schema:
                         type: string  
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeContextCreateError'
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeContextCreateError'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeContextCreateError'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
   /ue-contexts/{ueContextId}/release:
@@ -115,6 +136,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
@@ -130,13 +152,19 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-  /ue-contexts/{ueContextId}/assignEbi:
+  /ue-contexts/{ueContextId}/assign-ebi:
     post:
       summary: Namf_Communication EBI Assignment service Operation
       tags:
@@ -149,11 +177,12 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AssignEbi'
+              $ref: '#/components/schemas/AssignEbiData'
         required: true
       responses:
         '200':
@@ -161,13 +190,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssignedEbi'
+                $ref: '#/components/schemas/AssignedEbiData'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignEbiError'
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssignEbiError'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignEbiError'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
   /ue-contexts/{ueContextId}/transfer:
@@ -183,6 +232,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
@@ -214,31 +264,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeContextTransferRspData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-      callbacks:
-        onRegistrationCompleteNotify:
-          {$response.body#/regCompleteNotifyUri}:
-            post:
-              summary: Namf_Communication RegistratioComplateNotify service Operation
-              tags:
-                - Registration Complete Notify
-              operationId: RegistrationCompleteNotify
-              requestBody:
-                description: Registration Complete Notification
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/UERegCompleteNotifData'
-              responses:
-                '204':
-                  description: Expected response to a successful callback processing
+  /ue-contexts/{ueContextId}/transfer-update:
+    post:
+      summary: Namf_Communication RegistrationStatusUpdate service Operation
+      tags:
+        - Individual ueContext (Document)
+      operationId: RegistrationStatusUpdate
+      parameters:
+        - name: ueContextId
+          in: path
+          description: UE Context Identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UeRegStatusUpdateReqData'
+        required: true
+      responses:
+        '200':
+          description: UE context transfer status successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeRegStatusUpdateRspData'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
   /ue-contexts/{ueContextId}/n1-n2-messages:
     post:
       summary: Namf_Communication N1N2 Message Transfer (UE Specific) service Operation
@@ -252,17 +325,18 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/N1N2MessageData'
+              $ref: '#/components/schemas/N1N2MessageTransferReqData'
           multipart/related:  # message with binary body part(s)
             schema:
               type: object
               properties: # Request parts
                 jsonData:
-                  $ref: '#/components/schemas/N1N2MessageData'
+                  $ref: '#/components/schemas/N1N2MessageTransferReqData'
                 binaryDataN1Message:
                   type: string
                   format: binary
@@ -304,18 +378,28 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
         '409':
           description: Conflicts
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/N1N2MessageTransferError'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         '504':
           description: Gateway Timeout
           content:
@@ -326,14 +410,14 @@ paths:
           description: Unexpected error
       callbacks:
         onN1N2TransferFailure:
-          {$request.body#/n1n2FailureTxfNotifURI}:
+          '{$request.body#/n1n2FailureTxfNotifURI}':
             post:
-              summary: Namf_Communication N1N2MessageTransfer Failure Notification service Operation
+              summary: Namf_Communication N1N2Transfer Failure Notification service Operation
               tags:
-                - N1N2MessageTransfer Failure Notification
-              operationId: N1N2MessageTransferFailureNotification
+                - N1N2 Transfer Failure Notification
+              operationId: N1N2TransferFailureNotification
               requestBody:
-                description: N1N2MessageTransfer Failure Notification
+                description: N1N2Transfer Failure Notification
                 content:
                   application/json:
                     schema:
@@ -341,6 +425,18 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
   /ue-contexts/{ueContextId}/n1-n2-messages/subscriptions:
     post:
       summary: Namf_Communication N1N2 Message Subscribe (UE Specific) service Operation
@@ -354,6 +450,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
@@ -367,6 +464,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeN1N2InfoSubscriptionCreatedData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
       callbacks:
@@ -401,12 +510,20 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
                 '403':
-                  description: Forbidden
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
           '{$request.body#/n2NotifyCallbackUri}':
             post:
               summary: Namf_Communication N2 Info Notify (UE Specific) service Operation
@@ -446,6 +563,18 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
   /ue-contexts/{ueContextId}/n1-n2-messages/subscriptions/{subscriptionId}:
     delete:
       summary: Namf_Communication N1N2 Message UnSubscribe (UE Specific) service Operation
@@ -459,6 +588,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
         - name: subscriptionId
           in: path
           description: Subscription Identifier
@@ -468,6 +598,18 @@ paths:
       responses:
         '204':
           description: N1N2 Message Subscription successfully removed.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
   /non-ue-n2-messages/transfer:
     post:
       summary: Namf_Communication Non UE N2 Message Transfer service Operation
@@ -523,6 +665,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/N2InformationTransferError'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
         '500':
           description: Internal Server Error
           content:
@@ -556,17 +704,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NonUeN2InfoSubscriptionCreatedData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
       callbacks:
         onN2InfoNotify:
-          {$request.body#/n2NotifyCallbackUri}:
+          '{$request.body#/n2NotifyCallbackUri}':
             post:
               summary: Namf_Communication Non UE N2 Info Notify service Operation
               tags:
@@ -599,6 +755,18 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
   /non-ue-n2-messages/subscriptions/{n2NotifySubscriptionId}:
     delete:
       summary: Namf_Communication Non UE N2 Info UnSubscribe service Operation
@@ -615,6 +783,18 @@ paths:
       responses:
         '204':
           description: Non UE N2 INfo Subscription successfully removed.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
   /subscriptions:
     post:
       summary: Namf_Communication AMF Status Change Subscribe service Operation
@@ -638,6 +818,12 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
@@ -646,7 +832,7 @@ paths:
           description: Unexpected error
       callbacks:
         onAmfStatusChange:
-          {$request.body#/amfStatusUri}:
+          '{$request.body#/amfStatusUri}':
             post:
               summary: Amf Status Change Notify service Operation
               tags:
@@ -661,8 +847,20 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
                 '404':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
   /subscriptions/{subscriptionId}:
     delete:
       summary: Namf_Communication AMF Status Change UnSubscribe service Operation
@@ -679,8 +877,22 @@ paths:
       responses:
         '204':
           description: N1N2 Message Subscription successfully removed.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
     put:
       summary: Namf_Communication AMF Status Change Subscribe Modify service Operation
       tags:
@@ -706,17 +918,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
       callbacks:
         OnAmfStatusChange:
-          {$request.body#/amfStatusUri}:
+          '{$request.body#/amfStatusUri}':
             post:
               summary: Amf Status Change Notify service Operation
               tags:
@@ -731,12 +951,20 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
                 '403':
-                  description: Forbidden
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -751,36 +979,46 @@ components:
       properties:
         amfStatusUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
-        guamis:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+        guamiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 0
       required:
         - amfStatusUri
     AmfStatusChangeNotification:
       type: object
       properties:
-        amfStatusInfo:
-          $ref: '#/components/schemas/AmfStatusInfo'
+        amfStatusInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfStatusInfo'
+          minItems: 1
       required:
         - amfStatusInfo
     AmfStatusInfo:
       type: object
       properties:
-        guamis:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+        guamiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
         statusChange:
           $ref: '#/components/schemas/StatusChange'
-# TODO: To be fixed. Suggest NfInstanceId
-#        targetamfName:
-#          $ref: '#/components/schemas/AmfName'
+        targetAmfRemoval:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfName'
+        targetAmfFailure:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfName'
       required:
         - guamis
         - statusChange
-    AssignEbi:
+    AssignEbiData:
       type: object
       properties:
         pduSessionId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
-        arps:
+        arpList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
@@ -792,12 +1030,12 @@ components:
           minItems: 0
       required:
         - pduSessionId
-    AssignedEbi:
+    AssignedEbiData:
       type: object
       properties:
         pduSessionId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
-        assignedEbis:
+        assignedEbiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29502_Nsmf_PDUSession.yaml#/components/schemas/EbiArpMapping'
@@ -836,22 +1074,34 @@ components:
           type: boolean
           default: false
         ngapCause:
-          $ref: '#/components/schemas/NgApCause'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
       required:
         - ngapCause
     N2InformationTransferReqData:
       type: object
       properties:
-        tai:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
-        ecgi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
-        ncgi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
-        globalRanNodeId:
+        taiList:
           type: array
           items:
-            $ref: '#/components/schemas/GlobalRanNodeId'
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 0
+        ratSelector:
+          $ref: '#/components/schemas/RatSelector'
+        ecgiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
+          minItems: 0
+        ncgiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
+          minItems: 0
+        globalRanNodeList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+          minItems: 0
         n2Information:
           $ref: '#/components/schemas/N2InfoContainer'
         supportedFeatures:
@@ -861,19 +1111,21 @@ components:
     NonUeN2InfoSubscriptionCreateData:
       type: object
       properties:
-        globalRanNodeId:
+        globalRanNodeList:
           type: array
           items:
-            $ref: '#/components/schemas/GlobalRanNodeId'
-        anType:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+          minItems: 0
+        anTypeList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 0
         n2InformationClass:
           $ref: '#/components/schemas/N2InformationClass'
         n2NotifyCallbackUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
-        lmfId:
+        nfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
@@ -900,7 +1152,7 @@ components:
           $ref: '#/components/schemas/N1MessageClass'
         n1NotifyCallbackUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
-        lmfId:
+        nfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
@@ -920,8 +1172,13 @@ components:
           type: string
         n2InfoContainer:
           $ref: '#/components/schemas/N2InfoContainer'
+        toReleaseSessionList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+          minItems: 0
         lcsCorrelationId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/CorrelationID'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/CorrelationID'
       required:
         - n2NotifySubscriptionId
         - n2InfoContainer
@@ -931,10 +1188,7 @@ components:
         n2InformationClass:
           $ref: '#/components/schemas/N2InformationClass'
         smInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/N2SmInformation'
-          minItems: 0
+          $ref: '#/components/schemas/N2SmInformation'
         nrppaInfo:
           $ref: '#/components/schemas/NrppaInformation'
         pwsInfo:
@@ -951,11 +1205,10 @@ components:
         n1MessageContainer:
           $ref: '#/components/schemas/N1MessageContainer'
         lcsCorrelationId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/CorrelationID'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/CorrelationID'
         registrationCtxtContainer:
           $ref: '#/components/schemas/RegistrationContextContainer'
       required:
-        - n1NotifySubscriptionId
         - n1MessageContainer
     N1MessageContainer:
       type: object
@@ -964,30 +1217,31 @@ components:
           $ref: '#/components/schemas/N1MessageClass'
         n1MessageContent:
           $ref: '#/components/schemas/RefToBinaryData'
-        lmfId:
+        nfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
       required:
         - n1MessageClass
         - n1MessageContent
-    N1N2MessageData:
+    N1N2MessageTransferReqData:
       type: object
       properties:
         n1MessageContainer:
           $ref: '#/components/schemas/N1MessageContainer'
         n2InfoContainer:
           $ref: '#/components/schemas/N2InfoContainer'
+        skipInd:
+          type: boolean
+          default: false
         lastMsgIndication:
           type: boolean
         sessionId:
           type: string
-        anType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
         ppi:
           $ref: '#/components/schemas/Ppi'
         arp:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
         5qi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5qi'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5Qi'
         n1n2FailureTxfNotifURI:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
         supportedFeatures:
@@ -1010,20 +1264,41 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
         anType:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
-        anN2IPv4Address:
+        anN2ApId:
+          type: integer
+        ranNodeId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgRanIdentifier'
+        anN2IPv4Addr:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         anN2IPv6Addr:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
         allowedNssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml#/components/schemas/AllowedNssai'
+        configuredNssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml#/components/schemas/ConfiguredSnssai'
+        rejectedNssaiInPlmn:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        rejectedNssaiInTa:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
         - ueContext
         - anType
+        - anN2ApId
+        - ranNodeId
     AreaOfValidity:
       type: object
       properties:
-        taList:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+        taiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 0
       required:
         - taList
     RefToBinaryData:
@@ -1063,14 +1338,14 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
         supiUnauthInd:
           type: boolean
-        gpsi:
+        gpsiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
           minItems: 0
         pei:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
-        groups:
+        groupList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/GroupId'
@@ -1081,32 +1356,62 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RfspIndex'
         usedRfsp:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RfspIndex'
+        subUeAmbr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
         smsSupport:
           $ref: '#/components/schemas/SmsSupport'
         smsfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         seafData:
           $ref: '#/components/schemas/SeafData'
+        5gmmCapability:
+          $ref: '#/components/schemas/5gmmCapability'
         pcfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        pcfAmPolicyUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        amPolicyReqTriggerList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AMPolicyReqTrigger'
+          minItems: 0
         hpcfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        eventSubscriptions:
+        restrictedRatList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+          minItems: 0
+        forbiddenAreaList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Area'
+          minItems: 0
+        serviceAreaRestriction:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ServiceAreaRestriction'
+        restrictedCoreNwTypeList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/CoreNetworkType'
+          minItems: 0
+        eventSubscriptionList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventSubscription'
           minItems: 0
-        mmContexts:
+        mmContextList:
           type: array
           items:
             $ref: '#/components/schemas/MmContext'
           minItems: 0
           maxItems: 2
-        sessionContexts:
+        sessionContextList:
           type: array
           items:
             $ref: '#/components/schemas/PduSessionContext'
           minItems: 0
+        traceData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
       required:
         - smsSupport
     N2SmInformation:
@@ -1130,7 +1435,7 @@ components:
         ngapMessageType:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
         ngapIeType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          $ref: '#/components/schemas/NgapIeType'
         ngapData:
           $ref: '#/components/schemas/RefToBinaryData'
       required:
@@ -1139,7 +1444,7 @@ components:
     NrppaInformation:
       type: object
       properties:
-        lmfId:
+        nfId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         nrppaPdu:
           $ref: '#/components/schemas/N2InfoContent'
@@ -1211,29 +1516,27 @@ components:
           $ref: '#/components/schemas/NasCount'
         nasUplinkCount:
           $ref: '#/components/schemas/NasCount'
-        5gmmCapability:
-          $ref: '#/components/schemas/5gmmCapability'
-        mobilityRestrictions:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MobilityRestrictions'
         ueSecurityCapability:
           $ref: '#/components/schemas/UeSecurityCapability'
         s1UeNetworkCapability:
           $ref: '#/components/schemas/S1UeNetworkCapability'
-        allowedNssai:
+        allowedNssaiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 0
-        nssaiMapping:
+        nssaiMappingList:
           type: array
           items:
             $ref: '#/components/schemas/NssaiMapping'
           minItems: 0
-        nsInstances:
+        nsInstanceList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsiId'
           minItems: 0
+        expectedUEbehavior:
+          $ref: '#/components/schemas/ExpectedUeBehavior'
       required:
         - accessType
     SeafData:
@@ -1241,21 +1544,19 @@ components:
       properties:
         ngKsi:
           $ref: '#/components/schemas/NgKsi'
-        nh:
-          type: string
-        ncc:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
         keyAmf:
           $ref: '#/components/schemas/KeyAmf'
+        nh:
+          type: string
+          pattern: '^[A-Fa-f0-9]+$'
+        ncc:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minimum: 0
+          maximum: 7
         keyAmfChangeInd:
           type: boolean
-# TODO: To be defined
-#        Input:
-#          $ref: '#/components/schemas/Input'
       required:
         - ngKsi
-        - nh
-        - ncc
         - keyAmf
     NasSecurityMode:
       type: object
@@ -1308,13 +1609,25 @@ components:
       required:
         - mappedSnssai
         - hSnssai
-    UERegCompleteNotifData:
+    UeRegStatusUpdateReqData:
       type: object
       properties:
         transferStatus:
           $ref: '#/components/schemas/UeContextTransferStatus'
+        toReleaseSessionList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+          minItems: 0
       required:
         - transferStatus
+    UeRegStatusUpdateRspData:
+      type: object
+      properties:
+        regStatusTransferComplete:
+          type: boolean
+      required:
+        - regStatusTransferComplete
     AssignEbiError:
       type: object
       properties:
@@ -1333,11 +1646,16 @@ components:
         targetId:
           $ref: '#/components/schemas/NgRanTargetId'
         sourceToTargetData:
-          $ref: '#/components/schemas/N2InfoContainer'
-        pduSessions:
-          $ref: '#/components/schemas/N2SmInformation'
+          $ref: '#/components/schemas/N2InfoContent'
+        pduSessionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/N2SmInformation'
+          minItems: 1
+        n2NotifyUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
         ngapCause:
-          $ref: '#/components/schemas/NgApCause'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1351,15 +1669,15 @@ components:
         ueContext:
           $ref: '#/components/schemas/UeContext'
         targetToSourceData:
-          $ref: '#/components/schemas/N2InfoContainer'
-        pduSessions:
+          $ref: '#/components/schemas/N2InfoContent'
+        pduSessionList:
           type: array
           items:
             $ref: '#/components/schemas/N2SmInformation'
           minItems: 1
         ngapCause:
-          $ref: '#/components/schemas/NgApCause'
-        failedSessions:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
+        failedSessionList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
@@ -1376,18 +1694,17 @@ components:
         error:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         ngapCause:
-          $ref: '#/components/schemas/NgApCause'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
       required:
         - error
     NgRanTargetId:
       type: object
       properties:
         ranNodeId:
-          $ref: '#/components/schemas/NgRanIdentifier'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgRanIdentifier'
         tai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
       required:
-        - plmnId
         - ranNodeId
         - tai
     PWSResponseData:
@@ -1423,17 +1740,6 @@ components:
           $ref: '#/components/schemas/PWSErrorData'
       required:
         - error
-    GlobalRanNodeId:
-      type: object
-      properties:
-        plmnId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
-        n3IwfId:
-          type: string
-        ngRanNodeId:
-          $ref: '#/components/schemas/NgRanIdentifier'
-      required:
-        - plmnId
     NgKsi:
       type: object
       properties:
@@ -1454,13 +1760,22 @@ components:
       required:
         - keyType
         - keyVal
+    ExpectedUeBehavior:
+      type: object
+      properties:
+        expMoveTrajectory:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          minItems: 1
+        validityTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - expMoveTrajectory
+        - validityTime
+
     EpsBearerId:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
-    NgApCause:
-      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
-    NgRanIdentifier:
-      type: string
-      pattern: 'gNB-[A-Fa-f0-9]{6,8}|Macro-[A-Fa-f0-9]{5}|LMacro-[A-Fa-f0-9]{6}|SMacro-[A-Fa-f0-9]{5}'
     Ppi:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
     NasCount:
@@ -1500,6 +1815,7 @@ components:
           - "SM"
           - "LPP"
           - "SMS"
+          - "UPDP"
       - type: string
     N1N2MessageTransferCause:
       anyOf:
@@ -1508,6 +1824,8 @@ components:
           - "ATTEMPTING_TO_REACH_UE"
           - "N1_N2_TRANSFER_INITIATED"
           - "WAITING_FOR_ASYNCHRONOUS_TRANSFER"
+          - "UE_NOT_RESPONDING"
+          - "N1_MSG_NOT_TRANSFERRED"
       - type: string
     UeContextTransferStatus:
       anyOf:
@@ -1570,4 +1888,36 @@ components:
           - "INIT_REG"
           - "MOBI_REG"
           - "MOBI_REG_UE_VALIDATED"
+      - type: string
+    AMPolicyReqTrigger:
+      anyOf:
+      - type: string
+        enum:
+          - "LOCATION_CHANGE"
+          - "PRA_CHANGE"
+          - "SARI_CHANGE"
+          - "RFSP_INDEX_CHANGE"
+      - type: string
+    RatSelector:
+      anyOf:
+      - type: string
+        enum:
+          - "E-UTRA"
+          - "NR"
+      - type: string
+    NgapIeType:
+      anyOf:
+      - type: string
+        enum:
+          - "PDU_RES_SETUP_REQ"
+          - "PDU_RES_REL_CMD"
+          - "PDU_RES_MOD_REQ"
+          - "PDU_RES_MOD_CFM"
+          - "PATH_SWITCH_REQ_ACK"
+          - "PATH_SWITCH_REQ_FAIL"
+          - "HANDOVER_CMD"
+          - "HANDOVER_PREP_FAIL"
+          - "SRC_TO_TAR_CONTAINER"
+          - "TAR_TO_SRC_CONTAINER"
+          - "NRPPA_PDU"
       - type: string
