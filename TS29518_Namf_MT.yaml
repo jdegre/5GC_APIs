@@ -1,18 +1,20 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.0.0
+  version: 1.PreR15.1.0
   title: AMF MT Service
   description: AMF Mobile Termination Service
 security:
-  - oAuth2Clientcredentials: []
+  - oAuth2ClientCredentials: []
+  - {}
 externalDocs:
   description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/29518-120.zip'
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
-  - url: https://{apiRoot}/namf-mt/v1
+  - url: '{apiRoot}/namf-mt/v1'
     variables:
       apiRoot:
-        default: locahhost:8080
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
 paths:
   '/ue-contexts/{ueContextId}':
     get:
@@ -27,6 +29,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(imsi-[0-9]{5,15}|nai-.+|.+)$'
         - name: info-class
           in: query
           description: UE Context Information Class
@@ -50,10 +53,22 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
   /ue-contexts/{ueContextId}/ue-reachind:
@@ -94,6 +109,12 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
