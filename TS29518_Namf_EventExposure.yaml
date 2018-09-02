@@ -1,18 +1,20 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.0.0
+  version: 1.PreR15.1.0
   title: Namf_EventExposure Service
   description: AMF Event Exposure Service
 security:
   - oAuth2Clientcredentials: []
+  - {}
 externalDocs:
   description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/29518-120.zip'
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: https://{apiRoot}/namf-evts/v1
     variables:
       apiRoot:
-        default: locahhost:8080
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
 paths:
   /subscriptions:
     post:
@@ -33,17 +35,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AmfCreatedEventSubscription'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
       callbacks:
         onEventReport:
-          {$request.body#/subscription/notifyUri}:
+          '{$request.body#/subscription/notifyUri}':
             post:
               summary: Event Notificaiton Delivery
               requestBody:
@@ -55,6 +65,18 @@ paths:
               responses:
                 '204':
                   description: Successful acknowledgement
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   description: Unexpected error
   /subscriptions/{subscriptionId}:
@@ -83,18 +105,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AmfUpdatedEventSubscription'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
     delete:
@@ -112,8 +138,20 @@ paths:
       responses:
         '200':
           description: Subsription deleted successfully
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
 components:
@@ -128,10 +166,11 @@ components:
     AmfEventSubscription:
       type: object
       properties:
-        events:
+        eventList:
           type: array
           items:
             $ref: '#/components/schemas/AmfEvent'
+          minItems: 1
         eventNotifyUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
         notifyCorrelationId:
@@ -140,6 +179,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         subsChangeNotifyUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        subsChangeNotifyCorrelationId:
+          type: string
         supi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
         groupId:
@@ -150,6 +191,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
         anyUE:
           type: boolean
+        options:
+          $ref: '#/components/schemas/AmfEventMode'
       required:
         - events
         - eventNotifyUri
@@ -160,37 +203,40 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/AmfEventType'
-        options:
-          $ref: '#/components/schemas/AmfEventMode'
         immediateFlag:
           type: boolean
-        area:
+        areaList:
           type: array
           items:
             $ref: '#/components/schemas/AmfEventArea'
           minItems: 0
-        locationFilters:
-          $ref: '#/components/schemas/LocationFilter'
-        subscribedDataFilters:
-          $ref: '#/components/schemas/SubscribedDataFilter'
+        locationFilterList:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationFilter'
+          minItems: 0
+        subscribedDataFilterList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscribedDataFilter'
+          minItems: 0
       required:
         - type
-        - options
     AmfEventNotification:
       type: object
       properties:
         subscriptionId:
           type: string
-        notifCorelationId:
+        notifyCorrelationId:
           type: string
-        reports:
+        reportList:
           type: array
           items:
             $ref: '#/components/schemas/AmfEventReport'
           minItems: 1
       required:
         - subscriptionId
-        - notifCorelationId
+        - notifyCorrelationId
     AmfEventReport:
       type: object
       properties:
@@ -198,14 +244,17 @@ components:
           $ref: '#/components/schemas/AmfEventType'
         state:
           $ref: '#/components/schemas/AmfEventState'
+        timeStamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
         anyUe:
           type: boolean
         supi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        area:
+        areaList:
           type: array
           items:
             $ref: '#/components/schemas/AmfEventArea'
+          minItems: 0
         gpsi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
         pei:
@@ -214,12 +263,21 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
         timezone:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
-        accessTypes:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
-        rmInfos:
-          $ref: '#/components/schemas/RmInfo'
-        cmInfos:
-          $ref: '#/components/schemas/CmInfo'
+        accessTypeList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 0
+        rmInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RmInfo'
+          minItems: 0
+        cmInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CmInfo'
+          minItems: 0
         reachability:
           $ref: '#/components/schemas/UeReachability'
         subscribedData:
@@ -231,6 +289,7 @@ components:
       required:
         - type
         - state
+        - timeStamp
     AmfEventMode:
       type: object
       properties:
@@ -238,8 +297,8 @@ components:
           $ref: '#/components/schemas/AmfEventTrigger'
         maxReports:
           type: integer
-        duration:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        expiry:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - trigger
     AmfEventState:
@@ -286,7 +345,7 @@ components:
         nasReleaseCode:
           type: string
         ranReleaseCode:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml#/components/schemas/NgApCause'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
     AmfCreateEventSubscription:
       type: object
       properties:
@@ -301,8 +360,11 @@ components:
       properties:
         subscription:
           $ref: '#/components/schemas/AmfEventSubscription'
-        reports:
-          $ref: '#/components/schemas/AmfEventReport'
+        reportList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfEventReport'
+          minItems: 0
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -337,28 +399,19 @@ components:
     AmfEventArea:
       type: object
       properties:
-        presence:
-          $ref: '#/components/schemas/PresenceState'
-        trackingAreas:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
-        areaId:
-          type: string
+        presenceInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+        ladnInfo:
+          $ref: '#/components/schemas/LadnInfo'
+    LadnInfo:
+      type: object
+      properties:
         ladn:
           type: string
-        ecgi:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
-          minItems: 0
-        ncgi:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
-          minItems: 0
-        globalRanNodeId:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml#/components/schemas/GlobalRanNodeId'
+        presence:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PresenceState'
+      required:
+        - ladn
     5gGuti:
       type: string
     Sari:
@@ -411,14 +464,6 @@ components:
           - "UNREACHABLE"
           - "REACHABLE"
           - "REGULATORY_ONLY"
-      - type: string
-    PresenceState:
-      anyOf:
-      - type: string
-        enum:
-          - "IN"
-          - "OUT"
-          - "UNKNOWN"
       - type: string
     RmState:
       anyOf:
