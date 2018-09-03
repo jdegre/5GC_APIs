@@ -1,13 +1,8 @@
 openapi: 3.0.0
-
 info:
-  version: '1.PreR15.0.0'
+  version: '1.PreR15.1.0'
   title: '5G-EIR Equipment Identity Check'
   description: '5G-EIR Equipment Identity Check Service'
-
-security:
-  - oAuth2Clientcredentials: []
-  
 paths:
   /equipment-status:
     get:
@@ -21,13 +16,13 @@ paths:
           description: PEI of the UE
           required: true
           schema:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei' 
+            $ref: '#/components/schemas/Pei' 
         - name: supi
           in: query
           description: SUPI of the UE
           required: false
           schema:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi' 
+            $ref: '#/components/schemas/Supi' 
       responses:
         '200':
           description: Expected response to a valid request
@@ -40,24 +35,14 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: '#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                
+                $ref: '#/components/schemas/ProblemDetails'
 components:
-
-  securitySchemes:
-    oAuth2ClientCredentials:
-      type: oauth2
-      flows: 
-        clientCredentials: 
-          tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
-          
   schemas:
     EirResponseData:
       type: object
@@ -65,15 +50,35 @@ components:
         - status
       properties:
         status:
-          $ref: '#/components/schemas/EquipmentStatus'
+            $ref: '#/components/schemas/EquipmentStatus'
+    Pei:
+      type: string
+      pattern: "([0-9]{14})"
+    Supi:
+      type: string
+      pattern: "(imsi-[0-9]{5,15}|nai-.+)"
     EquipmentStatus:
       type: string
       enum:
         - WHITELISTED
         - BLACKLISTED
         - GREYLISTED
-        
+    ProblemDetails:
+      description: 'https://www.rfc-editor.org/rfc/rfc7807.txt'
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
 externalDocs:
   description: Documentation
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.511/'
- 
