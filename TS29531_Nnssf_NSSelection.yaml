@@ -1,21 +1,25 @@
 openapi: 3.0.0
 
 info:
-  version: '1.PreR15.0.0'
+  version: '1.PreR15.1.0'
   title: 'NSSF NS Selection'
   description: 'NSSF Network Slice Selection Service'
+security:
+  - {}
+  - oAuth2Clientcredentials: []
 servers:
-  - url: https://{apiRoot}/nnssf-nsselection/v1
+  - url: '{apiRoot}/nnssf-nsselection/v1'
     variables:
       apiRoot:
-        default: locahhost:8080
+        default: https://example.com
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
 paths:
   /network-slice-information:
     get:
       summary:  Retrieve the Network Slice Selection Information 
       tags:
         - Network Slice Information (Document)
-      operationId: Get
+      operationId: NSSelectionGet
       parameters:
         - name: nf-type
           in: query
@@ -60,10 +64,8 @@ paths:
         - name: supported-features
           in: query
           description: Features required to be supported by the NFs in the target slice instance
-          content:
-            application/json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
               
       responses:
         '200':
@@ -80,25 +82,31 @@ paths:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
   schemas:
     AuthorizedNetworkSliceInfo:
       type: object
-      required:
-        - allowedNssai
       properties:
-        allowedNssai:
-          $ref: '#/components/schemas/AllowedNssai'
+        allowedNssaiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowedNssai'
+          minItems: 0
         configuredNssai:
-          $ref: '#/components/schemas/ConfiguredNssai'
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfiguredSnssai'
         targetAmfSet:
           type: string
-        candidateAmf:
+        candidateAmfList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
@@ -114,50 +122,45 @@ components:
           $ref: '#/components/schemas/NsiInformation'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        nrfAmfSet:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
       
-    SubscribedSNssai:
+    SubscribedSnssai:
       type: object
       required:
-        - subscribedSNssai
+        - subscribedSnssai
       properties:
-        subscribedSNssai:
+        subscribedSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
         defaultIndication:
           type: boolean
       
-    SubscribedNssai:
-      type: object
-      required:
-        - subscribedSNssai
-      properties:
-        subscribedSNssai:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscribedSNssai'
     
-    AllowedSNssai:
+    AllowedSnssai:
       type: object
       required:
-        - allowedSNssai
+        - allowedSnssai
       properties:
-        allowedSNssai:
+        allowedSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
-        nsiInformation:
+        nsiInformationList:
           type: array
           items:
             $ref: '#/components/schemas/NsiInformation'
-        mappedHomeSNssai:
+        mappedHomeSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
     
     AllowedNssai:
       type: object
       required:
-        - allowedSNssai
+        - allowedSnssaiList
+        - accessType
       properties:
-        allowedSNssai:
+        allowedSnssaiList:
           type: array
           items:
-            $ref: '#/components/schemas/AllowedSNssai'
+            $ref: '#/components/schemas/AllowedSnssai'
+          minItems: 1
     
     NsiInformation:
       type: object
@@ -165,44 +168,47 @@ components:
         - nrfId
       properties:
         nrfId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
         nsiId:
           $ref: '#/components/schemas/NsiId'
     
-    MappingOfRequestedSNssai:
+    MappingOfRequestedSnssai:
       type: object
       required:
-        - servingSNssai
-        - homeSNssai
+        - servingSnssai
+        - homeSnssai
       properties:
-        servingSNssai:
+        servingSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
-        homeSNssai:
+        homeSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
     
-    MappingOfRequestedNssai:
-      type: object
-      required:
-        - mappingOfRequestedSNssai
-      properties:
-        mappingOfRequestedSNssai:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingOfRequestedSNssai'
     
     SliceInfoForRegistration:
       type: object
-      required:
-        - subscribedNSSAI
       properties:
-        subscribedNSSAI:
-          $ref: '#/components/schemas/SubscribedNssai'
+        subscribedNssai:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscribedSnssai'
+        allowedNssai:
+          $ref: '#/components/schemas/AllowedNssai'
+        sNssaiForMapping:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 0
         requestedNssai:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
-        mappingOfRequestedSNssai:
-          $ref: '#/components/schemas/MappingOfRequestedNssai'
+          minItems: 0
+        mappingOfRequestedNssai:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOfRequestedSnssai'
+        requestMapping:
+          type: boolean
     
     SliceInfoForPDUSession:
       type: object
@@ -214,7 +220,7 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
         roamingIndication:
           $ref: '#/components/schemas/RoamingIndication'
-        homeSNssai:
+        homeSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
     
     ConfiguredSnssai:
@@ -227,15 +233,6 @@ components:
         mappedHomeSnssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
     
-    ConfiguredNssai:
-      type: object
-      required:
-        - configuredSnssai
-      properties:
-        configuredSnssai:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConfiguredSnssai'
     
     RoamingIndication:
       anyOf:
@@ -245,12 +242,5 @@ components:
             - LOCAL_BREAKOUT
             - HOME_ROUTED_ROAMING
         - type: string
-  
     NsiId:
       type: string
-
-
-externalDocs:
-  description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.531/' 
-
