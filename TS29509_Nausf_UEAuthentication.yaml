@@ -1,10 +1,19 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.0.0
+  version: 1.PreR15.1.0
   title: AUSF API
   description: OpenAPI specification for AUSF
 servers:
-  - url: 'http://{apiRoot}/nausf-auth/v1'
+  - url: '{apiRoot}/nausf-auth/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+
+security:
+  - oAuth2ClientCredentials: []
+  - {}
+
 paths:
   /ue-authentications:
     post:
@@ -39,7 +48,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                
   /ue-authentications/{authCtxId}/5g-aka-confirmation:
     put:
       parameters:
@@ -73,10 +81,9 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                
   /ue-authentications/{authCtxId}/eap-session:
     post:
-      operationId: EapAkaPrime
+      operationId: EapAuthMethod
       parameters:
         - name: authCtxId
           in: path
@@ -122,10 +129,15 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
   schemas:
-  
     AuthenticationInfo:
       type: object
       properties:
@@ -135,17 +147,19 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ServingNetworkName'
         resynchronizationInfo:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ResynchronizationInfo'
+        amfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        traceData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
       required:
         - supiOrSuci
         - servingNetworkName
-        
+        - amfInstanceId
     UEAuthenticationCtx:
       type: object
       properties:
-        supi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
         authType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/AuthType'
+          $ref: '#/components/schemas/AuthType'
         5gAuthData:
           oneOf:
             - $ref: '#/components/schemas/Av5gAka'
@@ -157,7 +171,6 @@ components:
         servingNetworkName:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ServingNetworkName'
       required:
-        - supi
         - authType
         - 5gAuthData
         - _links
@@ -168,7 +181,7 @@ components:
         - rand
         - hxresStar
         - autn
-        - kseaf
+        - kSeaf
       properties:
         rand:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/Rand'
@@ -178,7 +191,6 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/Autn'
         kSeaf:
           $ref: '#/components/schemas/Kseaf'
-          
     ConfirmationData:
       type: object
       required:
@@ -186,7 +198,8 @@ components:
       properties:
         resStar:
           $ref: '#/components/schemas/ResStar'
-          
+        supiOrSuci:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/SupiOrSuci'
     ConfirmationDataResponse:
       type: object
       properties:
@@ -196,7 +209,6 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
       required:
         - authResult
-        
     EapSession:
       type: object
       properties:
@@ -208,8 +220,6 @@ components:
           type: object
           additionalProperties:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
-        supi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
       required:
         - eapPayload
 
@@ -219,24 +229,27 @@ components:
         - AUTHENTICATION_SUCCESS
         - AUTHENTICATION_FAILURE
         - AUTHENTICATION_ONGOING
-        
     EapPayload:
       type: string
       format: base64
       description: contains an EAP packet
-      
     Kseaf:
       type: string
       pattern: '[A-Fa-f0-9]{64}'
-      
     ResStar:
       type: string
       pattern: '[A-Fa-f0-9]{32}'
-      
     HxresStar:
       type: string
       pattern: "[A-Fa-f0-9]{32}"
-
+    AuthType:
+      anyOf:
+        - type: string
+          enum:
+            - 5G_AKA
+            - EAP_AKA_PRIME
+            - EAP-TLS
+        - type: string
 externalDocs:
   description: Documentation
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.509
