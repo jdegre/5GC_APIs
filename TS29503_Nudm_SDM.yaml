@@ -1,19 +1,20 @@
 openapi: 3.0.0
 
 info:
-  version: '1.PreR15.0.0'
+  version: '1.PreR15.1.0'
   title: 'Nudm_SDM'
   description: 'Nudm Subscriber Data Management Service'
 
 servers:
-  - url: https://{apiRoot}/nudm-sdm/v1
+  - url: '{apiRoot}/nudm-sdm/v1'
     variables:
       apiRoot:
-        default: https://demohost.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
 
 security:
   - oAuth2ClientCredentials: []
+  - {}
 
 paths:
   /{supi}:
@@ -31,6 +32,8 @@ paths:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
         - name: dataset-names
           in: query
+          style: form
+          explode: false
           description: List of dataset names
           required: true
           schema:
@@ -42,7 +45,7 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -67,7 +70,7 @@ paths:
       summary: retrieve a UE's subscribed NSSAI
       operationId: Get
       tags:
-        - Subscribed Network Slice Selection Assistance Information Retrieval
+        - Slice Selection Subscription Data Retrieval
       parameters:
         - name: supi
           in: path
@@ -75,7 +78,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -115,7 +118,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -155,7 +158,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -195,7 +198,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -215,6 +218,42 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /{supi}/trace-data:
+    get:
+      summary: retrieve a UE's Trace Configuration Data
+      operationId: Get
+      tags:
+        - Trace Configuration Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+        '404':
+          description: User (SUPI) does not exist
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
   /{supi}/sm-data:
     get:
       summary: retrieve a UE's Session Management Subscription Data
@@ -228,12 +267,12 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        - name: singleNssai
+        - name: single-nssai
           in: query
           content:
             application/json:
@@ -243,7 +282,7 @@ paths:
           in: query
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
-        - name: plmnId
+        - name: plmn-id
           in: query
           content:
             application/json:
@@ -280,12 +319,12 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        - name: plmnId
+        - name: plmn-id
           in: query
           content:
             application/json:
@@ -319,12 +358,12 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        - name: plmnId
+        - name: plmn-id
           in: query
           content:
             application/json:
@@ -392,6 +431,19 @@ paths:
               responses:
                 '204':
                   description: Successful Notification response
+                '307':
+                  description: Temporary Redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                '308':
+                  description: Permanent Redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
   /{supi}/sdm-subscriptions/{subscriptionId}:
     delete:
       summary: unsubscribe from notifications
@@ -427,7 +479,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -447,7 +499,121 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-
+  /{supi}/am-data/sor-ack:
+    put:
+      summary: Nudm_Sdm Info service operation
+      operationId: Info
+      tags:
+        - Providing acknowledgement of Steering of Roaming
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcknowledgeInfo'
+      responses:
+        '204':
+          description: Successful acknowledgement
+  /shared-data:
+    get:
+      summary: retrieve shared data
+      operationId: GetSharedData
+      tags:
+        - Retrieval of shared data
+      parameters:
+        - name: shared-data-ids
+          in: query
+          description: List of shared data ids
+          required: true
+          style: form
+          explode: false
+          schema:
+             $ref: '#/components/schemas/SharedDataIds'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SharedData'
+                minItems: 1
+        '404':
+          description: Shared Data Id does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /shared-data-subscriptions:
+    post:
+      summary: subscribe to notifications for shared data
+      operationId: Subscribe to shared data
+      tags:
+        - Subscription Creation for shared data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SdmSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SdmSubscription'
+        '404':
+          description: Shared Data does not exist
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        datachangeNotification:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/ModificationNotification'
+              responses:
+                '204':
+                  description: Successful Notification response
+  /shared-data-subscriptions/{subscriptionId}:
+    delete:
+      summary: unsubscribe from notifications for shared data
+      operationId: Unsubscribe for shared data
+      tags:
+        - Subscription Deletion for shared data
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Id of the Shared data Subscription 
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful response
 
 components:
   securitySchemes:
@@ -476,6 +642,39 @@ components:
           $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
         smfSelData:
           $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+        uecSmfData:
+          $ref: '#/components/schemas/UeContextInSmfData'
+        uecSmsfData:
+          $ref: '#/components/schemas/UeContextInSmsfData'
+        smsSubsData:
+          $ref: '#/components/schemas/SmsSubscriptionData'
+        smData:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionManagementSubscriptionData'
+        traceData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+        smsMngData:
+          $ref: '#/components/schemas/SmsManagementSubscriptionData'
+
+    UeContextInSmsfData:
+      type: object
+      properties:
+        smsfInfo3GppAccess:
+          $ref: '#/components/schemas/SmsfInfo'
+        smsfInfoNon3GppAccess:
+          $ref: '#/components/schemas/SmsfInfo'
+
+    SmsfInfo:
+      type: object
+      required:
+        - smsfInstanceId
+        - plmnId
+      properties:
+        smsfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        plmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
 
     AccessAndMobilitySubscriptionData:
       type: object
@@ -498,65 +697,41 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
-        areaRestrictions:
+        forbiddenAreas:
           type: array
           items:
-            $ref: '#/components/schemas/AreaRestriction'
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Area'
+        serviceAreaRestriction:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ServiceAreaRestriction'
         coreNetworkTypeRestrictions:
           type: array
           items:
-            $ref: '#/components/schemas/CoreNetworkType'
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/CoreNetworkType'
         rfspIndex:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RfspIndex'
         subsRegTimer:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
         ueUsageType:
           $ref: '#/components/schemas/UeUsageType'
-        ladnInformation:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
         mpsPriority:
           $ref: '#/components/schemas/MpsPriorityIndicator'
         activeTime:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
         dlPacketCount:
           $ref: '#/components/schemas/DlPacketCount'
-
-    AreaRestriction:
-      type: object
-      required:
-        - restrictionType
-      properties:
-        restrictionType:
-          $ref: '#/components/schemas/RestrictionType'
-        areaInformation:
-          $ref: '#/components/schemas/AreaInformation'
-        ratTypes:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
-
-    AreaInformation:
-      type: object
-      properties:
-        tacs:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tac'
-        areaCodes:
-          type: array
-          items:
-            type: string
-        maxNumderTAs:
-          type: integer
+        sorInfo:
+          $ref: '#/components/schemas/SorInfo'
+        micoAllowed:
+          $ref: '#/components/schemas/MicoAllowed'
+        sharedDataIds:
+          $ref: '#/components/schemas/SharedDataIds'
 
     SmfSelectionSubscriptionData:
       type: object
       properties:
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        subscribedSnssaiInfo:
+        subscribedSnssaiInfos:
           type: array
           items:
             $ref: '#/components/schemas/SnssaiInfo'
@@ -586,6 +761,10 @@ components:
           $ref: '#/components/schemas/DnnIndicator'
         lboRoamingAllowed:
           $ref: '#/components/schemas/LboRoamingAllowed'
+        iwkEpsInd:
+          $ref: '#/components/schemas/IwkEpsInd'
+        ladnIndicator:
+          $ref: '#/components/schemas/LadnIndicator'
 
     Nssai:
       type: object
@@ -604,26 +783,45 @@ components:
 
     UeContextInSmfData:
       type: object
-      additionalProperties:
-        $ref: '#/components/schemas/PduSession'
-      minProperties: 1
+      properties:
+        pduSessions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PduSession'
+        pgwInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/PgwInfo'
         
     PduSession:
       type: object
       required:
         - pduSessionId
         - dnn
-        - smfId
-        - smfAddress
+        - smfInstanceId
+        - plmnId
       properties:
         pduSessionId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         dnn:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
-        smfId:
+        smfInstanceId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        smfAddress:
-          $ref: '#/components/schemas/IpAddress'
+        plmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+
+    PgwInfo:
+      type: object
+      required:
+        - dnn
+        - pgwFqdn
+      properties:
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        pgwFqdn:
+          type: string
+        plmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
 
     SessionManagementSubscriptionData:
       type: object
@@ -650,6 +848,8 @@ components:
           $ref: '#/components/schemas/PduSessionTypes'
         sscModes:
           $ref: '#/components/schemas/SscModes'
+        iwkEpsInd:
+          $ref: '#/components/schemas/IwkEpsInd'
         ladnIndicator:
           $ref: '#/components/schemas/LadnIndicator'
         5gQosProfile:
@@ -660,6 +860,8 @@ components:
           $ref: '#/components/schemas/3GppChargingCharacteristics'
         staticIpAddress:
           $ref: '#/components/schemas/IpAddress'
+        upSecurity:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UpSecurity'
 
     IpAddress:
       type: object
@@ -703,15 +905,23 @@ components:
         - 5qi
       properties:
         5qi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5qi'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5Qi'
+        nonDynamic5Qi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NonDynamic5Qi'
+        dynamic5Qi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dynamic5Qi'
         arp:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
 
     SmsSubscriptionData:
       type: object
+      required:
+        - smsSubscribed
       properties:
-        smsSupported:
-          $ref: '#/components/schemas/SmsSupport'
+        smsSubscribed:
+          $ref: '#/components/schemas/SmsSubscribed'
+        sharedDataIds:
+          $ref: '#/components/schemas/SharedDataIds'
 
     SmsManagementSubscriptionData:
       type: object
@@ -733,13 +943,22 @@ components:
           type: boolean
         moSmsBarringRoaming:
           type: boolean
+        sharedDataIds:
+          $ref: '#/components/schemas/SharedDataIds'
 
     SdmSubscription:
       type: object
       required:
+        - nfInstanceId
         - callbackUri
         - monitoredResourceUri
       properties:
+        nfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        implicitUnsubscribe:
+          type: boolean
+        expires:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
         callbackReference:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
         monitoredResourceUris:
@@ -747,18 +966,22 @@ components:
           items: 
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
           minItems: 1
+        singleNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+
 
     ModificationNotification:
       type: object
+      required:
+        - notifyItems
       properties:
-        amDataModification:
-          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
-        smfSelDataModification:
-          $ref: '#/components/schemas/SmfSelectionSubscriptionData'
-        smsMngDataModification:
-          $ref: '#/components/schemas/SmsManagementSubscriptionData'
-        smDataModification:
-          $ref: '#/components/schemas/SessionManagementSubscriptionData'
+        notifyItems:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NotifyItem'
+          minItems: 1
 
     IdTranslationResult:
       type: object
@@ -771,6 +994,50 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+
+    AcknowledgeInfo:
+      type: object
+      properties:
+        sorMacIue:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
+
+    SorInfo:
+      type: object
+      properties:
+        steeringInfoList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/SteeringInfo'
+        ackInd:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/AckInd'
+        sorMacIausf:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
+        countersor:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/CounterSor'
+      required:
+        - steeringInfoList
+        - ackInd
+        - sorMacIausf
+        - countersor
+
+    SharedDataIds:
+      type: array
+      items: 
+        $ref: '#/components/schemas/SharedDataId'
+
+    SharedData:
+      type: object
+      required:
+        - sharedDataId
+      properties:
+        sharedDataId:
+          $ref: '#/components/schemas/SharedDataId'
+        sharedAmData:
+          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        sharedSmsSubsData:
+          $ref: '#/components/schemas/SmsSubscriptionData'
+        sharedSmsMngSubsData:
+          $ref: '#/components/schemas/SmsManagementSubscriptionData'
 
 
 # SIMPLE TYPES:
@@ -790,7 +1057,7 @@ components:
     LadnIndicator:
       type: boolean
 
-    SmsSupport:
+    SmsSubscribed:
       type: boolean
 
     3GppChargingCharacteristics:
@@ -803,36 +1070,30 @@ components:
     InternalGroupId:
       type: string
 
+    MicoAllowed:
+      type: boolean
+
+    SharedDataId:
+      type: string
+      pattern: '^[0-9]{5,6}-.+$'
+
+    IwkEpsInd:
+      type: boolean
+
 
 # ENUMS:
 
     DataSetName:
       anyOf:
-      - type: string
-        enum:
-        - AM
-        - SMF_SEL
-      - type: string
-
-    RestrictionType:
-      anyOf:
-      - type: string
-        enum:
-        - SAR_ALLOWED_AREA
-        - SAR_NOT_ALLOWED_AREA
-        - FORBIDDEN_AREA
-      - type: string
-
-    CoreNetworkType:
-      anyOf:
-      - type: string
-        enum:
-        - 5GC
-        - EPC
-      - type: string
-
-externalDocs:
-  description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
-
+        - type: string
+          enum:
+          - AM
+          - SMF_SEL
+          - UEC_SMF
+          - UEC_SMSF
+          - SMS_SUB
+          - SM
+          - TRACE
+          - SMS_MNG
+        - type: string
 
