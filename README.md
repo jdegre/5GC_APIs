@@ -1,5 +1,6 @@
 # 5GC APIs (OpenAPI 3)
 
+API version 1.PreR15.1.0 (Sept. 2018)
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each NF service:
 
 ## NRF
