@@ -1,33 +1,36 @@
 openapi: 3.0.0
 
 info:
-  version: '1.PreR15.0.0'
+  version: '1.PreR15.1.0'
   title: 'Nudm_EE'
   description: 'Nudm Event Exposure Service'
 
 servers:
-  - url: https://{apiRoot}/nudm-ee/v1
+  - url: '{apiRoot}/nudm-ee/v1'
     variables:
       apiRoot:
-        default: https://demohost.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
 
 security:
   - oAuth2ClientCredentials: []
+  - {}
+
 paths:
-  /{gpsi}/ee-subscriptions:
+  /{ueIdentity}/ee-subscriptions:
     post:
       summary: Subscribe
       operationId: CreateEeSubscription
       tags:
         - Create EE Subscription
       parameters:
-        - name: gpsi
+        - name: ueIdentity
           in: path
-          description: GPSI of the user
+          description: Represents the scope of the UE for which the subscription is applied. Contains the GPSI of the user or the external group ID or any UE.
           required: true
           schema:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+            type: string
+            pattern: '^(msisdn-[0-9]{5,15}|.+|extid-.+@.+|extgroupid-.+@.+|anyUE)$'
       requestBody:
         content:
           application/json:
@@ -40,15 +43,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EeSubscription'
+                $ref: '#/components/schemas/CreatedEeSubscription'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
-          description: User (GPSI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
       callbacks:
         eventOccurrenceNotification:
           '{request.body#/callbackReference}':
@@ -58,24 +67,38 @@ paths:
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/MonitoringReport'
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/MonitoringReport'
+                      minItems: 1
               responses:
                 '204':
                   description: Successful Notification response
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
 
-  /{gpsi}/ee-subscriptions/{subscriptionId}:
+  /{ueIdentity}/ee-subscriptions/{subscriptionId}:
     delete:
       summary: Unsubscribe
       operationId: DeleteEeSubscription
       tags:
         - Delete EE Subscription
       parameters:
-        - name: gpsi
+        - name: ueIdentity
           in: path
-          description: GPSI of the user
+          description: Represents the scope of the UE for which the subscription is applied. Contains the GPSI of the user or the external group ID or any UE.
           required: true
           schema:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+            type: string
+            pattern: '^(msisdn-[0-9]{5,15}|.+|extid-.+@.+|extgroupid-.+@.+|anyUE)$'
         - name: subscriptionId
           in: path
           description: Id of the EE Subscription
@@ -85,6 +108,16 @@ paths:
       responses:
         '204':
           description: Successful response
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
 
 components:
   securitySchemes:
@@ -98,6 +131,21 @@ components:
   schemas:
 
 # COMPLEX TYPES:
+
+    CreatedEeSubscription:
+      type: object
+      required:
+        - eeSubscription
+      properties:
+        eeSubscription:
+            $ref: '#/components/schemas/EeSubscription'
+        numberOfUes:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        eventReports:
+            type: array
+            items:
+              $ref: '#/components/schemas/MonitoringReport'
+            minItems: 0
 
     EeSubscription:
       type: object
@@ -113,22 +161,23 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MonitoringConfiguration'
           minProperties: 1  
+        reportingOptions:
+          $ref: '#/components/schemas/ReportingOptions'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     MonitoringConfiguration:
       type: object
       required:
-        - referencId
+        - referenceId
         - eventType
-        - reportingOptions
       properties:
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         eventType:
           $ref: '#/components/schemas/EventType'
-        reportingOptions:
-          $ref: '#/components/schemas/ReportingOptions'
+        immediateFlag:
+          type: boolean
 
     ReportingOptions:
       type: object
@@ -143,6 +192,7 @@ components:
       required:
         - referencId
         - eventType
+        - timeStamp
       properties:
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
@@ -150,6 +200,10 @@ components:
           $ref: '#/components/schemas/EventType'
         report:
           $ref: '#/components/schemas/Report'
+        gpsi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        timeStamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     Report:
       oneOf:
@@ -189,18 +243,15 @@ components:
 
     EventType:
       anyOf:
-      - type: string
-        enum:
-        - LOSS_OF_CONNECTIVITY
-        - UE_REACHABILITY_FOR_DATA
-        - UE_REACHABILITY_FOR_SMS
-        - LOCATION_REPORTING
-        - CHANGE_OF_SUPI_PEI_ASSOCIATION
-        - ROAMING_STATUS
-        - COMMUNICATION_FAILURE
-        - AVAILABILITY_AFTER_DNN_FAILURE
-      - type: string
+        - type: string
+          enum:
+          - LOSS_OF_CONNECTIVITY
+          - UE_REACHABILITY_FOR_DATA
+          - UE_REACHABILITY_FOR_SMS
+          - LOCATION_REPORTING
+          - CHANGE_OF_SUPI_PEI_ASSOCIATION
+          - ROAMING_STATUS
+          - COMMUNICATION_FAILURE
+          - AVAILABILITY_AFTER_DNN_FAILURE
+        - type: string
 
-externalDocs:
-  description: Documentation
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
