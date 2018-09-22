@@ -37,4 +37,7 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Equipment Identity Check](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
 ## Common Data Types
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
+## T8
+* [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml)
+
 
