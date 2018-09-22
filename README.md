@@ -42,4 +42,5 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Resource Management of Background Data Transfer (BDT)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ResourceManagementOfBdt.yaml)
 * [Chargeable Party](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ChargeableParty.yaml)
 * [Non-IP Data Delivery (NIDD)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NIDD.yaml)
+* [Device Triggering](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_DeviceTriggering.yaml)
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml)
