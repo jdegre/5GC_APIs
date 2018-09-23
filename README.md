@@ -44,4 +44,5 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Non-IP Data Delivery (NIDD)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NIDD.yaml)
 * [Device Triggering](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_DeviceTriggering.yaml)
 * [Group Message Delivery via MBMS by MB2](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyMB2.yaml)
+* [Group Message Delivery via MBMS by xMB](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml)
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml)
