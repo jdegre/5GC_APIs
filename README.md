@@ -37,7 +37,8 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Equipment Identity Check](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
 ## Common Data Types
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
-## T8
+## Northbound APIs (T8)
+NOTE: These APIs are not part of the 5G Core Network
 * [Event Monitoring](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MonitoringEvent.yaml)
 * [Resource Management of Background Data Transfer (BDT)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ResourceManagementOfBdt.yaml)
 * [Chargeable Party](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ChargeableParty.yaml)
@@ -47,4 +48,5 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Group Message Delivery via MBMS by xMB](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml)
 * [Network Status Reporting](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ReportingNetworkStatus.yaml)
 * [Communication Patterns (CP) Parameters Provisioning](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CpProvisioning.yaml)
+* [Packet Flow Description (PFD) Management](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_PfdManagement.yaml)
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml)
