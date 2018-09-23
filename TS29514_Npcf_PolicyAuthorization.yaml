@@ -1,0 +1,962 @@
+openapi: 3.0.0
+info:
+  title: "Npcf_PolicyAuthorization Service API"
+  version: "1.PreR15.1.0"
+  description: "This is the Policy Authorization Service"
+
+servers:
+  - url: ’{apiRoot}/npcf-policyauthorization/v1’
+    variables:
+      apiRoot:
+        default: https://virtserver.3ggp5gc-sbi.com
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+
+paths:
+  /app-sessions:
+    post:
+      summary: Creates a new Individual Application Session Context resource
+      operationId: PostAppSessions
+      tags:
+        - Individual Application Session Context (Collection)
+      requestBody:
+        description: Contains the information for the creation the resource
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppSessionContextReqData'
+      responses:
+        '201':
+          description: Successful creation of the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+        '303':
+          description: See Other. The result of the HTTP POST request would be equivalent to the existing Application Session Context. The HTTP response shall contain a Location header field set to the URI of the existing individual Application Session Context resource
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        terminationRequest:
+          '{$request.body#/notifUri}/terminate':
+            post:
+              requestBody:
+                description: Request of the termination of the Individual Application Session Context
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/TerminationInfo'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged.
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+        eventNotification:
+          '{$request.body#/evSubsc/notifUri}/notify':
+            post:
+              requestBody:
+                description: Notification of an event occurrence in the PCF.
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+  /app-sessions/{appSessionId}:
+    get:
+      summary: "Reads an existing Individual Application Session Context"
+      operationId: GetAppSession
+      tags:
+        - Individual Application Session Context resource
+      parameters:
+        - name: appSessionId
+          description: string identifying the resource
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A representation of the resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '414':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: "Modifies an existing Individual Application Session Context"
+      operationId: ModAppSession
+      tags:
+        - Individual Application Session Context resource
+      parameters:
+        - name: appSessionId
+          description: string identifying the resource
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: modification of the resource.
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AppSessionContextUpdateData'
+      responses:
+        '200':
+          description: successful modification of the resource and a representation of that resource is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+        '204':
+          description: The successful modification
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        eventNotification:
+          '{$request.body#/evSubsc/notifUri}/notify':
+            post:
+              requestBody:
+                description: Notification of an event occurrence in the PCF.
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+#                
+#                
+  /app-sessions/{appSessionId}/delete:
+    post:
+      summary: "Deletes an existing Individual Application Session Context"
+      operationId: DeleteAppSession
+      tags:
+        - Individual Application Session Context resource
+      parameters:
+        - name: appSessionId
+          description: string identifying the Individual Application Session Context resource
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: deletion of the Individual Application Session Context resource, req notification
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsSubscReqData'
+      responses:
+        '200':
+          description: The deletion of the resource is confirmed and a resource is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+        '204':
+          description: The deletion is confirmed without returning additional data.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+#               
+  /app-sessions/{appSessionId}/events-subscription:
+    put:
+      summary: "creates or modifies an Events Subscription subresource"
+      operationId: updateEventsSubsc
+      tags:
+        - Individual Events Subscription resource
+      parameters:
+        - name: appSessionId
+          description: string identifying the Events Subscription resource
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Creation or modification of an Events Subscription resource.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsSubscReqData'
+      responses:
+        '201':
+          description: The creation of the Events Subscription resource is confirmed and its representation is returned.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/EventsSubscReqData'
+                  - $ref: '#/components/schemas/EventsNotification'
+        '200':
+          description: The modification of the of the Events Subscription resource is confirmed its representation is returned.
+          content:
+            application/json:
+                schema:
+                  anyOf:
+                  - $ref: '#/components/schemas/EventsSubscReqData'
+                  - $ref: '#/components/schemas/EventsNotification'
+        '204':
+          description: The modification of the Events Subscription subresource is confirmed without returning additional data.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        eventNotification:
+          '{$request.body#/notifUri}/notify':
+            post:
+              requestBody:
+                description: Contains the information for the notification of an event occurrence in the PCF.
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged.
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: deletes the Events Subscription subresource
+      operationId: DeleteEventsSubsc
+      tags:
+        - Individual Events Subscription resource
+      parameters:
+        - name: appSessionId
+          description: string identifying the Individual Application Session Context resource
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The deletion of the of the Events Subscription sub-resource is confirmed without returning additional data.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+components:
+  schemas:
+    AppSessionContext:
+      description: Represents an Individual Application Session Context resource.
+      type: object
+      properties:
+        ascReqData:
+          $ref: '#/components/schemas/AppSessionContextReqData'
+        ascRespData:
+          $ref: '#/components/schemas/AppSessionContextRespData'
+        evsNotif:
+          $ref: '#/components/schemas/EventsNotification'
+    AppSessionContextReqData:
+      description: Identifies the service requirements of an Individual Application Session Context.
+      type: object
+      required:
+        - notifUri
+      properties:
+        afAppId:
+          $ref: '#/components/schemas/AfAppId'
+        afChargId:
+          $ref: '#/components/schemas/AfChargingId'
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirement'
+        aspId:
+          $ref: '#/components/schemas/AspId'
+        bdtRefId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        evSubsc:
+          $ref: '#/components/schemas/EventsSubscReqData'
+        medComponents:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MediaComponent'
+        ipDomain:
+          type: string
+        mpsId:
+          description: indication of MPS service request
+          type: string
+        notifUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+        sliceInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        sponId:
+          $ref: '#/components/schemas/SponId'
+        sponStatus:
+          $ref: '#/components/schemas/SponsoringStatus'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        suppFeat:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        ueIpv4:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ueIpv6:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        ueMac:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+    AppSessionContextRespData:
+      description: Describes the authorization data of an Individual Application Session Context created by the PCF.
+      type: object
+      properties:
+        servAuthInfo:
+          $ref: '#/components/schemas/ServAuthInfo'
+        suppFeat:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    AppSessionContextUpdateData:
+      description: Identifies the modifications to an Individual Application Session Context and may include the modifications to the sub-resource Events Subscription.
+      type: object
+      properties:
+        afAppId:
+          $ref: '#/components/schemas/AfAppId'
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirement'
+        aspId:
+          $ref: '#/components/schemas/AspId'
+        bdtRefId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
+        evSubsc:
+          $ref: '#/components/schemas/EventsSubscReqData'
+        medComponents:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MediaComponent'
+        mpsId:
+          description: indication of MPS service request
+          type: string
+        sponId:
+          $ref: '#/components/schemas/SponId'
+        sponStatus:
+          $ref: '#/components/schemas/SponsoringStatus'
+    EventsSubscReqData:
+      description: Identifies the events the application subscribes to.
+      type: object
+      required:
+        - events
+        - notifUri
+      properties:
+        dnaiChgType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AfEventSubscription'
+        notifUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+        reqAni:
+          $ref: '#/components/schemas/RequiredAccessInfo'
+        usgThres:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
+    MediaComponent:
+      description: Identifies a media component.
+      type: object
+      required:
+        - medCompN
+      properties:
+        afAppId:
+          $ref: '#/components/schemas/AfAppId'
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirement'
+        contVer:
+          $ref: '#/components/schemas/ContentVersion'
+        codecs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodecData'
+        fStatus:
+          $ref: '#/components/schemas/FlowStatus'
+        marBwDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        marBwUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        medCompN:
+          type: integer
+        medSubComps:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MediaSubComponent'
+        medType:
+          $ref: '#/components/schemas/MediaType'
+        mirBwDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mirBwUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        resPrio:
+          $ref: '#/components/schemas/ReservPriority'
+    MediaSubComponent:
+      description: Identifies a media subcomponent
+      type: object
+      required:
+        - fNum
+      properties:
+        ethfDescs:
+          type: array
+          items:
+            $ref: '#/components/schemas/EthFlowDescription'
+        fNum:
+          type: integer
+        fDescs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowDescription'
+        fStatus:
+          $ref: '#/components/schemas/FlowStatus'
+        marBwDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        marBwUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        tosTrCl:
+          $ref: '#/components/schemas/TosTrafficClass'
+        flowUsage:
+          $ref: '#/components/schemas/FlowUsage'
+    EventsNotification:
+      description: describes the notification of a matched event
+      type: object
+      required:
+        - evSubsUri
+        - evNotifs
+      properties:
+        accessType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+        anChargAddr:
+          $ref: '#/components/schemas/AccessNetChargingAddress'
+        anChargIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessNetChargingIdentifier'
+        anGwAddr:
+          $ref: '#/components/schemas/AnGwAddress'
+        evSubsUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+        evNotifs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AfEventNotification'
+        failedResourcAllocReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourcesAllocationInfo'
+        netLocAccSupp:
+          $ref: '#/components/schemas/NetLocAccSupp'
+        outOfCredReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutOfCreditInformation'
+        plmnCcNc:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        plmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        qncReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosNotificationControlInfo'
+        ratType: 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+        ueLoc:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        ueTimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        addUeLoc:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        addUeLocTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        usgRep:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/AccumulatedUsage'
+    AfEventSubscription:
+      description: describes the event information delivered in the subscription
+      type: object
+      required:
+        - event
+      properties:
+        event:
+          $ref: '#/components/schemas/AfEvent'
+        notifMethod:
+          $ref: '#/components/schemas/AfNotifMethod'
+    AfEventNotification:
+      description: describes the event information delivered in the notification
+      type: object
+      required:
+        - event
+      properties:
+        event:
+          $ref: '#/components/schemas/AfEvent'
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+    TerminationInfo:
+      description: indicates the cause for requesting the deletion of the Individual Application Session Context resource
+      type: object
+      required:
+        - termCause
+        - resUri
+      properties:
+        termCause:
+          $ref: '#/components/schemas/TerminationCause'
+        resUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+    AfRoutingRequirement:
+      description: describes the event information delivered in the subscription
+      type: object
+      required:
+        - afTransId
+      properties:
+        appReloc:
+          type: boolean
+        afTransId:
+          type: string
+        routeToLocs:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+        spVal:
+          $ref: '#/components/schemas/SpatialValidity'
+        tempVals:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemporalValidity'
+    SpatialValidity:
+      description: describes explicitly the route to an Application location
+      type: object
+      properties:
+        praIds:
+          type: array
+          items:
+            type: string
+        presenceInfoList:
+          type: object
+          additionalProperties:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+    AccessNetChargingAddress:
+      description: describes the network entity within the access network performing charging
+      type: object
+      properties:
+        anChargIpv4Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        anChargIpv6Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+    AccessNetChargingIdentifier:
+      description: describes the access network charging identifier
+      type: object
+      required:
+        - anChargIdValue
+      properties:
+        anChargIdValue:
+          type: string
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+    AnGwAddress:
+      description: describes the address of the access network gateway control node
+      type: object
+      properties:
+        anGwIpv4Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        anGwIpv6Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+    Flows:
+      description: Identifies the flows
+      type: object
+      required:
+        - medCompN
+      properties:
+        contVers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentVersion'
+        fNums:
+          type: array
+          items:
+            type: integer
+        medCompN:
+          type: integer
+    EthFlowDescription:
+      description: Identifies an Ethernet flow
+      type: object
+      required:
+        - ethType
+      properties:
+        destMacAddr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        ethType:
+          type: string
+        fDesc:
+          $ref: '#/components/schemas/FlowDescription'
+        fDir:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/FlowDirection'
+        sourceMacAddr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        vlanTags:
+          type: string
+    OutOfCreditInformation:
+      description: Indicates the SDFs without credit available and the termination action
+      type: object
+      properties:
+        finUnitAct:
+          $ref: 'TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/FinalUnitAction'
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+
+
+    ResourcesAllocationInfo:
+      description: describes the status of the PCC rule(s) related to certain media components.
+      type: object
+      required:
+        - mcResourcStatus
+        - flows
+      properties:
+        mcResourcStatus:
+          $ref: '#/components/schemas/MediaComponentResourcesStatus'
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+    TemporalValidity:
+      description: Indicates the time interval(s) during which the AF request is to be applied
+      type: object
+      properties:
+        startTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        stopTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+#
+    QosNotificationControlInfo:
+      description: Indicates whether the QoS targets for a GRB flow are not fulfilled or fulfilled again
+      type: object
+      required:
+        - notifType
+      properties:
+        notifType:
+          $ref: '#/components/schemas/QosNotifType'
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+#
+# SIMPLE DATA TYPES
+#
+    AfChargingId:
+      description: Contains an AF application identifier.
+      type: string
+    AfAppId:
+      description: Contains an AF application identifier.
+      type: string
+    AspId:
+      description: Contains an identity of an application service provider.
+      type: string
+    CodecData:
+      description: Contains codec related information.
+      type: string
+    ContentVersion:
+      description: Represents the content version of some content.
+      type: integer
+    FlowDescription:
+      description: Defines a packet filter of an IP flow.
+      type: string
+    NetLocAccSupp:
+      description: Indication of whether the access network supports access network information reporting.
+      type: boolean
+    SponId:
+      description: Contains an identity of a sponsor.
+      type: string
+#
+# ENUMERATIONS DATA TYPES
+#
+    MediaType:
+      anyOf:
+        - type: string
+          enum:
+            - AUDIO
+            - VIDEO
+            - DATA
+            - APPLICATION
+            - CONTROL
+            - TEXT
+            - MESSAGE
+            - OTHER
+        - type: string
+#
+    ReservPriority:
+      anyOf:
+        - type: string
+          enum:
+            - PRIO_1
+            - PRIO_2
+            - PRIO_3
+            - PRIO_4
+            - PRIO_5
+            - PRIO_6
+            - PRIO_7
+            - PRIO_8
+            - PRIO_9
+            - PRIO_10
+            - PRIO_11
+            - PRIO_12
+            - PRIO_13
+            - PRIO_14
+            - PRIO_15
+            - PRIO_16
+        - type: string
+#        
+    ServAuthInfo:
+      anyOf:
+      - type: string
+        enum:
+          - TP_NOT_KNOWN
+          - TP_EXPIRED
+          - TP_NOT_YET_OCURRED
+          - UNAUTH_TRAFFIC_ROUTING_REQ
+      - type: string
+#      
+    SponsoringStatus:
+      anyOf:
+      - type: string
+        enum:
+          - SPONSOR_DISABLED
+          - SPONSOR_ENABLED
+      - type: string
+#        
+    AfEvent:
+      anyOf:
+      - type: string
+        enum:
+          - ACCESS_TYPE_CHANGE
+          - ANI_REPORT
+          - CHARGING_CORRELATION
+          - DNAI_CHG
+          - FAILED_RESOURCES_ALLOCATION
+          - OUT_OF_CREDIT
+          - PLMN_CHG
+          - QOS_NOTIFICATION_CONTROL
+          - ROUT_REQ_STATUS_CHG
+          - SUCCESSFUL_RESOURCES_ALLOCATION
+          - USAGE_REPORT
+      - type: string
+#        
+    AfNotifMethod:
+      anyOf:
+      - type: string
+        enum:
+          - EVENT_DETECTION
+          - ONE_TIME
+      - type: string
+#        
+    QosNotifType:
+      anyOf:
+      - type: string
+        enum:
+          - FULFILLED
+          - NOT_FULFILLED
+      - type: string
+#        
+    TerminationCause:
+      anyOf:
+      - type: string
+        enum:
+          - ALL_SDF_DEACTIVATION
+          - PDU_SESSION_TERMINATION
+      - type: string
+#        
+    RequiredAccessInfo:
+      anyOf:
+      - type: string
+        enum:
+          - USER_LOCATION
+          - MS_TIME_ZONE
+      - type: string
+#        
+    MediaComponentResourcesStatus:
+      anyOf:
+      - type: string
+        enum:
+          - ACTIVE
+          - INACTIVE
+      - type: string
+#
+#
+    FlowUsage:
+      anyOf:
+      - type: string
+        enum:
+          - NO_INFO
+          - RTCP
+      - type: string
+
+
+    FlowStatus:
+      anyOf:
+      - type: string
+        enum:
+          - ENABLED-UPLINK
+          - ENABLED-DOWNLINK
+          - ENABLED
+          - DISABLED
+          - REMOVED
+      - type: string
+
+    TosTrafficClass:
+      type: string

@@ -1,0 +1,278 @@
+openapi: 3.0.0
+info:
+  title: Npcf_BDTPolicyControl Service API
+  version: "1.PreR15.1.0"
+  description: The Npcf_BDTPolicyControl Service is used by an NF service consumer to retrieve background data transfer policies from the PCF and to update the PCF with the background data transfer policy selected by the NF service consumer.
+#
+servers:
+  - url: '{apiRoot}/npcf-bdtpolicycontrol/v1'
+    variables:
+      apiRoot:
+        default: https://virtserver.3ggp5gc-sbi.com
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
+paths:
+  /bdtpolicies:
+    post:
+      requestBody:
+        description: Contains modification instructions to be performed on the existing Individual BDT policy resource.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BdtReqData'
+      responses:
+        '201':
+          description: Background data transfer policies offered to an ASP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BdtPolicy'
+#
+# Error scenarios POST
+#
+        '303':
+          description: See Other. The result of the POST request would be equivalent to the existing Individual BDT policy resource. The HTTP response shall contain a Location header field set to the URI of the existing individual BDT policy resource.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          description: Not Found.
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+#
+# End error scenarios POST
+#
+  /bdtpolicies/{bdtPolicyId}:
+    get:
+      parameters:
+        - name: bdtPolicyId
+          description: String identifying the individual BDT policy resource in the PCF.
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Background data transfer policies offered to and selected by an ASP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BdtPolicy'
+#
+# Error scenarios GET
+#
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '414':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+#
+# End error scenarios GET
+#
+    patch:
+      parameters:
+      - name: bdtPolicyId
+        description: String identifying the individual BDT policy resource in the PCF.
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Contains modification instruction to be performed on the BdtPolicy data structure to select a transfer policy.
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/BdtPolicyPatch'
+      responses:
+        '200':
+          description: The Individual BDT Policy resource is modified and a representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BdtPolicy'
+        '204':
+          description: The Individual BDT Policy resource is modified.
+#
+# Error scenarios PATCH
+#
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+#
+# End error scenarios PATCH
+#
+#
+components:
+  schemas:
+#
+# Structured data types
+#
+    BdtPolicy:
+      description: Represents an Individual BDT policy resource.
+      type: object
+      properties:
+        bdtPolData:
+          $ref: '#/components/schemas/BdtPolicyData'
+        bdtReqData:
+          $ref: '#/components/schemas/BdtReqData'
+#
+    BdtReqData:
+      description: Contains service requirements for creation a new Individual BDT policy resource.
+      type: object
+      required:
+      - aspId
+      - desTimeInt
+      - numOfUes
+      - volPerUe
+      properties:
+        aspId:
+          $ref: '#/components/schemas/AspId'
+        desTimeInt:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        nwAreaInfo:
+          $ref: '#/components/schemas/NetworkAreaInfo'
+        numOfUes:
+          description: Indicates a number of UEs.
+          type: integer
+        volPerUe:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
+        suppFeat:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+#
+    BdtPolicyData:
+      description: Describes the authorization data of an Individual BDT policy resource.
+      type: object
+      required:
+      - bdtRefId
+      - transfPolicies
+      properties:
+        bdtRefId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
+        transfPolicies:
+          description: Contains transfer policies.
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferPolicy'
+          minItems: 1
+        bdtPolicyDataPatch:
+          $ref: '#/components/schemas/BdtPolicyDataPatch'
+        suppFeat:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+#
+    BdtPolicyPatch:
+      description: A JSON Merge Patch body schema containing modification instruction to be performed on the BdtPolicy data structure to select a transfer policy. Adds selTransPolicyId to BdtPolicyData data structure.
+      type: object
+      required:
+      - bdtPolData
+      properties:
+        bdtPolData:
+          $ref: '#/components/schemas/BdtPolicyDataPatch'
+#
+    BdtPolicyDataPatch:
+      description: Contains selected transfer policy.
+      type: object
+      required:
+      - selTransPolicyId
+      properties:
+        selTransPolicyId:
+          description: Contains an identity (i.e. transPolicyId value) of the selected transfer policy.
+          type: integer
+#
+    TransferPolicy:
+      description: Describes a transfer policy.
+      type: object
+      required:
+      - ratingGroup
+      - recTimeInt
+      - transPolicyId
+      properties:
+        maxBitRateDl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxBitRateUl:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+        ratingGroup:
+          description: Indicates a rating group for the recommended time window.
+          type: integer
+        recTimeInt:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        transPolicyId:
+          description: Contains an identity of a transfer policy.
+          type: integer
+    NetworkAreaInfo:
+      description: Describes a network area information in which the NF service consumer requests the number of UEs.
+      type: object
+      properties:
+        ecgis:
+          description: Contains a list of E-UTRA cell identities.
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        ncgis:
+          description: Contains a list of NR cell identities.
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        ngRanNodeIds:
+          description: Contains a list of NG RAN nodes.
+          type: array
+          items:
+            $ref: '#/components/schemas/NgRanNodeId'
+        tais:
+          description: Contains a list of tracking area identities identities.
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'#
+    NgRanNodeId:
+      type: object
+      required:
+      - plmnId
+      - ngRanIdentifier
+      properties:
+        plmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        ngRanIdentifier:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgRanIdentifier'
+#
+# Simple data types
+#
+    AspId:
+      description: Contains an identity of an application service provider.
+      type: string
+#
+#
