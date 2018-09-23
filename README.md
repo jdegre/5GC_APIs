@@ -46,4 +46,5 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Group Message Delivery via MBMS by MB2](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyMB2.yaml)
 * [Group Message Delivery via MBMS by xMB](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml)
 * [Network Status Reporting](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ReportingNetworkStatus.yaml)
+* [Communication Patterns Provisioning](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CpProvisioning.yaml)
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml)
