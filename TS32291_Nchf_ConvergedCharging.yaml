@@ -1,0 +1,756 @@
+openapi: 3.0.0
+info:
+  description: ConvergedCharging Service
+  version: 1.R15.0.0
+  title: Nchf_ConvergedCharging
+externalDocs:
+  description: >-
+    3GPP TS 32.291 V1.0.0 (2018-09) Telecommunication management; Charging
+    management; 5G system, Charging service;stage 3 version 15.0.0
+  url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
+servers:
+  - url: 'https://{apiRoot}/Nchf_ConvergedCharging/v1'
+    variables:
+      apiRoot:
+        default: demohost.com
+        description: >-
+          apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501,
+          excluding the http:// part
+paths:
+  /chargingdata:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargingDataRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargingDataResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        myNotification:
+          '{$request.body#/notifyUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/ChargingNotification'
+              responses:
+                '204':
+                  description: 'No Content, Notification was succesfull'
+                '400':
+                  description: Bad request
+                  content:
+                    application/json:
+                      schema:
+                        $ref: >-
+                          https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+  '/chargingdata/{ChargingDataRef}/update':
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargingDataRequest'
+      parameters:
+        - name: ChargingDataRef
+          in: path
+          description: a unique identifier for a charging data resource in a PLMN
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. Updated Charging Data resource is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargingDataResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+  '/chargingdata/{ChargingDataRef}/release':
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargingDataRequest'
+      parameters:
+        - name: ChargingDataRef
+          in: path
+          description: a unique identifier for a charging data resource in a PLMN
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+components:
+  schemas:
+    ChargingDataRequest:
+      type: object
+      properties:
+        subscriberIdentifier:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        nfConsumerIdentification:
+          $ref: '#/components/schemas/NFConsumerIdentification'
+        invocationTimeStamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        invocationSequenceNumber:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        notifyUri:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        multipleUnitUsage:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleUnitUsage'
+          minItems: 0
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trigger'
+          minItems: 0
+        pDUSessionChargingInformation:
+          $ref: '#/components/schemas/PDUSessionChargingInformation'
+        roamingQBCInformation:
+          $ref: '#/components/schemas/RoamingQBCInformation'
+      required:
+        - nfConsumerIdentification
+        - invocationTimeStamp
+        - invocationSequenceNumber
+    ChargingDataResponse:
+      type: object
+      properties:
+        invocationTimeStamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        invocationSequenceNumber:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        invocationResult:
+          $ref: '#/components/schemas/InvocationResult'
+        sessionFailover:
+          $ref: '#/components/schemas/SessionFailover'
+        multipleQuotaInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleQuotaInformation'
+          minItems: 0
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trigger'
+          minItems: 0
+        pDUSessionChargingInformation:
+          $ref: '#/components/schemas/PDUSessionChargingInformation'
+        roamingQBCInformation:
+          $ref: '#/components/schemas/RoamingQBCInformation'
+      required:
+        - invocationTimeStamp
+        - invocationSequenceNumber
+        - invocationResult
+    ChargingNotification:
+      type: object
+      properties:
+        notificationType:
+          $ref: '#/components/schemas/NotificationType'
+        reauthorizationDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReauthorizationDetails'
+          minItems: 0
+      required:
+        - notificationType
+    NFConsumerIdentification:
+      type: object
+      properties:
+        nFName:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nFIPv4Address:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        nFIPv6Address:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        nFPLMNID:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        nodeFunctionality:
+          $ref: '#/components/schemas/NodeFunctionality'
+      required:
+        - nFName
+        - nFIPv4Address
+        - nFIPv6Address
+        - nodeFunctionality
+    MultipleUnitUsage:
+      type: object
+      properties:
+        ratingGroup:
+          $ref: '#/components/schemas/RatingGroupId'
+        requestedUnit:
+          $ref: '#/components/schemas/RequestedUnit'
+        UsedUnitContainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsedUnitContainer'
+          minItems: 0
+        uPFID:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      required:
+        - ratingGroup
+    InvocationResult:
+      type: object
+      properties:
+        error:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        failureHandling:
+          $ref: '#/components/schemas/FailureHandling'
+      required:
+        - error
+    Trigger:
+      type: object
+      properties:
+        triggerType:
+          $ref: '#/components/schemas/TriggerType'
+        category:
+          $ref: '#/components/schemas/TriggerCategory'
+        timeLimit:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        volumeLimit:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        maxNumberOfccc:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+      required:
+        - triggerType
+        - TriggerCategory
+    MultipleQuotaInformation:
+      type: object
+      properties:
+        resultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ratingGroup:
+          $ref: '#/components/schemas/RatingGroupId'
+        grantedUnit:
+          $ref: '#/components/schemas/GrantedUnit'
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trigger'
+          minItems: 0
+        validityTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        quotaHoldingTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        finalUnitIndication:
+          $ref: '#/components/schemas/FinalUnitIndication'
+        timeQuotaThreshold:
+          type: integer
+        volumeQuotaThreshold:
+          type: integer
+        unitQuotaThreshold:
+          type: integer
+        uPFID:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+      required:
+        - ratingGroup
+    RequestedUnit:
+      type: object
+      properties:
+        time:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        totalVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        uplinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        downlinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        serviceSpecificUnits:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+    UsedUnitContainer:
+      type: object
+      properties:
+        serviceId:
+          $ref: '#/components/schemas/ServiceId'
+        quotaManagementIndicator:
+          $ref: '#/components/schemas/QuotaManagementIndicator'
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trigger'
+          minItems: 0
+        triggerTimestamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        time:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        totalVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        uplinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        downlinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        serviceSpecificUnits:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        eventTimeStamps:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        localSequenceNumber:
+          type: integer
+        pDUContainerInformation:
+          $ref: '#/components/schemas/PDUContainerInformation'
+      required:
+        - localSequenceNumber
+    GrantedUnit:
+      type: object
+      properties:
+        tariffTimeChange:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        time:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        totalVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        uplinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        downlinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        serviceSpecificUnits:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+    FinalUnitIndication:
+      type: object
+      properties:
+        finalUnitAction:
+          $ref: '#/components/schemas/FinalUnitAction'
+        restrictionFilterRule:
+          $ref: '#/components/schemas/IPFilterRule'
+        filterId:
+          type: string
+        redirectServer:
+          $ref: '#/components/schemas/RedirectServer'
+      required:
+        - finalUnitAction
+    RedirectServer:
+      type: object
+      properties:
+        redirectAddressType:
+          $ref: '#/components/schemas/RedirectAddressType'
+        redirectServerAddress:
+          type: string
+      required:
+        - redirectAddressType
+        - redirectServerAddress
+    ReauthorizationDetails:
+      type: object
+      properties:
+        serviceIdentifier:
+          $ref: '#/components/schemas/ServiceId'
+        ratingGroup:
+          $ref: '#/components/schemas/RatingGroupId'
+        quotaManagementIndicator:
+          $ref: '#/components/schemas/QuotaManagementIndicator'
+      required:
+        - ratingGroup
+    PDUSessionChargingInformation:
+      type: object
+      properties:
+        chargingId:
+          type: string
+        userInformation:
+          $ref: '#/components/schemas/UserInformation'
+        userLocationinfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        userLocationTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        presenceReportingAreaInformation:
+          type: object
+          additionalProperties:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_CommonData.yaml#/components/schemas/PraInfo'
+          minProperties: 0
+        uetimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        pduSessionInformation:
+          $ref: '#/components/schemas/PDUSessionInformation'
+        unusedQuotaTimer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - userInformation
+        - pduSessionInformation
+    UserInformation:
+      type: object
+      properties:
+        servedGPSI:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        servedPEI:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        unauthenticatedFlag:
+          type: boolean
+        roamerInOut:
+          $ref: '#/components/schemas/RoamerInOut'
+      required:
+        - servedGPSI
+    PDUSessionInformation:
+      type: object
+      properties:
+        networkSlicingInfo:
+          $ref: '#/components/schemas/NetworkSlicingInfo'
+        pduSessionID:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        pduType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+        sscMode:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SscMode'
+        hPlmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        servingNodeID:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfId'
+          minItems: 0
+        servingNetworkFunctionID:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ServingNetworkFunctionID'
+        ratType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+        dnnId:
+          type: string
+        chargingCharacteristics:
+          type: string
+        chargingCharacteristicsSelectionMode:
+          $ref: '#/components/schemas/ChargingCharacteristicsSelectionMode'
+        startTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        stopTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        3gppPSDataOffStatus:
+          $ref: '#/components/schemas/3GPPPSDataOffStatus'
+        sessionStopIndicator:
+          type: boolean
+        pduAddress:
+          $ref: '#/components/schemas/PDUAddress'
+        diagnostics:
+          $ref: '#/components/schemas/Diagnostics'
+        qoSInformation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DefaultQosInformation'
+        servingCNPlmnId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      required:
+        - pduSessionID
+        - dnnId
+    PDUContainerInformation:
+      type: object
+      properties:
+        timeofFirstUsage:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        timeofLastUsage:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        qoSInformation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DefaultQoSInformation'
+        aFCorrelationInformation:
+          type: string
+        userLocationInformation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        uetimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        rATType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+        servingNodeID:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfId'
+          minItems: 0
+        presenceReportingAreaInformation:
+          type: object
+          additionalProperties:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_CommonData.yaml#/components/schemas/PraInfo'
+          minProperties: 0
+        3gppPSDataOffStatus:
+          $ref: '#/components/schemas/3GPPPSDataOffStatus'
+        sponsorIdentity:
+          type: string
+        applicationserviceProviderIdentity:
+          type: string
+        chargingRuleBaseName:
+          type: string
+    NetworkSlicingInfo:
+      type: object
+      properties:
+        sNSSAI:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+      required:
+        - sNSSAI
+    PDUAddress:
+      type: object
+      properties:
+        pduIPv4Address:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_CommonData.yaml#/components/schemas/Ipv4Addr'
+        pduIPv6Address:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        pduAddressprefixlength:
+          type: integer
+        IPv4dynamicAddressFlag:
+          type: boolean
+        IPv6dynamicAddressFlag:
+          type: boolean
+    ServingNetworkFunctionID:
+      type: object
+      properties:
+        servingNetworkFunctionName:
+          type: string
+        servingNetworkFunctionInstanceid:
+          type: string
+    RoamingQBCInformation:
+      type: object
+      properties:
+        multipleQFIcontainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleQFIcontainer'
+          minItems: 0
+        uPFID:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        roamingChargingProfile:
+          $ref: '#/components/schemas/RoamingChargingProfile'
+    MultipleQFIcontainer:
+      type: object
+      properties:
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trigger'
+          minItems: 0
+        triggerTimestamp:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        time:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint32'
+        totalVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        uplinkVolume:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uint64'
+        localSequenceNumber:
+          type: integer
+        qFIContainerInformation:
+          $ref: '#/components/schemas/QFIContainerInformation'
+      required:
+        - localSequenceNumber
+    QFIContainerInformation:
+      type: object
+      properties:
+        qFI:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        timeofFirstUsage:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        timeofLastUsage:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        qoSInformation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DefaultQoSInformation'
+        userLocationInformation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        uetimeZone:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        presenceReportingAreaInformation:
+          type: object
+          additionalProperties:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_CommonData.yaml#/components/schemas/PraInfo'
+          minProperties: 0
+        rATType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+        servingNetworkFunctionID:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfId'
+          minItems: 0
+        3gppPSDataOffStatus:
+          $ref: '#/components/schemas/3GPPPSDataOffStatus'
+    RoamingChargingProfile:
+      type: object
+      properties:
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trigger'
+          minItems: 0
+        partialRecordMethod:
+          $ref: '#/components/schemas/PartialRecordMethod'
+    RatingGroupId:
+      type: integer
+    ServiceId:
+      type: integer
+    Diagnostics:
+      type: integer
+    IPFilterRule:
+      type: string
+    NotificationType:
+      anyOf:
+        - type: string
+          enum:
+            - REAUTHORIZATION
+            - ABORT_CHARGING
+        - type: string
+    NodeFunctionality:
+      anyOf:
+        - type: string
+          enum:
+            - SMF
+        - type: string
+    ChargingCharacteristicsSelectionMode:
+      anyOf:
+        - type: string
+          enum:
+            - HOME_DEFAULT
+            - ROAMING_DEFAULT
+            - VISITING_DEFAULT
+        - type: string
+    TriggerType:
+      anyOf:
+        - type: string
+          enum:
+            - QUOTA_THRESHOLD
+            - QHT
+            - FINAL
+            - QUOTA_EXHAUSTED
+            - VALIDITY_TIME
+            - OTHER_QUOTA_TYPE
+            - FORCED_REAUTHORISATION
+            - UNUSED_QUOTA_TIMER
+            - ABNORMAL_RELEASE
+            - QOS_CHANGE
+            - VOLUME_LIMIT
+            - TIME_LIMIT
+            - PLMN_CHANGE
+            - USER_LOCATION_CHANGE
+            - RAT_CHANGE
+            - UE_TIMEZONE_CHANGE
+            - TARIFF_TIME_CHANGE
+            - MAX_NUMBER_OF_CHANGES_IN CHARGING_CONDITIONS
+            - MANAGEMENT_INTERVENTION
+            - CHANGE_OF_UE_PRESENCE_IN PRESENCE_REPORTING_AREA
+            - CHANGE_OF_3GPP_PS_DATA_OFF_STATUS
+            - SERVING_NODE_CHANGE
+            - REMOVAL_OF_UPF
+            - ADDITION_OF_UPF
+        - type: string
+    FinalUnitAction:
+      anyOf:
+        - type: string
+          enum:
+            - TERMINATE
+            - REDIRECT
+            - RESTRICT_ACCESS
+        - type: string
+    RedirectAddressType:
+      anyOf:
+        - type: string
+          enum:
+            - IPV4
+            - IPV6
+            - URL
+        - type: string
+    TriggerCategory:
+      anyOf:
+        - type: string
+          enum:
+            - IMMEDIATE_REPORT
+            - DEFERRED_REPORT
+        - type: string
+    QuotaManagementIndicator:
+      anyOf:
+        - type: string
+          enum:
+            - ONLINE_CHARGING
+            - OFFLINE_CHARGING
+        - type: string
+    FailureHandling:
+      anyOf:
+        - type: string
+          enum:
+            - TERMINATE
+            - CONTINUE
+            - RETRY_AND_TERMINATE
+        - type: string
+    SessionFailover:
+      anyOf:
+        - type: string
+          enum:
+            - FAILOVER_NOT_SUPPORTED
+            - FAILOVER_SUPPORTED
+        - type: string
+    3GPPPSDataOffStatus:
+      anyOf:
+        - type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        - type: string
+    ResultCode:
+      anyOf:
+        - type: string
+          enum:
+            - END_USER_SERVICE_DENIED
+            - CREDIT_CONTROL_NOT_APPLICABLE
+            - CREDIT_LIMIT_REACHED
+            - AUTHORIZATION_REJECTED
+            - USER_UNKNOWN
+            - RATING_FAILED
+        - type: string
+    PartialRecordMethod:
+      anyOf:
+        - type: string
+          enum:
+            - DEFAULT
+            - INDIVIDUAL
+        - type: string
+    RoamerInOut:
+      anyOf:
+        - type: string
+          enum:
+            - IN_BOUND
+            - OUT_BOUND
+        - type: string
