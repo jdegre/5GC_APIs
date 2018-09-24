@@ -1,0 +1,270 @@
+ openapi: 3.0.0
+info:
+  description: Nnwdaf_EventsSubscription Service API
+  version: "1.PreR15.0.0"
+  title: Nnwdaf_EventsSubscription
+servers:
+  - url: '{apiRoot}/nnwdaf-eventssubscription/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
+paths:
+  /subscriptions:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NnwdafEventsSubscription'
+      responses:
+        '201':
+          description: Create a new Individual NWDAF Event Subscription resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NnwdafEventsSubscription'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        myNotification:
+          '{$request.body#/notificationURI}': 
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/NnwdafEventsSubscriptionNotification'
+              responses:
+                '204':
+                  description: The receipt of the Notification is acknowledged.
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+  /subscriptions/{subscriptionId}:
+    delete:
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: String identifying a subscription to the Nnwdaf_EventsSubscription Service
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content. The Individual NWDAF Event Subscription resource matching the subscriptionId was deleted.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          description: The Individual NWDAF Event Subscription resource does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NnwdafEventsSubscription'
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: String identifying a subscription to the Nnwdaf_EventsSubscription Service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The Individual NWDAF Event Subscription resource was modified successfully and a representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NnwdafEventsSubscription'
+        '204':
+          description: The Individual NWDAF Event Subscription resource was modified successfully.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          description: The Individual NWDAF Event Subscription resource does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+components:
+  schemas:
+    NnwdafEventsSubscription:
+      type: object
+      properties:
+        eventSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventSubscription'
+          minItems: 1
+          description: Subscribed events
+        notificationURI:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        supportedFeatures:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schema/SupportedFeature'
+          description: List of Supported features used as described in subclause 5.1.8. This parameter shall be supplied by NF service consumer in the POST request that request the creation of an NWDAF Event Subscriptions resource, and shall be supplied by the NWDAF in the reply of corresponding request.
+      required:
+        - eventSubscriptions
+    EventSubscription:
+      type: object
+      properties:
+        anySlice:
+          $ref: '#/components/schemas/AnySlice'
+        event:
+          $ref: '#/components/schemas/NwdafEvent'
+        loadLevelThreshold:
+          type: integer
+          description: Shall be supplied for notification method "THRESHOLD". Indicates that the NWDAF shall report the corresponding network slice load level to the NF service consumer where the load level of the network slice instance identified by snssai is reached.
+        notificationMethod:
+          $ref: '#/components/schemas/NotificationMethod'
+        repetitionPeriod:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        snssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 0
+          description: Identification(s) of network slice to which the subscription applies. When subscribed event is "Slice_Load_Level", either information about slice(s) identified by snssai, or anySlice set to "TRUE" shall be included.
+      required:
+        - event
+    NnwdafEventsSubscriptionNotification:
+      type: object
+      properties:
+        eventNotifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventNotification'
+          minItems: 1
+          description: Notifications about Individual Events
+        subscriptionId:
+          type: string
+          description: String identifying a subscription to the Nnwdaf_EventsSubscription Service
+      required:
+        - eventNotifications
+        - subscriptionId
+    EventNotification:
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/NwdafEvent'
+        sliceLoadLevelInfo:
+          $ref: '#/components/schemas/SliceLoadLevelInformation'
+      required:
+        - event
+        - sliceLoadLevelInfo
+    SliceLoadLevelInformation:
+      type: object
+      properties:
+        loadLevelInformation:
+          $ref: '#/components/schemas/LoadLevelInformation'
+        snssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+          description: Identification(s) of network slice to which the subscription.
+      required:
+        - loadLevelInformation
+        - snssai
+    AnySlice:
+      type: boolean
+      description: FALSE represents not applicable for all slices. TRUE represents applicable for all slices.
+    LoadLevelInformation:
+      type: integer
+      description: Load level information of the network slice instance.
+    NotificationMethod:
+      anyOf:
+      - type: string
+        enum:
+          - PERIODIC
+          - THRESHOLD
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - PERIODIC: The subscribe of NWDAF Event is peridodicly. The periodic of the notification is identified by repetitionPeriod defined in subclause 5.1.6.2.3.
+        - THRESHOLD: The subscribe of NWDAF Event is upon threshold exceeded. The threshold of the notification is identified by loadLevelThreshold defined in subclause 5.1.6.2.3.
+    NwdafEvent:
+      anyOf:
+      - type: string
+        enum:
+          - Slice_Load_Level
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - Slice_Load_Level: Indicates that the event subscribed is load level information of Network Slice instance

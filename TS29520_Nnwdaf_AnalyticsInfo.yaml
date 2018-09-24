@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  description: Nnwdaf_AnalyticsInfo Service API
+  version: "1.PreR15.0.0"
+  title: Nnwdaf_AnalyticsInfo
+servers:
+  - url: '{apiRoot}/nnwdaf-analyticsinfo/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
+paths:
+  /analytics:
+    get:
+      parameters:
+        - name: eventId
+          in: query
+          description: Identify the analytics.
+          required: true
+          schema:
+            $ref: '#/components/schemas/EventId'
+        - name: eventFilter
+          in: query
+          description: Identify the analytics when the eventId is "Load_Level_Information".
+          required: false
+          schema:
+            $ref: '#/components/schemas/EventFilter'
+      responses:
+        '200':
+          description: The individual PCF session biding session binding information resource matching the query parameter(s) is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          description: Indicates that the NWDAF Analytics resource does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '414':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+components:
+  schemas:
+    AnalyticsData:
+      type: object
+      properties:
+        sliceLoadLevelInfos:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/SliceLoadLevelInformation'
+          minItems: 1
+          description: The slices and there load level information.
+        supportedFeatures:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - sliceLoadLevelInfos
+        - supportedFeatures
+    EventFilter:
+      type: object
+      properties:
+        anySlice:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/AnySlice'
+        snssai:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 0
+          description: Identification(s) of network slice to which the subscription belongs. When eventId is "Load_level_Information", either information about slice(s) identified by snssai, or anySlice set to "TRUE" shall be included.
+    EventId:
+      anyOf:
+      - type: string
+        enum:
+          - Load_Level_Information
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - Load_Level_Information: Represent the analytics of load level information of corresponding network slice instance.
