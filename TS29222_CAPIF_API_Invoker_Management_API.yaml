@@ -1,0 +1,188 @@
+openapi: 3.0.0
+info:
+  title: CAPIF_API_Invoker_Management_API
+  version: "1.PreR15.0.0"
+servers:
+  - url: '{apiRoot}/api-invoker-management/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
+
+paths:
+  /onboardedInvokers:
+    post:
+      description: Creates a new individual API Invoker profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/APIInvokerEnrolmentDetails'
+      callbacks:
+        notificationDestination:
+          '{request.body#/notificationDestination}':
+            post:
+              description: Notify the API Invoker about the onboarding completion
+              requestBody:  # contents of the callback message
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/OnboardingNotification'
+              responses:
+                '204':
+                  description: No Content (successful onboarding notification)
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+                '409':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+                '412':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+      responses:
+        '201':
+          description: API invoker on-boarded successfully 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIInvokerEnrolmentDetails'
+        '202':
+          description: The CAPIF core has accepted the Onboarding request and is processing it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingRequestAck'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '409':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+  /onboardedInvokers/{onboardingId}:
+    delete:
+      description: Deletes an individual API Invoker.
+      parameters:
+        - name: onboardingId
+          in: path
+          description: String identifying an individual on-boarded API invoker resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The individual API Invoker matching onboardingId was offboarded.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  schemas:
+    OnboardingInformation:
+      type: object
+      properties:
+        apiInvokerPublicKey:
+          type: string
+          description: The API Invoker’s public key
+        apiInvokerCertificate:
+          type: string
+          description: The API Invoker’s generic client certificate
+      required:
+        - apiInvokerPublicKey
+    OnboardingNotificationDestination:
+      type: object
+      properties:
+        notificationDestination: 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Uri'
+        requestTestNotification:
+          type: boolean
+          description: Set to true by Subscriber to request the CAPIF core function to send a test notification as defined in in subclause 7.6. Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+    APIList:
+      type: array
+      items:
+        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/ServiceAPIDescription'
+      minItems: 1
+      description: The list of service APIs that the API Invoker is allowed to invoke
+    APIInvokerEnrolmentDetails:
+      type: object
+      properties:
+        apiInvokerId:
+          type: string
+          description: API invoker ID assigned by the CAPIF core function to the API invoker while on-boarding the API invoker. Shall not be present in the HTTP POST request from the API invoker to the CAPIF core function, to on-board itself. Shall be present in all other HTTP requests and responses.
+        onboardingInformation:
+          $ref: '#/components/schemas/OnboardingInformation'
+        onboardingNotificationDestination:
+          $ref: '#/components/schemas/OnboardingNotificationDestination'
+        apiList:
+          $ref: '#/components/schemas/APIList'
+        apiInvokerInformation:
+          type: string
+          description: Generic information related to the API invoker such as details of the device or the application.
+      required:
+        - onboardingInformation
+        - onboardingNotificationDestination
+      description: Information about the API Invoker that requested to onboard
+    OnboardingRequestAck:
+      type: object
+      properties:
+        onboardingNotificationDestination:
+          $ref: '#/components/schemas/OnboardingNotificationDestination'
+      required:
+        - onboardingNotificationDestination
+    OnboardingNotification:
+      type: object
+      properties:
+        result:
+          type: boolean
+          description: Set to "true" indicate successful on-boarding. Otherwise set to "false"
+        resourceLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Uri'
+        apiInvokerEnrolmentDetails:
+          $ref: '#/components/schemas/APIInvokerEnrolmentDetails'
+        apiList:
+          $ref: '#/components/schemas/APIList'
+      required:
+        - result

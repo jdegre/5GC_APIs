@@ -1,0 +1,234 @@
+openapi: 3.0.0
+info:
+  title: CAPIF_Security_API
+  version: "1.PreR15.0.0"
+servers:
+  - url: '{apiRoot}/capif-security/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222.
+paths:
+  /trustedInvokers:
+    post:
+      requestBody:
+        description: All trusted API invokers
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceSecurity'
+      callbacks:
+        notificationDestination:
+          '{request.body#/notificationDestination}':
+            post:
+              requestBody: 
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/SecurityNotification'
+              responses:
+                '204':
+                  description: No Content (successful notification)
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+                '409':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+                '412':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+      responses:
+        '201':
+          description: Successful created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceSecurity'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '409':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+  /trustedInvokers/{apiInvokerId}:
+    get:
+      parameters:
+        - name: apiInvokerId
+          in: path
+          description: Identifier of an individual API invoker
+          required: true
+          schema:
+            type: string
+        - name: authenticationInfo
+          in: query
+          description: When set to 'true', it indicates the CAPIF core function to send the authentication information of the API invoker. Set to false or omitted otherwise.
+          schema:
+            type: boolean
+        - name: authorizationInfo
+          in: query
+          description: When set to 'true', it indicates the CAPIF core function to send the authorization information of the API invoker. Set to false or omitted otherwise.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: The security related information of the API Invoker based on the request from the API exposing function.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceSecurity'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+    delete: 
+      parameters:
+        - name: apiInvokerId
+          in: path
+          description: Identifier of an individual API invoker
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content (Successful deletion of the existing subscription)
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  schemas:
+    ServiceSecurity:
+      type: object
+      properties:
+        securityPreferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityMethod'
+          minimum: 0
+        selectedSecurityMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityMethod'
+          minimum: 0
+        apiInvokerSecurityMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityMethod'
+          minItems: 0
+        securityNotificationDestination:
+          $ref: '#/components/schemas/SecurityNotificationDestination'
+      required:
+        - securityNotificationDestination
+    SecurityMethod:
+      type: object
+      properties:
+        interfaceDetails:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
+        securityMethod:
+          type: string
+          description: Security method for the interface
+        authenticationInfo:
+          type: string
+          description: Authentication related information
+        authorizationInfo:
+          type: string
+          description: Authorization related information
+      required:
+        - interfaceDetails
+        - securityMethod
+    SecurityNotificationDestination:
+      type: object
+      properties:
+        notificationDestination:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Uri'
+        requestTestNotification:
+          type: boolean
+          description: Set to true by API invoker to request the CAPIF core function to send a test notification as defined in in subclause 7.6. Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+      required:
+        - notificationDestination
+    SecurityNotification:
+      type: object
+      properties:
+        apiInvokerId:
+          type: string
+          description: String identifying the API invoker assigned by the CAPIF core function 
+        apiId:
+          type: string
+          description: Identifier of the service API
+        cause:
+          $ref: '#/components/schemas/Cause'
+      required:
+        - apiInvokerId
+        - apiId
+        - cause
+    Cause:
+      anyOf:
+      - type: string
+        enum:
+          - OVERLIMIT_USAGE
+          - UNEXPECTED_REASON
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - OVERLIMIT_USAGE: The revocation of the authorization of the API invoker is due to the overlimit usage of the service API
+        - UNEXPECTED_REASON: The revocation of the authorization of the API invoker is due to unexpected reason.

@@ -1,0 +1,91 @@
+openapi: 3.0.0
+info:
+  title: CAPIF_Access_Control_Policy_API
+  version: "1.PreR15.0.0"
+servers:
+  - url: '{apiRoot}/access-control-policy/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
+
+paths:
+  /accessControlPolicyList/{serviceApiId}:
+    get:
+      description: Retrieves the access control policy list.
+      parameters:
+        - name: serviceApiId
+          in: path
+          description: Identifier of a published service API
+          required: true
+          schema:
+            type: string
+        - name: apiInvokerId
+          in: query
+          description: Identifier of the API invoker
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accessControlPolicyList'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '414':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/414'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  schemas:
+    accessControlPolicyList:
+      type: object
+      properties:
+        apiInvokerPolicies:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiInvokerPolicy'
+          minItems: 0
+          description: Policy of each API invoker.
+    ApiInvokerPolicy:
+      type: object
+      properties:
+        apiInvokerId:
+          type: string
+          description: API invoker ID assigned by the CAPIF core function
+        allowedTotalInvocations:
+          type: integer
+          description: Total number of invocations allowed on the service API by the API invoker.
+        allowedInvocationsPerSecond:
+          type: integer
+          description: Invocations per second allowed on the service API by the API invoker.  
+        allowedInvocationTimeRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRangeList'
+          minItems: 0
+          description: The time ranges during which the invocations are allowed on the service API by the API invoker.
+      required:
+        - apiInvokerID
+    TimeRangeList:
+      type: object
+      properties:
+        startTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+        stopTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'

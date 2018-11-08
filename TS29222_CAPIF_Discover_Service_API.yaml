@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  description: Discover_Service API
+  title: CAPIF_Discover_Service_API
+  version: "1.PreR15.0.0"servers:
+  - url: '{apiRoot}/service-apis/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222.
+paths:
+  /allServiceAPIs:
+    get:
+      description: Discover published service APIs and retrieve a collection of APIs according to certain filter criteria.
+      parameters:
+        - name: apiInvokerId
+          in: query
+          description: String identifying the API invoker assigned by the CAPIF core function.
+          required: true
+          schema:
+            type: string
+        - name: serviceName
+          in: query
+          description: Name of the service.
+          schema:
+            type: string
+        - name: apiName
+          in: query
+          description: API name.
+          schema:
+            type: string
+        - name: apiVersion
+          in: query
+          description: API version.
+          schema:
+            type: string
+        - name: commType
+          in: query
+          description: Communication type used by the API (e.g. request/response or subscribe/notify).
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/CommunicationType'
+        - name: interfaceDescription
+          in: query
+          description: Interface details (e.g. domain name, ipv4/6Addr, port).
+          schema:
+            type: array
+            items:
+              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
+        - name: dataFormat
+          in: query
+          description: Data formats used by the API (e.g. serialization protocol JSON used).
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/DataFormat'
+      responses:
+        '200':
+          description: The response body contains the result of the search over the list of registered APIs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveredAPIs'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '409':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '414':
+          description: URI Too Long
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+components:
+  schemas:
+    DiscoveredAPIs:
+      type: array
+      properties:
+        apiId:
+          type: string
+          description: Identifier of the service API
+        serviceAPIDescription:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/ServiceAPIDescription'
+      required:
+        - apiId
+        - serviceAPIDescription

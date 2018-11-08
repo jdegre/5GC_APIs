@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: CAPIF_Logging_API_Invocation_API
+  version: "1.PreR15.0.0"
+servers:
+  - url: '{apiRoot}/api-invocation-logs/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
+paths:
+  /{aefId}/logs:
+    post:
+      description: Creates a new log entry for service API invocations.
+      parameters:
+        - name: aefId
+          in: path
+          description: Identifier of the API exposing function
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvocationLogs'
+      responses:
+        '201':
+          description: Log of service API invocations provided by API exposing function successfully stored on the CAPIF core function. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvocationLogs'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '409':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+  /{aefId}/logs/{logId}:
+    description: Creates a new log entry for service API invocations.
+    parameters:
+      - name: aefId
+        in: path
+        description: Identifier of the API exposing function
+        required: true
+        schema:
+          type: string
+      - name: logId
+        in: path
+        description: Identifier of individual log entry
+        required: true
+        schema:
+          type: string
+components:
+  schemas:
+    InvocationLogs:
+      type: object
+      properties:
+        aefId:
+          type: string
+          description: Identity information of the API exposing function requesting logging of service API invocations
+        apiInvokerId:
+          type: string
+          description: Identity of the API invoker which invoked the service API
+        ipv4Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        port:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Port'
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Log'
+          minItems: 1
+          description: Service API invocation log
+      required:
+        - aefId
+        - apiInvokerId
+        - log
+    Log:
+      type: object
+      properties:
+        apiId:
+          type: string
+          description: String identifying the API invoked.
+        apiInvoked:
+          type: string
+          description: Name of the API which was invoked
+        version:
+          type: number
+          description: Version of the API which was invoked
+        resourceName:
+          type: string
+          description: Name of the specific resource invoked
+        operation:
+          type: string
+          description: Operation that was invoked on the API
+        result:
+          type: string
+          description: Result or output of the invocation
+        invocationTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+        parameters:
+          type: string
+          description: List of input parameters
+        interfaceDescription:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml/InterfaceDescription'
+      required:
+        - apiId
+        - apiInvoked
+        - version
+        - resourceName
+        - operation
+        - result

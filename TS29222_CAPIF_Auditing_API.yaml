@@ -1,0 +1,121 @@
+openapi: 3.0.0
+info:
+  description: Query_API_Invocation_Log
+  title: CAPIF_Auditing_API
+  version: "1.PreR15.0.0"
+servers:
+  - url: '{apiRoot}/service-apis/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222.
+paths:
+  /apiInvocationLogs:
+    get:
+      description: Query and retrieve service API invocation logs stored on the CAPIF core function.
+      parameters:
+        - name: aefId
+          in: query
+          description: String identifying the API exposing function.
+          schema:
+            type: string
+        - name: apiInvokerId
+          in: query
+          description: String identifying the API invoker which invoked the service API.
+          schema:
+            type: string
+        - name: ipv4Addr
+          in: query
+          description: String identifying a IPv4 address of the API invoker. This attribute shall not be present if ipv6Addr attribute is present.
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        - name: ipv6Addr
+          in: query
+          description: String identifying a IPv4 address of the API invoker. This attribute shall not be present if ipv6Addr attribute is present.
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        - name: port
+          in: query
+          description: Port. This attribute shall be present if either ipv4Addr or the ipv6Addr attribute is present.
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Port'
+        - name: timeRangeStart
+          in: query
+          description: Start time of the invocation time range.
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+        - name: timeRangeEnd
+          in: query
+          description: End time of the invocation time range.
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+        - name: apiId
+          in: query
+          description: String identifying the API invoked.
+          schema:
+            type: string
+        - name: apiName
+          in: query
+          description: Name of the API which was invoked.
+          schema:
+            type: string
+        - name: version
+          in: query
+          description: Version of the API which was invoked.
+          schema:
+            type: number
+        - name: operation
+          in: query
+          description: Operation that was invoked on the API.
+          schema:
+            type: string
+        - name: result
+          in: query
+          description: Result or output of the invocation.
+          schema:
+            type: string
+        - name: resourceName
+          in: query
+          description: Name of the specific resource invoked.
+          schema:
+            type: string
+        - name: interfaceDescription
+          in: query
+          description: Interface description of the API invoked.
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
+      responses:
+        '200':
+          description: Result of the query operation along with fetched service API invocation log data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvocationLogs'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '409':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '414':
+          description: URI Too Long
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+components:
+  schemas:
+    InvocationLogs:
+      type: array
+      items:
+        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Logging_API_Invocation.yaml#/components/schemas/InvocationLogs'

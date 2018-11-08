@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  title: CAPIF_Events_API
+  version: "1.PreR15.0.0"
+servers:
+  - url: '{apiRoot}/capif-events/v1'
+    variables:
+      apiRoot:
+        default: https://demohost.com
+        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
+
+paths:
+  /{subscriberId}/subscriptions:
+    post:
+      description: Creates a new individual CAPIF Event Subscription.
+      parameters:
+        - name: subscriberId
+          in: path
+          description: Identifier of the Subscriber
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventSubscription'
+      callbacks:
+        notificationDestination:
+          '{request.body#/notificationDestination}':
+            post:
+              requestBody:  # contents of the callback message
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventNotification'
+              responses:
+                '204':
+                  description: No Content (successful notification)
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+                '409':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+                '411':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+                '412':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+                '413':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+      responses:
+        '201':
+          description: Created (Successful creation of subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '409':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+  /{subscriberId}/subscriptions/{subscriptionId}:
+    delete:
+      description: Deletes an individual CAPIF Event Subscription.
+      parameters:
+        - name: subscriberId
+          in: path
+          description: Identifier of the Subscriber
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of an individual Events Subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The individual CAPIF Events Subscription matching the subscriptionId is deleted.
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
+        '412':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  schemas:
+    EventSubscription:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/CAPIFEvent'
+          minItems: 1
+          description: Subscribed events
+        notificationDestination:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Uri'
+        requestTestNotification:
+          type: boolean
+          description: Set to true by Subscriber to request the CAPIF core function to send a test notification as defined in in subclause 7.6. Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+      required:
+        - events
+        - notificationDestination
+    EventNotification:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          description: Identifier of the subscription resource to which the notification is related – CAPIF resource identifier
+        events:
+          $ref: '#/components/schemas/CAPIFEvent'
+      required:
+        - subscriptionId
+        - events
+    CAPIFEvent:
+      anyOf:
+      - type: string
+        enum:
+          - SERVICE_API_AVAILABLE
+          - SERVICE_API_UNAVAILABLE
+          - SERVICE_API_UPDATE
+          - API_INVOKER_ONBOARDED
+          - API_INVOKER_OFFBOARDED
+          - SERVICE_API_INVOCATION_SUCCESS
+          - SERVICE_API_INVOCATION_FAILURE
+          - ACCESS_CONTROL_POLICY_UPDATE
+          - ACCESS_CONTROL_POLICY_UNAVAILABLE
+          - API_INVOKER_AUTHORIZATION_REVOKED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - SERVICE_API_AVAILABLE: Events related to the availability of service APIs after the service APIs are published.
+        - SERVICE_API_UNAVAILABLE: Events related to the unavailability of service APIs after the service APIs are unpublished.
+        - SERVICE_API_UPDATE: Events related to change in service API information.
+        - API_INVOKER_ONBOARDED: Events related to API invoker onboarded to CAPIF.
+        - API_INVOKER_OFFBOARDED: Events related to API invoker offboarded from CAPIF.
+        - SERVICE_API_INVOCATION_SUCCESS: Events related to the successful invocation of service APIs.
+        - SERVICE_API_INVOCATION_FAILURE: Events related to the failed invocation of service APIs.
+        - ACCESS_CONTROL_POLICY_UPDATE: Events related to the update for the access control policy related to the service APIs.        - ACCESS_CONTROL_POLICY_UNAVAILABLE: Events related to the unavailability of the access control policy related to the service APIs.
+        - API_INVOKER_AUTHORIZATION_REVOKED: Events related to the revocation of the authorization of API invokers to access the service APIs.
