@@ -55,6 +55,11 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 ## Common Data Types
 * [Common Data](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
 
+
+# Northbound APIs (CAPIF)
+* [Discover Service](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Discover_Service_API.yaml)
+
+
 # Northbound APIs (T8)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
 * [Event Monitoring](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MonitoringEvent.yaml)
