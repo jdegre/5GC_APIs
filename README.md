@@ -58,7 +58,7 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 
 # Northbound APIs (CAPIF)
 * [Discover Service](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Discover_Service_API.yaml)
-
+* [Publish Service](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml)
 
 # Northbound APIs (T8)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
