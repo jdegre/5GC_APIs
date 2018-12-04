@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: 'NRF OAuth2'
+  description: 'NRF OAuth2 Authorization'
+paths:
+  /oauth2/token:
+    post:
+      summary: Access Token Request
+      operationId: AccessTokenRequest
+      tags:
+        - Access Token Request
+      security:
+        - basic: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccessTokenReq'
+        required: true
+      responses:
+        '200':
+          description: Successful Access Token Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenRsp'
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/cache-control'
+            Pragma:
+              $ref: '#/components/headers/pragma'
+        '400':
+          description: Error in the Access Token Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenErr'
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/cache-control'
+            Pragma:
+              $ref: '#/components/headers/pragma'
+components:
+  headers:
+    cache-control:
+      required: true
+      schema:
+        type: string
+        enum:
+          - no-store
+    pragma:
+      required: true
+      schema:
+        type: string
+        enum:
+          - no-cache
+  schemas:
+    AccessTokenReq:
+      type: object
+      required:
+        - grant_type
+        - nfInstanceId
+        - scope
+      properties:
+        grant_type:
+          type: string
+          enum:
+            - client_credentials
+        nfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        targetNfType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        scope:
+          type: string
+          pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+        targetNfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        requesterPlmn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        targetPlmn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+    AccessTokenRsp:
+      type: object
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: JWS Compact Serialized representation of JWS signed JSON object (AccessTokenClaims)
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        scope:
+          type: string
+          pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+    AccessTokenClaims:
+      type: object
+      required:
+        - issuer
+        - subject
+        - audience
+        - scope
+        - expiration
+      properties:
+        issuer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        subject:
+          type: string
+        audience:
+          anyOf:
+            - $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+            - type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+              minItems: 1
+        scope:
+          type: string
+          pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+        expiration:
+          type: integer
+    AccessTokenErr:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          enum:
+            - invalid_request
+            - invalid_client
+            - invalid_grant
+            - unauthorized_client
+            - unsupported_grant_type
+            - invalid_scope
+        error_description:
+          type: string
+        error_uri:
+          type: string
+externalDocs:
+  description: 3GPP TS 29.510 V15.2.0; 5G System; Network Function Repository Services; Stage 3
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
