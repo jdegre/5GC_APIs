@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: 'NRF NFManagement Service'
   description: 'NRF NFManagement Service'
 servers:
@@ -11,7 +11,8 @@ servers:
         description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
 security:
   - {}
-  - oAuth2ClientCredentials: []
+  - oAuth2ClientCredentials:
+      - nnrf-nfm
 paths:
   /nf-instances:
     get:
@@ -45,6 +46,7 @@ paths:
                     description: 'List of the URI of NF instances. It has two members whose names are item and self. The item one contains an array of URIs.'
                     additionalProperties:
                       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+                minProperties: 1
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -135,7 +137,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NFRegistrationData'
+                $ref: '#/components/schemas/NFProfile'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nnrf-nfm/v1/nf-instances/{nfInstanceId}'
+              required: true
+              schema:
+                type: string
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -175,6 +183,7 @@ paths:
               type: array
               items:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
         required: true
       responses:
         '200':
@@ -239,6 +248,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionData'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nnrf-nfm/v1/subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -293,6 +308,56 @@ paths:
                 default:
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
   /subscriptions/{subscriptionID}:
+    patch:
+      summary: Updates a subscription
+      operationId: UpdateSubscription
+      tags:
+        - Subscription ID (Document)
+      parameters:
+        - name: subscriptionID
+          in: path
+          required: true
+          description: Unique ID of the subscription to update
+          schema:
+            type: string
+            pattern: '^([0-9]{5,6}-)?[^-]+$'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionData'
+        '204':
+          description: No Content
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
     delete:
       summary: Deletes a subscription
       operationId: RemoveSubscription
@@ -336,7 +401,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '/oauth2/token'
-          scopes: {}
+          scopes:
+            nnrf-nfm: Access to the Nnrf_NFManagement API
   schemas:
     NFProfile:
       type: object
@@ -344,6 +410,10 @@ components:
         - nfInstanceId
         - nfType
         - nfStatus
+      anyOf:
+        - required: [ fqdn ]
+        - required: [ ipv4Addresses ]
+        - required: [ ipv6Addresses ]
       properties:
         nfInstanceId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
@@ -351,16 +421,23 @@ components:
           $ref: '#/components/schemas/NFType'
         nfStatus:
           $ref: '#/components/schemas/NFStatus'
-        plmn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        heartBeatTimer:
+          type: integer
+        plmnList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
         sNssais:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
         nsiList:
           type: array
           items:
             type: string
+          minItems: 1
         fqdn:
           $ref: '#/components/schemas/Fqdn'
         interPlmnFqdn:
@@ -369,10 +446,32 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+          minItems: 1
         ipv6Addresses:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
+        allowedPlmns:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
+        allowedNfTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFType'
+          minItems: 1
+        allowedNfDomains:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        allowedNssais:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
         priority:
           type: integer
           minimum: 0
@@ -403,14 +502,22 @@ components:
           $ref: '#/components/schemas/PcfInfo'
         bsfInfo:
           $ref: '#/components/schemas/BsfInfo'
+        chfInfo:
+          $ref: '#/components/schemas/ChfInfo'
+        nrfInfo:
+          $ref: '#/components/schemas/NrfInfo'
         customInfo:
           type: object
         recoveryTime:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        nfServicePersistence:
+          type: boolean
+          default: false
         nfServices:
           type: array
           items:
             $ref: '#/components/schemas/NFService'
+          minItems: 1
     NFService:
       type: object
       required:
@@ -428,6 +535,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NFServiceVersion'
+          minItems: 1
         scheme:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UriScheme'
         nfServiceStatus:
@@ -440,28 +548,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/IpEndPoint'
+          minItems: 1
         apiPrefix:
           type: string
         defaultNotificationSubscriptions:
           type: array
           items:
             $ref: '#/components/schemas/DefaultNotificationSubscription'
+          minItems: 1
         allowedPlmns:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
         allowedNfTypes:
           type: array
           items:
             $ref: '#/components/schemas/NFType'
+          minItems: 1
         allowedNfDomains:
           type: array
           items:
             type: string
+          minItems: 1
         allowedNssais:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
         priority:
           type: integer
           minimum: 0
@@ -476,6 +590,8 @@ components:
           maximum: 100
         recoveryTime:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        chfServiceInfo:
+          $ref: '#/components/schemas/ChfServiceInfo'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     NFType:
@@ -517,6 +633,8 @@ components:
           $ref: '#/components/schemas/TransportProtocol'
         port:
           type: integer  
+          minimum: 0
+          maximum: 65535
     SubscriptionData:
       type: object
       required:
@@ -525,6 +643,15 @@ components:
       properties:
         nfStatusNotificationUri:
           type: string
+        subscrCond:
+          oneOf:
+            - $ref: '#/components/schemas/NfInstanceIdCond'
+            - $ref: '#/components/schemas/NfTypeCond'
+            - $ref: '#/components/schemas/ServiceNameCond'
+            - $ref: '#/components/schemas/AmfCond'
+            - $ref: '#/components/schemas/GuamiListCond'
+            - $ref: '#/components/schemas/NetworkSliceCond'
+            - $ref: '#/components/schemas/NfGroupCond'
         subscriptionId:
           type: string
           pattern: '^([0-9]{5,6}-)?[^-]+$'
@@ -535,50 +662,131 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NotificationEventType'
+          minItems: 1
         plmnId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        notifCondition:
+           $ref: '#/components/schemas/NotifCondition'
+        reqNfType:
+          $ref: '#/components/schemas/NFType'
+        reqNfFqdn:
+          $ref: '#/components/schemas/Fqdn'
+    NfInstanceIdCond:
+      type: object
+      required:
+        - nfInstanceId
+      properties:
         nfInstanceId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+    NfTypeCond:
+      type: object
+      required:
+        - nfType
+      properties:
         nfType:
           $ref: '#/components/schemas/NFType'
+    ServiceNameCond:
+      type: object
+      required:
+        - serviceName
+      properties:
         serviceName:
           $ref: '#/components/schemas/ServiceName'
+    AmfCond:
+      type: object
+      anyOf:
+        - required: [ amfSetId ]
+        - required: [ amfRegionId ]
+      properties:
         amfSetId:
           type: string
         amfRegionId:
           type: string
+    GuamiListCond:
+      type: object
+      required:
+        - guamiList
+      properties:
         guamiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+    NetworkSliceCond:
+      type: object
+      required:
+        - snssaiList
+      properties:
+        snssaiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        nsiList:
+          type: array
+          items:
+            type: string
+    NfGroupCond:
+      type: object
+      required:
+        - nfType
+        - nfGroupId
+      properties:
+        nfType:
+          type: string
+          enum:
+            - UDM
+            - AUSF
+            - UDR
+        nfGroupId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+    NotifCondition:
+      type: object
+      not:
+        required: [ monitoredAttributes, unmonitoredAttributes ]
+      properties:
+        monitoredAttributes:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        unmonitoredAttributes:
+          type: array
+          items:
+            type: string
+          minItems: 1
     UdrInfo:
       type: object
       properties:
         groupId:
-          type: string
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         supiRanges:
           type: array
           items:
             $ref: '#/components/schemas/SupiRange'
+          minItems: 1
         gpsiRanges:
           type: array
           items:
             $ref: '#/components/schemas/IdentityRange'
-        externalGroupIdentityfiersRanges:
+          minItems: 1
+        externalGroupIdentifiersRanges:
           type: array
           items:
             $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
         supportedDataSets:
           type: array
           items:
             $ref: '#/components/schemas/DataSetId'
+          minItems: 1
     SupiRange:
       type: object
       properties:
         start:
           type: string
+          pattern: '^[0-9]+$'
         end:
           type: string
+          pattern: '^[0-9]+$'
         pattern:
           type: string
     IdentityRange:
@@ -586,8 +794,10 @@ components:
       properties:
         start:
           type: string
+          pattern: '^[0-9]+$'
         end:
           type: string
+          pattern: '^[0-9]+$'
         pattern:
           type: string
     DataSetId:
@@ -603,36 +813,44 @@ components:
       type: object
       properties:
         groupId:
-          type: string
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         supiRanges:
           type: array
           items:
             $ref: '#/components/schemas/SupiRange'
+          minItems: 1
         gpsiRanges:
           type: array
           items:
             $ref: '#/components/schemas/IdentityRange'
-        externalGroupIdentityfiersRanges:
+          minItems: 1
+        externalGroupIdentifiersRanges:
           type: array
           items:
             $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
         routingIndicators:
           type: array
           items:
             type: string
+            pattern: '^[0-9]{1,4}$'
+          minItems: 1
     AusfInfo:
       type: object
       properties:
         groupId:
-          type: string
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         supiRanges:
           type: array
           items:
             $ref: '#/components/schemas/SupiRange'
+          minItems: 1
         routingIndicators:
           type: array
           items:
             type: string
+            pattern: '^[0-9]{1,4}$'
+          minItems: 1
     AmfInfo:
       type: object
       required:
@@ -648,43 +866,76 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
         taiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
         taiRangeList:
           type: array
           items:
             $ref: '#/components/schemas/TaiRange'
+          minItems: 1
         backupInfoAmfFailure:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
         backupInfoAmfRemoval:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
         n2InterfaceAmfInfo:
           $ref: '#/components/schemas/N2InterfaceAmfInfo'
     SmfInfo:
       type: object
       required:
-        - dnnList
+        - sNssaiSmfInfoList
       properties:
-        dnnList:
+        sNssaiSmfInfoList:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+            $ref: '#/components/schemas/SnssaiSmfInfoItem'
+          minItems: 1
         taiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
         taiRangeList:
           type: array
           items:
             $ref: '#/components/schemas/TaiRange'
+          minItems: 1
         pgwFqdn:
           $ref: '#/components/schemas/Fqdn'
+        accessType:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
+    SnssaiSmfInfoItem:
+      type: object
+      required:
+        - sNssai
+        - dnnSmfInfoList
+      properties:
+        sNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnnSmfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnnSmfInfoItem'
+          minItems: 1
+    DnnSmfInfoItem:
+      type: object
+      required:
+        - dnn
+      properties:
+        dnn:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
     UpfInfo:
       type: object
       required:
@@ -699,10 +950,15 @@ components:
           type: array
           items:
             type: string
+          minItems: 1
         interfaceUpfInfoList:
           type: array
           items:
             $ref: '#/components/schemas/InterfaceUpfInfoItem'
+          minItems: 1
+        iwkEpsInd:
+          type: boolean
+          default: false
     SnssaiUpfInfoItem:
       type: object
       required:
@@ -723,6 +979,11 @@ components:
       properties:
         dnn:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+        dnaiList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
     InterfaceUpfInfoItem:
       type: object
       required:
@@ -730,14 +991,16 @@ components:
       properties:
         interfaceType:
           $ref: '#/components/schemas/UPInterfaceType'
-        ipv4EndpointAddress:
+        ipv4EndpointAddresses:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-        ipv6EndpointAddress:
+          minItems: 1
+        ipv6EndpointAddresses:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
         endpointFqdn:
             $ref: '#/components/schemas/Fqdn'
         networkInstance:
@@ -757,21 +1020,57 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
-        supiRangeList:
+          minItems: 1
+        supiRanges:
           type: array
           items:
             $ref: '#/components/schemas/SupiRange'
+          minItems: 1
+        rxDiamHost:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        rxDiamRealm:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
     BsfInfo:
       type: object
       properties:
+        dnnList:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1
+        ipDomainList:
+          type: array
+          items:
+            type: string
+          minItems: 1
         ipv4AddressRanges:
           type: array
           items: 
             $ref: '#/components/schemas/Ipv4AddressRange'
+          minItems: 1
         ipv6PrefixRanges:
           type: array
           items: 
             $ref: '#/components/schemas/Ipv6PrefixRange'
+          minItems: 1
+    ChfInfo:
+      type: object
+      properties:
+        supiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+          minItems: 1
+        gpsiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        plmnRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlmnRange'
+          minItems: 1
     Ipv4AddressRange:
       type: object
       properties:
@@ -829,13 +1128,56 @@ components:
       required:
         - event
         - nfInstanceUri
+      allOf:
+        - anyOf:
+          - not:
+              properties:
+                event:
+                  type: string
+                  enum:
+                    - NF_PROFILE_CHANGED 
+          - oneOf:
+              - required: [ nfProfile ]
+              - required: [ profileChanges ]
+        - anyOf:
+          - not:
+              properties:
+                event:
+                  type: string
+                  enum:
+                    - NF_REGISTERED 
+          - required: [ nfProfile ]
       properties:
         event:
           $ref: '#/components/schemas/NotificationEventType'
         nfInstanceUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
-        newProfile:
-          $ref: '#/components/schemas/NFProfile'
+        nfProfile:
+          allOf:
+            - $ref: '#/components/schemas/NFProfile'
+            - not:
+                required: [ interPlmnFqdn ] 
+            - properties:
+                nfServices:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/NFService'
+                      - not:
+                          required: [ interPlmnFqdn ]
+                      - not:
+                          required: [ allowedPlmns ]
+                      - not:
+                          required: [ allowedNfTypes ]
+                      - not:
+                          required: [ allowedNfDomains ]
+                      - not:
+                          required: [ allowedNssais ]
+        profileChanges:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ChangeItem'
+          minItems: 1
     NFStatus:
       anyOf:
         - type: string
@@ -843,16 +1185,6 @@ components:
             - REGISTERED
             - SUSPENDED
         - type: string
-    NFRegistrationData:
-      type: object
-      required:
-        - heartBeatTimer
-        - nfProfile
-      properties:
-        heartBeatTimer:
-          type: integer
-        nfProfile:
-          $ref: '#/components/schemas/NFProfile'
     NFServiceVersion:
       type: object
       required:
@@ -879,7 +1211,7 @@ components:
             - namf-comm
             - namf-evts
             - namf-mt
-            - namf-location
+            - namf-loc
             - nsmf-pdusession
             - nsmf-event-exposure
             - nausf-auth
@@ -889,6 +1221,8 @@ components:
             - npcf-smpolicycontrol
             - npcf-policyauthorization
             - npcf-bdtpolicycontrol
+            - npcf-eventexposure
+            - npcf-ue-policy-control
             - nsmsf-sms
             - nnssf-nsselection
             - nnssf-nssaiavailability
@@ -897,7 +1231,8 @@ components:
             - n5g-eir-eic
             - nbsf-management
             - nchf-spendinglimitcontrol
-            - nnwdaf-eventsubscription
+            - nchf-convergedcharging
+            - nnwdaf-eventssubscription
             - nnwdaf-analyticsinfo
         - type: string
     N2InterfaceAmfInfo:
@@ -907,10 +1242,12 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+          minItems: 1
         ipv6EndpointAddress:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
         amfName:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmfName'
     NFServiceStatus:
@@ -924,13 +1261,15 @@ components:
       type: object
       required:
         - plmnId
+        - tacRangeList
       properties:
         plmnId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
         tacRangeList:
           type: array
           items:
-            $ref: '#/components/schemas/TacRange'    
+            $ref: '#/components/schemas/TacRange'
+          minItems: 1
     TacRange:
       type: object
       properties:
@@ -942,6 +1281,74 @@ components:
           pattern: '^([A-Fa-f0-9]{4}|[A-Fa-f0-9]{6})$'
         pattern:
           type: string
+    ChfServiceInfo:
+      type: object
+      not:
+        required: [ primaryChfServiceInstance, secondaryChfServiceInstance ]
+      properties:
+        primaryChfServiceInstance:
+          type: string
+        secondaryChfServiceInstance:
+          type: string
+    PlmnRange:
+      type: object
+      properties:
+        start:
+          type: string
+          pattern: '^[0-9]{3}[0-9]{2,3}$'
+        end:
+          type: string
+          pattern: '^[0-9]{3}[0-9]{2,3}$'
+        pattern:
+          type: string
+    NrfInfo:
+      type: object
+      properties:
+        servedUdrInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UdrInfo'
+          minProperties: 1
+        servedUdmInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UdmInfo'
+          minProperties: 1
+        servedAusfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AusfInfo'
+          minProperties: 1
+        servedAmfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AmfInfo'
+          minProperties: 1
+        servedSmfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SmfInfo'
+          minProperties: 1
+        servedUpfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UpfInfo'
+          minProperties: 1
+        servedPcfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PcfInfo'
+          minProperties: 1
+        servedBsfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BsfInfo'
+          minProperties: 1
+        servedChfInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ChfInfo'
+          minProperties: 1
 externalDocs:
-  description: Documentation
+  description: 3GPP TS 29.510 V15.2.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
