@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: 'LMF Location'
   description: 'LMF Location Service'
 servers:
@@ -11,7 +11,8 @@ servers:
         description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
 security:
   - {}
-  - oAuth2ClientCredentials: []
+  - oAuth2ClientCredentials:
+      - nlmf-loc
 paths:
   /determine-location:
     post:
@@ -59,24 +60,30 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            nlmf-loc: Access to the Nlmf_Location API
   schemas:
 #
 # COMPLEX TYPES
 #
     InputData:
       type: object
+      not:
+        required: [ ecgi, ncgi ]
       properties:
         externalClientType:
           $ref: '#/components/schemas/ExternalClientType'
         correlationID:
           $ref: '#/components/schemas/CorrelationID'        
+        amfId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         locationQoS:
           $ref: '#/components/schemas/LocationQoS'
         supportedGADShapes:
           type: array
           items:
             $ref: '#/components/schemas/SupportedGADShapes'
+          minItems: 1
         supi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
         pei:
@@ -110,16 +117,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PositioningMethodAndUsage'
+          minItems: 1
         gnssPositioningDataList:
           type: array
           items:
             $ref: '#/components/schemas/GnssPositioningMethodAndUsage'
+          minItems: 1
         ecgi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ecgi'
         ncgi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ncgi'
         altitude:
           $ref: '#/components/schemas/Altitude'
+        barometricPressure:
+          $ref: '#/components/schemas/BarometricPressure'
     GeographicArea:
       oneOf:
         - $ref: '#/components/schemas/Point'
@@ -505,6 +516,10 @@ components:
       format: float
       minimum: 0
       maximum: 255
+    BarometricPressure:
+      type: integer
+      minimum: 30000
+      maximum: 115000
 #
 # ENUMS
 #
