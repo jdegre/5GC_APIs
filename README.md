@@ -1,15 +1,15 @@
 # 5G Core Network APIs (OpenAPI 3)
 
-API version 1.PreR15.1.0 (Sept. 2018)
+API version 1.0.0 (Dec. 2018)  --- NOTE: Work in progress
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API:
 
 ## NRF (NF Repository Function)
-* [NF Management](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml)
-* [NF Discovery](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFDiscovery.yaml)
-* [Access Token (OAuth2)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_AccessToken.yaml)
+* [NF Management - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml)
+* [NF Discovery - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFDiscovery.yaml)
+* [Access Token (OAuth2) - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_AccessToken.yaml)
 ## LMF (Location Management Function)
-* [Location](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml)
+* [Location - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml)
 ## AMF (Access and Mobility Management Function)
 * [Communication](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_Communication.yaml)
 * [Event Exposure](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29518_Namf_EventExposure.yaml)
