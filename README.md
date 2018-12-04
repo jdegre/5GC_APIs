@@ -35,7 +35,7 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 ## SMSF (SMS Function)
 * [SM Service](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml)
 ## 5G-EIR (5G Equipment Identity Register)
-* [Equipment Identity Check](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
+* [Equipment Identity Check - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
 ## NEF (Network Exposure Function)
 * [Packet Flow Description (PFD) Management](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29551_Nnef_PFDmanagement.yaml)
 ## PCF (Policy Control Function)
