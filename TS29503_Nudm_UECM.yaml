@@ -1,9 +1,13 @@
 openapi: 3.0.0
 
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: 'Nudm_UECM'
   description: 'Nudm Context Management Service'
+
+externalDocs:
+  description: 3GPP TS 29.503 Unified Data Management Services, version 15.2.0
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
   - url: '{apiRoot}/nudm-uecm/v1'
@@ -13,7 +17,8 @@ servers:
         description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
 
 security:
-  - oAuth2ClientCredentials: []
+  - oAuth2ClientCredentials:
+    - nudm-uecm
   - {}
 
 paths:
@@ -37,8 +42,26 @@ paths:
               $ref: '#/components/schemas/Amf3GppAccessRegistration'
         required: true
       responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Amf3GppAccessRegistration'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-uecm/v1/{ueId}/registrations/amf-3gpp-access'
+              required: true
+              schema:
+                type: string
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Amf3GppAccessRegistration'
         '204':
-          description: Expected response to a valid request
+          description: No content
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -192,8 +215,26 @@ paths:
               $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
         required: true
       responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-uecm/v1/{ueId}/registrations/amf-non-3gpp-access'
+              required: true
+              schema:
+                type: string
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
         '204':
-          description: Expected response to a valid request
+          description: No Content
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -350,12 +391,26 @@ paths:
               $ref: '#/components/schemas/SmfRegistration'
         required: true
       responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfRegistration'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-uecm/v1/{ueId}/registrations/smf-registrations/{pduSessionId}'
+              required: true
+              schema:
+                type: string
         '200':
           description: Expected response to a valid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SmfRegistration'   
+                $ref: '#/components/schemas/SmfRegistration'
+        '204':
+          description: No content
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -449,8 +504,26 @@ paths:
               $ref: '#/components/schemas/SmsfRegistration'
         required: true
       responses:
-        '204':
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-uecm/v1/{ueId}/registrations/smsf-3gpp-access'
+              required: true
+              schema:
+                type: string
+        '200':
           description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+        '204':
+          description: No content
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -550,8 +623,26 @@ paths:
               $ref: '#/components/schemas/SmsfRegistration'
         required: true
       responses:
-        '204':
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-uecm/v1/{ueId}/registrations/smsf-non-3gpp-access'
+              required: true
+              schema:
+                type: string
+        '200':
           description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
+        '204':
+          description: No content
         '400':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -638,7 +729,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            nudm-uecm: Access to the nudm-uecm API
 
   schemas:
 
@@ -649,7 +741,8 @@ components:
       required:
         - amfInstanceId
         - deregCallbackUri
-        - plmnId
+        - guami
+        - ratType
       properties:
         amfInstanceId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
@@ -659,30 +752,44 @@ components:
           $ref: '#/components/schemas/PurgeFlag'
         pei:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
-        imsVoPS:
-          $ref: '#/components/schemas/ImsVoPS'
+        imsVoPs:
+          $ref: '#/components/schemas/ImsVoPs'
         deregCallbackUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        amfServiceNameDereg:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
         pcscfRestorationCallbackUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        amfServiceNamePcscfRest:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
+        initialRegistrationInd:
+          type: boolean
         guami:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
-        plmnId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
         backupAmfInfo:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+          minItems: 1
+        drFlag:
+          $ref: '#/components/schemas/DualRegistrationFlag'
+        ratType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+
 
     Amf3GppAccessRegistrationModification:
       type: object
+      required:
+        - guami
       properties:
+        guami:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
         purgeFlag:
           $ref: '#/components/schemas/PurgeFlag'
         pei:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
-        imsVoPS:
-          $ref: '#/components/schemas/ImsVoPS'
+        imsVoPs:
+          $ref: '#/components/schemas/ImsVoPs'
         backupAmfInfo:
           type: array
           items:
@@ -692,8 +799,10 @@ components:
       type: object
       required:
         - amfInstanceId
+        - imsVoPs
         - deregCallbackUri
-        - plmnId
+        - guami
+        - ratType
       properties:
         amfInstanceId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
@@ -703,26 +812,40 @@ components:
           $ref: '#/components/schemas/PurgeFlag'
         pei:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        imsVoPs:
+          $ref: '#/components/schemas/ImsVoPs'
         deregCallbackUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        amfServiceNameDereg:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
         pcscfRestorationCallbackUri:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        amfServiceNamePcscfRest:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
         guami:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
-        plmnId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
         backupAmfInfo:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+          minItems: 1
+        ratType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+
 
     AmfNon3GppAccessRegistrationModification:
       type: object
+      required:
+        - guami
       properties:
+        guami:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
         purgeFlag:
           $ref: '#/components/schemas/PurgeFlag'
         pei:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+        imsVoPs:
+          $ref: '#/components/schemas/ImsVoPs'
         backupAmfInfo:
           type: array
           items:
@@ -733,6 +856,7 @@ components:
       required:
         - smfInstanceId
         - pduSessionId
+        - singleNssai
         - dnn
         - plmnId
       properties:
@@ -742,6 +866,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         pduSessionId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        singleNssai:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
         dnn:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
         pcscfRestorationCallbackUri:
@@ -807,9 +933,12 @@ components:
       type: string
       pattern: '^[0-9]{1,15}$'
 
+    DualRegistrationFlag:
+      type: boolean
+
 # ENUMS:
 
-    ImsVoPS:
+    ImsVoPs:
       anyOf:
         - type: string
           enum:
@@ -826,5 +955,6 @@ components:
           - UE_REGISTRATION_AREA_CHANGE
           - SUBSCRIPTION_WITHDRAWN
           - 5GS_TO_EPS_MOBILITY
+          - 5GS_TO_EPS_MOBILITY_UE_INITIAL_REGISTRATION
+          - REREGISTRATION_REQUIRED
         - type: string  
-

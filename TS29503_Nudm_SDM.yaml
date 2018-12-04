@@ -1,9 +1,13 @@
 openapi: 3.0.0
 
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: 'Nudm_SDM'
   description: 'Nudm Subscriber Data Management Service'
+
+externalDocs:
+  description: 3GPP TS 29.503 Unified Data Management Services, version 15.2.0
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
   - url: '{apiRoot}/nudm-sdm/v1'
@@ -13,7 +17,8 @@ servers:
         description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
 
 security:
-  - oAuth2ClientCredentials: []
+  - oAuth2ClientCredentials:
+    - nudm-sdm
   - {}
 
 paths:
@@ -50,6 +55,16 @@ paths:
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -57,14 +72,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionDataSets'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/nssai:
     get:
       summary: retrieve a UE's subscribed NSSAI
@@ -90,6 +120,16 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -97,14 +137,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Nssai'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2 
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/am-data:
     get:
       summary: retrieve a UE's Access and Mobility Subscription Data
@@ -130,6 +185,16 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -137,14 +202,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/smf-select-data:
     get:
       summary: retrieve a UE's SMF Selection Subscription Data
@@ -170,6 +250,16 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -177,14 +267,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/ue-context-in-smf-data:
     get:
       summary: retrieve a UE's UE Context In SMF Data
@@ -210,14 +315,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeContextInSmfData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
+  /{supi}/ue-context-in-smsf-data:
+    get:
+      summary: retrieve a UE's UE Context In SMSF Data
+      operationId: Get
+      tags:
+        - UE Context In SMSF Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
           content:
-            application/problem+json:
+            application/json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: '#/components/schemas/UeContextInSmsfData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
   /{supi}/trace-data:
     get:
       summary: retrieve a UE's Trace Configuration Data
@@ -243,6 +385,16 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -250,10 +402,29 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+          description: Unexpected error
   /{supi}/sm-data:
     get:
       summary: retrieve a UE's Session Management Subscription Data
@@ -288,6 +459,16 @@ paths:
             application/json:
               schema:
                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -298,14 +479,29 @@ paths:
                 items:
                   $ref: '#/components/schemas/SessionManagementSubscriptionData'
                 minItems: 1
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/sms-data:
     get:
       summary: retrieve a UE's SMS Subscription Data
@@ -330,6 +526,16 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -337,14 +543,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmsSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/sms-mng-data:
     get:
       summary: retrieve a UE's SMS Management Subscription Data
@@ -369,6 +590,16 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -376,14 +607,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmsManagementSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/sdm-subscriptions:
     post:
       summary: subscribe to notifications
@@ -410,14 +656,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SdmSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/v1/{supi}/sdm-subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (SUPI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
       callbacks:
         datachangeNotification:
           '{request.body#/callbackReference}':
@@ -443,7 +699,16 @@ paths:
                     application/problem+json:
                       schema:
                         $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
   /{supi}/sdm-subscriptions/{subscriptionId}:
     delete:
       summary: unsubscribe from notifications
@@ -466,6 +731,14 @@ paths:
       responses:
         '204':
           description: Successful response
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
   /{gpsi}/id-translation-result:
     get:
       summary: retrieve a UE's SUPI
@@ -484,6 +757,16 @@ paths:
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -491,14 +774,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IdTranslationResult'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: User (GPSI) does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /{supi}/am-data/sor-ack:
     put:
       summary: Nudm_Sdm Info service operation
@@ -520,6 +818,14 @@ paths:
       responses:
         '204':
           description: Successful acknowledgement
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
   /shared-data:
     get:
       summary: retrieve shared data
@@ -540,6 +846,16 @@ paths:
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -550,14 +866,29 @@ paths:
                 items:
                   $ref: '#/components/schemas/SharedData'
                 minItems: 1
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: Shared Data Id does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /shared-data-subscriptions:
     post:
       summary: subscribe to notifications for shared data
@@ -577,14 +908,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SdmSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/v1/shared-data-subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
         '404':
-          description: Shared Data does not exist
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
       callbacks:
         datachangeNotification:
           '{request.body#/callbackReference}':
@@ -598,6 +933,16 @@ paths:
               responses:
                 '204':
                   description: Successful Notification response
+                '400':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
   /shared-data-subscriptions/{subscriptionId}:
     delete:
       summary: unsubscribe from notifications for shared data
@@ -614,6 +959,14 @@ paths:
       responses:
         '204':
           description: Successful response
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
 
 components:
   securitySchemes:
@@ -622,7 +975,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            nudm-sdm: Access to the nudm-sdm API
 
   schemas:
 
@@ -652,6 +1006,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SessionManagementSubscriptionData'
+          minItems: 1
         traceData:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
         smsMngData:
@@ -688,9 +1043,10 @@ components:
         internalGroupIds:
           type: array
           items:
-            $ref: '#/components/schemas/InternalGroupId'
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/GroupId'
+          minItems: 1
         subscribedUeAmbr:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AmbrRm'
         nssai:
           $ref: '#/components/schemas/Nssai'
         ratRestrictions:
@@ -708,23 +1064,31 @@ components:
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/CoreNetworkType'
         rfspIndex:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RfspIndex'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RfspIndexRm'
         subsRegTimer:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
         ueUsageType:
           $ref: '#/components/schemas/UeUsageType'
         mpsPriority:
           $ref: '#/components/schemas/MpsPriorityIndicator'
+        mcsPriority:
+          $ref: '#/components/schemas/McsPriorityIndicator'
         activeTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
         dlPacketCount:
           $ref: '#/components/schemas/DlPacketCount'
         sorInfo:
           $ref: '#/components/schemas/SorInfo'
         micoAllowed:
           $ref: '#/components/schemas/MicoAllowed'
-        sharedDataIds:
-          $ref: '#/components/schemas/SharedDataIds'
+        sharedAmDataIds: 
+          type: array
+          items:
+            $ref: '#/components/schemas/SharedDataId'
+          minItems: 1
+        odbPacketServices:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/OdbPacketServices'
+
 
     SmfSelectionSubscriptionData:
       type: object
@@ -732,18 +1096,17 @@ components:
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         subscribedSnssaiInfos:
-          type: array
-          items:
+          type: object
+          additionalProperties:
             $ref: '#/components/schemas/SnssaiInfo'
+        sharedSnssaiInfosId:
+          $ref: '#/components/schemas/SharedDataId'
 
     SnssaiInfo:
       type: object
       required:
-        - singleNssai
         - dnnInfos
       properties:
-        singleNssai:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
         dnnInfos:
           type: array
           items:
@@ -768,6 +1131,8 @@ components:
 
     Nssai:
       type: object
+      required:
+       - defaultSingleNssais
       properties:
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
@@ -775,16 +1140,19 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
-          maxItems: 8
+          minItems: 1
         singleNssais:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+      nullable: true
 
     UeContextInSmfData:
       type: object
       properties:
         pduSessions:
+          description: A map (list of key-value pairs where PduSessionId serves as key) of PduSessions
           type: object
           additionalProperties:
             $ref: '#/components/schemas/PduSession'
@@ -792,17 +1160,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PgwInfo'
-        
+          minItems: 1
+
     PduSession:
       type: object
       required:
-        - pduSessionId
         - dnn
         - smfInstanceId
         - plmnId
       properties:
-        pduSessionId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         dnn:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
         smfInstanceId:
@@ -830,20 +1196,25 @@ components:
       properties:
         singleNssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
-        dnnConfiguration:
+        dnnConfigurations:
+          description: A map (list of key-value pairs where Dnn serves as key) of DnnConfigurations
           type: object
           additionalProperties:
             $ref: '#/components/schemas/DnnConfiguration'
+        internalGroupIds:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/GroupId'
+          minItems: 1
+        sharedDnnConfigurationsIds:
+          $ref: '#/components/schemas/SharedDataId'
 
     DnnConfiguration:
       type: object
       required:
-        - dnn
         - pduSessionTypes
         - sscModes
       properties:
-        dnn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
         pduSessionTypes:
           $ref: '#/components/schemas/PduSessionTypes'
         sscModes:
@@ -853,18 +1224,29 @@ components:
         ladnIndicator:
           $ref: '#/components/schemas/LadnIndicator'
         5gQosProfile:
-          $ref: '#/components/schemas/5GQosProfile'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SubscribedDefaultQos'
         sessionAmbr:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
         3gppChargingCharacteristics:
           $ref: '#/components/schemas/3GppChargingCharacteristics'
         staticIpAddress:
-          $ref: '#/components/schemas/IpAddress'
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+          minItems: 1
+          maxItems: 2
         upSecurity:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UpSecurity'
 
     IpAddress:
       type: object
+      oneOf:
+        - required:
+          - ipv4Address
+        - required:
+          - ipv6Address
+        - required:
+          - ipv6Prefix
       properties:
         ipv4Addr:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
@@ -884,6 +1266,7 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+          minItems: 1
 
     SscModes:
       type: object
@@ -896,38 +1279,19 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SscMode'
-          minItems: 0
+          minItems: 1
           maxItems: 2
-
-    5GQosProfile:
-      type: object
-      required:
-        - 5qi
-      properties:
-        5qi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5Qi'
-        nonDynamic5Qi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NonDynamic5Qi'
-        dynamic5Qi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dynamic5Qi'
-        arp:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
 
     SmsSubscriptionData:
       type: object
-      required:
-        - smsSubscribed
       properties:
         smsSubscribed:
           $ref: '#/components/schemas/SmsSubscribed'
-        sharedDataIds:
+        sharedSmsSubsDataId:
           $ref: '#/components/schemas/SharedDataIds'
 
     SmsManagementSubscriptionData:
       type: object
-      required:
-        - mtSmsSubscribed
-        - moSmsSubscribed
       properties:
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
@@ -943,8 +1307,11 @@ components:
           type: boolean
         moSmsBarringRoaming:
           type: boolean
-        sharedDataIds:
-          $ref: '#/components/schemas/SharedDataIds'
+        sharedSmsMngDataIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/SharedDataId'
+          minItems: 1
 
     SdmSubscription:
       type: object
@@ -961,6 +1328,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
         callbackReference:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        amfServiceName:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
         monitoredResourceUris:
           type: array
           items: 
@@ -1000,14 +1369,14 @@ components:
       properties:
         sorMacIue:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
+        securedPacket:
+          $ref: '#/components/schemas/SecuredPacket'
 
     SorInfo:
       type: object
       properties:
-        steeringInfoList:
-          type: array
-          items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/SteeringInfo'
+        steeringContainer:
+          $ref: '/components/schemas/SteeringContainer'
         ackInd:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/AckInd'
         sorMacIausf:
@@ -1015,7 +1384,6 @@ components:
         countersor:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/CounterSor'
       required:
-        - steeringInfoList
         - ackInd
         - sorMacIausf
         - countersor
@@ -1038,6 +1406,34 @@ components:
           $ref: '#/components/schemas/SmsSubscriptionData'
         sharedSmsMngSubsData:
           $ref: '#/components/schemas/SmsManagementSubscriptionData'
+        sharedDnnConfigurations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DnnConfiguration'
+        sharedTraceData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+        sharedSnssaiInfos:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SnssaiInfo'
+        sharedAuthenticationSubscription:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29505_Nudr_DataRepository.yaml#/components/schemas/SharedAuthenticationSubscription'
+
+    TraceDataResponse:
+      type: object
+      properties:
+        traceData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+        sharedTraceDataId:
+          $ref: '#/components/schemas/SharedDataId'
+
+    SteeringContainer:
+      oneOf:
+        - type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml#/components/schemas/SteeringInfo'
+          minItems: 1
+        - $ref: '#/components/schemas/SecuredPacket'
 
 
 # SIMPLE TYPES:
@@ -1046,6 +1442,9 @@ components:
       type: integer
 
     MpsPriorityIndicator:
+      type: boolean
+
+    McsPriorityIndicator:
       type: boolean
 
     DnnIndicator:
@@ -1067,9 +1466,6 @@ components:
       type: integer
       minimum: -1
 
-    InternalGroupId:
-      type: string
-
     MicoAllowed:
       type: boolean
 
@@ -1079,6 +1475,10 @@ components:
 
     IwkEpsInd:
       type: boolean
+
+    SecuredPacket:
+      type: string
+      format: base64
 
 
 # ENUMS:
