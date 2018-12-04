@@ -1,8 +1,18 @@
 openapi: 3.0.0
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: '5G-EIR Equipment Identity Check'
   description: '5G-EIR Equipment Identity Check Service'
+servers:
+  - url: '{apiRoot}/n5g-eir-eic/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
+security:
+  - {}
+  - oAuth2ClientCredentials:
+      - n5g-eir-eic
 paths:
   /equipment-status:
     get:
@@ -30,12 +40,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EirResponseData'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
         '404':
           description: PEI Not Found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '414':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
           content:
@@ -43,6 +65,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            n5g-eir-eic: Access to the N5g-eir_EquipmentIdentityCheck API
   schemas:
     EirResponseData:
       type: object
@@ -80,5 +110,6 @@ components:
         instance:
           type: string
 externalDocs:
-  description: Documentation
+  description: 3GPP TS 29.511 V15.2.0; 5G System; Equipment Identity Register Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.511/'
+ 
