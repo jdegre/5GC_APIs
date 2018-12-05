@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.1.0
+  version: 1.0.0
   title: AUSF API
   description: OpenAPI specification for AUSF
 servers:
@@ -8,12 +8,12 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501, excluding the https:// part.
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
 
 security:
-  - oAuth2ClientCredentials: []
+  - oAuth2ClientCredentials:
+      - nausf-auth
   - {}
-
 paths:
   /ue-authentications:
     post:
@@ -30,6 +30,13 @@ paths:
             application/3gppHal+json:
               schema:
                 $ref: '#/components/schemas/UEAuthenticationCtx'
+          headers:
+            Location:
+              description: FFS
+              required: true
+              schema:
+                type: string
+
         '400':
           description: Bad Request from the AMF
           content:
@@ -114,6 +121,7 @@ paths:
                     description: 'URI : /{eapSessionUri}'
                     additionalProperties:
                       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+                    minProperties: 1
                 required:
                   - eapPayload
                   - _links
@@ -136,7 +144,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            nausf-auth: Access to the Nausf_Authentication API
   schemas:
     AuthenticationInfo:
       type: object
@@ -147,14 +156,11 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ServingNetworkName'
         resynchronizationInfo:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/ResynchronizationInfo'
-        amfInstanceId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         traceData:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
       required:
         - supiOrSuci
         - servingNetworkName
-        - amfInstanceId
     UEAuthenticationCtx:
       type: object
       properties:
@@ -181,7 +187,6 @@ components:
         - rand
         - hxresStar
         - autn
-        - kSeaf
       properties:
         rand:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/Rand'
@@ -189,8 +194,6 @@ components:
           $ref: '#/components/schemas/HxresStar'
         autn:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/Autn'
-        kSeaf:
-          $ref: '#/components/schemas/Kseaf'
     ConfirmationData:
       type: object
       required:
@@ -198,8 +201,6 @@ components:
       properties:
         resStar:
           $ref: '#/components/schemas/ResStar'
-        supiOrSuci:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_UEAU.yaml#/components/schemas/SupiOrSuci'
     ConfirmationDataResponse:
       type: object
       properties:
@@ -207,6 +208,9 @@ components:
           $ref: '#/components/schemas/AuthResult'
         supi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+        kseaf:
+          $ref: '#/components/schemas/Kseaf'
+
       required:
         - authResult
     EapSession:
@@ -220,6 +224,10 @@ components:
           type: object
           additionalProperties:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+        authResult:
+          $ref: '#/components/schemas/AuthResult'
+        supi:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
       required:
         - eapPayload
 
@@ -251,5 +259,6 @@ components:
             - EAP-TLS
         - type: string
 externalDocs:
-  description: Documentation
+  description: 3GPP TS 29.509 V15.2.0; 5G System; 3GPP TS Authentication Server services.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.509
+
