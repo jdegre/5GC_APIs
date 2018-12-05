@@ -1,9 +1,13 @@
 openapi: 3.0.0
 
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: 'Nsmf_PDUSession'
   description: 'SMF PDU Session Service'
+
+externalDocs:
+  description: 3GPP TS 29.502 V15.2.0; 5G System; Session Management Services; Stage 3
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
   - url: '{apiRoot}/nsmf-pdusession/v1'
@@ -14,7 +18,8 @@ servers:
 
 security:
   - {}
-  - oAuth2Clientcredentials: []
+  - oAuth2Clientcredentials:
+    - nsmf-pdusession
 
 paths:
   /sm-contexts:
@@ -62,6 +67,8 @@ paths:
                   description: temporary redirect
                 '400': 
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '403': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
                 '404': 
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
                 '411': 
@@ -70,10 +77,10 @@ paths:
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
                 '415': 
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '429': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
                 '500': 
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
-                '501': 
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
                 '503': 
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
 
@@ -102,6 +109,13 @@ paths:
                     Content-Id:
                       schema:
                         type: string  
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/v1/sm-contexts/{smContextRef}'
+              required: true
+              schema:
+                type: string
+
         '307':
           description: temporary redirect
         '308':
@@ -184,6 +198,8 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415': 
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429': 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
 
         '500':
           description: unsuccessful creation of an SM context - internal server error
@@ -209,8 +225,6 @@ paths:
                     Content-Id:
                       schema:
                         type: string 
-        '501': 
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'            
         '503':
           description: unsuccessful creation of an SM context - service unavailable
           content:
@@ -303,10 +317,10 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415': 
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429': 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
-        '501': 
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
         '503':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -500,6 +514,8 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415': 
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429': 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           description: unsuccessful update of an SM context - Internal server error
           content:
@@ -533,8 +549,6 @@ paths:
                     Content-Id:
                       schema:
                         type: string      
-        '501': 
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'  
         '503':
           description: unsuccessful update of an SM context - Service Unavailable
           content:
@@ -588,9 +602,28 @@ paths:
         description: representation of the data to be sent to the SMF when releasing the SM context
         required: false
         content:
-          application/json:
+          application/json: # message without binary body part
             schema:
               $ref: '#/components/schemas/SmContextReleaseData'
+          multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/SmContextReleaseData'
+                  binaryDataN2SmInformation:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN2SmInformation:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string      
+
       responses:      
         '204':
           description: successful release of an SM context without content in the response
@@ -606,10 +639,10 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415': 
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429': 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
-        '501': 
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
         '503':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -676,6 +709,8 @@ paths:
                   description: successful notificationof the status change
                 '400':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                '403': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
                 '404':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
                 '411':
@@ -684,10 +719,10 @@ paths:
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
                 '415':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
                 '500':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
-                '501':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
                 '503':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
                 default:
@@ -774,10 +809,10 @@ paths:
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
                 '415': 
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '429': 
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
                 '500':
                   $ref: '#/components/responses/VsmfUpdateError'
-                '501': 
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
                 '503':
                   $ref: '#/components/responses/VsmfUpdateError'
                 '504':
@@ -810,6 +845,12 @@ paths:
                     Content-Id:
                       schema:
                         type: string  
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/v1/pdu-sessions/{pduSessionRef}'
+              required: true
+              schema:
+                type: string
         '307':
           description: temporary redirect
         '308':
@@ -826,10 +867,10 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415': 
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429': 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: '#/components/responses/PduSessionCreateError'
-        '501': 
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
         '503':
           $ref: '#/components/responses/PduSessionCreateError'
         default:
@@ -921,10 +962,10 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415': 
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429': 
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: '#/components/responses/HsmfUpdateError'
-        '501': 
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
         '503':
           $ref: '#/components/responses/HsmfUpdateError'
         default:
@@ -965,10 +1006,10 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
-        '501':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/501'
         '503':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -981,7 +1022,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            nsmf-pdusession: Access to the nsmf-pdusession API
 
   schemas:
 #
@@ -1012,7 +1054,7 @@ components:
         guami:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
         serviceName:
-          type: string
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
         servingNetwork:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PlmnId'
         requestType:
@@ -1039,13 +1081,14 @@ components:
           type: array
           items: 
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
         oldPduSessionId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         pduSessionsActivateList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
-          minItems: 0
+          minItems: 1
         ueEpsPdnConnection:
           $ref: '#/components/schemas/EpsPdnCnxContainer'
         hoState:
@@ -1062,10 +1105,17 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+          minItems: 1
         traceData:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+        udmGroupId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        routingIndicator:
+          type: string
         epsInterworkingInd:
           $ref: '#/components/schemas/EpsInterworkingIndication'
+        indirectForwardingFlag:
+          type: boolean
       required:
         - servingNfId
         - servingNetwork
@@ -1091,9 +1141,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EbiArpMapping'
-          minItems: 0
+          minItems: 1
         hoState:
           $ref: '#/components/schemas/HoState'
+        smfServiceInstanceId:
+          type: string
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'        
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
@@ -1114,6 +1168,8 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+          minItems: 1
+          nullable: true
         anType:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
         ratType:
@@ -1157,7 +1213,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         release:
           type: boolean
           default: false
@@ -1165,7 +1221,7 @@ components:
           $ref: '#/components/schemas/Cause'
         ngApCause:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
-        5GMmCauseValue:
+        5gMmCauseValue:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5GMmCause'
         sNssai:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
@@ -1173,6 +1229,9 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
         epsInterworkingInd:
           $ref: '#/components/schemas/EpsInterworkingIndication'
+        anTypeCanBeChanged:
+          type: boolean
+          default: false
 
     SmContextUpdatedData:
       type: object
@@ -1185,17 +1244,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         allocatedEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EbiArpMapping'
-          minItems: 0
+          minItems: 1
         modifiedEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EbiArpMapping'
-          minItems: 0
+          minItems: 1
         n1SmMsg:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         n2SmInfo:
@@ -1206,7 +1265,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerContainer'
-          minItems: 0
+          minItems: 1
         dataForwarding:
           type: boolean
 
@@ -1217,7 +1276,7 @@ components:
           $ref: '#/components/schemas/Cause'
         ngApCause:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
-        5GMmCauseValue:
+        5gMmCauseValue:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5GMmCause'
         ueLocation:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
@@ -1263,7 +1322,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         pgwS8cFteid:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
         vsmfPduSessionUri:
@@ -1294,10 +1353,25 @@ components:
           type: boolean
         selMode:
           $ref: '#/components/schemas/DnnSelectionMode'
+        alwaysOnRequested:
+          type: boolean
+          default: false
+        udmGroupId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        routingIndicator:
+          type: string
         epsInterworkingInd:
           $ref: '#/components/schemas/EpsInterworkingIndication'
         vSmfServiceInstanceId:
           type: string
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        roamingChargingProfile:
+          $ref: 'TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/RoamingChargingProfile'
+        chargingId:
+          type: string
+        oldPduSessionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
       required:
         - dnn
         - vsmfId
@@ -1313,6 +1387,7 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionType'
         sscMode:
           type: string
+          pattern: '^[0-7]$'
         hcnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         sessionAmbr:
@@ -1322,6 +1397,8 @@ components:
           items:
             $ref: '#/components/schemas/QosFlowSetupItem'
           minItems: 1
+        hSmfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         pduSessionId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         sNssai:
@@ -1344,14 +1421,26 @@ components:
           minItems: 1
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        maxIntegrityProtectedDataRate:
+          $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
+        alwaysOnGranted:
+          type: boolean
+          default: false
         upSecurity:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UpSecurity'
+        roamingChargingProfile:
+          $ref: 'TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/RoamingChargingProfile'
+        hSmfServiceInstanceId:
+          type: string
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - pduSessionType
         - sscMode
         - hcnTunnelInfo
         - sessionAmbr
         - qosFlowsSetupList
+        - hSmfInstanceId
 
     HsmfUpdateData:
       type: object
@@ -1386,17 +1475,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowItem'
-          minItems: 0
+          minItems: 1
         qosFlowsNotifyList:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowNotifyItem'
-          minItems: 0
+          minItems: 1
         NotifyList:
           type: array
           items:
             $ref: '#/components/schemas/PduSessionNotifyItem'
-          minItems: 0
+          minItems: 1
         epsBearerId:
           type: array
           items:
@@ -1408,15 +1497,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0        
+          minItems: 1        
         cause:
           $ref: '#/components/schemas/Cause'
         ngApCause:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
-        5GMmCauseValue:
+        5gMmCauseValue:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5GMmCause'
+        alwaysOnRequested:
+          type: boolean
+          default: false
         epsInterworkingInd:
           $ref: '#/components/schemas/EpsInterworkingIndication'
+        secondaryRatUsageReport:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SecondaryRatUsageReport'
+          minItems: 1        
       required:
         - requestIndication
 
@@ -1433,7 +1530,7 @@ components:
           $ref: '#/components/schemas/Cause'
         ngApCause:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
-        5GMmCauseValue:
+        5gMmCauseValue:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5GMmCause'
         ueLocation:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
@@ -1441,6 +1538,11 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
         addUeLocation:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        secondaryRatUsageReport:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SecondaryRatUsageReport'
+          minItems: 1        
 
     ReleasedData:
       type: object
@@ -1456,38 +1558,45 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowAddModifyRequestItem'
-          minItems: 0
+          minItems: 1
         qosFlowsRelRequestList:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowReleaseRequestItem'
-          minItems: 0
+          minItems: 1
         epsBearerInfo:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerInfo'
-          minItems: 0
+          minItems: 1
         assignEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         revokeEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         modifiedEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EbiArpMapping'
-          minItems: 0
+          minItems: 1
         pti:
           $ref: '#/components/schemas/ProcedureTransactionId'
         n1SmInfoToUe:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        alwaysOnGranted:
+          type: boolean
+          default: false
         cause:
           $ref: '#/components/schemas/Cause'
+        n1smCause:
+          type: string
+        backOffTimer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
       required:
         - requestIndication
 
@@ -1498,22 +1607,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowItem'
-          minItems: 0
+          minItems: 1
         qosFlowsRelList:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowItem'
-          minItems: 0
+          minItems: 1
         qosFlowsFailedtoAddModList:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowItem'
-          minItems: 0
+          minItems: 1
         qosFlowsFailedtoRelList:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowItem'
-          minItems: 0
+          minItems: 1
         n1SmInfoFromUe:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         unknownN1SmInfo:
@@ -1528,17 +1637,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EbiArpMapping'
-          minItems: 0
+          minItems: 1
         failedToAssignEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         releasedEbiList:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
+        secondaryRatUsageReport:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SecondaryRatUsageReport'
+          minItems: 1        
 
     StatusNotification:
       type: object
@@ -1565,6 +1679,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
         qosRules:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
+        ebi:
+          $ref: '#/components/schemas/EpsBearerId'
         qosFlowDescription:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
         qosFlowProfile:
@@ -1578,6 +1694,8 @@ components:
       properties:
         qfi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Qfi'
+        ebi:
+          $ref: '#/components/schemas/EpsBearerId'
         qosRules:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Bytes'
         qosFlowDescription:
@@ -1614,6 +1732,8 @@ components:
           $ref: '#/components/schemas/GbrQosFlowInformation'
         rqa:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ReflectiveQoSAttribute'
+        additionalQosFlowInfo:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AdditionalQosFlowInfo'
       required:
         - 5qi
     
@@ -1746,6 +1866,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         n1SmMsg:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - error
     
@@ -1762,6 +1884,8 @@ components:
           $ref: '#/components/schemas/N2SmInfoType'
         upCnxState:
           $ref: '#/components/schemas/UpCnxState'
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - error
     
@@ -1772,8 +1896,13 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         n1smCause:
           type: string
+          pattern: '^[A-F0-9]{2}$'
         n1SmInfoToUe:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        backOffTimer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - error
     
@@ -1786,8 +1915,13 @@ components:
           $ref: '#/components/schemas/ProcedureTransactionId'
         n1smCause:
           type: string
+          pattern: '^[A-F0-9]{2}$'
         n1SmInfoToUe:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        backOffTimer:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - error
 
@@ -1800,6 +1934,7 @@ components:
           $ref: '#/components/schemas/ProcedureTransactionId'
         n1smCause:
           type: string
+          pattern: '^[A-F0-9]{2}$'
         n1SmInfoFromUe:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         unknownN1SmInfo:
@@ -1808,11 +1943,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EpsBearerId'
-          minItems: 0
+          minItems: 1
         ngApCause:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
-        5GMmCauseValue:
+        5gMmCauseValue:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5GMmCause'
+        recoveryTime:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - error
 
@@ -1822,20 +1959,19 @@ components:
 #
     ProcedureTransactionId:
       type: integer
-      format: ProcedureTransactionId
       minimum: 0
       maximum: 255
       
     EpsBearerId:
-      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      type: integer
+      minimum: 0
+      maximum: 15
       
     EpsPdnCnxContainer:
       type: string
-      format: EpsPdnCnxContainer
      
     EpsBearerContainer:
       type: string
-      format: EpsBearerContainer
     
     Teid:
       type: string
@@ -1961,6 +2097,9 @@ components:
           - REL_DUE_TO_REACTIVATION
           - 5G_AN_NOT_RESPONDING
           - REL_DUE_TO_SLICE_NOT_AVAILABLE
+          - REL_DUE_TO_DUPLICATE_SESSION_ID
+          - PDU_SESSION_STATUS_MISMATCH
+          - HO_FAILURE
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -1976,6 +2115,9 @@ components:
         - REL_DUE_TO_REACTIVATION
         - 5G_AN_NOT_RESPONDING
         - REL_DUE_TO_SLICE_NOT_AVAILABLE
+        - REL_DUE_TO_DUPLICATE_SESSION_ID
+        - PDU_SESSION_STATUS_MISMATCH
+        - HO_FAILURE
 
     ResourceStatus:
       anyOf:
@@ -2081,6 +2223,22 @@ components:
         - HANDOVER_REQ_ACK
         - HANDOVER_RES_ALLOC_FAIL
 
+    MaxIntegrityProtectedDataRate':
+      anyOf:
+      - type: string
+        enum:
+          - 64_KBPS
+          - MAX_UE_RATE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - 64_KBPS
+          - MAX_UE_RATE
+
 
 #
 # HTTP responses
@@ -2168,4 +2326,4 @@ components:
               headers:
                 Content-Id:
                   schema:
-                    type: string  
+                    type: string
