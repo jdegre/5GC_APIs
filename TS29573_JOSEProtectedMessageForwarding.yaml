@@ -1,0 +1,228 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0.0'
+  title: 'JOSE Protected Message Forwarding API'
+  description: 'N32-f Message Forwarding'
+
+servers:
+  - url: '{apiRoot}/n32f-forward/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description:  apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
+externalDocs:
+  description: 3GPP TS 29.573 V15.1.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
+
+paths:
+  /n32f-process:
+    post:
+      summary:  N32-f Message Forwarding 
+      tags:
+        - N32-f Forward
+      operationId: PostN32fProcess
+      requestBody:
+        description: Custom operation N32-f Message Forwarding
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/N32fReformattedReqMsg'
+      responses:
+        '200':
+          description: OK (Successful forwarding of reformatted message over N32-f)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/N32fReformattedRspMsg'
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '411':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+components:
+  schemas:
+    FlatJweJson:
+      type: object
+      required:
+        - ciphertext
+      properties:
+        protected:
+          type: string
+        unprotected:
+          type: object
+        header:
+          type: object
+        encrypted_key:
+          type: string
+        aad:
+          type: string
+        iv:
+          type: string
+        ciphertext:
+          type: string
+        tag:
+          type: string
+  
+    FlatJwsJson:
+      type: object
+      required:
+        - payload
+        - signature
+      properties:
+        payload:
+          type: string
+        protected:
+          type: string
+        header:
+          type: object
+        signature:
+          type: string
+          
+    N32fReformattedReqMsg:
+      type: object
+      required:
+        - reformattedData
+      properties:
+        reformattedData:
+          $ref: '#/components/schemas/FlatJweJson'
+        modificationsBlock:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlatJwsJson'
+          minItems: 1
+
+    N32fReformattedRspMsg:
+      type: object
+      required:
+        - reformattedData
+      properties:
+        reformattedData:
+          $ref: '#/components/schemas/FlatJweJson'
+        modificationsBlock:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlatJwsJson'
+          minItems: 1
+
+    DataToIntegrityProtectAndCipherBlock:
+      type: object
+      required:
+        - dataToEncrypt
+      properties:
+        dataToEncrypt:
+          type: array
+          items:
+            type: object
+          minItems: 1
+    DataToIntegrityProtectBlock:
+      type: object
+      properties:
+        metaData:
+          $ref: '#/components/schemas/MetaData'
+        requestLine:
+          $ref: '#/components/schemas/RequestLine'
+        statusLine:
+          type: string
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/HttpHeader'
+          minItems: 1
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/HttpPayload'
+          minItems: 1
+    RequestLine:
+      type: object
+      required:
+        - method
+        - scheme
+        - authority
+        - path
+        - protocolVersion
+      properties:
+        method:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_N32cHandshake.yaml#/components/schemas/HttpMethod'
+        scheme:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemes/UriScheme'
+        authority:
+          type: string
+        path:
+          type: string
+        protocolVersion:
+          type: string
+        queryFragment:
+          type: string
+    HttpHeader:
+      type: object
+      required:
+        - header
+        - value
+      properties:
+        header:
+          type: string
+        value:
+          $ref: '#/components/schemas/EncodedHttpHeaderValue'
+    HttpPayload:
+      type: object
+      required:
+        - iePath
+        - ieValueLocation
+        - value
+      properties:
+        iePath:
+          type: string
+        ieValueLocation:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_N32cHandshake.yaml#/components/schemas/IeLocation'
+        value:
+          type: object
+    MetaData:
+      type: object
+      required:
+        - n32fContextId
+        - messageId
+        - authorizedIpxId
+      properties:
+        n32fContextId:
+          type: string
+        messageId:
+          type: string
+        authorizedIpxId:
+          type: string
+    Modifications:
+      type: object
+      required:
+        - identity
+      properties:
+        identity:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        operations:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/PatchItem'
+          minItems: 1
+    IndexToEncryptedValue:
+      type: object
+      required:
+        - encBlockIndex
+      properties:
+        encBlockIndex:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/Uinteger'
+    EncodedHttpHeaderValue:
+      oneOf:
+        - type: string
+        - $ref: '#/components/schemas/IndexToEncryptedValue'
