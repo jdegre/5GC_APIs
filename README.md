@@ -55,7 +55,9 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 * [Converged Charging](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS32291_Nchf_ConvergedCharging.yaml)
 ## Common Data Types
 * [Common Data - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml)
-
+## SEPP N32 APIs
+* [Handshake (N32-c) - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_N32_Handshake.yaml)
+* [Forwarding (N32-f) - version 1.0.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_JOSEProtectedMessageForwarding.yaml)
 
 # Northbound APIs (CAPIF)
 * [Discover Service](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Discover_Service_API.yaml)
