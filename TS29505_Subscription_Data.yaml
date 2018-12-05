@@ -4,12 +4,16 @@ info:
   title: 'Unified Data Repository Service API file for subscription data'
   description: ' The API version is defined in 3GPP TS 29.504'
   
+externalDocs:
+  description: 3GPP TS 'Unified Data Repository Service API file for subscription data, version 15.1.0
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
+
 paths:
 
-  /subscription-data/{ueId}/authentication-data:
+  /subscription-data/{ueId}/authentication-data/authentication-subscription:
     get:
-      summary: Retrieves the authentication data of a UE
-      operationId: QueryAuthData
+      summary: Retrieves the authentication subscription data of a UE
+      operationId: QueryAuthSubsData
       tags:
         - Authentication Data (Document)
       parameters:
@@ -19,7 +23,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -30,7 +34,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthenticationData'
+                $ref: '#/components/schemas/AuthenticationSubscription'
         default:
           description: Unexpected error
           content:
@@ -38,8 +42,8 @@ paths:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'                
     patch:
-      summary: modify the authentication data of a UE
-      operationId: ModifyAuthData
+      summary: modify the authentication subscription data of a UE
+      operationId: ModifyAuthentication
       tags:
         - Authentication Data (Document)
       parameters:
@@ -72,6 +76,178 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /subscription-data/{ueId}/authentication-data/authentication-status: 
+    put:
+      summary: To store the Authentication Status data of a UE 
+      operationId: CreateAuthenticationStatus
+      tags:
+        - Authentication Status (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/AuthEvent'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '/components/schemas/AuthenticationStatus'
+      responses:  
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+    get:
+      summary: Retrieves the Authentication Status of a UE
+      operationId: QueryAuthenticationStatus
+      tags:
+        - AuthEvent (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: fields
+          in: query
+          description: attributes to be retrieved
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            minItems: 1
+          style: form
+          explode: false
+        - name: supportedFeatures
+          description: Supported Features
+          in: query
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/AuthEvent'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /subscription-data/{ueId}/ue-update-confirmation-data/sor-data:
+    put:
+      summary: To store the SoR acknowledgement information of a UE 
+      operationId: CreateAuthenticationSoR
+      tags:
+        - Authentication SoR (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features 
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SorData'
+      responses:  
+        '204':
+          description: Expected response to a valid request
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    get:
+      summary: Retrieves the SoR acknowledgement information of a UE
+      operationId: QueryAuthSoR
+      tags:
+        - Authentication SoR (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SorData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /subscription-data/{ueId}/{servingPlmnId}/provisioned-data:
+    get:
+      summary: Retrieve multiple provisioned data sets of a UE
+      operationId: QueryProvisionedData
+      tags:
+        - Provisioned Data (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: servingPlmnId
+          in: path
+          description: PLMN ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+        - name: dataset-names
+          in: query
+          description: List of dataset names
+          schema:
+            $ref: '#/components/schemas/DatasetNames'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionedDataSets'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
                 
   /subscription-data/{ueId}/{servingPlmnId}/provisioned-data/am-data:
     get:
@@ -100,13 +276,24 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -114,6 +301,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -148,13 +348,24 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -162,6 +373,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -188,7 +412,7 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/VarPlmnId'
-        - name: singleNssai
+        - name: single-nssai
           in: query
           content:
             application/json:
@@ -210,20 +434,47 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionManagementSubscriptionData'
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessionManagementSubscriptionData'
+                minItems: 1
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -252,9 +503,10 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -355,9 +607,10 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -450,7 +703,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -496,9 +749,10 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -548,6 +802,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/v1/sm-contexts/{smContextRef}/subscription-data/{ueId}/context-data/smf-registrations/{pduSessionId}'
+              required: true
+              schema:
+                type: string
     delete:
       summary: To remove an individual SMF context data of a UE the UDR
       operationId: DeleteSmfContext
@@ -597,13 +857,24 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:  
         '200':
           description: Expected response to a valid request
@@ -611,6 +882,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OperatorSpecificDataContainer'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -721,9 +1005,10 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -810,9 +1095,10 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -850,11 +1136,21 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/VarPlmnId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -862,6 +1158,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmsManagementSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -888,11 +1197,21 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/VarPlmnId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -900,6 +1219,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmsSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -920,11 +1252,21 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -932,6 +1274,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PpData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         '403':
           description: Forbidden
           content:
@@ -993,7 +1348,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -1038,6 +1393,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EeSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}'
+              required: true
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -1096,6 +1457,298 @@ paths:
       responses:
         '204':
           description: Expected response to a successful subscription removal
+
+  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}/amf-subscriptions:
+    put:
+      summary: Create AmfSubscriptions for an individual ee subscriptions of a UE
+      operationId: Create AMF Subscriptions
+      tags:
+        - AMF Subscription Info (Document)
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AmfSubscriptionInfo'
+              minItems: 1
+        required: true
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      summary: Deletes AMF Subscription Info for an eeSubscription
+      operationId: RemoveAmfSubscriptionsInfo
+      tags:
+        - Event AMF Subscription Info (Document)
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+    patch:
+      summary: modify the AMF Subscription Info
+      operationId: ModifyAmfSubscriptionInfo
+      tags:
+        - AmfSubscriptionInfo (Document)
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    get:
+      summary: Retrieve AMF subscription Info
+      operationId: GetAmfSubscriptionInfo
+      tags:
+        - Query AMF Subscription Info (Document)
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AmfSubscriptionInfo'
+                minItems: 1
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /subscription-data/group-data/{ueGroupId}/ee-subscriptions:
+    get:
+      summary: Retrieves the ee subscriptions of a group of UEs or any UE
+      operationId: QueryEeGroupSubscriptions
+      tags:
+        - Event Exposure Group Subscriptions (Collection)
+      parameters:
+        - name: ueGroupId
+          in: path
+          description: Group of UEs or any UE
+          required: true
+          schema:
+              $ref: '#/components/schemas/VarUeGroupId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/EeSubscription'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    post:
+      summary: Create individual EE subscription for a group of UEs or any UE
+      operationId: CreateEeGroupSubscriptions
+      tags:
+        - Event Exposure Group Subscriptions (Collection)
+      parameters:
+        - name: ueGroupId
+          in: path
+          description: Group of UEs or any UE
+          required: true
+          schema:
+              $ref: '#/components/schemas/VarUeGroupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EeSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EeSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/v1/subscription-data/group-data/{ueGroupId}/ee-subscriptions '
+              required: true
+              schema:
+                type: string
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /subscription-data/group-data/{ueGroupId}/ee-subscriptions/{subsId}:
+    put:
+      summary: Stores an individual ee subscription of a group of UEs or any UE
+      operationId: UpdateEeGroupSubscriptions
+      tags:
+        - Event Exposure Subscription (Document)
+      parameters:
+        - name: ueGroupId
+          in: path
+          required: true
+          schema:
+              $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeGroupId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EeSubscription'
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    delete:
+      summary: Deletes a eeSubscription for a group of UEs or any UE
+      operationId: RemoveEeGroupSubscriptions
+      tags:
+        - Event Exposure Subscription (Document)
+      parameters:
+        - name: ueGroupId
+          in: path
+          required: true
+          schema:
+              $ref: '#/components/schemas/VarUeGroupId'
+        - name: subsId
+          in: path
+          required: true
+          description: Unique ID of the subscription to remove
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+         
+  /subscription-data/{ueId}/ee-profile-data:
+    get:
+      summary: Retrieves the ee profile data of a UE
+      operationId: QueryEEData
+      tags:
+        - Event Exposure Data (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: fields
+          in: query
+          description: attributes to be retrieved
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EeProfileData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
           
   /subscription-data/{ueId}/context-data/sdm-subscriptions:
     get:
@@ -1110,7 +1763,7 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -1155,6 +1808,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SdmSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/subscription-data/{ueId}/context-data/sdm-subscriptions/{subsId}'
+              required: true
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -1214,6 +1873,47 @@ paths:
         '204':
           description: Expected response to a successful subscription removal
 
+
+  /subscription-data/shared-data:
+    get:
+      summary: retrieve shared data
+      operationId: GetSharedData
+      tags:
+        - Retrieval of shared data
+      parameters:
+        - name: shared-data-ids
+          in: query
+          description: List of shared data ids
+          required: true
+          style: form
+          explode: false
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SharedDataIds'
+        - name: supportedFeatures
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SharedData'
+                minItems: 1
+        '400':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
   /subscription-data/subs-to-notify:
     post:
       summary: Subscription data subscriptions
@@ -1233,6 +1933,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionDataSubscriptions'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/subscription-data/subs-to-notify/{subsId}'
+              required: true
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
@@ -1289,6 +1995,16 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/VarPlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: Expected response to a valid request
@@ -1296,6 +2012,19 @@ paths:
             application/json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
   /subscription-data/{ueId}/identity-data:
@@ -1311,6 +2040,16 @@ paths:
           required: true
           schema:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -1318,29 +2057,304 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IdentityData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
         default:
           description: Unexpected error
           content:
             application/problem+json:
               schema:
                 $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /subscription-data/{ueId}/operator-determined-barring-data:
+    get:
+      summary: Retrieve ODB Data data by SUPI or GPSI
+      operationId: GetOdbData
+      tags:
+        - Query ODB Data by SUPI or GPSI (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE ID
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorDeterminedBarringData'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
 components:
   schemas:
-    AuthenticationData:
+    AuthenticationSubscription:
+      type: object
       required:
         - authenticationMethod
+        - permanentKey
+        - sequenceNumber
       properties:
         authenticationMethod:
           $ref: '#/components/schemas/AuthMethod'
         permanentKey:
-          type: string #place holder
-          # data type to be defined in normative text
+          $ref: '#/components/schemas/PermanentKey'
         sequenceNumber:
-          type: integer #place holder
-          # data type to be defined in normative text
+          $ref: '#/components/schemas/SequenceNumber'
+        authenticationManagementField:
+          $ref: '#/components/schemas/AuthenticationManagementField'
+        vectorAlgorithm:
+          $ref: '#/components/schemas/VectorAlgorithm'
+        milenage:
+          $ref: '#/components/schemas/Milenage'
+        tuak:
+          $ref: '#/components/schemas/Tuak'
+        opc:
+          $ref: '#/components/schemas/Opc'
+        topc:
+          $ref: '#/components/schemas/Topc'
+        sharedAuthenticationSubscriptionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SharedData'
+
+    SharedAuthenticationSubscription:
+      type: object
+      required:
+        - authenticationMethod
+        - vectorAlgorithm
+      properties:
+        authenticationManagementField:
+          $ref: '#/components/schemas/AuthenticationManagementField'
+        vectorAlgorithm:
+          $ref: '#/components/schemas/VectorAlgorithm'
+        milenage:
+          $ref: '#/components/schemas/Milenage'
+        tuak:
+          $ref: '#/components/schemas/Tuak'
+
+
+    PermanentKey:
+      type: object
+      required:
+        - permanentKeyValue
+        - encryptionKey
+        - encryptionAlgorithm
+      properties:
+        permanentKeyValue:
+          $ref: '#/components/schemas/PermanentKeyValue'
+        encryptionKey:
+          $ref: '#/components/schemas/EncryptionKey'
+        encryptionAlgorithm:
+          $ref: '#/components/schemas/EncryptionAlgorithm'
+
+
+    Milenage:
+      type: object
+      properties:
+        op:
+          $ref: '#/components/schemas/Op'
+        rotations:
+          $ref: '#/components/schemas/Rotations'
+        constants:
+          $ref: '#/components/schemas/Constants'
+
+    Tuak:
+      type: object
+      properties:
+        top:
+          $ref: '#/components/schemas/Top'
+        keccakIterations:
+          type: integer
+          minimum: 1
+          maximum: 255
+
+
+    Op:
+      type: object
+      required:
+        - opValue
+        - encryptionKey
+        - encryptionAlgorithm
+      properties:
+        opValue:
+          $ref: '#/components/schemas/OpValue'
+        encryptionKey:
+          $ref: '#/components/schemas/EncryptionKey'
+        encryptionAlgorithm:
+          $ref: '#/components/schemas/EncryptionAlgorithm'
+
+    Opc:
+      type: object
+      required:
+        - opcValue
+        - encryptionKey
+        - encryptionAlgorithm
+      properties:
+        opcValue:
+          $ref: '#/components/schemas/OpcValue'
+        encryptionKey:
+          $ref: '#/components/schemas/EncryptionKey'
+        encryptionAlgorithm:
+          $ref: '#/components/schemas/EncryptionAlgorithm'
+
+    Top:
+      type: object
+      required:
+        - topValue
+        - encryptionKey
+        - encryptionAlgorithm
+      properties:
+        topValue:
+          $ref: '#/components/schemas/TopValue'
+        encryptionKey:
+          $ref: '#/components/schemas/EncryptionKey'
+        encryptionAlgorithm:
+          $ref: '#/components/schemas/EncryptionAlgorithm'
+
+    Topc:
+      type: object
+      required:
+        - topcValue
+        - encryptionKey
+        - encryptionAlgorithm
+      properties:
+        topcValue:
+          $ref: '#/components/schemas/TopcValue'
+        encryptionKey:
+          $ref: '#/components/schemas/EncryptionKey'
+        encryptionAlgorithm:
+          $ref: '#/components/schemas/EncryptionAlgorithm'
+
+    Rotations:
+      type: object
+      required:
+        - r1
+        - r2
+        - r3
+        - r4
+        - r5
+      properties:
+        r1:
+          $ref: '#/components/schemas/RValue'
+        r2:
+          $ref: '#/components/schemas/RValue'
+        r3:
+          $ref: '#/components/schemas/RValue'
+        r4:
+          $ref: '#/components/schemas/RValue'
+        r5:
+          $ref: '#/components/schemas/RValue'
+
+    Constants:
+      type: object
+      required:
+        - c1
+        - c2
+        - c3
+        - c4
+        - c5
+      properties:
+        c1:
+          $ref: '#/components/schemas/CValue'
+        c2:
+          $ref: '#/components/schemas/CValue'
+        c3:
+          $ref: '#/components/schemas/CValue'
+        c4:
+          $ref: '#/components/schemas/CValue'
+        c5:
+          $ref: '#/components/schemas/CValue'
+
+    PermanentKeyValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    SequenceNumber:
+      type: string
+      pattern: '^[A-Fa-f0-9]{12}$'
+    AuthenticationManagementField:
+      type: string
+      pattern: '^[A-Fa-f0-9]{4}$'
+    OpValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    OpcValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    TopValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    TopcValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    RValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    CValue:
+      type: string
+      pattern: '^[A-Fa-f0-9]+$'
+    EncryptionKey:
+      type: integer
+    EncryptionAlgorithm:
+      type: integer
+    VectorAlgorithm:
+      type: string
+      enum:
+        - MILENAGE
+        - TUAK
     VarPlmnId:
       type: string
-      pattern: '[0-9]{5,6}'
+      pattern: '^[0-9]{5,6}$'
+    DatasetNames:
+      type: array
+      items: 
+        $ref: '#/components/schemas/DataSetName'
+      minItems: 1
+      uniqueItems: true
+    DataSetName:
+      anyOf:
+      - type: string
+        enum:
+        - AM
+        - SMF_SEL
+        - SMS_SUB
+        - SM
+        - TRACE
+        - SMS_MNG
+      - type: string
+    ProvisionedDataSets:
+      type: object
+      properties:
+        amData:
+          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        smfSelData:
+          $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+        smsSubsData:
+          $ref: '#/components/schemas/SmsSubscriptionData'
+        smData:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionManagementSubscriptionData'
+        traceData:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+        smsMngData:
+          $ref: '#/components/schemas/SmsManagementSubscriptionData'
     AccessAndMobilitySubscriptionData:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/AccessAndMobilitySubscriptionData'
     SmfSelectionSubscriptionData:
@@ -1364,6 +2378,7 @@ components:
     SmsSubscriptionData:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SmsSubscriptionData'
     OperatorSpecificDataContainer:
+      type: object
       properties:
         StringTypeElements:
           type: object
@@ -1390,6 +2405,9 @@ components:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_PP.yaml#/components/schemas/PpData'
     EeSubscription:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_EE.yaml#/components/schemas/EeSubscription'
+    VarUeGroupId:
+      type: string
+      pattern: '^(extgroupid-[^@]+@[^@]+|anyUE)$'
     SdmSubscription:
       $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_Nudm_SDM.yaml#/components/schemas/SdmSubscription'
     SmfRegList:
@@ -1402,7 +2420,7 @@ components:
         - ueId
         - callbackReference
         - originalCallbackReference
-        - supportedFeatures
+        - supported-features
       properties:
         ueId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
@@ -1414,7 +2432,9 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
-        supportedFeatures:
+        expiry:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        supported-features:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     DataChangeNotify:
       type: object
@@ -1423,36 +2443,14 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
         ueId:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        accessAndMobilitySubscriptionData: 
-          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
-        smfSelectionSubscriptionData: 
-          $ref: '#/components/schemas/SmfSelectionSubscriptionData'
-        sessionManagementSubscriptionData: 
+        notifyItems:
           type: array
           items:
-            $ref: '#/components/schemas/SessionManagementSubscriptionData'
-        amf3GppAccessRegistration: 
-          $ref: '#/components/schemas/Amf3GppAccessRegistration'
-        amfNon3GppAccessRegistration: 
-          $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
-        operatorSpecificData:
-          $ref: '#/components/schemas/OperatorSpecificDataContainer'
-        smsManagementSubscriptionData: 
-          $ref: '#/components/schemas/SmsManagementSubscriptionData'
-        smsf3GppAccessRegistration:
-          $ref: '#/components/schemas/SmsfRegistration'
-        smsfNon3GppAccessRegistration:
-          $ref: '#/components/schemas/SmsfRegistration'
-        eeSubscriptions:
-          $ref: '#/components/schemas/EeSubscription'
-        provisionedParamenterData:
-          $ref: '#/components/schemas/PpData'
-        smsSubscriptionData:
-          $ref: '#/components/schemas/SmsSubscriptionData'
-        traceData:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NotifyItem'
+          minItems: 1
     IdentityData:
       type: object
       properties:
@@ -1460,8 +2458,40 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+          maxItems: 2
         gpsiList:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
- 
+          minItems: 1
+    SorData:
+      type: object
+      properties:
+        sorXmacIue:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_CommonData.yaml#/components/schemas/SorMac'
+      required:
+        - sorXmacIue
+    OperatorDeterminedBarringData:
+      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/OdbData' 
+    EeProfileData:
+      type: object
+      properties:
+        restrictedEventTypes:
+          type: array
+          items:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29503_CommonData.yaml#/components/schemas/EventType'
+        supportedFeatures:
+            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    AmfSubscriptionInfo:
+      type: object
+      required:
+        - amfInstanceId
+        - subscriptionId
+      properties:
+        amfInstanceId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        subscriptionId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+        subsChangeNotifyCorrelationId:
+          type: string
