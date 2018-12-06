@@ -1,26 +1,28 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.1.0
-  title: AMF Location Service
+  version: 1.0.0
+  title: Namf_Location
   description: AMF Location Service
 security:
-  - oAuth2ClientCredentials: []
   - {}
+  - oAuth2Clientcredentials:
+      - namf-loc
 externalDocs:
-  description: Documentation
+  description: 3GPP TS 29.518 V15.2.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
-  - url: '{apiRoot}/namf-loc/v1'
+  - url: {apiRoot}/namf-loc/v1
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
+
 paths:
-  /{ueContextId}/providePosInfo:
+  /{ueContextId}/provide-pos-info:
     post:
       summary: Namf_Location ProvidePositioningInfo service Operation
       tags:
-        - Provide Positioning Information
+        - Individual UE context (Document)
       operationId: ProvidePositioningInfo
       parameters:
         - name: ueContextId
@@ -53,6 +55,8 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
@@ -84,15 +88,17 @@ paths:
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
                 '415':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
                 '500':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
                 '503':
                   $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
-  /{ueContextId}/provideLocInfo:
+  /{ueContextId}/provide-loc-info:
     post:
       summary: Namf_Location ProvideLocationInfo service Operation
       tags:
-        - Provide Location Information
+        - Individual UE context (Document)
       operationId: ProvideLocationInfo
       parameters:
         - name: ueContextId
@@ -101,6 +107,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^(imsi-[0-9]{5,15}|nai-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
       requestBody:
         content:
           application/json:
@@ -126,6 +133,8 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
@@ -139,7 +148,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            namf-loc: Access to the Namf_Location API
   schemas:
     RequestPosInfo:
       type: object
@@ -199,7 +209,9 @@ components:
         civicAddress:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
         barometricPressure:
-          $ref: '#/components/schemas/BarometricPressure'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/BarometricPressure'
+        altitude:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     NotifiedPosInfo:
@@ -240,7 +252,9 @@ components:
         civicAddress:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
         barometricPressure:
-          $ref: '#/components/schemas/BarometricPressure'
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/BarometricPressure'
+        altitude:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
       required:
         - locationEvent
     RequestLocInfo:
@@ -277,8 +291,6 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
         supportedFeatures:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-    BarometricPressure:
-      type: integer
     LocationType:
       anyOf:
       - type: string

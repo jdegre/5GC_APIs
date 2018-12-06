@@ -1,16 +1,17 @@
 openapi: 3.0.0
 info:
-  version: 1.PreR15.1.0
-  title: AMF MT Service
+  version: 1.0.0
+  title: Namf_MT
   description: AMF Mobile Termination Service
 security:
-  - oAuth2ClientCredentials: []
   - {}
+  - oAuth2Clientcredentials:
+      - namf-mt
 externalDocs:
-  description: Documentation
+  description: 3GPP TS 29.518 V15.2.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
-  - url: '{apiRoot}/namf-mt/v1'
+  - url: {apiRoot}/namf-mt/v1
     variables:
       apiRoot:
         default: https://example.com
@@ -20,7 +21,7 @@ paths:
     get:
       summary: Namf_MT Provide Domain Selection Info service Operation
       tags:
-        - Provide Domain Selection Info
+        - ueContext (Document)
       operationId: Provide Domain Selection Info
       parameters:
         - name: ueContextId
@@ -59,12 +60,10 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '414':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
@@ -75,7 +74,7 @@ paths:
     post:
       summary: Namf_MT EnableUEReachability service Operation
       tags:
-        - Enable UE Reachability
+        - ueReachInd (Document)
       operationId: EnableUeReachability
       parameters:
         - name: ueContextId
@@ -115,6 +114,8 @@ paths:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
         '415':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
         '503':
@@ -130,7 +131,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            namf-mt: Access to the Namf_MT API
   schemas:
     EnableUeReachabilityReqData:
       type: object
@@ -155,8 +157,12 @@ components:
       properties:
         supportVoPS:
           type: boolean
+        supportVoPSn3gpp:
+          type: boolean
         lastActTime:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+        accessType:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
         ratType:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
         supportedFeatures:
