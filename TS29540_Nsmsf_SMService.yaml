@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
-  version: '1.PreR15.1.0'
+  version: '1.0.0'
   title: 'Nsmsf_SMService Service API'
   description: 'SMSF SMService Service API'
+security:
+  - oAuth2ClientCredentials: []
+  - {}
 servers:
   - url: '{apiRoot}/nsmsf-sms/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
-security:
-  - oAuth2ClientCredentials: []
-  - {}
+        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
 paths:
   /ue-contexts/{supi}:
     put:
@@ -39,6 +39,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeSmsContextData'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmsf-sms/v1/ue-contexts/{supi}'
+              required: true
+              schema:
+                type: string
         '204':
           description: UE Context for SMS is updated in SMSF
         '400':
@@ -180,6 +186,7 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
         accessType:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
         gpsi:
@@ -194,6 +201,11 @@ components:
           type: array
           items:
             $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+          minItems: 1
+        udmGroupId:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        routingIndicator:
+          type: string
     SmsRecordData:
       type: object
       required:
@@ -210,6 +222,8 @@ components:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
         gpsi:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        pei:
+          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
         ueLocation:
           $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
