@@ -1,5 +1,9 @@
 # 5G Core Network APIs (OpenAPI 3)
 
+The files in this repository have been created by 3GPP, and the master source can be found in the [3GPP site](http://www.3gpp.org/DynaReport/29-series.htm), as part of the official 3GPP Technical Specifications.
+
+© 2018, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
+
 API version 1.0.0 (Dec. 2018)
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API:
