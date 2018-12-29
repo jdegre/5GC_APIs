@@ -1,12 +1,18 @@
 openapi: 3.0.0
 info:
   title: 3gpp-msisdn-less-mo-sms
-  version: "1.PreR15.1.0"
+  version: "1.0.0"
+externalDocs:
+  description: 3GPP TS 29.122 V15.2.0 T8 reference point for Northbound APIs
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
+security:
+  - {}
+  - oAuth2ClientCredentials: []
 servers:
   - url: '{apiRoot}'
     variables:
       apiRoot:
-        default: https://demohost.com
+        default: https://example.com
         description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
 paths:
   /:
@@ -25,50 +31,58 @@ paths:
               schema:
                 $ref: '#/components/schemas/MsisdnLessMoSmsNotificationReply'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
-        '409':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
   schemas: 
     MsisdnLessMoSmsNotification:
       type: object
       properties:
         supportedFeatures:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         sms:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Bytes'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bytes'
         externalId:
           type: string
           description: External identifier has the form username@realm.
-        ApplicationPort:
-          type: integer
-          description: Unsigned integer used to uniquely identify the triggering application addressed in the device, see subclause 9.2.3.24.4 in TS 23.040 [43] for further details.
+        applicationPort:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
       required:
         - supportedFeatures
         - sms
         - externalId
-        - ApplicationPort
+        - applicationPort
     MsisdnLessMoSmsNotificationReply:
       type: object
       properties:
         supportedFeatures:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - supportedFeatures

@@ -1,12 +1,18 @@
 openapi: 3.0.0
 info:
   title: 3gpp-nidd
-  version: "1.PreR15.1.0"
+  version: "1.0.0"
+externalDocs:
+  description: 3GPP TS 29.122 V15.2.0 T8 reference point for Northbound APIs
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
+security:
+  - {}
+  - oAuth2ClientCredentials: []
 servers:
   - url: '{apiRoot}/3gpp-nidd/v1'
     variables:
       apiRoot:
-        default: https://demohost.com
+        default: https://example.com
         description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
 paths:
   /{scsAsId}/configurations:
@@ -30,21 +36,23 @@ paths:
                 minItems: 0
                 description: individual NIDD configuration.
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     post:
       requestBody:
         description: Contains the data to create a NIDD configuration.
@@ -60,26 +68,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NiddConfiguration'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource'
+              required: true
+              schema:
+                type: string
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
-        '409':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
       callbacks:
         niddNotifications:
           '{$request.body#/notificationDestination}':
@@ -102,27 +118,29 @@ paths:
                   content:
                     application/json:
                       schema:
-                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Acknowledgement'
+                        $ref: 'TS29122_CommonData.yaml#/components/schemas/Acknowledgement'
                 '400':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
                 '403':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
-                '409':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
                 '411':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-                '412':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
                 '413':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
                 '500':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
                 '503':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
                 default:
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
   /{scsAsId}/configurations/{configurationId}:
     parameters:
       - name: scsAsId
@@ -146,21 +164,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/NiddConfiguration'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     patch:
       requestBody:
         description: Contains information to be applied to the individual NIDD configuration.
@@ -179,47 +199,47 @@ paths:
         '204':
           description: The Individual NIDD configuration is modified successfully.
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '409':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     delete:
       responses:
         '204':
           description: The Individual NIDD configuration is deleted.
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
   /{scsAsId}/configurations/{configurationId}/downlink-data-deliveries:
     parameters:
@@ -248,21 +268,23 @@ paths:
                 minItems: 0
                 description: individual NIDD downlink data delivery.
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     post:
       requestBody:
         description: Contains the data to create a NIDD downlink data delivery.
@@ -284,26 +306,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NiddDownlinkDataTransfer'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource'
+              required: true
+              schema:
+                type: string
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
-        '409':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          description: The NIDD downlink data delivery request was not successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NiddDownlinkDataDeliveryFailure'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
   /{scsAsId}/configurations/{configurationId}/downlink-data-deliveries/{downlinkDataDeliveryId}:
     parameters:
       - name: scsAsId
@@ -333,21 +367,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/NiddDownlinkDataTransfer'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     put:
       requestBody:
         description: Contains information to be applied to the individual NIDD downlink data delivery.
@@ -364,116 +400,140 @@ paths:
               schema:
                 $ref: '#/components/schemas/NiddDownlinkDataTransfer'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '409':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/409'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          description: The NIDD downlink data replacement request was not successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NiddDownlinkDataDeliveryFailure'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     delete:
       responses:
         '204':
           description: The pending NIDD downlink data is deleted.
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/404'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '409':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/409'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          description: The NIDD downlink data cancellation request was not successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NiddDownlinkDataDeliveryFailure'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
   schemas: 
     NiddConfiguration:
       type: object
       properties:
         self:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         supportedFeatures:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         externalId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
         msisdn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
         externalGroupId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
         duration:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
         reliableDataService:
           type: boolean
-          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682 [2]) to indicate if a reliable data service acknowledgment is enabled or not.
+          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
         rdsPorts:
           type: array
           items:
             $ref: '#/components/schemas/RdsPort'
-          minItems: 0
-          description: Indicates the port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250 [31]).
+          minItems: 1
+          description: Indicates the port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptions'
         notificationDestination:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         requestTestNotification:
           type: boolean
           description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in subclause 5.2.5.3. Set to false or omitted otherwise.
         websockNotifConfig:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         maximumPacketSize:
           type: integer
-          description: The Maximum Packet Size is the maximum NIDD packet size that was transferred to the UE by the SCEF in the PCO, see subclause 4.5.14.1 of 3GPP TS 23.682 [2]. If no maximum packet size was provided to the UE by the SCEF, the SCEF sends a default configured max packet size to SCS/AS. Unit  bit.
+          minimum: 1
+          description: The Maximum Packet Size is the maximum NIDD packet size that was transferred to the UE by the SCEF in the PCO, see subclause 4.5.14.1 of 3GPP TS 23.682. If no maximum packet size was provided to the UE by the SCEF, the SCEF sends a default configured max packet size to SCS/AS. Unit  bit.
           readOnly: true
         niddDownlinkDataTransfers:
           type: array
           items:
             $ref: '#/components/schemas/NiddDownlinkDataTransfer'
-          minItems: 0
+          minItems: 1
           description: The downlink data deliveries that needed to be executed by the SCEF. The cardinality of the property shall be 0..1 in the request and 0..N in the response (i.e. response may contain multiple buffered MT NIDD).
         status:
           $ref: '#/components/schemas/NiddStatus'
       required:
         - notificationDestination
+      oneOf:
+        - required: [externalId]
+        - required: [msisdn]
+        - required: [externalGroupId]
     NiddDownlinkDataTransfer:
       type: object
       properties:
         externalId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
         externalGroupId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
         msisdn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
         self:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         data:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Binary'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bytes'
         reliableDataService:
           type: boolean
-          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682 [2]) to indicate if a reliable data service acknowledgment is enabled or not.
+          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
         rdsPort:
           $ref: '#/components/schemas/RdsPort'
         maximumLatency:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
         priority:
           type: integer
           description: It is used to indicate the priority of the non-IP data packet relative to other non-IP data packets.
@@ -482,20 +542,24 @@ components:
         deliveryStatus:
           $ref: '#/components/schemas/DeliveryStatus'
         requestedRetransmissionTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
       required:
         - data
+      oneOf:
+        - required: [externalId]
+        - required: [msisdn]
+        - required: [externalGroupId]
     NiddUplinkDataNotification:
       type: object
       properties:
         niddConfiguration:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         externalId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
         msisdn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
         data:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Binary'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bytes'
         reliableDataService:
           type: boolean
           description: Indicates whether the reliable data service is enabled.
@@ -504,15 +568,18 @@ components:
       required:
         - niddConfiguration
         - data
+      oneOf:
+        - required: [externalId]
+        - required: [msisdn]
     NiddDownlinkDataDeliveryStatusNotification:
       type: object
       properties:
         niddDownlinkDataTransfer:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         deliveryStatus:
           $ref: '#/components/schemas/DeliveryStatus'
         requestedRetransmissionTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
       required:
         - niddDownlinkDataTransfer
         - deliveryStatus
@@ -520,21 +587,27 @@ components:
       type: object
       properties:
         niddConfiguration:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         externalId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
         msisdn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
         status:
           $ref: '#/components/schemas/NiddStatus'
+        rdsCapIndication:
+          type: boolean
+          description: It indicates whether the network capability for the reliable data service is enabled or not.
       required:
         - niddConfiguration
         - status
+      oneOf:
+        - required: [externalId]
+        - required: [msisdn]
     GmdNiddDownlinkDataDeliveryNotification:
       type: object
       properties:
         niddDownlinkDataTransfer:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Link'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         gmdResults:
           type: array
           items:
@@ -548,21 +621,37 @@ components:
       type: object
       properties:
         portUE:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Port'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
         portSCEF:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Port'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
       required:
         - portUE
         - portSCEF
     GmdResult:
       type: object
       properties:
+        externalId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
+        msisdn:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
         deliveryStatus:
           $ref: '#/components/schemas/DeliveryStatus'
         requestedRetransmissionTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
       required:
         - deliveryStatus
+      oneOf:
+        - required: [externalId]
+        - required: [msisdn]
+    NiddDownlinkDataDeliveryFailure:
+      type: object
+      properties:
+        problemDetail:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        requestedRetransmissionTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - problemDetail
     PdnEstablishmentOptions:
       anyOf:
       - type: string
@@ -607,16 +696,12 @@ components:
           - SUCCESS_NEXT_HOP_UNACKNOWLEDGED
           - SUCCESS_ACKNOWLEDGED
           - SUCCESS_UNACKNOWLEDGED
-          - TRIGGERING
+          - TRIGGERED
           - BUFFERING
           - BUFFERING_TEMPORARILY_NOT_REACHABLE
           - SENDING
-          - STOPPED_BUT_TRIGGERING
           - FAILURE
-          - FAILURE_QUOTA_EXCEEDED
-          - FAILURE_RATE_EXCEEDED
-          - FAILURE_DATA_TOO_LARGE
-          - FAILURE_TEMORARILY_NOT_REACHABLE
+          - FAILURE_RDS_DISABLED
           - FAILURE_NEXT_HOP
           - FAILURE_TIMEOUT
       - type: string
@@ -631,16 +716,12 @@ components:
         - SUCCESS_NEXT_HOP_UNACKNOWLEDGED: Successful delivery to the next hop without acknowledgment
         - SUCCESS_ACKNOWLEDGED: Reliable delivery was acknowledged by the UE
         - SUCCESS_UNACKNOWLEDGED: Reliable delivery was not acknowledged by the UE
-        - TRIGGERING: The SCEF is triggering the device and buffering the data.
+        - TRIGGERED: The SCEF triggered the device and is buffering the data.
         - BUFFERING: The SCEF is buffering the data due to no PDN connection established.
         - BUFFERING_TEMPORARILY_NOT_REACHABLE: The SCEF has been informed that the UE is temporarily not reachable but is buffering the data
         - SENDING: The SCEF has forwarded the data, but they may be stored elsewhere
-        - STOPPED_BUT_TRIGGERING: The SCEF is triggering the device but did not buffer the data. The SCS AS may resubmit the data
         - FAILURE: Delivery failure but details not provided
-        - FAILURE_QUOTA_EXCEEDED: Not enough quota for the MT NIDD
-        - FAILURE_RATE_EXCEEDED: MT NIDD sending rate is exceeded.
-        - FAILURE_DATA_TOO_LARGE: The non-IP data size is larger than "maximumPacketSize" of the NIDD configuration.
-        - FAILURE_TEMORARILY_NOT_REACHABLE: The SCEF has aborted the delivery because the UE is temporarily not reachable. The SCEF may in addition indicate a requested re-submission time for the data.
+        - FAILURE_RDS_DISABLED: RDS was disabled
         - FAILURE_NEXT_HOP: Unsuccessful delivery to the next hop.
         - FAILURE_TIMEOUT: Unsuccessful delivery due to timeout.
       readOnly: true
@@ -666,16 +747,16 @@ components:
       type: object
       properties:
         duration:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTimeRm'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTimeRm'
         reliableDataService:
           type: boolean
-          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682 [2]) to indicate if a reliable data service acknowledgment is enabled or not.
+          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
           nullable: true
         rdsPorts:
           type: array
           items:
             $ref: '#/components/schemas/RdsPort'
-          minItems: 0
-          description: Indicates the port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250 [31]).
+          minItems: 1
+          description: Indicates the port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptionsRm'
