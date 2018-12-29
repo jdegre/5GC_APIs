@@ -1,20 +1,23 @@
 openapi: 3.0.0
 info:
   title: Nnef_PFDmanagement Sevice API
-  version: "1.R15.0.0"
+  version: "1.0.0"
   description: Packet Flow Description Management Service
 #
 externalDocs:
-  description: 3GPP TS 29.551 v0.4.0, 5G system; Packet Flow Description Management Service
-  url: 'http://ftp.3gpp.org//Specs/archive/29_series/29.551/'
+  description: 3GPP TS 29.551 v15.1.0, 5G System; Packet Flow Description Management Service
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.551/'
 #
 servers:
   - url: '{apiRoot}/nnef-pfdmanagement/v1'
     variables:
       apiRoot:
-        default: https://demohost.com
+        default: https://example.com
         description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
-
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - nnef-pfdmanagement
 paths:
   /applications:
     get:
@@ -22,23 +25,49 @@ paths:
       tags:
         - PFD of applications
       operationId: Nnef_PFDmanagement_Fetch
+      parameters:
+          - name: application-ids
+            description: The required application identifier(s) for the returned PFDs.
+            in: query
+            required: true
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+              minItems: 1
+          - name: supported-features
+            in: query
+            description: To filter irrelevant responses related to unsupported features
+            schema:
+               $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: The PFDs for one or more application identifier(s) in the request URI are returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PfdDataForApp'
-        '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PfdDataForApp'
+                minItems: 0
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
         '414':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
   
   /applications/{appId}:
     get:
@@ -53,6 +82,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: supported-features
+          in: query
+          description: To filter irrelevant responses related to unsupported features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: A representation of PFDs for an application in the request URI is returned.
@@ -60,16 +94,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PfdDataForApp'
-        '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '414':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
   
   /subscriptions:
     post:
@@ -86,49 +128,55 @@ paths:
               $ref: '#/components/schemas/PfdSubscription'
       callbacks:
         PfdChangeNotification:
-          '{$request.body#/notifyUri}':
+          '{request.body#/notifyUri}':
             post:
               summary: Notification of PFD change.
               tags:
                 - PfdChangeNotification data
               operationId: Nnef_PFDmanagement_Notify
               requestBody:
-                description: Notify Body
                 required: true
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/PfdChangeNotification'
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PfdChangeNotification'
+                      minItems: 1
               responses:
-                '204':
-                  description: The PFD operation in the notification is performed successfully.
                 '200':
                   description: The PFD operation in the notification is performed and the PfdChangeReport indicates failure reason.
                   content:
                     application/json:
                       schema:
-                        $ref: '#/components/schemas/PfdChangeReport'
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PfdChangeReport'
+                        minItems: 1
+                '204':
+                  description: The PFD operation in the notification is performed successfully.
                 '400':
-                  description: Incorrect input parameter(s).
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                '500':
-                  description: Server Error
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                '503':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
                 '411':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
                 '413':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
                 '415':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
-                              
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                  
+            
       responses:
         '201':
           description: The creation of a PfdSubscription resource is confirmed and a representation of that resource is returned.
@@ -136,28 +184,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PfdSubscription'
-        '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nnef-pfdmanagement/v1/subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
         '400':
-          description: Incorrect input parameter(s).
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request.
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
       
   /subscriptions/{subscriptionId}:
     delete:
@@ -167,23 +219,38 @@ paths:
       operationId: Nnef_PFDmanagement_Unsubscribe
       parameters:
         - name: subscriptionId
+          description: Identify the subscription.
           in: path
           required: true
           schema:
-            type: string      
+            type: string
       responses:
         '204':
           description: The PfdSubscription resource matching the subscriptionId was deleted successfully.
-        '404':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nnef-pfdmanagement: Access to the Nnef_PFDmanagement API
   schemas:
 #
 # STRUCTURED DATA TYPES
@@ -198,47 +265,49 @@ components:
           type: array
           items:
             type: string
-          minItems: 0
+          minItems: 1
           description: Represents a 3-tuple with protocol, server ip and server port for UL/DL application traffic.
         urls:
           type: array
           items:
             type: string
-          minItems: 0
+          minItems: 1
           description: Indicates a URL or a regular expression which is used to match the significant parts of the URL.
         domainNames:
           type: array
           items:
             type: string
-          minItems: 0
+          minItems: 1
           description: Indicates an FQDN or a regular expression as a domain name matching criteria.
 
     PfdDataForApp:
       type: object
       properties:
         applicationId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
         pfds:
           type: array
           items:
             $ref: '#/components/schemas/PfdContent'
-          minItems: 0
+          minItems: 1
         cachingTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - applicationId
+        - pfds
     
     PfdSubscription:
       type: object
       properties:
-        applicationId:
+        applicationIds:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          minItems: 1
         notifyUri:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         supportedFeatures:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - notifyUri
         - supportedFeatures
@@ -247,7 +316,7 @@ components:
       type: object
       properties:
         applicationId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
         removalFlag:
           type: boolean
           default: false
@@ -258,7 +327,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PfdContent'
-          minItems: 0
+          minItems: 1
       required:
         - applicationId
 
@@ -266,10 +335,12 @@ components:
       type: object
       properties:
         pfdError:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         applicationId:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          minItems: 1
       required:
         - pfdError
+        - applicationId

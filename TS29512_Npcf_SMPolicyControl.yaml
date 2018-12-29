@@ -1,13 +1,20 @@
 openapi: 3.0.0
 info:
   description: Session Management Policy Control Service
-  version: "1.PreR15.1.0"
+  version: "1.0.0"
   title: Npcf_SMPolicyControl
+externalDocs:
+  description: 3GPP TS 29.512 V15.2.0; 5G System; Session Management Policy Control Service.
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.512/'
+security:
+  - {}
+  - oAuth2Clientcredentials:
+    - npcf-smpolicycontrol
 servers:
-  - url: '{apiRoot}/npcf-sm-policy-control/v1'
+  - url: '{apiRoot}/npcf-smpolicycontrol/v1'
     variables:
       apiRoot:
-        default: https://virtserver.3ggp5gc-sbi.com
+        default: https://example.com
         description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
 paths:
   /sm-policies:
@@ -25,28 +32,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SmPolicyDecision'
-        '400':
-          description: Bad Request.
-          content:
-            application/problem+json:
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource'
+              required: true
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           description: Not Found
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
         SmPolicyUpdateNotification:
           '{$request.body#/notificationUri}/update': 
@@ -63,11 +76,14 @@ paths:
                   content:
                     application/json:
                       schema:
-                        $ref: '#/components/schemas/UeCampingRep'
+                        oneOf:
+                          - $ref: '#/components/schemas/UeCampingRep'
+                          - type: array
+                            items:
+                              $ref: '#/components/schemas/PartialSuccessReport'
+                            minItems: 1
                 '204':
                   description: No Content, Notification was succesfull
-                '207':
-                  description: Multi-Status. Some of the PCC rules are installed/activated unsuccessflly.
                   content:
                     application/json:
                       schema:
@@ -75,26 +91,30 @@ paths:
                 '400':
                   description: Bad Request.
                   content:
-                    application/problem+json:
+                    application/json:
                       schema:
-                        $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                        $ref: '#/components/schemas/ErrorReport'
                 '401':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
                 '404':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
                 '411':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
                 '413':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
                 '415':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
                 '500':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
                 '503':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
-        SmPolicyContolTerminationRequestNotification:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        SmPolicyControlTerminationRequestNotification:
           '{$request.body#/notificationUri}/terminate': 
             post:
               requestBody:
@@ -105,25 +125,29 @@ paths:
                       $ref: '#/components/schemas/TerminationNotification'
               responses:
                 '204':
-                  description: No Content, Notification was succesfull
+                  description: No Content, Notification was succesful
                 '400':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
                 '404':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/404'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
                 '411':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
                 '413':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
                 '415':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
                 '500':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
                 '503':
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
-                  $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /sm-policies/{smPolicyId}:
     get:
       parameters:
@@ -141,17 +165,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/SmPolicyControl'
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
-        '414':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/414'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /sm-policies/{smPolicyId}/update:
     post:
       requestBody:
@@ -175,31 +205,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/SmPolicyDecision'
         '400':
-          description: Bad Request.
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
-          description: Forbidden.
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':	
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /sm-policies/{smPolicyId}/delete:
     post:
       requestBody:
@@ -219,22 +245,36 @@ paths:
         '204':
           description: No content
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/411'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/415'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            npcf-smpolicycontrol: Access to the Npcf_SMPolicyControl API
   schemas:
     SmPolicyControl :
       type: object
@@ -251,43 +291,53 @@ components:
       properties:
         accNetChId:
           $ref: '#/components/schemas/AccNetChId'
+        chargEntityAddr:
+          $ref: '#/components/schemas/AccNetChargingAddress'
         gpsi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         supi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        interGrpIds:
+          type: array	
+          items:	
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+          minItems: 1
         pduSessionId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         pduSessionType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
         chargingcharacteristics:
           type: string
         dnn:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Dnn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         notificationUri:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         accessType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         ratType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         servingNetwork:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NetworkId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NetworkId'
         userLocationInfo:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         pei:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
         ipv4Address:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         ipv6AddressPrefix:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
         ipDomain:
           type: string
           description: Indicates the IPv4 address domain
-        subSessAmbr:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+        subsSessAmbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ambr'
         subsDefQos:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DefaultQosInformation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SubscribedDefaultQos'
+        numOfPackFilter:
+          type: integer
+          description: Contains the number of supported packet filter for signalled QoS rules.
         online:
           type: boolean
           description: If it is included and set to true, the online charging is applied to the PDU session.
@@ -301,14 +351,17 @@ components:
           type: boolean
           description: If it is included and set to true, the reflective QoS is supported by the UE.
         traceReq:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
         sliceInfo:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Snssai'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        qosFlowUsage:
+          $ref: '#/components/schemas/QosFlowUsage'
         suppFeat:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - supi
         - pduSessionId
+        - pduSessionType
         - dnn
         - notificationUri
         - sliceInfo
@@ -319,59 +372,63 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SessionRule'
-          minProperties: 0
+          minProperties: 1
           description: A map of Sessionrules with the content being the SessionRule as described in subclause 5.6.2.7.
         pccRules:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/PccRule'
-          minProperties: 0
+          minProperties: 1
           description: A map of PCC rules with the content being the PCCRule as described in subclause 5.6.2.6.
+          nullable: true
         pcscfRestIndication:
           type: boolean
-          description: If it is included and set t true, it indicates the P-CSCF Restoration is requested.
+          description: If it is included and set to true, it indicates the P-CSCF Restoration is requested.
         qosDecs:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/QoSData'
-          minProperties: 0
+            $ref: '#/components/schemas/QosData'
+          minProperties: 1
           description: Map of QoS data policy decisions.
-        ChgDecs:
+        chgDecs:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/ChargingData'
-          minProperties: 0
+          minProperties: 1
           description: Map of Charging data policy decisions.
+          nullable: true
         chargingInfo:
           $ref: '#/components/schemas/ChargingInformation'
         traffContDecs:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/TrafficControlData'
-          minProperties: 0
+          minProperties: 1
           description: Map of Traffic Control data policy decisions.
         umDecs:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/UsageMonitoringData'
-          minProperties: 0
+          minProperties: 1
           description: Map of Usage Monitoring data policy decisions.
+          nullable: true
         qosChars:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/QosCharacteristics'
-          minProperties: 0
+          minProperties: 1
           description: Map of QoS characteristics for non standard 5QIs. This map uses the 5QI values as keys.
         reflectiveQoSTimer:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         conds:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/ConditionData'
-          minProperties: 0
+          minProperties: 1
           description: A map of condition data with the content being as described in subclause 5.6.2.9.
+          nullable: true
         revalidationTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         offline:
           type: boolean
           description: Indicates the offline charging is applicable to the PDU session or PCC rule.
@@ -384,6 +441,7 @@ components:
             $ref: '#/components/schemas/PolicyControlRequestTrigger'
           minItems: 1
           description: Defines the policy control request triggers subscribed by the PCF.
+          nullable: true
         lastReqRuleData:
           type: array
           items:
@@ -395,22 +453,25 @@ components:
         praInfos:
           type: object
           additionalProperties:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfoRm'
           minProperties: 1
           description: Map of PRA information.
+          nullable: true
         ipv4Index:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29519_Policy_Data.yaml#/components/schemas/IpIndex'
+          $ref: 'TS29519_Policy_Data.yaml#/components/schemas/IpIndex'
           description: Information that identifies which IP pool or external server is used to allocate the IPv4 address.
         ipv6Index:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29519_Policy_Data.yaml#/components/schemas/IpIndex'
+          $ref: 'TS29519_Policy_Data.yaml#/components/schemas/IpIndex'
           description: Information that identifies which IP pool or external server is used to allocate the IPv6 address.
+        qosFlowUsage:
+          $ref: '#/components/schemas/QosFlowUsage'
         suppFeat:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     SmPolicyNotification:
       type: object
       properties:
         resourceUri:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         smPolicyDecision:
           $ref: '#/components/schemas/SmPolicyDecision'
     PccRule:
@@ -426,7 +487,7 @@ components:
           type: string
           description: A reference to the application detection filter configured at the UPF.
         contVer:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ContentVersion'
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ContentVersion'
         pccRuleId:
           type: string
           description: Univocally identifies the PCC rule within a PDU session.
@@ -435,6 +496,7 @@ components:
           description: Determines the order in which this PCC rule is applied relative to other PCC rules within the same PDU session.
         afSigProtocol:
           $ref: '#/components/schemas/AfSigProtocol'
+          nullable: true
         appReloc:
           type: boolean
           description: Indication of application relocation possibility.
@@ -443,90 +505,106 @@ components:
           items:
             type: string
           minItems: 1
+          maxItems: 1
           description: A reference to the QoSData policy type decision type. It is the qosId described in subclause 5.6.2.8. (NOTE)
         refTcData:
           type: array
           items:
             type: string
           minItems: 1
+          maxItems: 1
           description: A reference to the TrafficControlData policy decision type. It is the tcId described in subclause 5.6.2.10. (NOTE)
         refChgData:
           type: array
           items:
             type: string
           minItems: 1
+          maxItems: 1
           description: A reference to the ChargingData policy decision type. It is the chgId described in subclause 5.6.2.11. (NOTE)
+          nullable: true
         refUmData:
           type: array
           items:
             type: string
           minItems: 1
+          maxItems: 1
           description: A reference to UsageMonitoringData policy decision type. It is the umId described in subclause 5.6.2.12. (NOTE)
+          nullable: true
         refCondData:
           type: string
           description: A reference to the condition data. It is the condId described in subclause 5.6.2.9.
+          nullable: true
       required:
         - pccRuleId
+      nullable: true
     SessionRule:
       type: object
       properties:
         authSessAmbr:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
-        authDefaultQos:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DefaultQosInformation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ambr'
+        authDefQos:
+          $ref: '#/components/schemas/AuthorizedDefaultQos'
         sessRuleId:
           type: string
           description: Univocally identifies the session rule within a PDU session.
         refUmData:
           type: string
           description: A reference to UsageMonitoringData policy decision type. It is the umId described in subclause 5.6.2.12.
+          nullable: true
         refCondData:
           type: string
           description: A reference to the condition data. It is the condId described in subclause 5.6.2.9.
+          nullable: true
       required:
         - sessRuleId
-    QoSData:
+      nullable: true
+    QosData:
       type: object
       properties:
         qosId:
           type: string
           description: Univocally identifies the QoS control policy data within a PDU session.
         5qi:
-          type: integer
-          description: Identifier for the authorized QoS parameters for the service data flow.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
+   
         maxbrUl:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         maxbrDl:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         gbrUl:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
-        gbrDL:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        gbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         arp:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Arp'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Arp'
         qnc:
           type: boolean
-          description: Indicates whether notifications are requested from 3GPP RAN when the GFBR can no longer (or again) be fulfilled for a QoS Flow during the lifetime of the QoS Flow.
+          description: Indicates whether notifications are requested from 3GPP NG-RAN when the GFBR can no longer (or again) be guaranteed for a QoS Flow during the lifetime of the QoS Flow.
         priorityLevel:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5QiPriorityLevel'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5QiPriorityLevelRm'
         averWindow:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AverWindow'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AverWindowRm'
         maxDataBurstVol:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVol'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVolRm'
         reflectiveQos:
           type: boolean
           description: Indicates whether the QoS information is reflective for the corresponding service data flow.
-        maxPacketLossRate:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        sharingKeyDl:
+          type: string
+          description: Indicates, by containing the same value, what PCC rules may share resource in downlink direction.
+        sharingKeyUl:
+          type: string
+          description: Indicates, by containing the same value, what PCC rules may share resource in uplink direction.
+        maxPacketLossRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRateRm'
         maxPacketLossRateUl:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRateRm'
         defQosFlowIndication:
           type: boolean
           description: Indicates that the dynamic PCC rule shall always have its binding with the QoS Flow associated with the default QoS rule
       required:
         - qosId
-        - 5qi
-        - arp
+      nullable: true
     ConditionData:
       type: object
       properties:
@@ -534,11 +612,12 @@ components:
           type: string
           description: Uniquely identifies the condition data within a PDU session.
         activationTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTimeRm'
         deactivationTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTimeRm'
       required:
         - condId
+      nullable: true
     TrafficControlData:
       type: object
       properties:
@@ -546,7 +625,7 @@ components:
           type: string
           description: Univocally identifies the traffic control policy data within a PDU session.
         flowStatus:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowStatus'
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowStatus'
         redirectInfo:
           $ref: '#/components/schemas/RedirectInformation'
         muteNotif:
@@ -555,19 +634,22 @@ components:
         trafficSteeringPolIdDl:
           type: string
           description: Reference to a pre-configured traffic steering policy for downlink traffic at the SMF.
+          nullable: true
         trafficSteeringPolIdUl:
           type: string
           description: Reference to a pre-configured traffic steering policy for uplink traffic at the SMF.
+          nullable: true
         routeToLocs:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
           minItems: 1
           description: A list of location which the traffic shall be routed to for the AF request
-        dnaiReport:
-          $ref: '#/components/schemas/DnaiReport'
+        upPathChgEvent:
+          $ref: '#/components/schemas/UpPathChgEvent'
       required:
         - tcId
+      nullable: true
     ChargingData:
       type: object
       properties:
@@ -576,20 +658,20 @@ components:
           description: Univocally identifies the charging control policy data within a PDU session.
         meteringMethod:
           $ref: '#/components/schemas/MeteringMethod'
+          nullable: true
         offline:
           type: boolean
-          description: Indicates the online charging is applicable to the PDU session or PCC rule.
+          description: Indicates the offline charging is applicable to the PDU session or PCC rule.
         online:
           type: boolean
-          description: Indicates the offline charging is applicable to the PDU session or PCC rule.
+          description: Indicates the online charging is applicable to the PDU session or PCC rule.
         ratingGroup:
-          type: string
-          description: The charging key for the PCC rule used for rating purposes.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatingGroup'
         reportingLevel:
           $ref: '#/components/schemas/ReportingLevel'
+          nullable: true
         serviceId:
-          type: string
-          description: Indicates the identifier of the service or service component the service data flow in a PCC rule relates to.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ServiceId'
         sponsorId:
           type: string
           description: Indicates the sponsor identity.
@@ -597,10 +679,10 @@ components:
           type: string
           description: Indicates the application service provider identity.
         afChargingIdentifier:
-          type: string
-          description: An identifier, provided from the AF, correlating the measurement for the Charging key/Service identifier values in this PCC rule with application level reports.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
       required:
         - chgId
+      nullable: true
     UsageMonitoringData:
       type: object
       properties:
@@ -608,79 +690,85 @@ components:
           type: string
           description: Univocally identifies the usage monitoring policy data within a PDU session.
         volumeThreshold:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/VolumeRm'
         volumeThresholdUplink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/VolumeRm'
         volumeThresholdDownlink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/VolumeRm'
         timeThreshold:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
         monitoringTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTimeRm'
         nextVolThreshold:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/VolumeRm'
         nextVolThresholdUplink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/VolumeRm'
         nextVolThresholdDownlink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/VolumeRm'
         nextTimeThreshold:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
         inactivityTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
         exUsagePccRuleIds:
           type: array
           items:
             type: string
           minItems: 1
           description: Contains the PCC rule identifier(s) which corresponding service data flow(s) shall be excluded from PDU Session usage monitoring. It is only included in the UsageMonitoringData instance for session level usage monitoring.
+          nullable: true
       required:
         - umId
+      nullable: true
     RedirectInformation:
       type: object
       properties:
-        redirectSupport:
+        redirectEnabled:
           type: boolean
           description: Indicates the redirect is enable.
         redirectAddressType:
-          $ref: '#/components/schemas/FlowDirection'
+          $ref: '#/components/schemas/RedirectAddressType'
         redirectServerAddress:
           type: string
           description: Indicates the address of the redirect server.
-      required:
-        - redirectSupport
     FlowInformation:
       type: object
       properties:
         flowDescription:
           $ref: '#/components/schemas/FlowDescription'
         ethFlowDescription:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
           description: Defines a packet filter for an Ethernet flow. "fDir" attribute is not applicable.
+        packFiltId:
+          type: string
+          description: An identifier of packet filter.
         packetFilterUsage:
           type: boolean
           description: The packet shall be sent to the UE.
         tosTrafficClass:
           type: string
           description: Contains the Ipv4 Type-of-Service and mask field or the Ipv6 Traffic-Class field and mask field.
+          nullable: true
         spi:
           type: string
           description: the security parameter index of the IPSec packet.
+          nullable: true
         flowLabel:
           type: string
           description: the Ipv6 flow label header field.
+          nullable: true
         flowDirection:
-          $ref: '#/components/schemas/FlowDirection'
+          $ref: '#/components/schemas/FlowDirectionRm'
     SmPolicyDeleteData:
       type: object
       properties:
         userLocationInfo:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         servingNetwork:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NetworkId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NetworkId'
         userLocationInfoTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         ranNasRelCauses:
           type: array
           items:
@@ -696,23 +784,22 @@ components:
     QosCharacteristics:
       type: object
       properties:
-        5qI:
-          type: integer
-          description: Identifier for the authorized QoS parameters for the service data flow. Applies to PCC rule and PDU session level.
+        5qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
         resourceType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/QosResourceType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/QosResourceType'
         priorityLevel:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5QiPriorityLevel'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5QiPriorityLevel'
         packetDelayBudget:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
         packetErrorRate:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
         averagingWindow:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AverWindow'
-        maximumDataBurst Volume:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVol'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AverWindow'
+        maxDataBurstVol:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVol'
       required:
-        - 5qI
+        - 5qi
         - resourceType
         - priorityLevel
         - packetDelayBudget
@@ -721,9 +808,9 @@ components:
       type: object
       properties:
         primaryChfAddress:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         secondaryChfAddress:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - primaryChfAddress
         - secondaryChfAddress
@@ -734,21 +821,21 @@ components:
           type: string
           description: An id referencing UsageMonitoringData objects associated with this usage report.
         volUsage:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         volUsageUplink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         volUsageDownlink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         timeUsage:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         nextVolUsage:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         nextVolUsageUplink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         nextVolUsageDownlink:
-          $ref: '#/components/schemas/Volume'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         nextTimeUsage:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
       required:
         - refUmIds
     SmPolicyUpdateContextData:
@@ -767,33 +854,40 @@ components:
           minItems: 1
           description: Indicates the access network charging identifier for the PCC rule(s) or whole PDU session.
         accessType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         ratType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RatType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         servingNetwork:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NetworkId'
-        userLocationInformation:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NetworkId'
+        userLocationInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         relIpv4Address:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         ipv4Address:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         ipv6AddressPrefix:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
         relIpv6AddressPrefix:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
         relUeMac:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
         ueMac:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
         subsSessAmbr:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Ambr'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ambr'
         subsDefQos:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DefaultQosInformation'
-        accuUsageReport:
-          $ref: '#/components/schemas/AccuUsageReport'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SubscribedDefaultQos'
+        numOfPackFilter:
+          type: integer
+          description: Contains the number of supported packet filter for signalled QoS rules.
+        accuUsageReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccuUsageReport'
+          minItems: 1
+          description: Contains the usage report
         3gppPsDataOffStatus:
           type: boolean
           description: If it is included and set to true, the 3GPP PS Data Off is activated by the UE.
@@ -807,14 +901,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RuleReport'
-          minItems: 0
+          minItems: 1
           description: Used to report the PCC rule failure.
+        qncReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosNotificationControlInfo'
+          minItems: 1
+          description: QoS Notification Control information.
         userLocationInfoTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         repPraInfos:
           type: object
           additionalProperties:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
           description: Reports the changes of presence reporting area.
         ueInitResReq:
@@ -823,26 +923,35 @@ components:
         refQosIndication:
           type: boolean
           description: If it is included and set to true, the reflective QoS is supported by the UE. If it is included and set to false, the reflective QoS is revoked by the UE.
+        qosFlowUsage:
+          $ref: '#/components/schemas/QosFlowUsage'
         traceReq:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
-      required:
-        - repPolicyCtrlReqTriggers
-    DnaiReport:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
+    UpPathChgEvent:
       type: object
       properties:
         notificationUri:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifCorreId:
+          type: string
+          description: It is used to set the value of Notification Correlation ID in the notification sent by the SMF.
         dnaiChgType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
       required:
         - notificationUri
+        - notifCorreId
+        - dnaiChgType
+      nullable: true
     TerminationNotification:
       type: object
       properties:
         resourceUri:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        cause:
+          $ref: 'TS29507_Npcf_AMPolicyControl.yaml#/components/schemas/PolicyAssociationReleaseCause'
       required:
         - resourceUri
+        - cause
     AppDetectionInfo :
       type: object
       properties:
@@ -864,8 +973,7 @@ components:
       type: object
       properties:
         accNetChaIdValue:
-          type: string
-          description: Contains a charging identifier
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
         refPccRuleIds:
           type: array
           items:
@@ -877,6 +985,17 @@ components:
           description: When it is included and set to true, indicates the Access Network Charging Identifier applies to the whole PDU Session
       required:
         - accNetChaIdValue
+    AccNetChargingAddress:
+      description: Describes the network entity within the access network performing charging
+      type: object
+      anyOf:
+        - required: [anChargIpv4Addr]
+        - required: [anChargIpv6Addr]
+      properties:
+        anChargIpv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        anChargIpv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
     RequestedRuleData:
       type: object
       properties:
@@ -911,16 +1030,16 @@ components:
       type: object
       properties:
         accessType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
           description: The Access Type where the served UE is camping
         ratType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         servingNetwork:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NetworkId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NetworkId'
         userLocationInfo:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
     RuleReport:
       type: object
       properties:
@@ -936,24 +1055,35 @@ components:
         contVers:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ContentVersion'
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ContentVersion'
+          minItems: 1
           description: Indicates the version of a PCC rule.
         failureCode:
           $ref: '#/components/schemas/FailureCode'
           description: Indicates the reason tha the PCC Rule is being reported.
         finUnitAct:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/FinalUnitAction'
+          $ref: 'TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/FinalUnitAction'
           description: Contains the related filter parameters and redirect address parameters (if available), when the user's account cannot cover the service cost.
+        ranNasRelCauses:
+          type: array
+          items:
+            $ref: '#/components/schemas/RanNasRelCause'
+          minItems: 1
+          description: indicates the RAN or NAS release cause code information.
+      required:
+        - pccRuleIds
+        - ruleStatus
+        - failureCode
     RanNasRelCause:
       type: object
       properties:
         ngApCause:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NgApCause'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NgApCause'
           description: Indicate the cause value for NGAP protocol.
-        5GMmCause:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5GMmCause'
+        5gMmCause:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5GMmCause'
           description: Indicate the cause value for 5GMM protocol.
-        5GSmCause:
+        5gSmCause:
           $ref: '#/components/schemas/5GSmCause'
           description: Indicate the cause value for 5GSM protocol.
     UeInitiatedResourceRequest:
@@ -1002,16 +1132,77 @@ components:
       type: object
       properties:
         5qi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/5Qi'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
           description: Identifier for the authorized QoS parameters for the service data flow.
         gbrUl:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
           description: Indicates the guaranteed bandwidth in uplink requested by the UE.
         gbrDl:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BitRate'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
           description: Indicates the guaranteed bandwidth in downlink requested by the UE.
+      required:
+        - 5qi
+    QosNotificationControlInfo:
+      type: object
+      properties:
+        refPccRuleIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: An array of PCC rule id references to the PCC rules associated with the QoS notification control info.
+        notifType:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/QosNotifType'
+        contVer:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ContentVersion'
+      required:
+        - refPccRuleIds
+        - notifType
+    PartialSuccessReport:
+      type: object
+      properties:
+        failureCause:
+          type: string
+          description: Application error cause specific to this report.
+        ruleReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleReport'
+            minItems: 1
+            description: Information about the PCC rules provisioned by the PCF not successfully installed/activated.
+        ueCampingRep:
+          $ref: '#/components/schemas/UeCampingRep'
+          description: Includes the current applicable values corresponding to the provisioned policy control request triggers.
+      required:
+        - failureCause
+        - ruleReports
+    AuthorizedDefaultQos:
+      type: object
+      properties:
+        5qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
+          description: Identifier for the 5QI.
+        arp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Arp'
+        priorityLevel:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5QiPriorityLevelRm'
+        averWindow:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AverWindowRm'
+        maxDataBurstVol:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MaxDataBurstVolRm'
+    ErrorReport:
+      type: object
+      properties:
+        error:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        ruleReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleReport'
+          minItems: 1
+          description: Used to report the PCC rule failure.
     5GSmCause:
-      $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       description: Indicating the cause value of 5GSM protocol.
     PacketFilterContent:
       type: string
@@ -1019,9 +1210,6 @@ components:
     FlowDescription:
       type: string
       description: Defines a packet filter for an IP flow.Refer to subclause 5.4.2 of 3GPP TS 29.212 [23] for encoding.
-    Volume:
-      type: integer
-      description: Unsigned integer identifying a volume in units of bytes.
     FlowDirection:
       anyOf:
       - type: string
@@ -1041,6 +1229,26 @@ components:
         - UPLINK: The corresponding filter applies for traffic from the UE.
         - BIDIRECTIONAL: The corresponding filter applies for traffic both to and from the UE.
         - UNSPECIFIED: The corresponding filter applies for traffic to the UE (downlink), but has no specific direction declared. The service data flow detection shall apply the filter for uplink traffic as if the filter was bidirectional. The PCF shall not use the value UNSPECIFIED in filters created by the network in NW-initiated procedures. The PCF shall only include the value UNSPECIFIED in filters in UE-initiated procedures if the same value is received from the SMF.
+    FlowDirectionRm:
+      anyOf:
+      - type: string
+        enum:
+          - DOWNLINK
+          - UPLINK
+          - BIDIRECTIONAL
+          - UNSPECIFIED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - DOWNLINK: The corresponding filter applies for traffic to the UE.
+        - UPLINK: The corresponding filter applies for traffic from the UE.
+        - BIDIRECTIONAL: The corresponding filter applies for traffic both to and from the UE.
+        - UNSPECIFIED: The corresponding filter applies for traffic to the UE (downlink), but has no specific direction declared. The service data flow detection shall apply the filter for uplink traffic as if the filter was bidirectional. The PCF shall not use the value UNSPECIFIED in filters created by the network in NW-initiated procedures. The PCF shall only include the value UNSPECIFIED in filters in UE-initiated procedures if the same value is received from the SMF.
+      nullable: true
     ReportingLevel:
       anyOf:
       - type: string
@@ -1085,7 +1293,7 @@ components:
           - RES_MO_RE
           - AC_TY_CH
           - UE_IP_CH
-          - UE MAC_CH
+          - UE_MAC_CH
           - AN_CH_COR
           - US_RE
           - APP_STA
@@ -1095,17 +1303,17 @@ components:
           - PS_DA_OFF
           - DEF_QOS_CH
           - SE_AMBR_CH
-          - PCC_RMV
-          - QOS_STO
-          - QOS_STA
+ 
+          - QOS_NOTIF
           - NO_CREDIT
           - PRA_CH
           - SAREA_CH
           - SCNN_CH
-          - ENF_PCC_RUL
-          - RE_TIMEOUT
+             - RE_TIMEOUT
           - RES_RELEASE
           - SUCC_RES_ALLO
+          - RAT_TY_CH
+          - REF_QOS_IND_CH
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -1117,7 +1325,7 @@ components:
         - RES_MO_RE: A request for resource modification has been received by the SMF. The SMF always reports to the PCF.
         - AC_TY_CH: Access Type Change
         - UE_IP_CH: UE IP address change. The SMF always reports to the PCF.
-        - UE MAC_CH: A new UE MAC address is detected or a used UE MAC address is inactive for a specific period
+        - UE_MAC_CH: A new UE MAC address is detected or a used UE MAC address is inactive for a specific period
         - AN_CH_COR: Access Network Charging Correlation Information
         - US_RE: The PDU Session or the Monitoring key specific resources consumed by a UE either reached the threshold or needs to be reported for other reasons.
         - APP_STA: The start of application traffic has been detected.
@@ -1127,8 +1335,7 @@ components:
         - PS_DA_OFF: The SMF reports when the 3GPP PS Data Off status changes. The SMF always reports to the PCF.
         - DEF_QOS_CH: Default QoS Change. The SMF always reports to the PCF.
         - SE_AMBR_CH: Session AMBR Change. The SMF always reports to the PCF.
-         - QOS_STO: The SMF notify the PCF when receiving notification from RAN that QoS targets of the QoS Flow cannot be fulfilled
-        - QOS_STA: The SMF notify the PCF when receiving notification from RAN that QoS targets of the QoS Flow can be fulfilled again
+        - QOS_NOTIF: The SMF notify the PCF when receiving notification from RAN that QoS targets of the QoS Flow cannot be guranteed or gurateed again.
         - NO_CREDIT: Out of credit
         - PRA_CH: Change of UE presence in Presence Reporting Area
         - SAREA_CH: Location Change with respect to the Serving Area
@@ -1136,6 +1343,8 @@ components:
         - RE_TIMEOUT: Indicates the SMF generated the request because there has been a PCC revalidation timeout
         - RES_RELEASE: Indicate that the SMF can inform the PCF of the outcome of the release of resources for those rules that require so.
         - SUCC_RES_ALLO: Indicates that the requested rule data is the successful resource allocation.
+        - RAT_TY_CH: RAT Type Change.
+        - REF_QOS_IND_CH: Reflective QoS indication Change
     RequestedRuleDataType:
       anyOf:
       - type: string
@@ -1278,3 +1487,26 @@ components:
         - IPV6_ADDR: Indicates that the address type is in the form of IPv6 address.
         - URL: Indicates that the address type is in the form of Uniform Resource Locator.
         - SIP_URI: Indicates that the address type is in the form of SIP Uniform Resource Identifier.
+    QosFlowUsage:
+      anyOf:
+      - type: string
+        enum:
+          - GENERAL
+          - IMS_SIG
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - GENERAL: Indicate no specific QoS flow usage information is available. 
+        - IMS_SIG: Indicate that the QoS flow is used for IMS signalling only.
+    FailureCause:
+      anyOf:
+      - type: string
+        enum:
+          - PCC_RULE_EVENT
+          - PCC_QOS_FLOW_EVENT
+      - type: string
+

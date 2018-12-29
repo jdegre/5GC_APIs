@@ -4,7 +4,8 @@ info:
   title: 'Nsmsf_SMService Service API'
   description: 'SMSF SMService Service API'
 security:
-  - oAuth2ClientCredentials: []
+  - oAuth2ClientCredentials:
+    - nsmsf-sms
   - {}
 servers:
   - url: '{apiRoot}/nsmsf-sms/v1'
@@ -52,31 +53,31 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '403':
           description: Unable to create/update UE Context for SMS in SMSF
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '404':
           description: Unable to found subscription for service user or UE Context for SMS in SMSF
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '503':
           description: Service Unavailable
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
     delete:
       summary: Deactivate SMS Service for a given UE
       operationId: SMServiceDeactivation
@@ -97,19 +98,19 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '404':
           description: Unable to found UE Context for SMS in SMSF
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '503':
           description: Service Unavailable
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
   /ue-contexts/{supi}/sendsms:
     post:
       summary: Send SMS payload for a given UE
@@ -141,25 +142,25 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '403':
           description: Unable to deliver SMS at SMSF
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '404':
           description: Unable to found UE Context for SMS in SMSF
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '503':
           description: Service Unavailable
           content:
             application/problem+json:
               schema:
-                $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -167,7 +168,8 @@ components:
       flows: 
         clientCredentials: 
           tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes: {}
+          scopes:
+            nsmsf-sms: Access to the nsmsf-sms API
   schemas:
     UeSmsContextData:
       type: object
@@ -177,33 +179,33 @@ components:
         - accessType
       properties:
         supi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Supi'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         pei:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
         amfId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         guamis:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Guami'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
           minItems: 1
         accessType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         gpsi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         ueLocation:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         traceData:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TraceData'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
         backupAmfInfo:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
           minItems: 1
         udmGroupId:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         routingIndicator:
           type: string
     SmsRecordData:
@@ -217,17 +219,17 @@ components:
         smsPayloads:
           type: array
           items:
-            $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         accessType:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/AccessType'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         gpsi:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         pei:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/Pei'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
         ueLocation:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         ueTimeZone:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml#/components/schemas/TimeZone'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
     RecordId:
       type: string
     SmsRecordDeliveryData:
@@ -247,5 +249,5 @@ components:
         - SMS_DELIVERY_COMPLETED
         - SMS_DELIVERY_FAILED
 externalDocs:
-  description: Documentation
+  description: 3GPP TS 29.540 V15.2.0; 5G System; SMS Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.540/'

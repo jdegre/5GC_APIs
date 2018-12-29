@@ -1,12 +1,16 @@
 openapi: 3.0.0
 info:
   title: CAPIF_Logging_API_Invocation_API
-  version: "1.PreR15.0.0"
+  description: This API enables the API exposing function to communicate with the CAPIF core function to log the information related to service API invocations.
+  version: "1.0.0"
+externalDocs:
+  description: 3GPP TS 29.222 V15.2.0 Common API Framework for 3GPP Northbound APIs
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/api-invocation-logs/v1'
     variables:
       apiRoot:
-        default: https://demohost.com
+        default: https://example.com
         description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
 paths:
   /{aefId}/logs:
@@ -24,34 +28,42 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvocationLogs'
+              $ref: '#/components/schemas/InvocationLog'
       responses:
         '201':
           description: Log of service API invocations provided by API exposing function successfully stored on the CAPIF core function. 
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvocationLogs'
+                $ref: '#/components/schemas/InvocationLog'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/api-invocation-logs/v1/{aefId}/logs/{logId}'
+              required: true
+              schema:
+                type: string
         '400':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/400'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/401'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/403'
-        '409':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/409'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '411':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/411'
-        '412':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/412'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/413'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/500'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
         '503':
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/503'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/responses/default'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
   /{aefId}/logs/{logId}:
     description: Creates a new log entry for service API invocations.
     parameters:
@@ -69,7 +81,7 @@ paths:
           type: string
 components:
   schemas:
-    InvocationLogs:
+    InvocationLog:
       type: object
       properties:
         aefId:
@@ -78,18 +90,14 @@ components:
         apiInvokerId:
           type: string
           description: Identity of the API invoker which invoked the service API
-        ipv4Addr:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
-        ipv6Addr:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
-        port:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/Port'
         logs:
           type: array
           items:
             $ref: '#/components/schemas/Log'
           minItems: 1
           description: Service API invocation log
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - aefId
         - apiInvokerId
@@ -100,32 +108,47 @@ components:
         apiId:
           type: string
           description: String identifying the API invoked.
-        apiInvoked:
+        apiName:
           type: string
-          description: Name of the API which was invoked
-        version:
-          type: number
+          description: Name of the API which was invoked, it is set as {apiName} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501.
+        apiVersion:
+          type: string
           description: Version of the API which was invoked
         resourceName:
           type: string
           description: Name of the specific resource invoked
+        uri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        protocol:
+          $ref: 'TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/Protocol'
         operation:
-          type: string
-          description: Operation that was invoked on the API
+          $ref: 'TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/Operation'
         result:
           type: string
-          description: Result or output of the invocation
+          description: For HTTP protocol, it contains HTTP status code of the invocation
         invocationTime:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml#/components/schemas/DateTime'
-        parameters:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        invocationLatency:
+          $ref: '#/components/schemas/DurationMs'
+        inputParameters:
+          description: List of input parameters. Can be any value - string, number, boolean, array or object.
+        outputParameters:
+          description: List of output parameters. Can be any value - string, number, boolean, array or object.
+        srcInterface:
+          $ref: 'TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
+        destInterface:
+          $ref: 'TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
+        fwdInterface:
           type: string
-          description: List of input parameters
-        interfaceDescription:
-          $ref: 'https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
+          description: It includes the node identifier (as defined in IETF RFC 7239 of all forwarding entities between the API invoker and the AEF, concatenated with comma and space, e.g. 192.0.2.43:80, unknown:_OBFport, 203.0.113.60
       required:
         - apiId
-        - apiInvoked
-        - version
+        - apiName
+        - apiVersion
         - resourceName
-        - operation
+        - protocol
         - result
+    DurationMs:
+      type: integer
+      description: Unsigned integer identifying a period of time in units of milliseconds.
+      minimum: 0
