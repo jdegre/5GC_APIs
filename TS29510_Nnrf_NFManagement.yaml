@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'NRF NFManagement Service'
   description: 'NRF NFManagement Service'
 servers:
@@ -8,7 +8,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
 security:
   - {}
   - oAuth2ClientCredentials:
@@ -433,6 +433,11 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 1
+        perPlmnSnssaiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlmnSnssai'
+          minItems: 1
         nsiList:
           type: array
           items:
@@ -518,6 +523,18 @@ components:
           items:
             $ref: '#/components/schemas/NFService'
           minItems: 1
+        nfProfileChangesSupportInd:
+          type: boolean
+          default: false
+          writeOnly: true
+        nfProfileChangesInd:
+          type: boolean
+          default: false
+          readOnly: true
+        defaultNotificationSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DefaultNotificationSubscription'
     NFService:
       type: object
       required:
@@ -699,9 +716,9 @@ components:
         - required: [ amfRegionId ]
       properties:
         amfSetId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfSetId'
         amfRegionId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfRegionId'
     GuamiListCond:
       type: object
       required:
@@ -859,9 +876,9 @@ components:
         - guamiList
       properties:
         amfSetId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfSetId'
         amfRegionId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfRegionId'
         guamiList:
           type: array
           items:
@@ -959,6 +976,11 @@ components:
         iwkEpsInd:
           type: boolean
           default: false
+        pduSessionTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+          minItems: 1
     SnssaiUpfInfoItem:
       type: object
       required:
@@ -983,6 +1005,11 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
+        pduSessionTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
           minItems: 1
     InterfaceUpfInfoItem:
       type: object
@@ -1129,6 +1156,10 @@ components:
         - event
         - nfInstanceUri
       allOf:
+        #
+        # Condition: If 'event' takes value 'NF_PROFILE_CHANGED',
+        # then either 'nfProfile' or 'profileChanges' (but not both) must be present
+        #
         - anyOf:
           - not:
               properties:
@@ -1139,6 +1170,10 @@ components:
           - oneOf:
               - required: [ nfProfile ]
               - required: [ profileChanges ]
+        #
+        # Condition: If 'event' takes value 'NF_REGISTERED',
+        # then 'nfProfile' must be present
+        #
         - anyOf:
           - not:
               properties:
@@ -1157,6 +1192,14 @@ components:
             - $ref: '#/components/schemas/NFProfile'
             - not:
                 required: [ interPlmnFqdn ] 
+            - not:
+                required: [ allowedPlmns ] 
+            - not:
+                required: [ allowedNfTypes ] 
+            - not:
+                required: [ allowedNfDomains ] 
+            - not:
+                required: [ allowedNssais ] 
             - properties:
                 nfServices:
                   type: array
@@ -1184,6 +1227,7 @@ components:
           enum:
             - REGISTERED
             - SUSPENDED
+            - UNDISCOVERABLE
         - type: string
     NFServiceVersion:
       type: object
@@ -1216,6 +1260,7 @@ components:
             - nsmf-event-exposure
             - nausf-auth
             - nausf-sorprotection
+            - nausf-upuprotection
             - nnef-pfdmanagement
             - npcf-am-policy-control
             - npcf-smpolicycontrol
@@ -1256,6 +1301,7 @@ components:
           enum:
             - REGISTERED
             - SUSPENDED
+            - UNDISCOVERABLE
         - type: string
     TaiRange:
       type: object
@@ -1349,6 +1395,20 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/ChfInfo'
           minProperties: 1
+    PlmnSnssai:
+      type: object
+      required:
+        - plmnId
+        - sNssaiList
+      properties:
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        sNssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+
 externalDocs:
-  description: 3GPP TS 29.510 V15.2.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V15.3.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'

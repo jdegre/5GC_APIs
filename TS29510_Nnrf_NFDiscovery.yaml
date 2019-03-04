@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'NRF NFDiscovery Service'
-  description: 'NRF NFDiscovery  Service'
+  description: 'NRF NFDiscovery Service'
 servers:
   - url: '{apiRoot}/nnrf-disc/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
 security:
   - {}
   - oAuth2ClientCredentials:
@@ -35,12 +35,13 @@ paths:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
         - name: service-names
           in: query
-          description: Name of the service offered by the NF
+          description: Names of the services offered by the NF
           schema:
             type: array
             items:
-              type: string
+              $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
             minItems: 1
+            uniqueItems: true
           style: form
           explode: false
         - name: requester-nf-instance-fqdn
@@ -50,7 +51,7 @@ paths:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
         - name: target-plmn-list
           in: query
-          description: Id of the PLMN where the target NF is located
+          description: Id of the PLMN of the target NF
           content:
             application/json:
               schema:
@@ -93,6 +94,16 @@ paths:
                 items:
                   $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
                 minItems: 1
+        - name: plmn-specific-snssai-list
+          in: query
+          description: PLMN specific Slice info of the target NF
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/PlmnSnssai'
+                minItems: 1
         - name: dnn
           in: query
           description: Dnn supported by the BSF, SMF or UPF
@@ -123,17 +134,19 @@ paths:
           in: query
           description: AMF Region Identity
           schema:
-            type: string
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfRegionId'
         - name: amf-set-id
           in: query
           description: AMF Set Identity
           schema:
-            type: string
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfSetId'
         - name: guami
           in: query
           description: Guami used to search for an appropriate AMF
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
         - name: supi
           in: query
           description: SUPI of the user
@@ -205,15 +218,25 @@ paths:
             minItems: 1
           style: form
           explode: false
+        - name: pdu-session-types
+          in: query
+          description: list of PDU Session Type required to be supported by the target NF
+          schema:
+            type: array
+            item:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+            minItems: 1
+          style: form
+          explode: false
         - name: supported-features
           in: query
           description: Features required to be supported by the target NF
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         - name: upf-iwk-eps-ind
-          in: query	
+          in: query
           description: UPF supporting interworking with EPS or not
-          schema:	
+          schema:
             type: boolean
         - name: chf-supported-plmn
           in: query
@@ -232,6 +255,38 @@ paths:
           description: AccessType supported by the target NF
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        - name: limit
+          in: query
+          description: Maximum number of NFProfiles to return in the response
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: required-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+            minItems: 1
+          style: form
+          explode: false
+        - name: complex-query
+          in: query
+          description: the complex query condition expression
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ComplexQuery'
+        - name: max-payload-size
+          in: query
+          description: Maximum payload size of the response expressed in kilo octets
+          required: false
+          schema:
+            type: integer
+            maximum: 2000
+            default: 124
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in IETF RFC 7232, 3.2 
@@ -296,6 +351,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NFProfile'
+        nrfSupportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     NFProfile:
       type: object
       required:
@@ -318,6 +375,11 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        perPlmnSnssaiList:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/PlmnSnssai'
           minItems: 1
         nsiList:
           type: array
@@ -380,6 +442,10 @@ components:
           items:
             $ref: '#/components/schemas/NFService'
           minItems: 1
+        defaultNotificationSubscriptions:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/DefaultNotificationSubscription'
     NFService:
       type: object
       required:
@@ -435,5 +501,5 @@ components:
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 externalDocs:
-  description: 3GPP TS 29.510 V15.2.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V15.3.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
