@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'Common Data Types'
   description: 'Common Data Types for Service Based Interfaces '
 externalDocs:
-  description: 3GPP TS 29.571 V15.2.0; Common Data Types for Service Based Interfaces
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 15.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -414,6 +414,12 @@ components:
     AmfId:
       type: string
       pattern: '^[A-Fa-f0-9]{6}$'
+    AmfRegionId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{2}$'
+    AmfSetId:
+      type: string
+      pattern: '^[0-3][A-Fa-f0-9]{2}$'
     RfspIndex:
       type: integer
       minimum: 1
@@ -526,6 +532,7 @@ components:
       nullable: true
     N3IwfId:
       type: string 
+      pattern: '^[A-Fa-f0-9]+$'
     NgeNbId:
       type: string
       pattern: '^(MacroNGeNB-[A-Fa-f0-9]{5}|LMacroNGeNB-[A-Fa-f0-9]{6}|SMacroNGeNB-[A-Fa-f0-9]{5})$'
@@ -995,6 +1002,9 @@ components:
           nullable: true
       required:
         - dnai
+      anyOf:
+        - required: [ routeInfo ]
+        - required: [ routeProfId ]
       nullable: true
     RouteInformation:
       type: object
@@ -1187,11 +1197,17 @@ components:
       type: string
       pattern: '^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$'
       nullable: true
+    ArpPriorityLevelRm:
+      type: integer
+      minimum: 1
+      maximum: 15
+      nullable: true
     ArpPriorityLevel:
       type: integer
       minimum: 1
       maximum: 15
       nullable: true
+    description: nullable: true shall not be used for this attribute 
     5QiPriorityLevel:
       type: integer
       minimum: 1
@@ -1520,8 +1536,6 @@ components:
       properties:
         roamingOdb:
           $ref: '#/components/schemas/RoamingOdb'
-        odbPacketServices:
-          $ref: '#/components/schemas/OdbPacketServices'
 
 #
 # Data Types related to Charging as defined in subclause 5.8
