@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
   description: Policy Control Event Exposure Service API
-  version: "1.0.0"
+  version: "1.0.1"
   title: Npcf_EventExposure
 externalDocs:
-  description: 3GPP TS 29.523 V15.0.0; 5G System; Policy Control Event Exposure Service; Stage 3.
+  description: 3GPP TS 29.523 V15.1.0; 5G System; Policy Control Event Exposure Service; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.523/
 
 servers:
@@ -22,6 +22,10 @@ security:
 paths:
   /subscriptions:
     post:
+      summary: Creates a new Individual Policy Control Events Subscription resource
+      operationId: PostPcEventExposureSubsc
+      tags:
+        - Policy Control Events Subscription (Collection)
       requestBody:
         required: true
         content:
@@ -100,6 +104,10 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /subscriptions/{subscriptionId}:
     get:
+      summary: "Reads an existing Individual Policy Control Events Subscription"
+      operationId: GetPcEventExposureSubsc
+      tags:
+        - Individual Policy Control Events Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -133,6 +141,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      summary: "Modifies an existing Individual Policy Control Events Subscription "
+      operationId: PutPcEventExposureSubsc
+      tags:
+        - Individual Policy Control Events Subscription (Document)
       requestBody:
         required: true
         content:
@@ -178,6 +190,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      summary: "Cancels an existing Individual Policy Control Events Subscription "
+      operationId: DeletePcEventExposureSubsc
+      tags:
+        - Individual Policy Control Events Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -236,7 +252,7 @@ components:
     PcEventExposureSubsc:
       type: object
       properties:
-        eventSubscs:
+        eventSubs:
           type: array
           items:
             $ref: '#/components/schemas/PcEvent'
@@ -300,6 +316,17 @@ components:
           minItems: 1
         afAppId:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AfAppId'
+# All conditions in allOf must be met
+      allOf:
+        # First condition is that servEthFlows and servIpFlows are mutually exclusive
+        - oneOf:
+          - required: [servEthFlows]
+          - required: [servIpFlows]
+        # Second condition is that at least one the servEthFlows, servIpFlows and afAppId shall be present
+        - anyOf:
+          - required: [servEthFlows]
+          - required: [servIpFlows]
+          - required: [afAppId]
             
     EthernetFlowInfo:
       type: object
@@ -340,6 +367,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         plmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         pduSessionInfo:
@@ -368,6 +399,11 @@ components:
       required:
         - snssai
         - dnn
+      oneOf:
+        - required: [ueMac]
+        - anyOf:
+          - required: [ueIpv4]
+          - required: [ueIpv6]
 
 # Simple data types and Enumerations
 
@@ -378,3 +414,5 @@ components:
           - AC_TY_CH
           - PLMN_CH
       - type: string
+
+
