@@ -1,0 +1,894 @@
+<head>
+<style>
+body {
+  font-family: Segoe UI, Helvetica, Arial, sans-serif;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  margin-top: 24px;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  margin-top: 24px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 24px;
+  box-sizing: border-box;
+  color: rgb(36, 41, 46);
+  margin-bottom: 16px;
+  margin-top: 0px;
+  overflow-wrap: break-word;
+}
+
+.result {
+  display: inline;
+}
+
+.test.pass {
+  font-size: 16px;
+  display: inline;
+  color: #00d6b2;
+}
+
+.test.fail {
+  font-size: 16px;
+  display: inline;
+  color: #c00000;
+}
+
+a.button {
+  background-color: rgb(230, 235, 241);
+  background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);
+  background-position: -6px 50%;
+  background-position-x: -6px;
+  background-position-y: 50%;
+  background-repeat: repeat-x;
+  background-size: 110% 110%;
+  border-bottom-color: rgba(27, 31, 35, 0.35);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-image-outset: 0;
+  border-image-repeat: stretch stretch;
+  border-image-slice: 100%;
+  border-image-source: none;
+  border-image-width: 1;
+  border-left-color: rgba(27, 31, 35, 0.35);
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-right-color: rgba(27, 31, 35, 0.35);
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-top-color: rgba(27, 31, 35, 0.35);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  box-sizing: border-box;
+  color: rgb(36, 41, 46);
+  cursor: pointer;
+  display: block;
+  float: left;
+  font-family: Segoe UI, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  outline-width: 0px;
+  overflow-wrap: break-word;
+  padding-bottom: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 3px;
+  position: relative;
+  text-decoration: none;
+  text-decoration-line: none;
+  vertical-align: middle;
+}
+	
+a.button:hover {
+  background-color: rgb(230, 235, 241);
+  background-image: linear-gradient(-180deg,#f0f3f6,#e6ebf1 90%);
+}
+
+a.button:active {
+  background-color: rgb(230, 235, 241);
+  background-image: linear-gradient(-180deg,#d0d3d6,#e6ebf1 90%);
+}
+
+a.minibutton {
+  background-color: rgb(230, 235, 241);
+  background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);
+  background-position: -6px 50%;
+  background-position-x: -6px;
+  background-position-y: 50%;
+  background-repeat: repeat-x;
+  background-size: 110% 110%;
+  border-bottom-color: rgba(27, 31, 35, 0.35);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-image-outset: 0;
+  border-image-repeat: stretch stretch;
+  border-image-slice: 100%;
+  border-image-source: none;
+  border-image-width: 1;
+  border-left-color: rgba(27, 31, 35, 0.35);
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-right-color: rgba(27, 31, 35, 0.35);
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-top-color: rgba(27, 31, 35, 0.35);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  box-sizing: border-box;
+  color: rgb(36, 41, 46);
+  cursor: pointer;
+  font-family: Segoe UI, Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 20px;
+  outline-width: 0px;
+  overflow-wrap: break-word;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 0px;
+  text-decoration: none;
+  text-decoration-line: none;
+  vertical-align: top;
+}
+	
+a.minibutton:hover {
+  background-color: rgb(230, 235, 241);
+  background-image: linear-gradient(-180deg,#f0f3f6,#e6ebf1 90%);
+}
+	
+a.minibutton:active {
+  background-color: rgb(230, 235, 241);
+  background-image: linear-gradient(-180deg,#d0d3d6,#e6ebf1 90%);
+}
+</style>
+</head>
+
+<body>
+<!-- Swagger Parser -->
+<script src="https://apidevtools.org/swagger-parser/dist/swagger-parser.min.js"></script>
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+  var queryString = location.search;
+  var urlParams = new URLSearchParams(location.search);
+  if (urlParams.has('repo')) 
+    repo = urlParams.get('repo');
+  else repo = "jdegre/5GC_APIs";
+  if (urlParams.has('branch'))
+    branch = urlParams.get('branch');
+  else branch = 'master';
+
+  var hostRaw = "https://raw.githubusercontent.com/";
+  var url = hostRaw + repo + "/" + branch + "/" + "README.md";
+  $.get(url, function( data ) {
+    console.log(data );
+  });
+
+  var host = "https://www.github.com/";
+  var dir = host + repo + "/tree/" + branch + "/";
+  console.log(dir);
+  $.get(dir, function( data ) {
+    console.log(data );
+  });
+
+  
+  var apis = [
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_NFManagement.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_NFDiscovery.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_AccessToken.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29572_Nlmf_Location.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_Communication.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_EventExposure.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_Location.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_MT.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29502_Nsmf_PDUSession.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29508_Nsmf_EventExposure.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_SDM.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_UECM.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_UEAU.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_EE.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_PP.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29504_Nudr_DataRepository.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29505_Subscription_Data.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Policy_Data.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Application_Data.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Exposure_Data.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_UEAuthentication.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_SoRProtection.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_UPUProtection.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29531_Nnssf_NSSAIAvailability.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29531_Nnssf_NSSelection.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29540_Nsmsf_SMService.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29511_N5g-eir_EquipmentIdentityCheck.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29551_Nnef_PFDmanagement.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29514_Npcf_PolicyAuthorization.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29507_Npcf_AMPolicyControl.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29512_Npcf_SMPolicyControl.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29554_Npcf_BDTPolicyControl.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29523_Npcf_EventExposure.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29525_Npcf_UEPolicyControl.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29521_Nbsf_Management.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29520_Nnwdaf_EventsSubscription.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29520_Nnwdaf_AnalyticsInfo.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29594_Nchf_SpendingLimitControl.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS32291_Nchf_ConvergedCharging.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29571_CommonData.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29573_N32_Handshake.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29573_JOSEProtectedMessageForwarding.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Discover_Service_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Publish_Service_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Events_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_API_Invoker_Management_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Security_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Access_Control_Policy_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Logging_API_Invocation_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Auditing_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_AEF_Security_API.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29522_TrafficInfluence.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_MonitoringEvent.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ResourceManagementOfBdt.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ChargeableParty.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_NIDD.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_DeviceTriggering.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_GMDviaMBMSbyMB2.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_GMDviaMBMSbyxMB.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ReportingNetworkStatus.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_CpProvisioning.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_PfdManagement.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ECRControl.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_NpConfiguration.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_AsSessionWithQoS.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_MsisdnLessMoSms.yaml",
+    "https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_CommonData.yaml"
+  ]
+
+  function validate(index, next) {
+    new SwaggerParser().validate(apis[index-1])
+      .then(function(api) {
+        document.getElementById("result"+index).innerHTML = 
+		  '<div class="test pass">✓ OK &apos;' + 
+		  api.info.title + '&apos; v' + 
+		  api.info.version + 
+		  '</div>';
+        if (next == true) loop.next();
+      })
+      .catch(function(err) {
+        document.getElementById("result"+index).innerHTML = 
+		  '<div class="test fail">✖ '+
+		  err.message +
+		  '</div>';
+        if (next == true) loop.next();
+    });
+  }
+  
+  function* synchronous_loop() {
+    for (i=1; i<=67; i++) {
+      validate(i, true);
+      yield;
+    }
+    enableButtons();
+  }
+
+  var loop;
+  var buttonEnabled = true;
+
+  function parseAllAPIs() {
+    if (buttonEnabled) {
+      disableButtons();
+      for (i=1; i<=67; i++) {
+        document.getElementById('result'+i).innerHTML = '';
+      }
+      loop = synchronous_loop();
+      loop.next();
+    }
+  }
+  
+  function enableButtons() {
+    buttonEnabled = true;
+    document.getElementById("buttStart").style.cssText =
+      'color: rgb(36, 41, 46);';
+    for (i=1; i<=67; i++) {
+      document.getElementById('button'+i).style.cssText = 
+        'color: rgb(36, 41, 46);';
+    }
+  }
+  
+  function disableButtons() {
+    buttonEnabled = false;
+    document.getElementById("buttStart").style.cssText =
+      'color: rgb(192, 192, 192); background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);';
+    for (i=1; i<=67; i++) {
+      document.getElementById('button'+i).style.cssText = 
+        'color: rgb(192, 192, 192); background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);';
+    }
+  }
+  
+  function parseOneAPI(index) {
+    if (buttonEnabled) {
+      document.getElementById("result"+index).innerHTML = '';
+      validate(index, false);
+    }
+  }
+  
+  
+  function getTextFromUrl(url){
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.send(null);
+    request.onreadystatechange = function () {
+	  alert(request.readyState);
+      if (request.readyState === 4)
+        return request.responseText;
+    }
+	alert("exit");
+  }
+
+</script>
+
+<h1>OpenAPI Specification Files for 3GPP 5G Core Network (Release 15)</h1>
+<p>The YAML files below have been created by 3GPP, and the master source can be found in the <a href="http://www.3gpp.org/DynaReport/29-series.htm">3GPP site</a>, as part of the official 3GPP Technical Specifications.</p>
+<p>© 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.</p>
+<br/>
+<p>API version: Mar. 2019</p>
+<p>The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API.</p>
+<p>The "Parse" button, next to each API, executes a real time validation of the API and its dependencies by invoking the <a href="https://github.com/APIDevTools/swagger-parser">Swagger Parser</a> validator.</p>
+<a href="javascript:parseAllAPIs()" id="buttStart" class="button">Parse all APIs</a><br/>
+
+<h2>NRF (NF Repository Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(1)" id="button1" class="minibutton">Parse</a>
+NF Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_NFManagement.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_NFManagement.yaml">(UI)</a>
+<div id="result1" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(2)" id="button2" class="minibutton">Parse</a>
+NF Discovery
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_NFDiscovery.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_NFDiscovery.yaml">(UI)</a>
+<div id="result2" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(3)" id="button3" class="minibutton">Parse</a>
+Access Token (OAuth2)
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_AccessToken.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29510_Nnrf_AccessToken.yaml">(UI)</a>
+<div id="result3" class="result"></div>
+</li>
+</ul>
+<h2>LMF (Location Management Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(4)" id="button4" class="minibutton">Parse</a>
+Location
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29572_Nlmf_Location.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29572_Nlmf_Location.yaml">(UI)</a>
+<div id="result4" class="result"></div>
+</li>
+</ul>
+<h2>AMF (Access and Mobility Management Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(5)" id="button5" class="minibutton">Parse</a>
+Communication
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_Communication.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_Communication.yaml">(UI)</a>
+<div id="result5" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(6)" id="button6" class="minibutton">Parse</a>
+Event Exposure
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_EventExposure.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_EventExposure.yaml">(UI)</a>
+<div id="result6" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(7)" id="button7" class="minibutton">Parse</a>
+Location
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_Location.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_Location.yaml">(UI)</a>
+<div id="result7" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(8)" id="button8" class="minibutton">Parse</a>
+MT
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_MT.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29518_Namf_MT.yaml">(UI)</a>
+<div id="result8" class="result"></div>
+</li>
+</ul>
+<h2>SMF (Session Management Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(9)" id="button9" class="minibutton">Parse</a>
+PDU Session
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29502_Nsmf_PDUSession.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29502_Nsmf_PDUSession.yaml">(UI)</a>
+<div id="result9" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(10)" id="button10" class="minibutton">Parse</a>
+Event Exposure
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29508_Nsmf_EventExposure.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29508_Nsmf_EventExposure.yaml">(UI)</a>
+<div id="result10" class="result"></div>
+</li>
+</ul>
+<h2>UDM (Unified Data Management)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(11)" id="button11" class="minibutton">Parse</a>
+Subscriber Data Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_SDM.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_SDM.yaml">(UI)</a>
+<div id="result11" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(12)" id="button12" class="minibutton">Parse</a>
+UE Context Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_UECM.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_UECM.yaml">(UI)</a>
+<div id="result12" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(13)" id="button13" class="minibutton">Parse</a>
+UE Authentication
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_UEAU.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_UEAU.yaml">(UI)</a>
+<div id="result13" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(14)" id="button14" class="minibutton">Parse</a>
+Event Exposure
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_EE.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_EE.yaml">(UI)</a>
+<div id="result14" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(15)" id="button15" class="minibutton">Parse</a>
+Parameter Provisioning
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_PP.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29503_Nudm_PP.yaml">(UI)</a>
+<div id="result15" class="result"></div>
+</li>
+</ul>
+<h2>UDR (Unified Data Repository)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(16)" id="button16" class="minibutton">Parse</a>
+Data Repository
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29504_Nudr_DataRepository.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29504_Nudr_DataRepository.yaml">(UI)</a>
+<div id="result16" class="result"></div>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(17)" id="button17" class="minibutton">Parse</a>
+Subscription Data
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29505_Subscription_Data.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29505_Subscription_Data.yaml">(UI)</a>
+<div id="result17" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(18)" id="button18" class="minibutton">Parse</a>
+Policy Data
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Policy_Data.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Policy_Data.yaml">(UI)</a>
+<div id="result18" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(19)" id="button19" class="minibutton">Parse</a>
+Application Data
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Application_Data.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Application_Data.yaml">(UI)</a>
+<div id="result19" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(20)" id="button20" class="minibutton">Parse</a>
+Exposure Data
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Exposure_Data.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29519_Exposure_Data.yaml">(UI)</a>
+<div id="result20" class="result"></div>
+</li>
+</ul>
+</li>
+</ul>
+<h2>AUSF (Authentication Server Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(21)" id="button21" class="minibutton">Parse</a>
+UE Authentication
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_UEAuthentication.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_UEAuthentication.yaml">(UI)</a>
+<div id="result21" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(22)" id="button22" class="minibutton">Parse</a>
+SoR Protection
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_SoRProtection.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_SoRProtection.yaml">(UI)</a>
+<div id="result22" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(23)" id="button23" class="minibutton">Parse</a>
+UPU Protection
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_UPUProtection.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29509_Nausf_UPUProtection.yaml">(UI)</a>
+<div id="result23" class="result"></div>
+</li>
+</ul>
+<h2>NSSF (Network Slice Selection Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(24)" id="button24" class="minibutton">Parse</a>
+NSSAI Availability
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29531_Nnssf_NSSAIAvailability.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29531_Nnssf_NSSAIAvailability.yaml">(UI)</a>
+<div id="result24" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(25)" id="button25" class="minibutton">Parse</a>
+NS Selection
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29531_Nnssf_NSSelection.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29531_Nnssf_NSSelection.yaml">(UI)</a>
+<div id="result25" class="result"></div>
+</li>
+</ul>
+<h2>SMSF (SMS Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(26)" id="button26" class="minibutton">Parse</a>
+SM Service
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29540_Nsmsf_SMService.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29540_Nsmsf_SMService.yaml">(UI)</a>
+<div id="result26" class="result"></div>
+</li>
+</ul>
+<h2>5G-EIR (5G Equipment Identity Register)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(27)" id="button27" class="minibutton">Parse</a>
+Equipment Identity Check
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29511_N5g-eir_EquipmentIdentityCheck.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29511_N5g-eir_EquipmentIdentityCheck.yaml">(UI)</a>
+<div id="result27" class="result"></div>
+</li>
+</ul>
+<h2>NEF (Network Exposure Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(28)" id="button28" class="minibutton">Parse</a>
+Packet Flow Description (PFD) Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29551_Nnef_PFDmanagement.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29551_Nnef_PFDmanagement.yaml">(UI)</a>
+<div id="result28" class="result"></div>
+</li>
+</ul>
+<h2>PCF (Policy Control Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(29)" id="button29" class="minibutton">Parse</a>
+Policy Authorization
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29514_Npcf_PolicyAuthorization.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29514_Npcf_PolicyAuthorization.yaml">(UI)</a>
+<div id="result29" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(30)" id="button30" class="minibutton">Parse</a>
+Access and Mobility (AM) Policy Control
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29507_Npcf_AMPolicyControl.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29507_Npcf_AMPolicyControl.yaml">(UI)</a>
+<div id="result30" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(31)" id="button31" class="minibutton">Parse</a>
+Session Management (SM) Policy Control
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29512_Npcf_SMPolicyControl.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29512_Npcf_SMPolicyControl.yaml">(UI)</a>
+<div id="result31" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(32)" id="button32" class="minibutton">Parse</a>
+Background Data Transfer (BDT) Policy Control
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29554_Npcf_BDTPolicyControl.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29554_Npcf_BDTPolicyControl.yaml">(UI)</a>
+<div id="result32" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(33)" id="button33" class="minibutton">Parse</a>
+Policy Control Event Exposure
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29523_Npcf_EventExposure.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29523_Npcf_EventExposure.yaml">(UI)</a>
+<div id="result33" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(34)" id="button34" class="minibutton">Parse</a>
+UE Policy Control
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29525_Npcf_UEPolicyControl.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29525_Npcf_UEPolicyControl.yaml">(UI)</a>
+<div id="result34" class="result"></div>
+</li>
+</ul>
+<h2>BSF (Binding Support Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(35)" id="button35" class="minibutton">Parse</a>
+Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29521_Nbsf_Management.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29521_Nbsf_Management.yaml">(UI)</a>
+<div id="result35" class="result"></div>
+</li>
+</ul>
+<h2>NWDAF (Network Data Analytics Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(36)" id="button36" class="minibutton">Parse</a>
+Events Subscription
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29520_Nnwdaf_EventsSubscription.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29520_Nnwdaf_EventsSubscription.yaml">(UI)</a>
+<div id="result36" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(37)" id="button37" class="minibutton">Parse</a>
+Analytics Info
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29520_Nnwdaf_AnalyticsInfo.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29520_Nnwdaf_AnalyticsInfo.yaml">(UI)</a>
+<div id="result37" class="result"></div>
+</li>
+</ul>
+<h2>CHF (Charging Function)</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(38)" id="button38" class="minibutton">Parse</a>
+Spending Limit Control
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29594_Nchf_SpendingLimitControl.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29594_Nchf_SpendingLimitControl.yaml">(UI)</a>
+<div id="result38" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(39)" id="button39" class="minibutton">Parse</a>
+Converged Charging
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS32291_Nchf_ConvergedCharging.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS32291_Nchf_ConvergedCharging.yaml">(UI)</a>
+<div id="result39" class="result"></div>
+</li>
+</ul>
+<h2>Common Data Types</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(40)" id="button40" class="minibutton">Parse</a>
+Common Data
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29571_CommonData.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29571_CommonData.yaml">(UI)</a>
+<div id="result40" class="result"></div>
+</li>
+</ul>
+<h2>SEPP N32 APIs</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(41)" id="button41" class="minibutton">Parse</a>
+Handshake (N32-c)
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29573_N32_Handshake.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29573_N32_Handshake.yaml">(UI)</a>
+<div id="result41" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(42)" id="button42" class="minibutton">Parse</a>
+Forwarding (N32-f)
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29573_JOSEProtectedMessageForwarding.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29573_JOSEProtectedMessageForwarding.yaml">(UI)</a>
+<div id="result42" class="result"></div>
+</li>
+</ul>
+<h1>Northbound APIs (CAPIF)</h1>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(43)" id="button43" class="minibutton">Parse</a>
+Discover Service
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Discover_Service_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Discover_Service_API.yaml">(UI)</a>
+<div id="result43" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(44)" id="button44" class="minibutton">Parse</a>
+Publish Service
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Publish_Service_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Publish_Service_API.yaml">(UI)</a>
+<div id="result44" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(45)" id="button45" class="minibutton">Parse</a>
+Events
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Events_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Events_API.yaml">(UI)</a>
+<div id="result45" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(46)" id="button46" class="minibutton">Parse</a>
+API Invoker Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_API_Invoker_Management_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_API_Invoker_Management_API.yaml">(UI)</a>
+<div id="result46" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(47)" id="button47" class="minibutton">Parse</a>
+Security
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Security_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Security_API.yaml">(UI)</a>
+<div id="result47" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(48)" id="button48" class="minibutton">Parse</a>
+Access Control Policy
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Access_Control_Policy_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Access_Control_Policy_API.yaml">(UI)</a>
+<div id="result48" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(49)" id="button49" class="minibutton">Parse</a>
+Logging API Invocation
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Logging_API_Invocation_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Logging_API_Invocation_API.yaml">(UI)</a>
+<div id="result49" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(50)" id="button50" class="minibutton">Parse</a>
+Auditing
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Auditing_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_CAPIF_Auditing_API.yaml">(UI)</a>
+<div id="result50" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(51)" id="button51" class="minibutton">Parse</a>
+AEF Security
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_AEF_Security_API.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29222_AEF_Security_API.yaml">(UI)</a>
+<div id="result51" class="result"></div>
+</li>
+</ul>
+<h1>Northbound APIs (T8)</h1>
+<h2>NEF</h2>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(52)" id="button52" class="minibutton">Parse</a>
+Traffic Influence
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29522_TrafficInfluence.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29522_TrafficInfluence.yaml">(UI)</a>
+<div id="result52" class="result"></div>
+</li>
+</ul>
+<h2>SCEF</h2>
+<p>NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS</p>
+<ul>
+<li>
+<a href="javascript:parseOneAPI(53)" id="button53" class="minibutton">Parse</a>
+Event Monitoring
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_MonitoringEvent.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_MonitoringEvent.yaml">(UI)</a>
+<div id="result53" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(54)" id="button54" class="minibutton">Parse</a>
+Resource Management of Background Data Transfer (BDT)
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ResourceManagementOfBdt.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ResourceManagementOfBdt.yaml">(UI)</a>
+<div id="result54" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(55)" id="button55" class="minibutton">Parse</a>
+Chargeable Party
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ChargeableParty.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ChargeableParty.yaml">(UI)</a>
+<div id="result55" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(56)" id="button56" class="minibutton">Parse</a>
+Non-IP Data Delivery (NIDD)
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_NIDD.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_NIDD.yaml">(UI)</a>
+<div id="result56" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(57)" id="button57" class="minibutton">Parse</a>
+Device Triggering
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_DeviceTriggering.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_DeviceTriggering.yaml">(UI)</a>
+<div id="result57" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(58)" id="button58" class="minibutton">Parse</a>
+Group Message Delivery via MBMS by MB2
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_GMDviaMBMSbyMB2.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_GMDviaMBMSbyMB2.yaml">(UI)</a>
+<div id="result58" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(59)" id="button59" class="minibutton">Parse</a>
+Group Message Delivery via MBMS by xMB
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_GMDviaMBMSbyxMB.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_GMDviaMBMSbyxMB.yaml">(UI)</a>
+<div id="result59" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(60)" id="button60" class="minibutton">Parse</a>
+Network Status Reporting
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ReportingNetworkStatus.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ReportingNetworkStatus.yaml">(UI)</a>
+<div id="result60" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(61)" id="button61" class="minibutton">Parse</a>
+Communication Patterns (CP) Parameters Provisioning
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_CpProvisioning.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_CpProvisioning.yaml">(UI)</a>
+<div id="result61" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(62)" id="button62" class="minibutton">Parse</a>
+Packet Flow Description (PFD) Management
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_PfdManagement.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_PfdManagement.yaml">(UI)</a>
+<div id="result62" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(63)" id="button63" class="minibutton">Parse</a>
+Enhanced Coverage Restriction Control
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ECRControl.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_ECRControl.yaml">(UI)</a>
+<div id="result63" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(64)" id="button64" class="minibutton">Parse</a>
+Network Parameter Configuration
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_NpConfiguration.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_NpConfiguration.yaml">(UI)</a>
+<div id="result64" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(65)" id="button65" class="minibutton">Parse</a>
+Application Server (AS) Session with QoS
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_AsSessionWithQoS.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_AsSessionWithQoS.yaml">(UI)</a>
+<div id="result65" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(66)" id="button66" class="minibutton">Parse</a>
+MSISDN-less Mobile-Originated SMS
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_MsisdnLessMoSms.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_MsisdnLessMoSms.yaml">(UI)</a>
+<div id="result66" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(67)" id="button67" class="minibutton">Parse</a>
+Common Data
+<a href="https://forge.etsi.org/swagger/editor/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_CommonData.yaml">(Editor)</a>
+<a href="https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/3GPP/openapis-playground/raw/REL-15/TS29122_CommonData.yaml">(UI)</a>
+<div id="result67" class="result"></div>
+</li>
+</ul>
+
+</body>
