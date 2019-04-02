@@ -4,7 +4,7 @@ info:
   title: 'Unified Data Repository Service API file for policy data'
   description: 'The API version is defined in 3GPP TS 29.504'
 externalDocs:
-  description: 3GPP TS 29.519 V15.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V15.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -119,7 +119,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: '#/components/schemas/UePolicySet'
+              $ref: '#/components/schemas/UePolicySetPatch'
       responses:
         '204':
           description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
@@ -157,8 +157,10 @@ paths:
        - name: snssai
          in: query
          required: false
-         schema:
-           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+         content:
+           application/json:
+             schema:
+               $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
        - name: dnn
          in: query
          required: false
@@ -172,6 +174,7 @@ paths:
            type: array
            items:
              type: string
+           minItems: 1
       responses:
         '200':
           description: Upon success, a response body containing SmPolicyData shall be returned.
@@ -215,7 +218,7 @@ paths:
                $ref: '#/components/schemas/UsageMonData'
       responses:
         '204':
-          description: Successful case. The resource has been successfully uupdated and no additional content is to be sent in the response message.
+          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -579,7 +582,7 @@ paths:
                       minItems: 1
               responses:
                 '204':
-                  description: No Content, Notification was succesfull
+                  description: No Content, Notification was successful
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -683,6 +686,7 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
       responses:  
         '200':
           description: Expected response to a valid request
@@ -838,6 +842,11 @@ components:
       description: Contains the AM policy data for a given subscriber.
       type: object
       properties:
+        praInfos:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+          minProperties: 1
         subscCats:
           type: array
           items:
@@ -847,6 +856,11 @@ components:
       description: Contains the UE policy data for a given subscriber.
       type: object
       properties:
+        praInfos:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+          minProperties: 1
         subscCats:
           type: array
           items:
@@ -861,6 +875,20 @@ components:
           type: array
           items:
             type: string
+          minItems: 1
+        allowedRouteSelDescs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PlmnRouteSelectionDescriptor'
+          minProperties: 1
+        andspInd:
+          type: boolean
+        pei:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
+        osIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/OsId'
           minItems: 1
     UePolicySetPatch:
       description: Contains the UE policy set for a given subscriber.
@@ -875,6 +903,15 @@ components:
           type: array
           items:
             type: string
+          minItems: 1
+        andspInd:
+          type: boolean
+        pei:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
+        osIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/OsId'
           minItems: 1
     UePolicySection:
       description: Contains the UE policy section.
@@ -966,6 +1003,11 @@ components:
           type: boolean
         mpsPriorityLevel:
           type: integer
+        praInfos:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+          minProperties: 1
       required:
         - dnn
     UsageMonDataLimit:
@@ -1068,6 +1110,10 @@ components:
           type: string
         nwAreaInfo:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        numOfUes:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        volPerUe:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
       required:
         - aspIds
         - transPolicy
@@ -1102,8 +1148,63 @@ components:
           $ref: '#/components/schemas/SponsorConnectivityData'
         bdtData:
           $ref: '#/components/schemas/BdtData'
+        ueId:
+         $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        sponsorId:
+          type: string
+        bdtRefId:
+          type: string
+        usageMonId:
+          type: string
+    PlmnRouteSelectionDescriptor:
+      description: Contains the route selection descriptors (combinations of SNSSAI, DNNs, PDU session types, and SSC modes) allowed by subscription to the UE for a serving PLMN
+      type: object
+      properties:
+        servingPlmn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        snssaiRouteSelDescs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnssaiRouteSelectionDescriptor'
+          minItems: 1
+      required:
+        - servingPlmn
+    SnssaiRouteSelectionDescriptor:
+      description: Contains the route selector parameters (DNNs, PDU session types and SSC modes) per SNSSAI
+      type: object
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnnRouteSelDescs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnnRouteSelectionDescriptor'
+          minItems: 1
+      required:
+        - snssai
+    DnnRouteSelectionDescriptor:
+      description: Contains the route selector parameters (PDU session types and SSC modes) per DNN
+      type: object
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        sscModes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SscMode'
+          minItems: 1
+        pduSessTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+          minItems: 1
+      required:
+        - dnn
     IpIndex:
       type: integer
+    OsId:
+      type: string
+      format: uuid
     UsageMonLevel:
       anyOf:
       - type: string
@@ -1121,3 +1222,4 @@ components:
           - DAILY
           - HOURLY
       - type: string
+
