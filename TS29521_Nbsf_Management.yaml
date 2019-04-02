@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
   description: Binding Support Management Service API
-  version: "1.0.0"
+  version: "1.0.1"
   title: Nbsf_Management
 externalDocs:
-  description: 3GPP TS 29.521 V15.2.0; 5G System; Binding Support Management Service.
+  description: 3GPP TS 29.521 V15.3.0; 5G System; Binding Support Management Service.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.521/'
 servers:
   - url: '{apiRoot}/nbsf-management/v1'
@@ -102,14 +102,21 @@ paths:
           in: query
           description: The identification of slice.
           required: false
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         - name: ipDomain
           in: query
           description: The IPv4 address domain identifier.
           required: false
           schema:
             type: string
+        - name: supp-feat
+          in: query
+          description: To filter irrelevant responses related to unsupported features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: The individual PCF session binding session binding information resource matching the query parameter(s) is returned.
@@ -117,6 +124,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PcfBinding'
+        '204':
+          description: There is no PCF session binding information matching the query parameter(s).
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -199,13 +208,19 @@ components:
           items:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/IpEndPoint'
           minItems: 1
-          description: IP end points of the PCF or the IP end points of the PCF hosting the Npcf_PolicyAuthorization service. At least one of pcfFqdn or pcfIpEndPoints shall be included if the PCF supports N5 interface. If the pcfIpEndPoints is provided at the PCF level, the transport and port in the pcfIpEndPoints are not required.
+          description: IP end points of the PCF hosting the Npcf_PolicyAuthorization service. At least one of pcfFqdn or pcfIpEndPoints shall be included if the PCF supports the Npcf_PolicyAuthorization service.
         pcfDiamHost:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
         pcfDiamRealm:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        pcfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        recoveryTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - dnn
         - snssai
@@ -214,3 +229,8 @@ components:
           - required: [ipv4Addr]
           - required: [ipv6Prefix]
         - required: [macAddr48]
+      anyOf:
+        - anyOf:
+          - required: [pcfFqdn]
+          - required: [pcfIpEndPoints]
+        - required: [pcfDiamHost, pcfDiamRealm]
