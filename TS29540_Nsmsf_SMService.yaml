@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '2.0.0'
   title: 'Nsmsf_SMService Service API'
   description: 'SMSF SMService Service API'
 security:
@@ -8,7 +8,7 @@ security:
     - nsmsf-sms
   - {}
 servers:
-  - url: '{apiRoot}/nsmsf-sms/v1'
+  - url: '{apiRoot}/nsmsf-sms/v2'
     variables:
       apiRoot:
         default: https://example.com
@@ -42,7 +42,7 @@ paths:
                 $ref: '#/components/schemas/UeSmsContextData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmsf-sms/v1/ue-contexts/{supi}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmsf-sms/{apiVersion}/ue-contexts/{supi}'
               required: true
               schema:
                 type: string
@@ -126,9 +126,24 @@ paths:
             type: string
       requestBody:
         content:
-          application/json:
+          multipart/related:
             schema:
-              $ref: '#/components/schemas/SmsRecordData'
+              type: object
+              properties:
+                jsonData:
+                  $ref: '#/components/schemas/SmsRecordData'
+                binaryPayload:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType: application/json
+              binaryPayload:
+                contentType: application/vnd.3gpp.sms
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
         required: true
       responses:
         '200':
@@ -212,14 +227,12 @@ components:
       type: object
       required:
         - smsRecordId
-        - smsPayloads
+        - smsPayload
       properties:
         smsRecordId:
           $ref: '#/components/schemas/RecordId'
-        smsPayloads:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        smsPayload:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         gpsi:
@@ -249,5 +262,5 @@ components:
         - SMS_DELIVERY_COMPLETED
         - SMS_DELIVERY_FAILED
 externalDocs:
-  description: 3GPP TS 29.540 V15.2.0; 5G System; SMS Services; Stage 3
+  description: 3GPP TS 29.540 V15.3.0; 5G System; SMS Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.540/'
