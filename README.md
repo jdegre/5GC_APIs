@@ -2,9 +2,9 @@
 
 The files in this repository have been created by 3GPP, and the master source can be found in the [3GPP site](http://www.3gpp.org/DynaReport/29-series.htm), as part of the official 3GPP Technical Specifications.
 
-© 2018-2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
+© 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
 
-API version: March 2019 (Work in progress)
+API version: March 2019
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API:
 
