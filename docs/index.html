@@ -243,16 +243,18 @@ a.minibutton:active {
   function validate(index, next) {
     new SwaggerParser().validate(apis[index-1])
       .then(function(api) {
+	version = api.info.version;
+	if (version != '-') version = 'v' + version;
+	else version = '';
         document.getElementById("result"+index).innerHTML = 
 		  '<div class="test pass">&#10003; OK &apos;' + 
-		  api.info.title + '&apos; v' + 
-		  api.info.version + 
+		  api.info.title + '&apos; ' + version + 
 		  '</div>';
         if (next == true) loop.next();
       })
       .catch(function(err) {
         document.getElementById("result"+index).innerHTML = 
-		  '<div class="test fail">✖ '+
+		  '<div class="test fail">&#10006; '+
 		  err.message +
 		  '</div>';
         if (next == true) loop.next();
