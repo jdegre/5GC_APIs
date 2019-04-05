@@ -5,7 +5,7 @@ info:
   description: 'The API version is defined in 3GPP TS 29.504'
   
 externalDocs:
-  description: 3GPP TS 29.505 V15.2.0; 5G System; Usage of the Unified Data Repository services for Subscription Data; Stage 3
+  description: 3GPP TS 29.505 V15.3.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
@@ -43,9 +43,9 @@ paths:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'                
     patch:
       summary: modify the authentication subscription data of a UE
-      operationId: ModifyAuthentication
+      operationId: ModifyAuthenticationSubscription
       tags:
-        - Authentication Data (Document)
+        - Authentication Subscription (Document)
       parameters:
         - name: ueId
           in: path
@@ -77,7 +77,7 @@ paths:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
 
-  /subscription-data/{ueId}/authentication-data/authentication-status: 
+  /subscription-data/{ueId}/authentication-data/authentication-status:
     put:
       summary: To store the Authentication Status data of a UE 
       operationId: CreateAuthenticationStatus
@@ -128,7 +128,7 @@ paths:
             minItems: 1
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           description: Supported Features
           in: query
           schema:
@@ -160,7 +160,7 @@ paths:
           required: true
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
-        - name: supported-features 
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -232,6 +232,8 @@ paths:
         - name: dataset-names
           in: query
           description: List of dataset names
+          style: form
+          explode: false
           schema:
             $ref: '#/components/schemas/DatasetNames'
       responses:
@@ -804,7 +806,7 @@ paths:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/v1/sm-contexts/{smContextRef}/subscription-data/{ueId}/context-data/smf-registrations/{pduSessionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/v2/sm-contexts/{smContextRef}/subscription-data/{ueId}/context-data/smf-registrations/{pduSessionId}'
               required: true
               schema:
                 type: string
@@ -903,7 +905,7 @@ paths:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
     patch:
       summary: To modify operator specific data of a UE
-      operationId: AmfContext3gpp
+      operationId: UpdateOperatorSpecificData
       tags:
         - Operator-Specific Data Container (Document)
       parameters:
@@ -1431,6 +1433,12 @@ paths:
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
+        '404':
+          description: update of non-existing resource is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
           content:
@@ -1644,7 +1652,7 @@ paths:
                 $ref: '#/components/schemas/EeSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/v1/subscription-data/group-data/{ueGroupId}/ee-subscriptions '
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/v2/subscription-data/group-data/{ueGroupId}/ee-subscriptions '
               required: true
               schema:
                 type: string
@@ -1680,6 +1688,12 @@ paths:
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
+        '404':
+          description: update of non-existing resource is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
           content:
@@ -1846,6 +1860,12 @@ paths:
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
+        '404':
+          description: update of non-existing resource is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
           content:
@@ -1958,6 +1978,39 @@ paths:
               responses:
                 '204':
                   description: Expected response to a valid request
+
+    get:
+      summary: Retrieves the list of subscriptions
+      operationId: QuerySubsToNotify
+      tags:
+        - Subs To Nofify (Collection)
+      parameters:
+        - name: ue-id
+          in: query
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubscriptionDataSubscriptions'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
 
   /subscription-data/subs-to-notify/{subsId}:  
     delete:
@@ -2104,220 +2157,102 @@ paths:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
 
+  /subscription-data/{ueId}/context-data:
+    get:
+      summary: Retrieve multiple context data sets of a UE
+      operationId: QueryContextData
+      tags:
+        - Context Data (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: context-dataset-names
+          in: query
+          description: List of context dataset names
+          style: form
+          explode: false
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContextDatasetNames'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextDataSets'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
 components:
   schemas:
     AuthenticationSubscription:
       type: object
       required:
         - authenticationMethod
-        - permanentKey
+        - protectionParamId
         - sequenceNumber
+        - authenticationManagementField
+        - algorithmId
       properties:
         authenticationMethod:
           $ref: '#/components/schemas/AuthMethod'
-        permanentKey:
-          $ref: '#/components/schemas/PermanentKey'
+        encPermanentKey:
+          type: string
+        protectionParamId:
+          type: string
         sequenceNumber:
           $ref: '#/components/schemas/SequenceNumber'
+
         authenticationManagementField:
-          $ref: '#/components/schemas/AuthenticationManagementField'
-        vectorAlgorithm:
-          $ref: '#/components/schemas/VectorAlgorithm'
-        milenage:
-          $ref: '#/components/schemas/Milenage'
-        tuak:
-          $ref: '#/components/schemas/Tuak'
-        opc:
-          $ref: '#/components/schemas/Opc'
-        topc:
-          $ref: '#/components/schemas/Topc'
-        sharedAuthenticationSubscriptionId:
-          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SharedData'
-
-    SharedAuthenticationSubscription:
-      type: object
-      required:
-        - authenticationMethod
-        - vectorAlgorithm
-      properties:
-        authenticationManagementField:
-          $ref: '#/components/schemas/AuthenticationManagementField'
-        vectorAlgorithm:
-          $ref: '#/components/schemas/VectorAlgorithm'
-        milenage:
-          $ref: '#/components/schemas/Milenage'
-        tuak:
-          $ref: '#/components/schemas/Tuak'
-
-
-    PermanentKey:
-      type: object
-      required:
-        - permanentKeyValue
-        - encryptionKey
-        - encryptionAlgorithm
-      properties:
-        permanentKeyValue:
-          $ref: '#/components/schemas/PermanentKeyValue'
-        encryptionKey:
-          $ref: '#/components/schemas/EncryptionKey'
-        encryptionAlgorithm:
-          $ref: '#/components/schemas/EncryptionAlgorithm'
-
-
-    Milenage:
-      type: object
-      properties:
-        op:
-          $ref: '#/components/schemas/Op'
-        rotations:
-          $ref: '#/components/schemas/Rotations'
-        constants:
-          $ref: '#/components/schemas/Constants'
-
-    Tuak:
-      type: object
-      properties:
-        top:
-          $ref: '#/components/schemas/Top'
-        keccakIterations:
-          type: integer
-          minimum: 1
-          maximum: 255
-
-
-    Op:
-      type: object
-      required:
-        - opValue
-        - encryptionKey
-        - encryptionAlgorithm
-      properties:
-        opValue:
-          $ref: '#/components/schemas/OpValue'
-        encryptionKey:
-          $ref: '#/components/schemas/EncryptionKey'
-        encryptionAlgorithm:
-          $ref: '#/components/schemas/EncryptionAlgorithm'
-
-    Opc:
-      type: object
-      required:
-        - opcValue
-        - encryptionKey
-        - encryptionAlgorithm
-      properties:
-        opcValue:
-          $ref: '#/components/schemas/OpcValue'
-        encryptionKey:
-          $ref: '#/components/schemas/EncryptionKey'
-        encryptionAlgorithm:
-          $ref: '#/components/schemas/EncryptionAlgorithm'
-
-    Top:
-      type: object
-      required:
-        - topValue
-        - encryptionKey
-        - encryptionAlgorithm
-      properties:
-        topValue:
-          $ref: '#/components/schemas/TopValue'
-        encryptionKey:
-          $ref: '#/components/schemas/EncryptionKey'
-        encryptionAlgorithm:
-          $ref: '#/components/schemas/EncryptionAlgorithm'
-
-    Topc:
-      type: object
-      required:
-        - topcValue
-        - encryptionKey
-        - encryptionAlgorithm
-      properties:
-        topcValue:
-          $ref: '#/components/schemas/TopcValue'
-        encryptionKey:
-          $ref: '#/components/schemas/EncryptionKey'
-        encryptionAlgorithm:
-          $ref: '#/components/schemas/EncryptionAlgorithm'
-
-    Rotations:
-      type: object
-      required:
-        - r1
-        - r2
-        - r3
-        - r4
-        - r5
-      properties:
-        r1:
-          $ref: '#/components/schemas/RValue'
-        r2:
-          $ref: '#/components/schemas/RValue'
-        r3:
-          $ref: '#/components/schemas/RValue'
-        r4:
-          $ref: '#/components/schemas/RValue'
-        r5:
-          $ref: '#/components/schemas/RValue'
-
-    Constants:
-      type: object
-      required:
-        - c1
-        - c2
-        - c3
-        - c4
-        - c5
-      properties:
-        c1:
-          $ref: '#/components/schemas/CValue'
-        c2:
-          $ref: '#/components/schemas/CValue'
-        c3:
-          $ref: '#/components/schemas/CValue'
-        c4:
-          $ref: '#/components/schemas/CValue'
-        c5:
-          $ref: '#/components/schemas/CValue'
-
-    PermanentKeyValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
+          type: string
+          pattern: '^[A-Fa-f0-9]{4}$'
+        algorithmId:
+          type: string
+        encOpcKey:
+          type: string
+        encTopcKey:
+          type: string
     SequenceNumber:
-      type: string
-      pattern: '^[A-Fa-f0-9]{12}$'
-    AuthenticationManagementField:
-      type: string
-      pattern: '^[A-Fa-f0-9]{4}$'
-    OpValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
-    OpcValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
-    TopValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
-    TopcValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
-    RValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
-    CValue:
-      type: string
-      pattern: '^[A-Fa-f0-9]+$'
-    EncryptionKey:
-      type: integer
-    EncryptionAlgorithm:
-      type: integer
-    VectorAlgorithm:
+      type: object
+      properties:
+        sqnScheme:
+          $ref: '#/components/schemas/SqnScheme'
+        sqn:
+          type: string        
+          pattern: '^[A-Fa-f0-9]{12}$'
+        lastIndexes:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+        indLength:
+          type: integer
+          minimum: 0
+        difSign:
+          $ref: '#/components/schemas/Sign'
+
+    SqnScheme:
+      anyOf:
+        - type: string
+          enum:
+            - GENERAL
+            - NON_TIME_BASED
+            - TIME_BASED
+        - type: string
+    Sign:
       type: string
       enum:
-        - MILENAGE
-        - TUAK
+        - POSITIVE
+        - NEGATIVE
     VarPlmnId:
       type: string
       pattern: '^[0-9]{5,6}$'
@@ -2397,10 +2332,13 @@ components:
           additionalProperties:
             type: boolean
     AuthMethod:
-      type: string
-      enum:
-        - 5G_AKA
-        - EAP_AKA_PRIME
+      anyOf:
+        - type: string
+          enum:
+            - 5G_AKA
+            - EAP_AKA_PRIME
+            - EAP_TLS
+        - type: string
     PpData:
       $ref: 'TS29503_Nudm_PP.yaml#/components/schemas/PpData'
     EeSubscription:
@@ -2434,6 +2372,8 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        sdmSubscription:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SdmSubscription'
         supported-features:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     DataChangeNotify:
@@ -2451,6 +2391,8 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/NotifyItem'
           minItems: 1
+        sdmSubscription:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SdmSubscription'
     IdentityData:
       type: object
       properties:
@@ -2468,10 +2410,26 @@ components:
     SorData:
       type: object
       properties:
+        provisioningTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        ueUpdateStatus:
+          $ref: '#/components/schemas/UeUpdateStatus'
         sorXmacIue:
           $ref: 'TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
+        sorMacIue:
+          $ref: 'TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
       required:
-        - sorXmacIue
+        - provisioningTime
+        - ueUpdateStatus
+
+    UeUpdateStatus:
+      type: string
+      enum:
+        - NOT_SENT
+        - SENT_NO_ACK_REQUIRED
+        - WAITING_FOR_ACK
+        - ACK_RECEIVED
+
     OperatorDeterminedBarringData:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/OdbData' 
     EeProfileData:
@@ -2495,3 +2453,41 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         subsChangeNotifyCorrelationId:
           type: string
+    ContextDatasetNames:
+      type: array
+      items: 
+        $ref: '#/components/schemas/ContextDataSetName'
+      minItems: 1
+      uniqueItems: true
+    ContextDataSetName:
+      anyOf:
+      - type: string
+        enum:
+        - AMF_3GPP
+        - AMF_NON_3GPP
+        - SDM_SUBSCRIPTIONS
+        - EE_SUBSCRIPTIONS
+        - SMSF_3GPP
+        - SMSF_NON_3GPP
+      - type: string
+    ContextDataSets:
+      type: object
+      properties:
+        amf3Gpp:
+          $ref: '#/components/schemas/Amf3GppAccessRegistration'
+        amfNon3Gpp:
+          $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+        sdmSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SdmSubscription'
+          minItems: 1
+        eeSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/EeSubscription'
+          minItems: 1
+        smsf3GppAccess:
+          $ref: '#/components/schemas/SmsfRegistration'
+        smsfNon3GppAccess:
+          $ref: '#/components/schemas/SmsfRegistration'

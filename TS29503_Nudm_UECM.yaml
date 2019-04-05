@@ -1,12 +1,12 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'Nudm_UECM'
   description: 'Nudm Context Management Service'
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 15.2.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 15.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -170,7 +170,7 @@ paths:
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
         - name: supported-features
           in: query
           schema:
@@ -340,7 +340,7 @@ paths:
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
         - name: supported-features
           in: query
           schema:
@@ -775,6 +775,17 @@ components:
           $ref: '#/components/schemas/DualRegistrationFlag'
         ratType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        urrpIndicator:
+          type: boolean
+        epsInterworkingInfo:
+          type: object
+          properties:
+            epsIwkPgws:
+              description: A map (list of key-value pairs where Dnn serves as key) of EpsIwkPgws
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/EpsIwkPgw'
+
 
 
     Amf3GppAccessRegistrationModification:
@@ -794,6 +805,25 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
+        epsInterworkingInfo:
+          type: object
+          properties:
+            epsIwkPgws:
+              description: A map (list of key-value pairs where Dnn serves as key) of EpsIwkPgws
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/EpsIwkPgw'
+
+    EpsIwkPgw:
+      type: object
+      required:
+        - pgwFqdn
+        - smfInstanceId
+      properties:
+        pgwFqdn:
+          type: string
+        smfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
 
     AmfNon3GppAccessRegistration:
       type: object
@@ -831,6 +861,9 @@ components:
           minItems: 1
         ratType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        urrpIndicator:
+          type: boolean
+
 
 
     AmfNon3GppAccessRegistrationModification:
@@ -857,7 +890,6 @@ components:
         - smfInstanceId
         - pduSessionId
         - singleNssai
-        - dnn
         - plmnId
       properties:
         smfInstanceId:
@@ -870,6 +902,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        emergencyServices:
+          type: boolean
         pcscfRestorationCallbackUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         plmnId:
@@ -958,3 +992,4 @@ components:
           - 5GS_TO_EPS_MOBILITY_UE_INITIAL_REGISTRATION
           - REREGISTRATION_REQUIRED
         - type: string  
+

@@ -37,7 +37,7 @@ p {
 .test.pass {
   font-size: 16px;
   display: inline;
-  color: #00d6b2;
+  color: #159626;
 }
 
 .test.fail {
@@ -193,6 +193,7 @@ a.minibutton:active {
     "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29519_Exposure_Data.yaml",
     "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_UEAuthentication.yaml",
     "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml",
+    "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_UPUProtection.yaml",
     "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSAIAvailability.yaml",
     "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml",
     "https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml",
@@ -242,16 +243,18 @@ a.minibutton:active {
   function validate(index, next) {
     new SwaggerParser().validate(apis[index-1])
       .then(function(api) {
+	version = api.info.version;
+	if (version != '-') version = 'v' + version;
+	else version = '';
         document.getElementById("result"+index).innerHTML = 
-		  '<div class="test pass">✓ OK &apos;' + 
-		  api.info.title + '&apos; v' + 
-		  api.info.version + 
+		  '<div class="test pass">&#10003; OK &apos;' + 
+		  api.info.title + '&apos; ' + version + 
 		  '</div>';
         if (next == true) loop.next();
       })
       .catch(function(err) {
         document.getElementById("result"+index).innerHTML = 
-		  '<div class="test fail">✖ '+
+		  '<div class="test fail">&#10006; '+
 		  err.message +
 		  '</div>';
         if (next == true) loop.next();
@@ -259,11 +262,11 @@ a.minibutton:active {
   }
   
   function* synchronous_loop() {
-    for (i=1; i<=66; i++) {
-	  validate(i, true);
-	  yield;
-	}
-	enableButtons();
+    for (i=1; i<=67; i++) {
+      validate(i, true);
+      yield;
+    }
+    enableButtons();
   }
 
   var loop;
@@ -272,31 +275,31 @@ a.minibutton:active {
   function parseAllAPIs() {
     if (buttonEnabled) {
       disableButtons();
-      for (i=1; i<=66; i++) {
+      for (i=1; i<=67; i++) {
         document.getElementById('result'+i).innerHTML = '';
       }
       loop = synchronous_loop();
       loop.next();
-	}
+    }
   }
   
   function enableButtons() {
-  	buttonEnabled = true;
-	document.getElementById("buttStart").style.cssText =
-	  'color: rgb(36, 41, 46);';
-	for (i=1; i<=65; i++) {
+    buttonEnabled = true;
+    document.getElementById("buttStart").style.cssText =
+      'color: rgb(36, 41, 46);';
+    for (i=1; i<=67; i++) {
       document.getElementById('button'+i).style.cssText = 
-	    'color: rgb(36, 41, 46);';
+        'color: rgb(36, 41, 46);';
     }
   }
   
   function disableButtons() {
-  	buttonEnabled = false;
-	document.getElementById("buttStart").style.cssText =
-	  'color: rgb(192, 192, 192); background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);';
-	for (i=1; i<=65; i++) {
+    buttonEnabled = false;
+    document.getElementById("buttStart").style.cssText =
+      'color: rgb(192, 192, 192); background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);';
+    for (i=1; i<=67; i++) {
       document.getElementById('button'+i).style.cssText = 
-	    'color: rgb(192, 192, 192); background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);';
+        'color: rgb(192, 192, 192); background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);';
     }
   }
   
@@ -304,15 +307,15 @@ a.minibutton:active {
     if (buttonEnabled) {
       document.getElementById("result"+index).innerHTML = '';
       validate(index, false);
-	}
+    }
   }
 </script>
 
 <h1>5G Core Network APIs (OpenAPI 3)</h1>
 <p>The YAML files below have been created by 3GPP, and the master source can be found in the <a href="http://www.3gpp.org/DynaReport/29-series.htm">3GPP site</a>, as part of the official 3GPP Technical Specifications.</p>
-<p>© 2018, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.</p>
+<p>&#169; 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.</p>
 <br/>
-<p>API version 1.0.0 (Dec. 2018)</p>
+<p>API version: March 2019</p>
 <p>The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API.</p>
 <p>The "Parse" button, next to each API, executes a real time validation of the API and its dependencies by invoking the <a href="https://github.com/APIDevTools/swagger-parser">Swagger Parser</a> validator.</p>
 <a href="javascript:parseAllAPIs()" id="buttStart" class="button">Parse all APIs</a><br/>
@@ -488,359 +491,366 @@ UE Authentication
 </li>
 <li>
 <a href="javascript:parseOneAPI(22)" id="button22" class="minibutton">Parse</a>
-SoR Protection
+SoR (Steering of Roaming) Protection
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_SoRProtection.yaml">(UI)</a>
 <div id="result22" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(23)" id="button23" class="minibutton">Parse</a>
+UPU (UE Parameter Update) Protection
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_UPUProtection.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29509_Nausf_UPUProtection.yaml">(UI)</a>
+<div id="result23" class="result"></div>
 </li>
 </ul>
 <h2>NSSF (Network Slice Selection Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(23)" id="button23" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(24)" id="button24" class="minibutton">Parse</a>
 NSSAI Availability
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSAIAvailability.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSAIAvailability.yaml">(UI)</a>
-<div id="result23" class="result"></div>
+<div id="result24" class="result"></div>
 </li>
 <li>
-<a href="javascript:parseOneAPI(24)" id="button24" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(25)" id="button25" class="minibutton">Parse</a>
 NS Selection
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29531_Nnssf_NSSelection.yaml">(UI)</a>
-<div id="result24" class="result"></div>
+<div id="result25" class="result"></div>
 </li>
 </ul>
 <h2>SMSF (SMS Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(25)" id="button25" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(26)" id="button26" class="minibutton">Parse</a>
 SM Service
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29540_Nsmsf_SMService.yaml">(UI)</a>
-<div id="result25" class="result"></div>
+<div id="result26" class="result"></div>
 </li>
 </ul>
 <h2>5G-EIR (5G Equipment Identity Register)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(26)" id="button26" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(27)" id="button27" class="minibutton">Parse</a>
 Equipment Identity Check
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29511_N5g-eir_EquipmentIdentityCheck.yaml">(UI)</a>
-<div id="result26" class="result"></div>
+<div id="result27" class="result"></div>
 </li>
 </ul>
 <h2>NEF (Network Exposure Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(27)" id="button27" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(28)" id="button28" class="minibutton">Parse</a>
 Packet Flow Description (PFD) Management
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29551_Nnef_PFDmanagement.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29551_Nnef_PFDmanagement.yaml">(UI)</a>
-<div id="result27" class="result"></div>
+<div id="result28" class="result"></div>
 </li>
 </ul>
 <h2>PCF (Policy Control Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(28)" id="button28" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(29)" id="button29" class="minibutton">Parse</a>
 Policy Authorization
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_Npcf_PolicyAuthorization.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29514_Npcf_PolicyAuthorization.yaml">(UI)</a>
-<div id="result28" class="result"></div>
-</li>
-<li>
-<a href="javascript:parseOneAPI(29)" id="button29" class="minibutton">Parse</a>
-Access and Mobility (AM) Policy Control
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29507_Npcf_AMPolicyControl.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29507_Npcf_AMPolicyControl.yaml">(UI)</a>
 <div id="result29" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(30)" id="button30" class="minibutton">Parse</a>
-Session Management (SM) Policy Control
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_Npcf_SMPolicyControl.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_Npcf_SMPolicyControl.yaml">(UI)</a>
+Access and Mobility (AM) Policy Control
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29507_Npcf_AMPolicyControl.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29507_Npcf_AMPolicyControl.yaml">(UI)</a>
 <div id="result30" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(31)" id="button31" class="minibutton">Parse</a>
-Background Data Transfer (BDT) Policy Control
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29554_Npcf_BDTPolicyControl.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29554_Npcf_BDTPolicyControl.yaml">(UI)</a>
+Session Management (SM) Policy Control
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_Npcf_SMPolicyControl.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29512_Npcf_SMPolicyControl.yaml">(UI)</a>
 <div id="result31" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(32)" id="button32" class="minibutton">Parse</a>
-Policy Control Event Exposure
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29523_Npcf_EventExposure.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29523_Npcf_EventExposure.yaml">(UI)</a>
+Background Data Transfer (BDT) Policy Control
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29554_Npcf_BDTPolicyControl.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29554_Npcf_BDTPolicyControl.yaml">(UI)</a>
 <div id="result32" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(33)" id="button33" class="minibutton">Parse</a>
+Policy Control Event Exposure
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29523_Npcf_EventExposure.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29523_Npcf_EventExposure.yaml">(UI)</a>
+<div id="result33" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(34)" id="button34" class="minibutton">Parse</a>
 UE Policy Control
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29525_Npcf_UEPolicyControl.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29525_Npcf_UEPolicyControl.yaml">(UI)</a>
-<div id="result33" class="result"></div>
+<div id="result34" class="result"></div>
 </li>
 </ul>
 <h2>BSF (Binding Support Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(34)" id="button34" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(35)" id="button35" class="minibutton">Parse</a>
 Management
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29521_Nbsf_Management.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29521_Nbsf_Management.yaml">(UI)</a>
-<div id="result34" class="result"></div>
+<div id="result35" class="result"></div>
 </li>
 </ul>
 <h2>NWDAF (Network Data Analytics Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(35)" id="button35" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(36)" id="button36" class="minibutton">Parse</a>
 Events Subscription
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29520_Nnwdaf_EventsSubscription.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29520_Nnwdaf_EventsSubscription.yaml">(UI)</a>
-<div id="result35" class="result"></div>
+<div id="result36" class="result"></div>
 </li>
 <li>
-<a href="javascript:parseOneAPI(36)" id="button36" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(37)" id="button37" class="minibutton">Parse</a>
 Analytics Info
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29520_Nnwdaf_AnalyticsInfo.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29520_Nnwdaf_AnalyticsInfo.yaml">(UI)</a>
-<div id="result36" class="result"></div>
+<div id="result37" class="result"></div>
 </li>
 </ul>
 <h2>CHF (Charging Function)</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(37)" id="button37" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(38)" id="button38" class="minibutton">Parse</a>
 Spending Limit Control
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29594_Nchf_SpendingLimitControl.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29594_Nchf_SpendingLimitControl.yaml">(UI)</a>
-<div id="result37" class="result"></div>
+<div id="result38" class="result"></div>
 </li>
 <li>
-<a href="javascript:parseOneAPI(38)" id="button38" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(39)" id="button39" class="minibutton">Parse</a>
 Converged Charging
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS32291_Nchf_ConvergedCharging.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS32291_Nchf_ConvergedCharging.yaml">(UI)</a>
-<div id="result38" class="result"></div>
+<div id="result39" class="result"></div>
 </li>
 </ul>
 <h2>Common Data Types</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(39)" id="button39" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(40)" id="button40" class="minibutton">Parse</a>
 Common Data
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29571_CommonData.yaml">(UI)</a>
-<div id="result39" class="result"></div>
+<div id="result40" class="result"></div>
 </li>
 </ul>
 <h2>SEPP N32 APIs</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(40)" id="button40" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(41)" id="button41" class="minibutton">Parse</a>
 Handshake (N32-c)
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_N32_Handshake.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_N32_Handshake.yaml">(UI)</a>
-<div id="result40" class="result"></div>
+<div id="result41" class="result"></div>
 </li>
 <li>
-<a href="javascript:parseOneAPI(41)" id="button41" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(42)" id="button42" class="minibutton">Parse</a>
 Forwarding (N32-f)
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_JOSEProtectedMessageForwarding.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29573_JOSEProtectedMessageForwarding.yaml">(UI)</a>
-<div id="result41" class="result"></div>
+<div id="result42" class="result"></div>
 </li>
 </ul>
 <h1>Northbound APIs (CAPIF)</h1>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(42)" id="button42" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(43)" id="button43" class="minibutton">Parse</a>
 Discover Service
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Discover_Service_API.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Discover_Service_API.yaml">(UI)</a>
-<div id="result42" class="result"></div>
-</li>
-<li>
-<a href="javascript:parseOneAPI(43)" id="button43" class="minibutton">Parse</a>
-Publish Service
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml">(UI)</a>
 <div id="result43" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(44)" id="button44" class="minibutton">Parse</a>
-Events
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Events_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Events_API.yaml">(UI)</a>
+Publish Service
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Publish_Service_API.yaml">(UI)</a>
 <div id="result44" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(45)" id="button45" class="minibutton">Parse</a>
-API Invoker Management
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_API_Invoker_Management_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_API_Invoker_Management_API.yaml">(UI)</a>
+Events
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Events_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Events_API.yaml">(UI)</a>
 <div id="result45" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(46)" id="button46" class="minibutton">Parse</a>
-Security
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Security_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Security_API.yaml">(UI)</a>
+API Invoker Management
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_API_Invoker_Management_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_API_Invoker_Management_API.yaml">(UI)</a>
 <div id="result46" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(47)" id="button47" class="minibutton">Parse</a>
-Access Control Policy
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Access_Control_Policy_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Access_Control_Policy_API.yaml">(UI)</a>
+Security
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Security_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Security_API.yaml">(UI)</a>
 <div id="result47" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(48)" id="button48" class="minibutton">Parse</a>
-Logging API Invocation
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Logging_API_Invocation_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Logging_API_Invocation_API.yaml">(UI)</a>
+Access Control Policy
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Access_Control_Policy_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Access_Control_Policy_API.yaml">(UI)</a>
 <div id="result48" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(49)" id="button49" class="minibutton">Parse</a>
-Auditing
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Auditing_API.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Auditing_API.yaml">(UI)</a>
+Logging API Invocation
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Logging_API_Invocation_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Logging_API_Invocation_API.yaml">(UI)</a>
 <div id="result49" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(50)" id="button50" class="minibutton">Parse</a>
+Auditing
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Auditing_API.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_CAPIF_Auditing_API.yaml">(UI)</a>
+<div id="result50" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(51)" id="button51" class="minibutton">Parse</a>
 AEF Security
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_AEF_Security_API.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29222_AEF_Security_API.yaml">(UI)</a>
-<div id="result50" class="result"></div>
+<div id="result51" class="result"></div>
 </li>
 </ul>
 <h1>Northbound APIs (T8)</h1>
 <h2>NEF</h2>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(51)" id="button51" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(52)" id="button52" class="minibutton">Parse</a>
 Traffic Influence
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29522_TrafficInfluence.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29522_TrafficInfluence.yaml">(UI)</a>
-<div id="result51" class="result"></div>
+<div id="result52" class="result"></div>
 </li>
 </ul>
 <h2>SCEF</h2>
 <p>NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS</p>
 <ul>
 <li>
-<a href="javascript:parseOneAPI(52)" id="button52" class="minibutton">Parse</a>
+<a href="javascript:parseOneAPI(53)" id="button53" class="minibutton">Parse</a>
 Event Monitoring
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MonitoringEvent.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MonitoringEvent.yaml">(UI)</a>
-<div id="result52" class="result"></div>
-</li>
-<li>
-<a href="javascript:parseOneAPI(53)" id="button53" class="minibutton">Parse</a>
-Resource Management of Background Data Transfer (BDT)
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ResourceManagementOfBdt.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ResourceManagementOfBdt.yaml">(UI)</a>
 <div id="result53" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(54)" id="button54" class="minibutton">Parse</a>
-Chargeable Party
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ChargeableParty.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ChargeableParty.yaml">(UI)</a>
+Resource Management of Background Data Transfer (BDT)
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ResourceManagementOfBdt.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ResourceManagementOfBdt.yaml">(UI)</a>
 <div id="result54" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(55)" id="button55" class="minibutton">Parse</a>
-Non-IP Data Delivery (NIDD)
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NIDD.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NIDD.yaml">(UI)</a>
+Chargeable Party
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ChargeableParty.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ChargeableParty.yaml">(UI)</a>
 <div id="result55" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(56)" id="button56" class="minibutton">Parse</a>
-Device Triggering
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_DeviceTriggering.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_DeviceTriggering.yaml">(UI)</a>
+Non-IP Data Delivery (NIDD)
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NIDD.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NIDD.yaml">(UI)</a>
 <div id="result56" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(57)" id="button57" class="minibutton">Parse</a>
-Group Message Delivery via MBMS by MB2
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyMB2.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyMB2.yaml">(UI)</a>
+Device Triggering
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_DeviceTriggering.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_DeviceTriggering.yaml">(UI)</a>
 <div id="result57" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(58)" id="button58" class="minibutton">Parse</a>
-Group Message Delivery via MBMS by xMB
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml">(UI)</a>
+Group Message Delivery via MBMS by MB2
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyMB2.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyMB2.yaml">(UI)</a>
 <div id="result58" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(59)" id="button59" class="minibutton">Parse</a>
-Network Status Reporting
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ReportingNetworkStatus.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ReportingNetworkStatus.yaml">(UI)</a>
+Group Message Delivery via MBMS by xMB
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_GMDviaMBMSbyxMB.yaml">(UI)</a>
 <div id="result59" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(60)" id="button60" class="minibutton">Parse</a>
-Communication Patterns (CP) Parameters Provisioning
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CpProvisioning.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CpProvisioning.yaml">(UI)</a>
+Network Status Reporting
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ReportingNetworkStatus.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ReportingNetworkStatus.yaml">(UI)</a>
 <div id="result60" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(61)" id="button61" class="minibutton">Parse</a>
-Packet Flow Description (PFD) Management
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_PfdManagement.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_PfdManagement.yaml">(UI)</a>
+Communication Patterns (CP) Parameters Provisioning
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CpProvisioning.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CpProvisioning.yaml">(UI)</a>
 <div id="result61" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(62)" id="button62" class="minibutton">Parse</a>
-Enhanced Coverage Restriction Control
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ECRControl.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ECRControl.yaml">(UI)</a>
+Packet Flow Description (PFD) Management
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_PfdManagement.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_PfdManagement.yaml">(UI)</a>
 <div id="result62" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(63)" id="button63" class="minibutton">Parse</a>
-Network Parameter Configuration
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NpConfiguration.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NpConfiguration.yaml">(UI)</a>
+Enhanced Coverage Restriction Control
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ECRControl.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_ECRControl.yaml">(UI)</a>
 <div id="result63" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(64)" id="button64" class="minibutton">Parse</a>
-Application Server (AS) Session with QoS
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_AsSessionWithQoS.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_AsSessionWithQoS.yaml">(UI)</a>
+Network Parameter Configuration
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NpConfiguration.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_NpConfiguration.yaml">(UI)</a>
 <div id="result64" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(65)" id="button65" class="minibutton">Parse</a>
-MSISDN-less Mobile-Originated SMS
-<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MsisdnLessMoSms.yaml">(Editor)</a>
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MsisdnLessMoSms.yaml">(UI)</a>
+Application Server (AS) Session with QoS
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_AsSessionWithQoS.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_AsSessionWithQoS.yaml">(UI)</a>
 <div id="result65" class="result"></div>
 </li>
 <li>
 <a href="javascript:parseOneAPI(66)" id="button66" class="minibutton">Parse</a>
+MSISDN-less Mobile-Originated SMS
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MsisdnLessMoSms.yaml">(Editor)</a>
+<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_MsisdnLessMoSms.yaml">(UI)</a>
+<div id="result66" class="result"></div>
+</li>
+<li>
+<a href="javascript:parseOneAPI(67)" id="button67" class="minibutton">Parse</a>
 Common Data
 <a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml">(Editor)</a>
 <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29122_CommonData.yaml">(UI)</a>
-<div id="result66" class="result"></div>
+<div id="result67" class="result"></div>
 </li>
 </ul>
 

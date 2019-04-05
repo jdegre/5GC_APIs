@@ -1,12 +1,12 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'Nudm_EE'
   description: 'Nudm Event Exposure Service'
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 15.2.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 15.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -129,6 +129,43 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
+    patch:
+      summary: Patch
+      operationId: UpdateEeSubscription
+      tags:
+        - Update EE Subscription
+      parameters:
+        - name: ueIdentity
+          in: path
+          description: Represents the scope of the UE for which the subscription is applied. Contains the GPSI of the user or the external group ID or any UE.
+          required: true
+          schema:
+            type: string
+            pattern: '^(msisdn-[0-9]{5,15}|.+|extid-[^@]+@[^@]+|extgroupid-[^@]+@[^@]+|anyUE)$'
+        - name: subscriptionId
+          in: path
+          description: Id of the EE Subscription
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '204': 
+          description: Successful response
+        '403': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          description: Unexpected error
 
 components:
   securitySchemes:
@@ -214,7 +251,7 @@ components:
     MonitoringReport:
       type: object
       required:
-        - referencId
+        - referenceId
         - eventType
         - timeStamp
       properties:

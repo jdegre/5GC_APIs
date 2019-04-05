@@ -4,7 +4,7 @@ info:
   title: 'Unified Data Repository Service API file for Application Data'
   description: 'The API version is defined in 3GPP TS 29.504'
 externalDocs:
-  description: 3GPP TS 29.519 V15.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V15.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -13,12 +13,13 @@ paths:
       parameters:
         - name: appId
           in: query
-          description: Contains the information of the application identifier(s) for the querying PFD Data resource.If none appId is included in the URI, it applies to all application identifier(s) for the querying PFD Data resource.
+          description: Contains the information of the application identifier(s) for the querying PFD Data resource. If none appId is included in the URI, it applies to all application identifier(s) for the querying PFD Data resource.
           required: false
           schema:
             type: array
             items:
               $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+            minItems: 1
       responses:
         '200':
           description: A representation of PFDs for request applications is returned.
@@ -53,7 +54,7 @@ paths:
       parameters:
         - name: appId
           in: path
-          description: Indicate the application identifier for the request pfd(s).It shall apply the format of Data type ApplicationId.
+          description: Indicate the application identifier for the request pfd(s). It shall apply the format of Data type ApplicationId.
           required: true
           schema:
             type: string
@@ -86,13 +87,13 @@ paths:
       parameters:
         - name: appId
           in: path
-          description: Indicate the application identifier for the request pfd(s).It shall apply the format of Data type ApplicationId.
+          description: Indicate the application identifier for the request pfd(s). It shall apply the format of Data type ApplicationId.
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: Successful case.The Individual PFD Data resource related to the application identifier was deleted.
+          description: Successful case. The Individual PFD Data resource related to the application identifier was deleted.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -119,7 +120,7 @@ paths:
       parameters:
         - name: appId
           in: path
-          description: Indicate the application identifier for the request pfd(s).It shall apply the format of Data type ApplicationId.
+          description: Indicate the application identifier for the request pfd(s). It shall apply the format of Data type ApplicationId.
           required: true
           schema:
             type: string
@@ -132,12 +133,12 @@ paths:
                 $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/v1/application-data/pfds/{application-identifier}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/pfds/{appId}'
               required: true
               schema:
                 type: string
         '200':
-          description: Successful case.The upgrade of an Individual PFD Data resource related to the application identifier is confirmed and a representation of that resource is returned.
+          description: Successful case. The upgrade of an Individual PFD Data resource related to the application identifier is confirmed and a representation of that resource is returned.
           content:
             application/json:
               schema:
@@ -179,6 +180,7 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
         - name: dnns
           in: query
           description: Each element identifies a DNN.
@@ -187,14 +189,18 @@ paths:
             type: array
             items:
               $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+            minItems: 1
         - name: snssais
           in: query
           description: Each element identifies a slice.
           required: false
-          schema:
-            type: array
-            items:
-              $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+                minItems: 1
         - name: internal-Group-Ids
           in: query
           description: Each element identifies a group of users. 
@@ -203,6 +209,7 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
         - name: supis
           in: query
           description: Each element identifies the user.
@@ -211,6 +218,7 @@ paths:
             type: array
             items:
               $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+            minItems: 1
       responses:
         '200':
           description: The Traffic Influence Data stored in the UDR are returned.
@@ -251,7 +259,7 @@ paths:
       parameters:
         - name: influenceId
           in: path
-          description: The Identifier of an Individual Influence Data to be created or updated.It shall apply the format of Data type string.
+          description: The Identifier of an Individual Influence Data to be created or updated. It shall apply the format of Data type string.
           required: true
           schema:
             type: string
@@ -264,7 +272,7 @@ paths:
                 $ref: '#/components/schemas/TrafficInfluData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/v1/application-data/influenceData/{influenceId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/influenceData/{influenceId}'
               required: true
               schema:
                 type: string
@@ -310,7 +318,7 @@ paths:
       parameters:
         - name: influenceId
           in: path
-          description: The Identifier of an Individual Influence Data to be updated.It shall apply the format of Data type string.
+          description: The Identifier of an Individual Influence Data to be updated. It shall apply the format of Data type string.
           required: true
           schema:
             type: string
@@ -349,7 +357,7 @@ paths:
       parameters:
         - name: influenceId
           in: path
-          description: The Identifier of an Individual Influence Data to be updated.It shall apply the format of Data type string.
+          description: The Identifier of an Individual Influence Data to be updated. It shall apply the format of Data type string.
           required: true
           schema:
             type: string
@@ -430,7 +438,7 @@ paths:
                       minItems: 1
               responses:
                 '204':
-                  description: No Content, Notification was succesfull
+                  description: No Content, Notification was successful
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '403':
@@ -463,8 +471,10 @@ paths:
           in: query
           description: Identifies a slice.
           required: false
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         - name: internal-Group-Id
           in: query
           description: Identifies a group of users.
@@ -637,7 +647,7 @@ components:
           items:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
           minItems: 1
-          description: Identifies Ethernet packet filters.Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+          description: Identifies Ethernet packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         interGroupId:
@@ -650,7 +660,7 @@ components:
           items:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
           minItems: 1
-          description: Identifies IP packet filters.Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+          description: Identifies IP packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
         trafficRoutes:
           type: array
           items:
@@ -691,7 +701,7 @@ components:
           items:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
           minItems: 1
-          description: Identifies Ethernet packet filters.Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+          description: Identifies Ethernet packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         internalGroupId:
@@ -704,7 +714,7 @@ components:
           items:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
           minItems: 1
-          description: Identifies IP packet filters.Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+          description: Identifies IP packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
         trafficRoutes:
           type: array
           items:

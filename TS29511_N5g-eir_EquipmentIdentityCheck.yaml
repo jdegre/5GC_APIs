@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: '5G-EIR Equipment Identity Check'
   description: '5G-EIR Equipment Identity Check Service'
 servers:
@@ -26,13 +26,19 @@ paths:
           description: PEI of the UE
           required: true
           schema:
-            $ref: '#/components/schemas/Pei' 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei' 
         - name: supi
           in: query
           description: SUPI of the UE
           required: false
           schema:
-            $ref: '#/components/schemas/Supi' 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi' 
+        - name: gpsi
+          in: query
+          description: GPSI of the UE
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
       responses:
         '200':
           description: Expected response to a valid request
@@ -49,7 +55,7 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ProblemDetails'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '414':
           $ref: 'TS29571_CommonData.yaml#/components/responses/414'
         '429':
@@ -60,10 +66,6 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -81,35 +83,13 @@ components:
       properties:
         status:
             $ref: '#/components/schemas/EquipmentStatus'
-    Pei:
-      type: string
-      pattern: "([0-9]{14})"
-    Supi:
-      type: string
-      pattern: "(imsi-[0-9]{5,15}|nai-.+)"
     EquipmentStatus:
       type: string
       enum:
         - WHITELISTED
         - BLACKLISTED
         - GREYLISTED
-    ProblemDetails:
-      description: 'https://www.rfc-editor.org/rfc/rfc7807.txt'
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-        title:
-          type: string
-        status:
-          type: integer
-        detail:
-          type: string
-        instance:
-          type: string
+
 externalDocs:
-  description: 3GPP TS 29.511 V15.2.0; 5G System; Equipment Identity Register Services; Stage 3
+  description: 3GPP TS 29.511 V15.3.0; 5G System; Equipment Identity Register Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.511/'
- 
