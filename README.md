@@ -8,6 +8,9 @@ API version: March 2019
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API:
 
+>**Note:**
+There is a known bug in Swagger Editor in the latest versions (from 3.6.23 onwards), and it shows a 'Resolver' error when in fact there is no such error in the API definition, and the types are indeed resolved correctly. See [swagger-api/swagger-editor#1957](https://github.com/swagger-api/swagger-editor/issues/1957)
+
 ## NRF (NF Repository Function)
 * [NF Management](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml)
 * [NF Discovery](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFDiscovery.yaml)
