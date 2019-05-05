@@ -1,3 +1,5 @@
 #!/bin/sh
-ls *.yaml
-swagger-cli validate TS29122_NIDD.yaml
+for i in ./*.yaml ;  do
+    swagger-cli validate "$i"
+done
+
