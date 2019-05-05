@@ -1,5 +1,7 @@
 # 5G Core Network APIs (OpenAPI 3)
 
+[![Build Status](https://www.travis-ci.com/jdegre/5GC_APIs.svg?branch=master)](https://travis-ci.org/jdegre/5GC_APIs)
+
 The files in this repository have been created by 3GPP, and the master source can be found in the [3GPP site](http://www.3gpp.org/DynaReport/29-series.htm), as part of the official 3GPP Technical Specifications.
 
 © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
@@ -10,10 +12,6 @@ The links below will open the Swagger Editor and auto-load the OpenAPI YAML file
 
 >**Note:**
 There is a known bug in Swagger Editor in the latest versions (from 3.6.23 onwards), and it shows a 'Resolver' error when in fact there is no such error in the API definition, and the types are indeed resolved correctly. See [swagger-api/swagger-editor#1957](https://github.com/swagger-api/swagger-editor/issues/1957)
-
-
-[![Build Status](https://www.travis-ci.com/jdegre/5GC_APIs.svg?branch=master)](https://travis-ci.org/jdegre/5GC_APIs)
-
 
 ## NRF (NF Repository Function)
 * [NF Management](https://editor.swagger.io/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/master/TS29510_Nnrf_NFManagement.yaml)
