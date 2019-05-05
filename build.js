@@ -1,0 +1,1 @@
+swagger-cli validate TS29122_AsSessionWithQoS.yaml
