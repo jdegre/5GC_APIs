@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: "1.0.0"
+  version: "1.1.0.alpha-1"
 externalDocs:
-  description: 3GPP TS 29.122 V15.3.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.1.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -431,6 +431,8 @@ components:
           $ref: '#/components/schemas/FailureCause'
         eventTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        pdnConnInfo:
+          $ref: '#/components/schemas/PdnConnectionInformation'
       required:
         - monitoringType
     IdleStatusInfo:
@@ -520,6 +522,28 @@ components:
         smCause:
           type: integer
           description: Identifies a non-transparent copy of the SM cause code. Refer to 3GPP TS 29.128 [12].
+    PdnConnectionInformation:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/PdnConnectionStatus'
+        apn:
+          type: string
+          description: Identify the APN, it is depending on the SCEF local configuration whether or not this attribute is sent to the SCS/AS.
+        pdnType:
+          $ref: '#/components/schemas/PdnType'
+        interfaceInd:
+          $ref: '#/components/schemas/InterfaceIndication'
+        ipv4Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+      required:
+        - status
+        - pdnType
+      anyOf:
+        - required: [ipv4Addr]
+        - required: [ipv6Addr]
     MonitoringType:
       anyOf:
       - type: string
@@ -532,6 +556,7 @@ components:
           - COMMUNICATION_FAILURE
           - AVAILABILITY_AFTER_DDN_FAILURE
           - NUMBER_OF_UES_IN_AN_AREA
+          - PDN_CONNECTIVITY_STATUS
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -547,6 +572,7 @@ components:
         - COMMUNICATION_FAILURE: The SCS/AS requests to be notified of communication failure events
         - AVAILABILITY_AFTER_DDN_FAILURE: The SCS/AS requests to be notified when the UE has become available after a DDN failure
         - NUMBER_OF_UES_IN_AN_AREA: The SCS/AS requests to be notified the number of UEs in a given geographic area 
+        - PDN_CONNECTIVITY_STATUS: The SCS/AS requests to be notified when the 3GPP network detects that the UE’s PDN connection is set up or torn down
     ReachabilityType:
       anyOf:
       - type: string
@@ -615,3 +641,48 @@ components:
         - PLMN: The SCS/AS requests to be notified at PLMN level location accuracy.
         - TWAN_ID: The SCS/AS requests to be notified at TWAN identifier level location accuracy.
         - GEO_AREA: The SCS/AS requests to be notified of the geographical area accuracy.
+    PdnConnectionStatus:
+      anyOf:
+      - type: string
+        enum:
+          - CREATED
+          - RELEASED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - CREATED: The PDN connection is created.
+        - RELEASED: The PDN connection is released.
+    PdnType:
+      anyOf:
+      - type: string
+        enum:
+          - IP
+          - NON_IP
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - IP: PDN connection of IP type.
+        - NON_IP: PDN connection of non-IP type.
+    InterfaceIndication:
+      anyOf:
+      - type: string
+        enum:
+          - EXPOSURE_FUNCTION
+          - PDN_GATEWAY
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - EXPOSURE_FUNCTION: SCEF is used for the PDN connection towards the SCS/AS.
+        - PDN_GATEWAY: PDN gateway is used for the PDN connection towards the SCS/AS.

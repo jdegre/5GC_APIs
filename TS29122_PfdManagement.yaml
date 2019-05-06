@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
   title: 3gpp-pfd-management
-  version: "1.0.0"
+  version: "1.1.0.alpha-1"
 externalDocs:
-  description: 3GPP TS 29.122 V15.3.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.1.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -472,6 +472,8 @@ components:
             type: string
           minItems: 1
           description: Indicates an FQDN or a regular expression as a domain name matching criteria.
+        dnProtocol:
+          $ref: '#/components/schemas/DomainNameProtocol'
       required:
         - pfdId
     PfdReport:
@@ -511,3 +513,22 @@ components:
         - SHORT_DELAY: This value indicates that the allowed delay is too short and PFD(s) are not stored.
         - APP_ID_DUPLICATED: The received external application identifier(s) are already provisioned.
         - OTHER_REASON: Other reason unspecified.
+    DomainNameProtocol:
+      anyOf:
+      - type: string
+        enum:
+          - DNS_QNAME
+          - TLS_SNI
+          - TLS_SAN
+          - TSL_SCN
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - DNS_QNAME: Identifies the DNS protocol and the question name in DNS query.
+        - TLS_SNI: Identifies the Server Name Indication in TLS ClientHello message.
+        - TLS_SAN: Identifies the Subject Alternative Name in TLS ServerCertificate message.
+        - TLS_SCN: Identifies the Subject Common Name in TLS ServerCertificate message.
