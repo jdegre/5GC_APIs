@@ -10,8 +10,7 @@ All rights reserved.
 API version: **March 2019**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)
-<br/>
-<br/>
+<br/><br/>
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API:
 <br/><br/>
