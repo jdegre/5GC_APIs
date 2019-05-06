@@ -8,7 +8,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 All rights reserved.
 
 API version: **March 2019**<br/>
-Release status: **Open**<br/>
+Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)
 
 The links below will open the Swagger Editor and auto-load the OpenAPI YAML file of each Network Function (NF) API:
