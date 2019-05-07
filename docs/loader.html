@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+</head>
+<body>
+<script src="https://apidevtools.org/swagger-parser/dist/swagger-parser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+  urlParams = new URLSearchParams(location.search);
+  if (urlParams.has('repo')) repo = urlParams.get('repo');
+  else repo = 'jdegre/5GC_APIs'; 
+  if (urlParams.has('branch')) branch = urlParams.get('branch');
+  else {
+    branch = '';
+    ref = document.referrer;
+    id1 = ref.indexOf(repo);
+    if (id1 != -1) {
+      r = ref.substr(id1+repo.length); if (r != '') {
+        id2 = r.indexOf('/tree/'); if (id2 != -1) {
+          id3 = r.indexOf('/', id2+7);
+          if (id3 == -1) branch = r.substr(id2+6);
+          else branch = r.substr(id2+6, id3-(id2+6));
+        }
+        else {
+          id2 = r.indexOf('/blob/');
+          if (id2 != -1) branch = r.substr(id2+6, r.indexOf('/README.md')-(id2+6));
+        }
+      }
+    }
+    if (branch == '') branch = 'master';
+  }
+  host = 'https://https://raw.githubusercontent.com/';
+  url = host + repo + '/' + branch + '/' + 'README.md';
+  console.log(url);
+  editor = 'https://jdegre.github.io/5GC_APIs/editor/';
+  console.log(editor);
+</script>
