@@ -16,13 +16,12 @@ Other releases: [Rel-16 (Open)](https://github.com/jdegre/5GC_APIs/tree/master)<
 The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI YAML file of each Network Function (NF) API:
 <br/>
 
-
 ## NRF (NF Repository Function)
-* [NF Management](https://jdegre.github.io/5GC_APIs/editor/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/Rel-15/TS29510_Nnrf_NFManagement.yaml)
-* [NF Discovery](https://jdegre.github.io/5GC_APIs/editor/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/Rel-15/TS29510_Nnrf_NFDiscovery.yaml)
-* [Access Token (OAuth2)](https://jdegre.github.io/5GC_APIs/editor/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/Rel-15/TS29510_Nnrf_AccessToken.yaml)
+* [NF Management](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29510_Nnrf_NFManagement.yaml)
+* [NF Discovery](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29510_Nnrf_NFDiscovery.yaml)
+* [Access Token (OAuth2)](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29510_Nnrf_AccessToken.yaml)
 ## LMF (Location Management Function)
-* [Location](https://jdegre.github.io/5GC_APIs/editor/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/Rel-15/TS29572_Nlmf_Location.yaml)
+* [Location](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29572_Nlmf_Location.yaml)
 ## AMF (Access and Mobility Management Function)
 * [Communication](https://jdegre.github.io/5GC_APIs/editor/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/Rel-15/TS29518_Namf_Communication.yaml)
 * [Event Exposure](https://jdegre.github.io/5GC_APIs/editor/?url=https://raw.githubusercontent.com/jdegre/5GC_APIs/Rel-15/TS29518_Namf_EventExposure.yaml)
