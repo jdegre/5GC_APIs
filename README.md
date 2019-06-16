@@ -88,7 +88,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Auditing](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Auditing_API.yaml)
 * [AEF Authentication](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_AEF_Security_API.yaml)
 
-# Northbound APIs (T8)
+# Northbound APIs
 ## NEF (Network Exposure Function)
 * [Traffic Influence](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29522_TrafficInfluence.yaml)
 * [NIDD Configuration Trigger](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29522_NIDDConfigurationTrigger.yaml)
