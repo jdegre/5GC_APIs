@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **March 2019**<br/>
+API version: **June 2019**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -36,6 +36,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [UE Authentication](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29503_Nudm_UEAU.yaml)
 * [Event Exposure](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29503_Nudm_EE.yaml)
 * [Parameter Provisioning](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29503_Nudm_PP.yaml)
+* [NIDD Authorization](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29503_Nudm_NIDDAU.yaml)
 ## UDR (Unified Data Repository)
 * [Data Repository](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29504_Nudr_DataRepository.yaml)
   * [Subscription Data](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29505_Subscription_Data.yaml)
@@ -90,6 +91,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 # Northbound APIs (T8)
 ## NEF (Network Exposure Function)
 * [Traffic Influence](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29522_TrafficInfluence.yaml)
+* [NIDD Configuration Trigger](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29522_NIDDConfigurationTrigger.yaml)
 ## SCEF (Service Capability Exposure Function)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
 * [Event Monitoring](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29122_MonitoringEvent.yaml)
