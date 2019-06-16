@@ -77,7 +77,8 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Handshake (N32-c)](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29573_N32_Handshake.yaml)
 * [Forwarding (N32-f)](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29573_JOSEProtectedMessageForwarding.yaml)
 
-# Northbound APIs (CAPIF)
+# Northbound APIs
+## Common API Framework (CAPIF)
 * [Discover Service](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Discover_Service_API.yaml)
 * [Publish Service](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Publish_Service_API.yaml)
 * [Events](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Events_API.yaml)
@@ -88,10 +89,10 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Auditing](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Auditing_API.yaml)
 * [AEF Authentication](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_AEF_Security_API.yaml)
 
-# Northbound APIs
 ## NEF (Network Exposure Function)
 * [Traffic Influence](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29522_TrafficInfluence.yaml)
 * [NIDD Configuration Trigger](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29522_NIDDConfigurationTrigger.yaml)
+
 ## SCEF (Service Capability Exposure Function)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
 * [Event Monitoring](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29122_MonitoringEvent.yaml)
