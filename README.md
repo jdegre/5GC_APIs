@@ -78,6 +78,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Forwarding (N32-f)](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29573_JOSEProtectedMessageForwarding.yaml)
 
 # Northbound APIs
+
 ## Common API Framework (CAPIF)
 * [Discover Service](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Discover_Service_API.yaml)
 * [Publish Service](https://jdegre.github.io/5GC_APIs/loader.html?yaml=TS29222_CAPIF_Publish_Service_API.yaml)
