@@ -1,10 +1,13 @@
 openapi: 3.0.0
 info:
   version: '-'
-  title: 'Unified Data Repository Service API file for policy data'
-  description: 'The API version is defined in 3GPP TS 29.504'
+  title: Unified Data Repository Service API file for policy data
+  description: |
+    The API version is defined in 3GPP TS 29.504
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V15.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V15.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -16,6 +19,10 @@ paths:
        schema:
          $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
     get:
+      summary: Retrieves the access and mobility policy data for a subscriber
+      operationId: ReadAccessAndMobilityPolicyData
+      tags:
+        - AccessAndMobilityPolicyData (Document)
       responses:
         '200':
           description: Upon success, a response body containing access and mobility policies shall be returned.
@@ -50,6 +57,10 @@ paths:
        schema:
          $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
     get:
+      summary: Retrieves the UE policy set data for a subscriber
+      operationId: ReadUEPolicySet
+      tags:
+        - UEPolicySet (Document)
       responses:
         '200':
           description: Upon success, a response body containing UE policies shall be returned.
@@ -76,6 +87,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      summary: Create or modify the UE policy set data for a subscriber
+      operationId: CreateOrReplaceUEPolicySet
+      tags:
+        - UEPolicySet (Document)
       requestBody:
         content:
           application/json:
@@ -84,12 +99,22 @@ paths:
       responses:
         '201':
           description: Successful case. The resource has been successfully created and a response body containing a representation of the created UEPolicySet resource shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UePolicySet'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
               required: true
               schema:
                 type: string
+        '200':
+          description: Successful case. The resource has been successfully created and a response body containing UE policies shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UePolicySet'
         '204':
           description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
         '400':
@@ -115,6 +140,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     patch:
+      summary: Modify the UE policy set data for a subscriber
+      operationId: UpdateUEPolicySet
+      tags:
+        - UEPolicySet (Document)
       requestBody:
         content:
           application/merge-patch+json:
@@ -148,6 +177,10 @@ paths:
 
   /policy-data/ues/{ueId}/sm-data:
     get:
+      summary: Retrieves the session management policy data for a subscriber
+      operationId: ReadSessionManagementPolicyData
+      tags:
+        - SessionManagementPolicyData (Document)
       parameters:
        - name: ueId
          in: path
@@ -203,6 +236,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default' 
     patch:
+      summary: Modify the session management policy data for a subscriber
+      operationId: UpdateSessionManagementPolicyData
+      tags:
+        - SessionManagementPolicyData (Document)
       parameters:
        - name: ueId
          in: path
@@ -244,6 +281,10 @@ paths:
 
   /policy-data/ues/{ueId}/sm-data/{usageMonId}: 
     get:
+      summary: Retrieve a usage monitoring resource
+      operationId: ReadUsageMonitoringInformation
+      tags:
+        - UsageMonitoringInformation (Document)
       parameters:
         - name: ueId
           in: path
@@ -285,6 +326,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      summary: Create a usage monitoring resource
+      operationId: CreateUsageMonitoringResource
+      tags:
+        - UsageMonitoringInformation (Document)
       parameters:
        - name: ueId
          in: path
@@ -304,6 +349,10 @@ paths:
       responses:
         '201':
           description: Successful case. The resource has been successfully created and a response body is returned containing a representation of the resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageMonData'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
@@ -335,6 +384,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      summary: Delete a usage monitoring resource
+      operationId: DeleteUsageMonitoringInformation
+      tags:
+        - UsageMonitoringInformation (Document)
       parameters:
        - name: ueId
          in: path
@@ -374,6 +427,10 @@ paths:
        schema:
          type: string 
     get:
+      summary: Retrieves the sponsored connectivity information for a given sponsorId
+      operationId: ReadSponsorConnectivityData
+      tags:
+        - SponsorConnectivityData (Document)
       responses:
         '200':
           description: Upon success, a response body containing Sponsor Connectivity Data shall be returned.
@@ -404,6 +461,10 @@ paths:
 
   /policy-data/bdt-data:
     get:
+      summary: Retrieves the BDT data collection
+      operationId: ReadBdtData
+      tags:
+        - BdtData (Store)
       responses:
         '200':
           description: Upon success, a response body containing the BDT data shall be returned.
@@ -440,6 +501,10 @@ paths:
        schema:
          type: string
     get:
+      summary: Retrieves the BDT data information associated with a BDT reference Id
+      operationId: ReadIndividualBdtData
+      tags:
+        - IndividualBdtData (Document)
       responses:
         '200':
           description: Upon success, a response body containing the BDT data shall be returned.
@@ -466,6 +531,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default' 
     put:
+      summary: Creates an BDT data resource associated with an BDT reference Id
+      operationId: CreateIndividualBdtData
+      tags:
+        - IndividualBdtData (Document)
       requestBody:
         content:
           application/json:
@@ -474,6 +543,10 @@ paths:
       responses:
         '201':
           description: Successful case. The resource has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BdtData'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
@@ -505,6 +578,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      summary: Deletes an BDT data resource associated with an BDT reference Id
+      operationId: DeleteIndividualBdtData
+      tags:
+        - IndividualBdtData (Document)
       responses:
         '204':
           description: Successful case. The resource has been successfully deleted.
@@ -527,6 +604,10 @@ paths:
 
   /policy-data/subs-to-notify:
     post:
+      summary: Create a subscription to receive notification of policy data changes
+      operationId: CreateIndividualPolicyDataSubscription
+      tags:
+        - PolicyDataSubscriptions (Collection)
       requestBody:
         content:
           application/json:
@@ -614,6 +695,10 @@ paths:
        schema:
          type: string
     put:
+      summary: Modify a subscription to receive notification of policy data changes
+      operationId: ReplaceIndividualPolicyDataSubscription
+      tags:
+        - IndividualPolicyDataSubscription (Document)
       requestBody:
         content:
           application/json:
@@ -626,6 +711,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicyDataSubscription'
+        '204':
+          description: The individual subscription resource was updated successfully and no additional content is to be sent in the response message.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -649,6 +736,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default' 
     delete:
+      summary: Delete the individual Policy Data subscription
+      operationId: DeleteIndividualPolicyDataSubscription
+      tags:
+        - IndividualPolicyDataSubscription (Document)
       responses:
         '204':
           description: Upon success, an empty response body shall be returned.
@@ -671,6 +762,10 @@ paths:
 
   /policy-data/ues/{ueId}/operator-specific-data:
     get:
+      summary: Retrieve the operator specific policy data of an UE
+      operationId: ReadOperatorSpecificData
+      tags:
+        - OperatorSpecificData (Document)
       parameters:
         - name: ueId
           in: path
@@ -718,6 +813,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
     patch:
+      summary: Modify the operator specific policy data of an UE
+      operationId: UpdateOperatorSpecificData
+      tags:
+        - OperatorSpecificData (Document)
       parameters:
         - name: ueId
           in: path
@@ -734,6 +833,8 @@ paths:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
         required: true
       responses:
+        '204':
+          description: No content. Response to successful modification.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -757,6 +858,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      summary: Modify the operator specific policy data of an UE
+      operationId: ReplaceOperatorSpecificData
+      tags:
+        - OperatorSpecificData (Document)
       parameters:
         - name: ueId
           in: path
@@ -778,7 +883,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+                type: object
+                additionalProperties:
+                  $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+        '204':
+          description: The resource has been successfully updated.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -807,8 +916,12 @@ paths:
        in: path
        required: true
        schema:
-         type: string
+         $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/VarPlmnId'
     get:
+      summary: Retrieve the UE policy set data for an H-PLMN
+      operationId: ReadPlmnUePolicySet
+      tags:
+        - PlmnUePolicySet (Document)
       responses:
         '200':
           description: Upon success, a response body containing UE policies shall be returned.
@@ -1115,7 +1228,7 @@ components:
         volPerUe:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
       required:
-        - aspId
+        - aspIds
         - transPolicy
     PolicyDataSubscription:
       description: Identifies a subscription to policy data change notification.
@@ -1127,6 +1240,8 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1140,6 +1255,8 @@ components:
           $ref: '#/components/schemas/AmPolicyData'
         uePolicySet:
           $ref: '#/components/schemas/UePolicySet' 
+        plmnUePolicySet:
+          $ref: '#/components/schemas/UePolicySet' 
         smPolicyData:
           $ref: '#/components/schemas/SmPolicyData'
         usageMonData:
@@ -1148,6 +1265,8 @@ components:
           $ref: '#/components/schemas/SponsorConnectivityData'
         bdtData:
           $ref: '#/components/schemas/BdtData'
+        opSpecData:
+          $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
         ueId:
          $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
         sponsorId:
@@ -1156,6 +1275,13 @@ components:
           type: string
         usageMonId:
           type: string
+        plmnId:
+         $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        delResources:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
     PlmnRouteSelectionDescriptor:
       description: Contains the route selection descriptors (combinations of SNSSAI, DNNs, PDU session types, and SSC modes) allowed by subscription to the UE for a serving PLMN
       type: object
@@ -1222,4 +1348,3 @@ components:
           - DAILY
           - HOURLY
       - type: string
-

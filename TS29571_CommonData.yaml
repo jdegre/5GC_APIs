@@ -1,10 +1,13 @@
 openapi: 3.0.0
 info:
-  version: '1.0.1'
+  version: '1.0.2'
   title: 'Common Data Types'
-  description: 'Common Data Types for Service Based Interfaces '
+  description: |
+    Common Data Types for Service Based Interfaces.
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 15.3.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 15.4.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -12,7 +15,7 @@ components:
   schemas:
 
 #
-# Common Data Types for  Generic usage definitiones as defined in subclause 5.2
+# Common Data Types for  Generic usage definitiones as defined in clause 5.2
 #
 
 #
@@ -48,10 +51,10 @@ components:
       nullable: true
     DiameterIdentity:
       type: string
-      pattern: '^([A-Za-z0-9]+(-[A-Za-z0-9]+).)+[a-z]{2,}$'
+      pattern: '^([A-Za-z0-9]+([-A-Za-z0-9]+)\.)+[a-z]{2,}$'
     DiameterIdentityRm:
       type: string
-      pattern: '^([A-Za-z0-9]+(-[A-Za-z0-9]+).)+[a-z]{2,}$'
+      pattern: '^([A-Za-z0-9]+([-A-Za-z0-9]+)\.)+[a-z]{2,}$'
       nullable: true
     Double:
       format: double
@@ -195,7 +198,7 @@ components:
             - move
             - remove
             - replace
-            - test 
+            - test
         - type: string
     UriScheme:
       anyOf:
@@ -238,6 +241,8 @@ components:
           items:
             $ref: '#/components/schemas/InvalidParam'
           minItems: 1
+        supportedFeatures:
+          $ref: '#/components/schemas/SupportedFeatures'
     Link:
       type: object
       properties:
@@ -258,7 +263,7 @@ components:
           type: string
         from:
           type: string
-        value: 
+        value:
           nullable: true
       required:
         - op
@@ -302,6 +307,9 @@ components:
         - path
     NotifyItem:
       type: object
+      required:
+        - resourceId
+        - changes
       properties:
         resourceId:
           $ref: '#/components/schemas/Uri'
@@ -369,7 +377,7 @@ components:
 
 
 #
-# Data Types related to Subscription, Identification and Numbering as defined in subclause 5.3
+# Data Types related to Subscription, Identification and Numbering as defined in clause 5.3
 #
 
 #
@@ -465,8 +473,8 @@ components:
           $ref: '#/components/schemas/Mcc'
 
 
-# 
-# Data Types related to 5G Network as defined in subclause 5.4
+#
+# Data Types related to 5G Network as defined in clause 5.4
 #
 
 #
@@ -526,12 +534,12 @@ components:
     AmfName:
       type: string
     AreaCode:
-      type: string 
+      type: string
     AreaCodeRm:
-      type: string 
+      type: string
       nullable: true
     N3IwfId:
-      type: string 
+      type: string
       pattern: '^[A-Fa-f0-9]+$'
     NgeNbId:
       type: string
@@ -836,7 +844,7 @@ components:
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
-        geodeticInformation: 
+        geodeticInformation:
           type: string
           pattern: '^[0-9A-F]{20}$'
         globalNgenbId:
@@ -860,7 +868,7 @@ components:
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
-        geodeticInformation: 
+        geodeticInformation:
           type: string
           pattern: '^[0-9A-F]{20}$'
         globalNgenbId:
@@ -885,7 +893,7 @@ components:
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
-        geodeticInformation: 
+        geodeticInformation:
           type: string
           pattern: '^[0-9A-F]{20}$'
         globalGnbId:
@@ -909,7 +917,7 @@ components:
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
-        geodeticInformation: 
+        geodeticInformation:
           type: string
           pattern: '^[0-9A-F]{20}$'
         globalGnbId:
@@ -1043,7 +1051,7 @@ components:
           items:
             $ref: '#/components/schemas/Tac'
           minItems: 1
-        areaCodes:
+        areaCode:
             $ref: '#/components/schemas/AreaCode'
     ServiceAreaRestriction:
       type: object
@@ -1056,9 +1064,11 @@ components:
             $ref: '#/components/schemas/Area'
         maxNumOfTAs:
           $ref: '#/components/schemas/Uinteger'
+        maxNumOfTAsForNotAllowedAreas:
+          $ref: '#/components/schemas/Uinteger'
       allOf:
         #
-        # 1st condition: restrictionType and areas attributes shall be either both absent 
+        # 1st condition: restrictionType and areas attributes shall be either both absent
         #                or both present
         #
         - oneOf:
@@ -1066,7 +1076,7 @@ components:
                 required: [ restrictionType ]
             - required: [ areas ]
         #
-        # 2nd condition: if restrictionType takes value NOT_ALLOWED_AREAS, 
+        # 2nd condition: if restrictionType takes value NOT_ALLOWED_AREAS,
         #                then maxNumOfTAs shall be absent
         #
         - anyOf:
@@ -1078,6 +1088,19 @@ components:
                     enum: [ NOT_ALLOWED_AREAS ]
             - not:
                 required: [ maxNumOfTAs ]
+        #
+        # 3rd condition: if restrictionType takes value ALLOWED_AREAS,
+        #                then maxNumOfTAsForNotAllowedAreas shall be absent
+        #
+        - anyOf:
+            - not:
+                required: [ restrictionType ]
+                properties:
+                  restrictionType:
+                    type: string
+                    enum: [ ALLOWED_AREAS ]
+            - not:
+                required: [ maxNumOfTAsForNotAllowedAreas ]
     PresenceInfo:
       type: object
       properties:
@@ -1165,7 +1188,7 @@ components:
 
 
 #
-# Data Types related to 5G QoS as defined in subclause 5.5
+# Data Types related to 5G QoS as defined in clause 5.5
 #
 
 #
@@ -1207,7 +1230,7 @@ components:
       minimum: 1
       maximum: 15
       nullable: true
-      description: nullable true shall not be used for this attribute 
+      description: nullable true shall not be used for this attribute
     5QiPriorityLevel:
       type: integer
       minimum: 1
@@ -1435,7 +1458,7 @@ components:
       minProperties: 0
 
 #
-# Data Types related to 5G Trace as defined in subclause 5.6
+# Data Types related to 5G Trace as defined in clause 5.6
 #
 
 #
@@ -1500,7 +1523,7 @@ components:
         - eventList
 
 
-# Data Types related to 5G ODB as defined in subclause 5.7
+# Data Types related to 5G ODB as defined in clause 5.7
 
 #
 # SIMPLE DATA TYPES
@@ -1538,7 +1561,7 @@ components:
           $ref: '#/components/schemas/RoamingOdb'
 
 #
-# Data Types related to Charging as defined in subclause 5.8
+# Data Types related to Charging as defined in clause 5.8
 #
 
 #
@@ -1591,6 +1614,41 @@ components:
           $ref: '#/components/schemas/Int64'
       required:
         - qfi
+        - startTimeStamp
+        - endTimeStamp
+        - downlinkVolume
+        - uplinkVolume
+
+    SecondaryRatUsageInfo:
+      type: object
+      properties:
+        secondaryRatType:
+          $ref: '#/components/schemas/RatType'
+        qosFlowsUsageData:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowUsageReport'
+          minItems: 1
+        pduSessionUsageData:
+          type: array
+          items:
+            $ref: '#/components/schemas/VolumeTimedReport'
+          minItems: 1
+      required:
+        - secondaryRatType
+
+    VolumeTimedReport:
+      type: object
+      properties:
+        startTimeStamp:
+          $ref: '#/components/schemas/DateTime'
+        endTimeStamp:
+          $ref: '#/components/schemas/DateTime'
+        downlinkVolume:
+          $ref: '#/components/schemas/Int64'
+        uplinkVolume:
+          $ref: '#/components/schemas/Int64'
+      required:
         - startTimeStamp
         - endTimeStamp
         - downlinkVolume
@@ -1710,4 +1768,3 @@ components:
             $ref: '#/components/schemas/ProblemDetails'
     default:
       description: Generic Error
-
