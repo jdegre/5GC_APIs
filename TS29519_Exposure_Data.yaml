@@ -1,17 +1,20 @@
 openapi: 3.0.0
 info:
   version: '-'
-  title: 'Unified Data Repository Service API file for structured data for exposure'
-  description: 'The API version is defined in 3GPP TS 29.504'
+  title: Unified Data Repository Service API file for structured data for exposure
+  description: |
+    The API version is defined in 3GPP TS 29.504
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V15.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V16.0.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
   /exposure-data/{ueId}/access-and-mobility-data:
     put:
       summary: Creates and updates the access and mobility exposure data for a UE
-      operationId: CreateAccessAndMobilityData
+      operationId: CreateOrReplaceAccessAndMobilityData
       tags:
         - AccessAndMobilityData
       parameters:
@@ -29,6 +32,10 @@ paths:
       responses:
         '201':
           description: Upon success, a response body is returned containing a representation of the access and mobility data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessAndMobilityData'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
@@ -132,10 +139,52 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Updates the access and mobility exposure data for a UE
+      operationId: UpdateAccessAndMobilityData
+      tags:
+        - AccessAndMobilityData
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AccessAndMobilityData'
+      responses:
+        '204':
+          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /exposure-data/{ueId}/session-management-data/{pduSessionId}:
     put:
       summary: Creates and updates the session management data for a UE and for an individual PDU session
-      operationId: CreateSessionManagementData
+      operationId: CreateOrReplaceSessionManagementData
       tags:
         - PduSessionManagementData
       parameters:
@@ -150,7 +199,7 @@ paths:
           description: PDU session id
           required: true
           schema:
-            type: integer
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
       requestBody:
         content:
           application/json:
@@ -159,6 +208,10 @@ paths:
       responses:  
         '201':
           description: Upon success, a response body is returned containing a representation of the session management data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PduSessionManagementData'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
@@ -204,7 +257,7 @@ paths:
           description: PDU session id
           required: true
           schema:
-            type: integer
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         - name: ipv4-addr
           in: query
           description: IPv4 Address of the UE
@@ -278,7 +331,7 @@ paths:
           description: PDU session id
           required: true
           schema:
-            type: integer
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
       responses:  
         '204':
           description: Upon success, an empty response body shall be returned
@@ -300,6 +353,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /exposure-data/subs-to-notify:
     post:
+      summary: Create a subscription to receive notification of exposure data changes
+      operationId: CreateIndividualExposureDataSubscription
+      tags:
+        - ExposureDataSubscriptions (Collection)
       requestBody:
         required: true
         content:
@@ -381,7 +438,10 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /exposure-data/subs-to-notify/{subId}:
     put:
-      summary: updates a subscription for notifications
+      summary: updates a subscription to receive notifications of exposure data changes
+      operationId: ReplaceIndividualExposureDataSubscription
+      tags:
+        - IndividualExposureDataSubscription (Document)
       parameters:
         - name: subId
           in: path
@@ -397,11 +457,13 @@ paths:
               $ref: '#/components/schemas/ExposureDataSubscription'
       responses:  
         '200':
-          description: Resource was successfully modified.
+          description: Resource was successfully modified and a body with the modified subscription to notifications about exposure data is returned..
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExposureDataSubscription'
+        '204':
+          description: The individual subscription resource was successfully modified.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -425,7 +487,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
-      summary: Deletes a subscription for notifications
+      summary: Deletes the individual Exposure Data subscription
+      operationId: DeleteIndividualExposureDataSubscription
+      tags:
+        - IndividualExposureDataSubscription (Document)
       parameters:
         - name: subId
           in: path
@@ -531,6 +596,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        pduSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
     ExposureDataSubscription:
       type: object
       properties:
@@ -541,6 +608,8 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
           minItems: 1
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -557,6 +626,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PduSessionManagementData'
+          minItems: 1
+        delResources:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
           minItems: 1
     PduSessionStatus:
       anyOf:

@@ -1,10 +1,13 @@
 openapi: 3.0.0
 info:
-  description: Session Management Event Exposure Service API
-  version: "1.0.1"
+  version: 1.1.0.alpha-1
   title: Nsmf_EventExposure
+  description: |
+    Session Management Event Exposure Service.
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.508 V15.2.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V16.0.0; 5G System; Session Management Event Exposure Service.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 servers:
   - url: '{apiRoot}/nsmf_event-exposure/v1'
@@ -19,6 +22,10 @@ security:
 paths:
   /subscriptions:
     post:
+      operationId: CreateIndividualSubcription
+      summary: Create an individual subscription for event notifications from the SMF
+      tags:
+        - Subscriptions (Collection)
       requestBody:
         required: true
         content:
@@ -28,6 +35,12 @@ paths:
       responses:
         '201':
           description: Success
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-event-exposure/v1/subscriptions/{subId}'
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -93,6 +106,10 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /subscriptions/{subId}:
     get:
+      operationId: GetIndividualSubcription
+      summary: Read an individual subscription for event notifications from the SMF
+      tags:
+        - IndividualSubscription (Document)
       parameters:
         - name: subId
           in: path
@@ -107,12 +124,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NsmfEventExposure'
-          headers:
-            Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/npcf-event-exposure/v1/subscriptions/{subId}'
-              required: true
-              schema:
-                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -132,6 +143,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      operationId: ReplaceIndividualSubcription
+      summary: Replace an individual subscription for event notifications from the SMF
+      tags:
+        - IndividualSubscription (Document)
       requestBody:
         required: true
         content:
@@ -177,6 +192,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      operationId: DeleteIndividualSubcription
+      summary: Delete an individual subscription for event notifications from the SMF
+      tags:
+        - IndividualSubscription (Document)
       parameters:
         - name: subId
           in: path
@@ -295,6 +314,13 @@ components:
           $ref: '#/components/schemas/SmfEvent'
         dnaiChgType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
+        dddTraDes:
+          $ref: '#/components/schemas/DddTrafficDescriptor'
+        dddStati:
+          type: array
+          items:
+            $ref: '#/components/schemas/DddStatus'
+          minItems: 1
       required:
         - event
     EventNotification:
@@ -342,9 +368,22 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         pduSeId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        dddStatus:
+          $ref: '#/components/schemas/DddStatus'
+        maxWaitTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - event
         - timeStamp
+    DddTrafficDescriptor:
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        port:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
     SubId:
       type: string
       format: SubId
@@ -358,6 +397,7 @@ components:
           - PDU_SES_REL
           - PLMN_CH
           - UE_IP_CH
+          - DDDS
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -370,6 +410,7 @@ components:
         - PDU_SES_REL: PDU Session Release
         - PLMN_CH: PLMN Change
         - UE_IP_CH: UE IP address change
+        - DDDS: Downlink data delivery status
     NotificationMethod:
       anyOf:
       - type: string
@@ -387,3 +428,20 @@ components:
         - PERIODIC
         - ONE_TIME
         - ON_EVENT_DETECTION
+    DddStatus:
+      anyOf:
+      - type: string
+        enum:
+          - BUFFERED
+          - TRANSMITTED
+          - DISCARDED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - BUFFERED: The downlink data are buffered.
+        - TRANSMITTED: The downlink data are transmitted
+        - DISCARDED: The downlink data are discarded.

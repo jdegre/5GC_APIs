@@ -1,12 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '2.0.0'
+  version: '2.1.0.alpha-1'
   title: 'Nudm_SDM'
-  description: 'Nudm Subscriber Data Management Service'
+  description: |
+    Nudm Subscriber Data Management Service.
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 15.3.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.0.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -14,7 +17,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501.
+        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
 
 security:
   - oAuth2ClientCredentials:
@@ -25,7 +28,7 @@ paths:
   /{supi}:
     get:
       summary: retrieve multiple data sets
-      operationId: Get
+      operationId: GetDataSets
       tags:
         - Retrieval of multiple data sets
       parameters:
@@ -98,7 +101,7 @@ paths:
   /{supi}/nssai:
     get:
       summary: retrieve a UE's subscribed NSSAI
-      operationId: Get
+      operationId: GetNSSAI
       tags:
         - Slice Selection Subscription Data Retrieval
       parameters:
@@ -163,7 +166,7 @@ paths:
   /{supi}/am-data:
     get:
       summary: retrieve a UE's Access and Mobility Subscription Data
-      operationId: Get
+      operationId: GetAmData
       tags:
         - Access and Mobility Subscription Data Retrieval
       parameters:
@@ -228,7 +231,7 @@ paths:
   /{supi}/smf-select-data:
     get:
       summary: retrieve a UE's SMF Selection Subscription Data
-      operationId: Get
+      operationId: GetSmfSelData
       tags:
         - SMF Selection Subscription Data Retrieval
       parameters:
@@ -293,7 +296,7 @@ paths:
   /{supi}/ue-context-in-smf-data:
     get:
       summary: retrieve a UE's UE Context In SMF Data
-      operationId: Get
+      operationId: GetUeCtxInSmfData
       tags:
         - UE Context In SMF Data Retrieval
       parameters:
@@ -328,7 +331,7 @@ paths:
   /{supi}/ue-context-in-smsf-data:
     get:
       summary: retrieve a UE's UE Context In SMSF Data
-      operationId: Get
+      operationId: GetUeCtxInSmsfData
       tags:
         - UE Context In SMSF Data Retrieval
       parameters:
@@ -363,7 +366,7 @@ paths:
   /{supi}/trace-data:
     get:
       summary: retrieve a UE's Trace Configuration Data
-      operationId: Get
+      operationId: GetTraceConfigData
       tags:
         - Trace Configuration Data Retrieval
       parameters:
@@ -428,7 +431,7 @@ paths:
   /{supi}/sm-data:
     get:
       summary: retrieve a UE's Session Management Subscription Data
-      operationId: Get
+      operationId: GetSmData
       tags:
         - Session Management Subscription Data Retrieval
       parameters:
@@ -505,7 +508,7 @@ paths:
   /{supi}/sms-data:
     get:
       summary: retrieve a UE's SMS Subscription Data
-      operationId: Get
+      operationId: GetSmsData
       tags:
         - SMS Subscription Data Retrieval
       parameters:
@@ -569,7 +572,7 @@ paths:
   /{supi}/sms-mng-data:
     get:
       summary: retrieve a UE's SMS Management Subscription Data
-      operationId: Get
+      operationId: GetSmsMngtData
       tags:
         - SMS Management Subscription Data Retrieval
       parameters:
@@ -658,7 +661,7 @@ paths:
                 $ref: '#/components/schemas/SdmSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/v1/{supi}/sdm-subscriptions/{subscriptionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/<apiVersion>/{supi}/sdm-subscriptions/{subscriptionId}'
               required: true
               schema:
                 type: string
@@ -693,12 +696,24 @@ paths:
                     application/problem+json:
                       schema:
                         $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      description: 'Contains the new Callback URI of the target NF Service Consumer (e.g. AMF) to which the request is redirected'
+                      required: true
+                      schema:
+                        type: string
                 '308':
                   description: Permanent Redirect
                   content:
                     application/problem+json:
                       schema:
                         $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      description: 'Contains the new Callback URI of the target NF Service Consumer (e.g. AMF) to which the request is redirected'
+                      required: true
+                      schema:
+                        type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '404':
@@ -783,7 +798,7 @@ paths:
   /{gpsi}/id-translation-result:
     get:
       summary: retrieve a UE's SUPI
-      operationId: Get
+      operationId: GetSupi
       tags:
         - GPSI to SUPI Translation
       parameters:
@@ -841,7 +856,7 @@ paths:
   /{supi}/am-data/sor-ack:
     put:
       summary: Nudm_Sdm Info service operation
-      operationId: Info
+      operationId: SorAckInfo
       tags:
         - Providing acknowledgement of Steering of Roaming
       parameters:
@@ -870,7 +885,7 @@ paths:
   /{supi}/am-data/upu-ack:
     put:
       summary: Nudm_Sdm Info for UPU service operation
-      operationId: PutUpuAck
+      operationId: UpuAck
       tags:
         - Providing acknowledgement of UE Parameters Update
       parameters:
@@ -962,7 +977,7 @@ paths:
   /shared-data-subscriptions:
     post:
       summary: subscribe to notifications for shared data
-      operationId: Subscribe to shared data
+      operationId: SubscribeToSharedData
       tags:
         - Subscription Creation for shared data
       requestBody:
@@ -980,7 +995,7 @@ paths:
                 $ref: '#/components/schemas/SdmSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/v1/shared-data-subscriptions/{subscriptionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/<apiVersion>/shared-data-subscriptions/{subscriptionId}'
               required: true
               schema:
                 type: string
@@ -1016,7 +1031,7 @@ paths:
   /shared-data-subscriptions/{subscriptionId}:
     delete:
       summary: unsubscribe from notifications for shared data
-      operationId: Unsubscribe for shared data
+      operationId: UnsubscribeForSharedData
       tags:
         - Subscription Deletion for shared data
       parameters:
@@ -1039,7 +1054,7 @@ paths:
           description: Unexpected error
     patch:
       summary: modify the subscription
-      operationId: Modify
+      operationId: ModifySharedDataSubs
       tags:
         - Subscription Modification
       parameters:
@@ -1062,6 +1077,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SdmSubscription'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+  /group-data/group-identifiers:
+    get:
+      summary: Mapping of Group Identifiers
+      operationId: GetGroupIdentifiers
+      tags:
+        - Group Identifiers
+      parameters:
+        - name: ext-group-id
+          in: query
+          description: External Group Identifier
+          required: false
+          schema:
+            $ref: '#/components/schemas/ExtGroupId'
+        - name: int-group-id
+          in: query
+          description: Internal Group Identifier
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupIdentifiers'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3 
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2 
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '404':
@@ -1199,6 +1279,10 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        serviceGapTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        traceData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
 
     SmfSelectionSubscriptionData:
       type: object
@@ -1332,7 +1416,13 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
-        sharedDnnConfigurationsIds:
+        sharedDnnConfigurationsId:
+          $ref: '#/components/schemas/SharedDataId'
+        odbPacketServices:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/OdbPacketServices'
+        traceData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
+        sharedTraceDataId:
           $ref: '#/components/schemas/SharedDataId'
 
     DnnConfiguration:
@@ -1361,6 +1451,24 @@ components:
           maxItems: 2
         upSecurity:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UpSecurity'
+        pduSessionContinuityInd:
+          $ref: '#/components/schemas/PduSessionContinuityInd'
+        invokeNefSelection:
+          type: boolean
+        niddNefId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        niddInfo:
+          $ref: '#/components/schemas/NiddInformation'
+
+    NiddInformation:
+      type: object
+      required:
+        - afInstanceId
+      properties:
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
 
     IpAddress:
       type: object
@@ -1412,7 +1520,7 @@ components:
         smsSubscribed:
           $ref: '#/components/schemas/SmsSubscribed'
         sharedSmsSubsDataId:
-          $ref: '#/components/schemas/SharedDataIds'
+          $ref: '#/components/schemas/SharedDataId'
 
     SmsManagementSubscriptionData:
       type: object
@@ -1436,6 +1544,8 @@ components:
           items:
             $ref: '#/components/schemas/SharedDataId'
           minItems: 1
+        traceData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
 
     SdmSubscription:
       type: object
@@ -1473,6 +1583,11 @@ components:
       properties:
         expires:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        monitoredResourceUris:
+          type: array
+          items: 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
 
     ModificationNotification:
       type: object
@@ -1532,6 +1647,8 @@ components:
       type: array
       items: 
         $ref: '#/components/schemas/SharedDataId'
+      minItems: 1
+      uniqueItems: true
 
     UpuInfo:
       type: object
@@ -1598,6 +1715,14 @@ components:
           minItems: 1
         - $ref: '#/components/schemas/SecuredPacket'
 
+    GroupIdentifiers:
+      type: object
+      properties:
+        extGroupId:
+          $ref: '#/components/schemas/ExtGroupId'
+        intGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+
 
 # SIMPLE TYPES:
 
@@ -1643,6 +1768,10 @@ components:
     UpuRegInd:
       type: boolean
 
+    ExtGroupId:
+      type: string
+      pattern: '^extgroupid-[^@]+@[^@]+$'
+
 
 # ENUMS:
 
@@ -1658,4 +1787,13 @@ components:
           - SM
           - TRACE
           - SMS_MNG
+        - type: string
+
+    PduSessionContinuityInd:
+      anyOf:
+        - type: string
+          enum:
+          - MAINTAIN_PDUSESSION
+          - RECONNECT_PDUSESSION
+          - RELEASE_PDUSESSION
         - type: string

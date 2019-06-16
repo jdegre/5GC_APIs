@@ -1,11 +1,14 @@
 openapi: 3.0.0
 info:
-  title: "Npcf_PolicyAuthorization Service API"
-  version: "1.1.0.alpha-1"
-  description: "This is the Policy Authorization Service"
+  title: Npcf_PolicyAuthorization Service API
+  version: 1.1.0.alpha-2
+  description: |
+    PCF Policy Authorization Service.
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V16.0.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V16.1.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -60,7 +63,7 @@ paths:
                 $ref: '#/components/schemas/ExtendedProblemDetails'
           headers:
             Retry-After:
-              description: 'Indicates the time the AF has to wait before making a new request. It can be a non-negative integer (decimal number) indicating the number of seconds the AF has to wait before making a new request or an HTTP-date after which the AF can retry a new request.'
+              description: 'Indicates the time the AF has to wait before making a new request. It can be a non-negative integer (decimal number) indicating the number of seconds the AF has to wait before making a new request or an HTTP-date after which the AF can retry a new request. '
               schema:
                 anyOf:
                   - type: integer
@@ -83,7 +86,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
         terminationRequest:
-          '{$request.body#/notifUri}/terminate':
+          '{$request.body#/ascReqData/notifUri}/terminate':
             post:
               requestBody:
                 description: Request of the termination of the Individual Application Session Context
@@ -117,7 +120,7 @@ paths:
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
         eventNotification:
-          '{$request.body#/evSubsc/notifUri}/notify':
+          '{$request.body#/ascReqData/evSubsc/notifUri}/notify':
             post:
               requestBody:
                 description: Notification of an event occurrence in the PCF.
@@ -228,7 +231,7 @@ paths:
                 $ref: '#/components/schemas/ExtendedProblemDetails'
           headers:
             Retry-After:
-              description: 'Indicates the time the AF has to wait before making a new request. It can be a non-negative integer (decimal number) indicating the number of seconds the AF has to wait before making a new request or an HTTP-date after which the AF can retry a new request.'
+              description: 'Indicates the time the AF has to wait before making a new request. It can be a non-negative integer (decimal number) indicating the number of seconds the AF has to wait before making a new request or an HTTP-date after which the AF can retry a new request. '
               schema:
                 anyOf:
                   - type: integer
@@ -524,6 +527,8 @@ components:
         mpsId:
           description: indication of MPS service request
           type: string
+        resPrio:
+          $ref: '#/components/schemas/ReservPriority'
         notifUri:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         sliceInfo:
@@ -574,6 +579,8 @@ components:
         mpsId:
           description: indication of MPS service request
           type: string
+        resPrio:
+          $ref: '#/components/schemas/ReservPriority'
         sponId:
           $ref: '#/components/schemas/SponId'
         sponStatus:
@@ -838,6 +845,8 @@ components:
           minItems: 1
         upPathChgSub:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/UpPathChgEvent'
+        addrPreserInd:
+          type: boolean
     SpatialValidity:
       description: describes explicitly the route to an Application location
       type: object
@@ -883,6 +892,9 @@ components:
           nullable: true
         upPathChgSub:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/UpPathChgEvent'
+        addrPreserInd:
+          type: boolean
+          nullable: true
       nullable: true
     AnGwAddress:
       description: describes the address of the access network gateway control node
@@ -1145,7 +1157,3 @@ components:
           - DISABLED
           - REMOVED
       - type: string
-
-
-
-

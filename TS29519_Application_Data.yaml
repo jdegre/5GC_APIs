@@ -1,15 +1,22 @@
 openapi: 3.0.0
 info:
-  version: "-"
-  title: 'Unified Data Repository Service API file for Application Data'
-  description: 'The API version is defined in 3GPP TS 29.504'
+  version: '-'
+  title: Unified Data Repository Service API file for Application Data
+  description: |
+    The API version is defined in 3GPP TS 29.504
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V15.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V16.0.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
   /application-data/pfds:
     get:
+      summary: Retrieve PFDs for application identifier(s)
+      operationId: ReadPFDData
+      tags:
+        - PFD Data (Store)
       parameters:
         - name: appId
           in: query
@@ -28,7 +35,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
+                  $ref: '#/components/schemas/PfdDataForAppExt'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -51,6 +58,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /application-data/pfds/{appId}:
     get:
+      summary: Retrieve the corresponding PFDs of the specified application identifier
+      operationId: ReadIndividualPFDData
+      tags:
+        - Individual PFD Data (Document)
       parameters:
         - name: appId
           in: path
@@ -64,7 +75,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
+                $ref: '#/components/schemas/PfdDataForAppExt'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -84,6 +95,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      summary: Delete the corresponding PFDs of the specified application identifier
+      operationId: DeleteIndividualPFDData
+      tags:
+        - Individual PFD Data (Document)
       parameters:
         - name: appId
           in: path
@@ -111,12 +126,16 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      summary: Create or update the corresponding PFDs for the specified application identifier
+      operationId: CreateOrReplaceIndividualPFDData
+      tags:
+        - Individual PFD Data (Document)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
+              $ref: '#/components/schemas/PfdDataForAppExt'
       parameters:
         - name: appId
           in: path
@@ -130,7 +149,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
+                $ref: '#/components/schemas/PfdDataForAppExt'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/pfds/{appId}'
@@ -142,7 +161,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
+                $ref: '#/components/schemas/PfdDataForAppExt'
         '204':
           description: No content
         '400':
@@ -171,6 +190,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /application-data/influenceData:
     get:
+      summary: Retrieve Traffic Influence Data
+      operationId: ReadInfluenceData
+      tags:
+        - Influence Data (Store)
       parameters:
         - name: influence-Ids
           in: query
@@ -250,6 +273,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /application-data/influenceData/{influenceId}:
     put:
+      summary: Create or update an individual Influence Data resource
+      operationId: CreateOrReplaceIndividualInfluenceData
+      tags:
+        - Individual Influence Data (Document)
       requestBody:
         required: true
         content:
@@ -309,6 +336,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     patch:
+      summary: Modify part of the properties of an individual Influence Data resource
+      operationId: UpdateIndividualInfluenceData
+      tags:
+        - Individual Influence Data (Document)
       requestBody:
         required: true
         content:
@@ -354,6 +385,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      summary: Delete an individual Influence Data resource
+      operationId: DeleteIndividualInfluenceData
+      tags:
+        - Individual Influence Data (Document)
       parameters:
         - name: influenceId
           in: path
@@ -382,6 +417,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /application-data/influenceData/subs-to-notify:
     post:
+      summary: Create a new Individual Influence Data Subscription resource
+      operationId: CreateIndividualInfluenceDataSubscription
+      tags:
+        - Influence Data Subscriptions (Collection)
       requestBody:
         required: true
         content:
@@ -460,6 +499,10 @@ paths:
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     get:
+      summary: Read Influence Data Subscriptions
+      operationId: ReadInfluenceDataSubscriptions
+      tags:
+        - Influence Data Subscriptions (Collection)
       parameters:
         - name: dnn
           in: query
@@ -519,6 +562,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /application-data/influenceData/subs-to-notify/{subscriptionId}:
     get:
+      summary: Get an existing individual Influence Data Subscription resource
+      operationId: ReadIndividualInfluenceDataSubscription
+      tags:
+        - Individual Influence Data Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -554,6 +601,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
+      summary: Modify an existing individual Influence Data Subscription resource
+      operationId: ReplaceIndividualInfluenceDataSubscription
+      tags:
+        - Individual Influence Data Subscription (Document)
       requestBody:
         required: true
         content:
@@ -599,6 +650,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
+      summary: Delete an individual Influence Data Subscription resource
+      operationId: DeleteIndividualInfluenceDataSubscription
+      tags:
+        - Individual Influence Data Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -675,8 +730,17 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         upPathChgNotifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-      required:
-        - trafficRoutes
+        subscribedEvents:
+          type: array
+          items:
+            $ref: 'TS29522_TrafficInfluence.yaml#/components/schemas/SubscribedEvent'
+          minItems: 1
+        dnaiChgType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
+        afAckInd:
+          type: boolean
+        addrPreserInd:
+          type: boolean
       allOf:
         - oneOf:
           - required: [afAppId]
@@ -729,6 +793,10 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         upPathChgNotifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        afAckInd:
+          type: boolean
+        addrPreserInd:
+          type: boolean
     TrafficInfluSub:
       type: object
       properties:
@@ -758,6 +826,8 @@ components:
           description: Each element identifies the user.
         notificationUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -767,3 +837,10 @@ components:
         - required: [snssais]
         - required: [internalGroupIds]
         - required: [supis]
+    PfdDataForAppExt:
+      allOf:
+        - $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
+        - type: object
+          properties:
+            suppFeat:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'

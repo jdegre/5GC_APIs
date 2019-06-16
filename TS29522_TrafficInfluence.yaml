@@ -1,9 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-traffic-influence
-  version: "1.0.1"
+  version: 1.1.0.alpha-1
+  description: |
+    API for AF traffic influence
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.522 V15.2.0; 5G System; Network Exposure Function Northbound APIs.
+  description: 3GPP TS 29.522 V16.0.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -373,6 +377,10 @@ components:
             type: string
           minItems: 1
           description: Identifies a geographic zone that the AF request applies only to the traffic of UE(s) located in this specific zone.
+        afAckInd:
+          type: boolean
+        addrPreserInd:
+          type: boolean
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       allOf:
@@ -429,6 +437,12 @@ components:
           minItems: 1
           description: Identifies a geographic zone that the AF request applies only to the traffic of UE(s) located in this specific zone.
           nullable: true
+        afAckInd:
+          type: boolean
+          nullable: true
+        addrPreserInd:
+          type: boolean
+          nullable: true
     EventNotification:
       type: object
       properties:
@@ -443,6 +457,10 @@ components:
           $ref: '#/components/schemas/SubscribedEvent'
         targetTrafficRoute:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+        sourceDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        targetDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         srcUeIpv4Addr:
@@ -458,6 +476,15 @@ components:
       required:
         - dnaiChgType
         - subscribedEvent
+    AfResultInfo:
+      type: object
+      properties:
+        afStatus:
+          $ref: '#/components/schemas/AfResultStatus'
+        trafficRoute:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+      required:
+        - appStatus
     SubscribedEvent:
       anyOf:
       - type: string
@@ -467,3 +494,18 @@ components:
       description: >
         Possible values are
         - CHANGE_OF_DNAI: The AF requests to be notified when the UP path changes for the PDU session.
+    AfResultStatus:
+      anyOf:
+        - type: string
+          enum:
+            - SUCCESS
+            - TEMPORARY_CONGESTION
+            - RELOC_NO_ALLOWED
+            - OTHER
+        - type: string
+      description: >
+        Possible values are
+        - SUCCESS: The application layer is ready or the relocation is completed.
+        - TEMPORARY_CONGESTION: The application relocation fails due to temporary congestion.
+        - RELOC_NO_ALLOWED: The application relocation fails because application relocation is not allowed.
+        - OTHER: The application relocation fails due to other reason.
