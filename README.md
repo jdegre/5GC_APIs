@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **June 2019**<br/>
+API version: **September 2019**<br/>
 Release status: **Frozen** <sup>&#x1F512;</sup><br/>
 Other releases: [Rel-16 (Open)](https://github.com/jdegre/5GC_APIs/tree/master)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
