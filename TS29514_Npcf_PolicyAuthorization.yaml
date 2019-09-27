@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.1.0.alpha-2
+  version: 1.1.0.alpha-3
   description: |
     PCF Policy Authorization Service.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V16.1.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V16.2.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -507,6 +507,10 @@ components:
       properties:
         afAppId:
           $ref: '#/components/schemas/AfAppId'
+        afChargingIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
+        afReqData:
+          $ref: '#/components/schemas/AfRequestedData'
         afRoutReq:
           $ref: '#/components/schemas/AfRoutingRequirement'
         aspId:
@@ -517,6 +521,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         evSubsc:
           $ref: '#/components/schemas/EventsSubscReqData'
+        mcpttId:
+          description: indication of MCPTT service request
+          type: string
+        mcVideoId:
+          description: indication of MCVideo service request
+          type: string
         medComponents:
           type: object
           additionalProperties:
@@ -527,10 +537,16 @@ components:
         mpsId:
           description: indication of MPS service request
           type: string
+        preemptControlinfo:
+          $ref: '#/components/schemas/PreemptionControlInformation'
         resPrio:
           $ref: '#/components/schemas/ReservPriority'
+        servInfStatus:
+          $ref: '#/components/schemas/ServiceInfoStatus'
         notifUri:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        servUrn:
+          $ref: '#/components/schemas/ServiceUrn'
         sliceInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         sponId:
@@ -555,6 +571,11 @@ components:
       properties:
         servAuthInfo:
           $ref: '#/components/schemas/ServAuthInfo'
+        ueIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeIdentityInfo'
+          minItems: 1
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     AppSessionContextUpdateData:
@@ -571,6 +592,12 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
         evSubsc:
           $ref: '#/components/schemas/EventsSubscReqDataRm'
+        mcpttId:
+          description: indication of MCPTT service request
+          type: string
+        mcVideoId:
+          description: indication of modification of MCVideo service
+          type: string
         medComponents:
           type: object
           additionalProperties:
@@ -579,8 +606,14 @@ components:
         mpsId:
           description: indication of MPS service request
           type: string
+        preemptControlinfo:
+          $ref: '#/components/schemas/PreemptionControlInformationRm'
         resPrio:
           $ref: '#/components/schemas/ReservPriority'
+        servInfStatus:
+          $ref: '#/components/schemas/ServiceInfoStatus'
+        sipForkInd:
+          $ref: '#/components/schemas/SipForkingIndication'
         sponId:
           $ref: '#/components/schemas/SponId'
         sponStatus:
@@ -598,6 +631,8 @@ components:
           minItems: 1
         notifUri:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        reqAni:
+          $ref: '#/components/schemas/RequiredAccessInfo'
         usgThres:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
     EventsSubscReqDataRm:
@@ -612,6 +647,8 @@ components:
             $ref: '#/components/schemas/AfEventSubscription'
         notifUri:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        reqAni:
+          $ref: '#/components/schemas/RequiredAccessInfo'
         usgThres:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
       nullable: true
@@ -652,8 +689,22 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         mirBwUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        preemptCap:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PreemptionCapability'
+        preemptVuln:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PreemptionVulnerability'
+        prioSharingInd:
+          $ref: '#/components/schemas/PrioritySharingIndicator'
         resPrio:
           $ref: '#/components/schemas/ReservPriority'
+        rrBw:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        rsBw:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        sharingKeyDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        sharingKeyUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
     MediaComponentRm:
       description: This data type is defined in the same way as the MediaComponent data type, but with the OpenAPI nullable property set to true
       type: object
@@ -691,8 +742,22 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         mirBwUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        preemptCap:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PreemptionCapabilityRm'
+        preemptVuln:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PreemptionVulnerabilityRm'
+        prioSharingInd:
+          $ref: '#/components/schemas/PrioritySharingIndicator'
         resPrio:
           $ref: '#/components/schemas/ReservPriority'
+        rrBw:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        rsBw:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        sharingKeyDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32Rm'
+        sharingKeyUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32Rm'
       nullable: true
     MediaSubComponent:
       description: Identifies a media subcomponent
@@ -700,6 +765,8 @@ components:
       required:
         - fNum
       properties:
+        afSigProtocol:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/AfSigProtocol'
         ethfDescs:
           type: array
           items:
@@ -730,6 +797,8 @@ components:
       required:
         - fNum
       properties:
+        afSigProtocol:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/AfSigProtocol'
         ethfDescs:
           type: array
           items:
@@ -766,6 +835,13 @@ components:
       properties:
         accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        anChargAddr:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/AccNetChargingAddress'
+        anChargIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessNetChargingIdentifier'
+          minItems: 1
         anGwAddr:
           $ref: '#/components/schemas/AnGwAddress'
         evSubsUri:
@@ -780,6 +856,13 @@ components:
           items:
             $ref: '#/components/schemas/ResourcesAllocationInfo'
           minItems: 1
+        noNetLocSupp:
+          type: boolean
+        outOfCredReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutOfCreditInformation'
+          minItems: 1
         plmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         qncReports:
@@ -789,6 +872,10 @@ components:
           minItems: 1
         ratType: 
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        ueLoc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         usgRep:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/AccumulatedUsage'
     AfEventSubscription:
@@ -947,6 +1034,10 @@ components:
             type: string
           minItems: 1
           maxItems: 2
+        srcMacAddrEnd:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        destMacAddrEnd:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
 
 
     ResourcesAllocationInfo:
@@ -997,6 +1088,49 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         marBwDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+
+    UeIdentityInfo:
+      description: Represents 5GS-Level UE identities.
+      type: object
+      anyOf:
+        - required: [gpsi]
+        - required: [pei]
+        - required: [supi]
+      properties:
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        pei:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+#
+    AccessNetChargingIdentifier:
+      description: Describes the access network charging identifier.
+      type: object
+      required:
+        - accNetChaIdValue
+      properties:
+        accNetChaIdValue:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+          minItems: 1
+#
+    OutOfCreditInformation:
+      description: Indicates the SDFs without available credit and the corresponding termination action.
+      type: object
+      required:
+        - finUnitAct
+      properties:
+        finUnitAct:
+          $ref: 'TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/FinalUnitAction'
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+          minItems: 1
 #
 # EXTENDED PROBLEMDETAILS
 #
@@ -1029,6 +1163,9 @@ components:
       type: string
     SponId:
       description: Contains an identity of a sponsor.
+      type: string
+    ServiceUrn:
+      description: Contains values of the service URN and may include subservices.
       type: string
     TosTrafficClass:
       description: 2-octet string, where each octet is encoded in hexadecimal representation. The first octet contains the IPv4 Type-of-Service or the IPv6 Traffic-Class field and the second octet contains the ToS/Traffic Class mask field.
@@ -1098,7 +1235,10 @@ components:
       - type: string
         enum:
           - ACCESS_TYPE_CHANGE
+          - ANI_REPORT
+          - CHARGING_CORRELATION
           - FAILED_RESOURCES_ALLOCATION
+          - OUT_OF_CREDIT
           - PLMN_CHG
           - QOS_NOTIF
           - SUCCESSFUL_RESOURCES_ALLOCATION
@@ -1144,6 +1284,7 @@ components:
         enum:
           - NO_INFO
           - RTCP
+          - AF_SIGNALLING
       - type: string
 
 
@@ -1157,3 +1298,61 @@ components:
           - DISABLED
           - REMOVED
       - type: string
+#        
+    RequiredAccessInfo:
+      anyOf:
+      - type: string
+        enum:
+          - USER_LOCATION
+          - UE_TIME_ZONE
+      - type: string
+#        
+    SipForkingIndication:
+      anyOf:
+        - type: string
+          enum:
+            - SINGLE_DIALOGUE
+            - SEVERAL_DIALOGUES
+        - type: string
+#
+    AfRequestedData:
+      anyOf:
+        - type: string
+          enum:
+            - UE_IDENTITY
+        - type: string
+#        
+    ServiceInfoStatus:
+      anyOf:
+        - type: string
+          enum:
+            - FINAL
+            - PRELIMINARY
+        - type: string
+#        
+    PreemptionControlInformation:
+      anyOf:
+        - type: string
+          enum:
+            - MOST_RECENT
+            - LEAST_RECENT
+            - HIGHEST_BW
+        - type: string
+#        
+    PrioritySharingIndicator:
+      anyOf:
+        - type: string
+          enum:
+            - ENABLED
+            - DISABLED
+        - type: string
+#        
+    PreemptionControlInformationRm:
+      anyOf:
+        - type: string
+          enum:
+            - MOST_RECENT
+            - LEAST_RECENT
+            - HIGHEST_BW
+        - type: string
+      nullable: true

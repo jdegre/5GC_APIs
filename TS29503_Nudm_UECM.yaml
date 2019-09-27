@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.2'
+  version: '1.1.0.alpha-1'
   title: 'Nudm_UECM'
   description: |
     Nudm Context Management Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 15.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.1.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -142,6 +142,12 @@ paths:
               $ref: '#/components/schemas/Amf3GppAccessRegistrationModification'
         required: true
       responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
           description: Expected response to a valid request
         '400':
@@ -314,10 +320,18 @@ paths:
               $ref: '#/components/schemas/AmfNon3GppAccessRegistrationModification'
         required: true
       responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
           description: Expected response to a valid request
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '422':
@@ -725,6 +739,37 @@ paths:
         default:
           description: Unexpected error
 
+  /restore-pcscf:
+    post:
+      summary: Trigger the Restoration of the P-CSCF
+      operationId: Trigger P-CSCF Restoration
+      tags:
+        - Trigger P-CSCF Restoration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -790,6 +835,8 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/EpsIwkPgw'
+        ueSrvccCapability:
+          type: boolean
 
 
 
@@ -818,6 +865,9 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/EpsIwkPgw'
+        ueSrvccCapability:
+          type: boolean
+          nullable: true
 
     EpsIwkPgw:
       type: object
@@ -963,6 +1013,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
         realm:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+
+    TriggerRequest:
+      type: object
+      required:
+        - supi
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
 
 # SIMPLE TYPES:
 

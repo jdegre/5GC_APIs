@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.1.0.alpha-2
+  version: 1.1.0.alpha-3
   description: | 
     API for Monitoring Event.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.2.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.3.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -376,7 +376,7 @@ components:
           $ref: '#/components/schemas/AssociationType'
         plmnIndication:
           type: boolean
-          description: If "monitoring-Type" is "ROAMING_STATUS", this parameter may be included to indicate the notification of UE's Serving PLMN ID. -	"true"  The value shall be used to indicate enabling of notification; -	"false"  The value shall be used to indicate disabling of notification.  Default  "false".
+          description: If "monitoringType" is "ROAMING_STATUS", this parameter may be included to indicate the notification of UE's Serving PLMN ID. -	"true"  The value shall be used to indicate enabling of notification; -	"false"  The value shall be used to indicate disabling of notification.  Default  "false".
         locationArea:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea'
         locationArea5G:
@@ -414,7 +414,9 @@ components:
           description: Monitoring event reports.
         cancelInd:
           type: boolean
-          description: Indicates whether to request to cancel the corresponding monitoring subscription. Set to false or omitted otherwise.
+          description: Indicates whether to request to cancel the corresponding monitoring subscription. Set to false or omitted otherwise. 
+        appliedParam:
+          $ref: '#/components/schemas/AppliedParameterConfiguration'
       required:
         - subscription
     MonitoringEventReport:
@@ -430,7 +432,7 @@ components:
           $ref: '#/components/schemas/LocationInfo'
         lossOfConnectReason:
           type: integer
-          description: If "monitoring-Type" is "LOSS_OF_CONNECTIVITY", this parameter shall be included if available to identify the reason why loss of connectivity is reported. Refer to 3GPP TS 29.336 [11] Subclause 8.4.58.
+          description: If "monitoringType" is "LOSS_OF_CONNECTIVITY", this parameter shall be included if available to identify the reason why loss of connectivity is reported. Refer to 3GPP TS 29.336 [11] Subclause 8.4.58.
         maxUEAvailabilityTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
         msisdn:
@@ -566,7 +568,28 @@ components:
         - pdnType
       anyOf:
         - required: [ipv4Addr]
-        - required: [ipv6Addr]
+        - required: [ipv6Addr] 
+    AppliedParameterConfiguration:
+      type: object
+      properties:
+        externalIds:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          minItems: 1
+          description: Each element uniquely identifies a user.
+        msisdns:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          minItems: 1
+          description: Each element identifies the MS internal PSTN/ISDN number allocated for a UE.
+        maximumLatency:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        maximumResponseTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        maximumDetectionTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
     MonitoringType:
       anyOf:
       - type: string

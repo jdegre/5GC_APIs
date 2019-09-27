@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.1.0.alpha-1'
+  version: '1.1.0.alpha-2'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.
@@ -205,6 +205,13 @@ paths:
           description: external group identifier of the user
           schema:
             type: string
+        - name: pfd-data
+          in: query
+          description: PFD data
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/PfdData'
         - name: data-set
           in: query
           description: data set supported by the NF
@@ -337,11 +344,63 @@ paths:
           description: UPF supporting allocating UE IP addresses/prefixes
           schema:
             type: boolean
+        - name: client-type
+          in: query
+          description: Requested client type served by the NF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/ExternalClientType'
+        - name: preferred-tai
+          in: query
+          description: preferred Tracking Area Identity
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
         - name: If-None-Match
           in: header
-          description: Validator for conditional requests, as described in IETF RFC 7232, 3.2 
+          description: Validator for conditional requests, as described in IETF RFC 7232, 3.2
           schema:
             type: string
+        - name: target-snpn
+          in: query
+          description: Target SNPN Identity
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+        - name: af-ee-data
+          in: query
+          description: NEF exposured by the AF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/AfEventExposureData'
+        - name: w-agf-info
+          in: query
+          description: UPF collocated with W-AGF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/WAgfInfo'
+        - name: tngf-info
+          in: query
+          description: UPF collocated with TNGF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TngfInfo'
+        - name: target-nf-set-id
+          in: query
+          description: Target NF Set ID
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        - name: target-nf-service-set-id
+          in: query
+          description: Target NF Service Set ID
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
       responses:
         '200':
           description: Expected response to a valid request
@@ -355,14 +414,14 @@ paths:
               parameters:
                 searchId: $response.body#/searchId
               description: >
-                The 'searchId' parameter returned in the response can be used as the 
+                The 'searchId' parameter returned in the response can be used as the
                 'searchId' parameter in the GET request to '/searches/{searchId}'
             completeSearch:
               operationId: RetrieveCompleteSearch
               parameters:
                 searchId: $response.body#/searchId
               description: >
-                The 'searchId' parameter returned in the response can be used as the 
+                The 'searchId' parameter returned in the response can be used as the
                 'searchId' parameter in the GET request to '/searches/{searchId}/complete'
           headers:
             Cache-Control:
@@ -370,7 +429,7 @@ paths:
               schema:
                 type: string
             ETag:
-              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3 
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
               schema:
                 type: string
         '307':
@@ -434,8 +493,8 @@ components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      flows: 
-        clientCredentials: 
+      flows:
+        clientCredentials:
           tokenUrl: '/oauth2/token'
           scopes:
             nnrf-disc: Access to the Nnrf_NFDiscovery API
@@ -460,7 +519,7 @@ components:
           schema:
             type: string
         ETag:
-          description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3 
+          description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
           schema:
             type: string
   schemas:
@@ -479,6 +538,8 @@ components:
           type: string
         numNfInstComplete:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        preferredSearch:
+          $ref: '#/components/schemas/PreferredSearch'
         nrfSupportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     StoredSearchResult:
@@ -616,6 +677,13 @@ components:
           minItems: 1
         nwdafInfo:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NwdafInfo'
+        nefInfo:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NefInfo'
+        pcscfInfo:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/PcscfInfo'
+          minItems: 1
         customInfo:
           type: object
         recoveryTime:
@@ -632,6 +700,20 @@ components:
           type: array
           items:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/DefaultNotificationSubscription'
+        lmfInfo:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/LmfInfo'
+        gmlcInfo:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/GmlcInfo'
+        snpnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+          minItems: 1
+        nfSetIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+          minItems: 1
     NFService:
       type: object
       required:
@@ -686,6 +768,18 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/ChfServiceInfo'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        nfServiceSetIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+          minItems: 1
+    PreferredSearch:
+      type: object
+      properties:
+        preferredTaiMatchInd:
+          type: boolean
+          default: false
+
 externalDocs:
-  description: 3GPP TS 29.510 V16.0.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V16.1.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'

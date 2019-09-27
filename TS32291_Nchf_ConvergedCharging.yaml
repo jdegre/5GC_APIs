@@ -1,11 +1,11 @@
-openapi: 3.0.0
+﻿openapi: 3.0.0
 info:
   description: ConvergedCharging Service
-  version: 2.0.1
+  version: 3.0.0.alpha-1
   title: Nchf_ConvergedCharging
 externalDocs:
   description: >
-    3GPP TS 32.291 V15.3.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V16.1.1: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -191,6 +191,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         oneTimeEvent:
           type: boolean
+        oneTimeEventType:
+          $ref: '#/components/schemas/oneTimeEventType'
         notifyUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         multipleUnitUsage:
@@ -210,7 +212,7 @@ components:
         sMSChargingInformation:
           $ref: '#/components/schemas/SMSChargingInformation'
       required:
-        - nfIdentification
+        - nfConsumerIdentification 
         - invocationTimeStamp
         - invocationSequenceNumber
     ChargingDataResponse:
@@ -277,7 +279,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatingGroup'
         requestedUnit:
           $ref: '#/components/schemas/RequestedUnit'
-        UsedUnitContainer:
+        usedUnitContainer:
           type: array
           items:
             $ref: '#/components/schemas/UsedUnitContainer'
@@ -438,6 +440,8 @@ components:
       properties:
         chargingId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
+        homeProvidedChargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
         userInformation:
           $ref: '#/components/schemas/UserInformation'
         userLocationinfo:
@@ -489,6 +493,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         dnnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        dnnSelectionMode:
+          $ref: '#/components/schemas/dnnSelectionMode'
         chargingCharacteristics:
           type: string
         chargingCharacteristicsSelectionMode:
@@ -527,8 +533,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         qoSInformation:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/QosData'
-        aFCorrelationInformation:
-          type: string
+        afChargingIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
         userLocationInformation:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         uetimeZone:
@@ -622,6 +628,8 @@ components:
       properties:
         qFI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
+        reportTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         timeofFirstUsage:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         timeofLastUsage:
@@ -646,6 +654,16 @@ components:
           minItems: 0
         3gppPSDataOffStatus:
           $ref: '#/components/schemas/3GPPPSDataOffStatus'
+        3gppChargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
+        diagnostics:
+          $ref: '#/components/schemas/Diagnostics'
+        enhancedDiagnostics:
+          type: array
+          items:
+            type: string
+      required:
+        - reportTime
     RoamingChargingProfile:
       type: object
       properties:
@@ -822,6 +840,7 @@ components:
           enum:
             - SMF
             - SMSF
+            - SGW
         - type: string
     ChargingCharacteristicsSelectionMode:
       anyOf:
@@ -861,6 +880,11 @@ components:
             - REMOVAL_OF_UPF
             - ADDITION_OF_UPF
             - START_OF_SERVICE_DATA_FLOW
+            - ECGI_CHANGE
+            - TAI_CHANGE
+            - HANDOVER_CANCEL
+            - HANDOVER_START
+            - HANDOVER_COMPLETE
         - type: string
     FinalUnitAction:
       anyOf:
@@ -1025,4 +1049,19 @@ components:
           enum:
             - NO_REPLY_PATH_SET
             - REPLY_PATH_SET
+        - type: string
+    oneTimeEventType:
+      anyOf:
+        - type: string
+          enum:
+            - IEC
+            - PEC
+        - type: string
+    dnnSelectionMode:
+      anyOf:
+        - type: string
+          enum:
+            - VERIFIED
+            - UE_DNN_NOT_VERIFIED
+            - NW_DNN_NOT_VERIFIED
         - type: string

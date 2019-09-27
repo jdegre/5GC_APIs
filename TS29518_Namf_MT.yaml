@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.2
+  version: 1.1.0.alpha-1
   title: Namf_MT
   description: |
     AMF Mobile Termination Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-mt
 externalDocs:
-  description: 3GPP TS 29.518 V15.4.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.1.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-mt/v1'
@@ -44,6 +44,13 @@ paths:
           description: Supported Features
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: old-guami
+          in: query
+          description: Old GUAMI
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
       responses:
         '200':
           description: Requested UE Context Information returned
@@ -120,7 +127,11 @@ paths:
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsEnableUeReachability'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
@@ -136,15 +147,19 @@ paths:
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         '504':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+          description: Gateway Timeout
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsEnableUeReachability'
         default:
           description: Unexpected error
 components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      flows: 
-        clientCredentials: 
+      flows:
+        clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             namf-mt: Access to the Namf_MT API
@@ -156,6 +171,11 @@ components:
           $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/UeReachability'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        oldGuami:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+        extBufSupport:
+          type: boolean
+          default: false
       required:
         - reachability
     EnableUeReachabilityRspData:
@@ -182,6 +202,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    ProblemDetailsEnableUeReachability:
+      allOf:
+      - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      - $ref: '#/components/schemas/AdditionInfoEnableUeReachability'
+    AdditionInfoEnableUeReachability:
+      type: object
+      properties:
+        maxWaitingTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
     UeContextInfoClass:
       anyOf:
       - type: string

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.1'
+  version: '1.1.0.alpha-1'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 15.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.1.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -43,6 +43,106 @@ paths:
           application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/PpData'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '204':
+          description: Expected response to a valid request
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+  /5g-vn-groups/{external-group-id}:
+    put:
+      summary: create a 5G VN Group
+      operationId: Create 5G VN Group
+      tags:
+        - 5G VN Group Creation
+      parameters:
+        - name: external-group-id
+          in: path
+          description: External Identifier of the Group
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/5GVnGroupConfiguration'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    delete:
+      summary: delete a 5G VN Group
+      operationId: Delete 5G VN Group
+      tags:
+        - 5G VN Group Deletion
+      parameters:
+        - name: external-group-id
+          in: path
+          description: External Identifier of the Group
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    patch:
+      summary: modify a 5G VN Group
+      operationId: Modify 5G VN Group
+      tags:
+        - 5G VN Group Modification
+      parameters:
+        - name: external-group-id
+          in: path
+          description: External Identifier of the group
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/5GVnGroupConfiguration'
         required: true
       responses:
         '204':
@@ -83,6 +183,8 @@ components:
           $ref: '#/components/schemas/CommunicationCharacteristics'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        expectedUeBehaviourParameters:
+          $ref: '#/components/schemas/ExpectedUeBehaviour'
 
     CommunicationCharacteristics:
       type: object
@@ -107,6 +209,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       nullable: true
 
     PpActiveTime:
@@ -122,7 +226,130 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       nullable: true
+
+    5GVnGroupConfiguration:
+      type: object
+      properties:
+        5gVnGroupData:
+          $ref: '#/components/schemas/5GVnGroupData'
+        members:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        internalGroupIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+
+    5GVnGroupData:
+      type: object
+      required:
+        - dnn
+        - sNssai
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        sNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnnConfiguration:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/DnnConfiguration'
+
+    ExpectedUeBehaviour:
+      type: object
+      required:
+        - afInstanceId
+        - referenceId
+      properties:
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        stationaryIndication:
+          $ref: '#/components/schemas/StationaryIndication'
+        communicationDurationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        periodicTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        scheduledCommunicationTime:
+          $ref: '#/components/schemas/ScheduledCommunicationTime'
+        expectedUmts:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationArea'
+          minItems: 1
+          description: Identifies the UE's expected geographical movement. The attribute is only applicable in 5G.
+        trafficProfile:
+          $ref: '#/components/schemas/TrafficProfile'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    ScheduledCommunicationTime:
+      type: object
+      properties:
+        daysOfWeek:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayOfWeek'
+          minItems: 1
+          maxItems: 6
+          description: Identifies the day(s) of the week. If absent, it indicates every day of the week.
+        timeOfDayStart:
+          $ref: '#/components/schemas/TimeOfDay'
+        timeOfDayEnd:
+          $ref: '#/components/schemas/TimeOfDay'
+
+    LocationArea:
+      type: object
+      properties:
+        geographicAreas:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+          minItems: 0
+          description: Identifies a list of geographic area of the user where the UE is located.
+        civicAddresses:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
+          minItems: 0
+          description: Identifies a list of civic addresses of the user where the UE is located.
+        nwAreaInfo:
+          $ref: '#/components/schemas/NetworkAreaInfo'
+
+    NetworkAreaInfo:
+      description: Describes a network area information in which the NF service consumer requests the number of UEs.
+      type: object
+      properties:
+        ecgis:
+          description: Contains a list of E-UTRA cell identities.
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+          minItems: 1
+        ncgis:
+          description: Contains a list of NR cell identities.
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+          minItems: 1
+        gRanNodeIds:
+          description: Contains a list of NG RAN nodes.
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+          minItems: 1
+        tais:
+          description: Contains a list of tracking area identities.
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
 
 
 # SIMPLE TYPES:
@@ -134,5 +361,53 @@ components:
       type: integer
       nullable: true
 
+    DayOfWeek:
+      type: integer
+      minimum: 1
+      maximum: 7
+      description: integer between and including 1 and 7 denoting a weekday. 1 shall indicate Monday, and the subsequent weekdays shall be indicated with the next higher numbers. 7 shall indicate Sunday.
+
+    TimeOfDay:
+      type: string
+      description: String with format partial-time or full-time as defined in clause 5.6 of IETF RFC 3339. Examples, 20:15:00, 20:15:00-08:00 (for 8 hours behind UTC).
+
+
 
 # ENUMS:
+
+    StationaryIndication:
+      anyOf:
+      - type: string
+        enum:
+          - STATIONARY
+          - MOBILE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - STATIONARY: Identifies the UE is stationary
+        - MOBILE: Identifies the UE is mobile
+
+    TrafficProfile:
+      anyOf:
+      - type: string
+        enum:
+          - SINGLE_TRANS_UL
+          - SINGLE_TRANS_DL
+          - DUAL_TRANS_UL_FIRST
+          - DUAL_TRANS_DL_FIRST
+          - MULTI_TRANS
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - SINGLE_TRANS_UL: Uplink single packet transmission.
+        - SINGLE_TRANS_DL: Downlink single packet transmission.
+        - DUAL_TRANS_UL_FIRST: Dual packet transmission, firstly uplink packet transmission with subsequent downlink packet transmission.
+        - DUAL_TRANS_DL_FIRST: Dual packet transmission, firstly downlink packet transmission with subsequent uplink packet transmission.

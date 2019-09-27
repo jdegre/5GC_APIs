@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.2
+  version: 1.1.0.alpha-1
   title: Namf_EventExposure
   description: |
     AMF Event Exposure Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-evts
 externalDocs:
-  description: 3GPP TS 29.518 V15.4.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.1.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-evts/v1'
@@ -207,8 +207,8 @@ components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      flows: 
-        clientCredentials: 
+      flows:
+        clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             namf-evts: Access to the Namf_EventExposure API
@@ -332,6 +332,11 @@ components:
           $ref: '#/components/schemas/CommunicationFailure'
         numberOfUes:
           type: integer
+        5gsUserStateList:
+          type: array
+          items:
+            $ref: '#/components/schemas/5GsUserStateInfo'
+          minItems: 1
       required:
         - type
         - state
@@ -392,6 +397,8 @@ components:
           $ref: '#/components/schemas/AmfEventSubscription'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        oldGuami:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
       required:
         - subscription
     AmfCreatedEventSubscription:
@@ -470,6 +477,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceState'
       required:
         - ladn
+    5GsUserStateInfo:
+      type: object
+      properties:
+        5gsUserState:
+          $ref: '#/components/schemas/5GsUserState'
+        accessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+      required:
+        - 5gsUserState
+        - accessType
     5gGuti:
       type: string
     AmfEventType:
@@ -488,6 +505,7 @@ components:
           - SUBSCRIPTION_ID_CHANGE
           - SUBSCRIPTION_ID_ADDITION
           - LOSS_OF_CONNECTIVITY
+          - 5GS_USER_STATE_REPORT
       - type: string
     AmfEventTrigger:
       anyOf:
@@ -527,4 +545,15 @@ components:
         enum:
           - IDLE
           - CONNECTED
+      - type: string
+    5GsUserState:
+      anyOf:
+      - type: string
+        enum:
+          - DEREGISTERED
+          - REGISTERED_NOT_REACHABLE_FOR_PAGING
+          - REGISTERED_REACHABLE_FOR_PAGING
+          - CONNECTED_NOT_REACHABLE_FOR_PAGING
+          - CONNECTED_REACHABLE_FOR_PAGING
+          - NOT_PROVIDED_FROM_AMF
       - type: string

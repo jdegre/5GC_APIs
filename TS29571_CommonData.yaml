@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: '1.2.0.alpha-1'
+  version: '1.2.0.alpha-2'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.0.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.1.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -183,6 +183,18 @@ components:
       type: string
     TimeZoneRm:
       type: string
+      nullable: true
+    StnSr:
+      type: string
+    StnSrRm:
+      type: string
+      nullable: true
+    CMsisdn:
+      type: string
+      pattern: '^[0-9]{5,15}$'
+    CMsisdnRm:
+      type: string
+      pattern: '^[0-9]{5,15}$'
       nullable: true
 
 #
@@ -480,6 +492,23 @@ components:
           minItems: 1
         complexQuery:
           $ref: '#/components/schemas/ComplexQuery'
+    PatchResult:
+      type: object
+      required:
+        - report
+      properties:
+       report:
+        type: array
+        items:
+          $ref: '#/components/schemas/ReportItem'
+        minItems: 1
+    ReportItem:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
 
 
 
@@ -512,10 +541,10 @@ components:
       nullable: true
     Pei:
       type: string
-      pattern: '^(imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
+      pattern: '^(imei-[0-9]{15}|imeisv-[0-9]{16}|macaddress-[0-F]{6}|.+)$'
     PeiRm:
       type: string
-      pattern: '^(imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
+      pattern: '^(imei-[0-9]{15}|imeisv-[0-9]{16}|macaddress-[0-F]{6}|.+)$'
       nullable: true
     Supi:
       type: string
@@ -549,6 +578,9 @@ components:
       type: string
     MtcProviderInformation:
       type: string
+    CagId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{8}$'
 
 #
 # STRUCTURED DATA TYPES
@@ -654,6 +686,17 @@ components:
     NgeNbId:
       type: string
       pattern: '^(MacroNGeNB-[A-Fa-f0-9]{5}|LMacroNGeNB-[A-Fa-f0-9]{6}|SMacroNGeNB-[A-Fa-f0-9]{5})$'
+    Nid:
+      type: string
+      pattern: '^[A-Fa-f0-9]{5}$'
+    NidRm:
+      type: string
+      pattern: '^[A-Fa-f0-9]{5}$'
+      nullable: true
+    NfSetId:
+      type: string
+    NfServiceSetId:
+      type: string
 
 #
 # ENUMERATED DATA TYPES
@@ -679,6 +722,7 @@ components:
             - WLAN
             - VIRTUAL
             - NBIOT
+            - WIRELINE
         - type: string
     RatTypeRm:
       anyOf:
@@ -689,6 +733,7 @@ components:
             - WLAN
             - VIRTUAL
             - NBIOT
+            - WIRELINE
         - type: string
       nullable: true
     PduSessionType:
@@ -873,6 +918,8 @@ components:
           $ref: '#/components/schemas/PlmnId'
         tac:
           $ref: '#/components/schemas/Tac'
+        nid:
+          $ref: '#/components/schemas/Nid'
       required:
         - plmnId
         - tac
@@ -883,6 +930,8 @@ components:
           $ref: '#/components/schemas/PlmnId'
         tac:
           $ref: '#/components/schemas/Tac'
+        nid:
+          $ref: '#/components/schemas/Nid'
       required:
         - plmnId
         - tac
@@ -895,6 +944,8 @@ components:
           # PLMN Identity
         eutraCellId:
           $ref: '#/components/schemas/EutraCellId'
+        nid:
+          $ref: '#/components/schemas/Nid'
       required:
         - plmnId
         - eutraCellId
@@ -906,6 +957,8 @@ components:
           # PLMN Identity
         eutraCellId:
           $ref: '#/components/schemas/EutraCellId'
+        nid:
+          $ref: '#/components/schemas/Nid'
       required:
         - plmnId
         - eutraCellId
@@ -917,6 +970,8 @@ components:
           $ref: '#/components/schemas/PlmnId'
         nrCellId:
           $ref: '#/components/schemas/NrCellId'
+        nid:
+          $ref: '#/components/schemas/Nid'
       required:
         - plmnId
         - nrCellId
@@ -927,6 +982,8 @@ components:
           $ref: '#/components/schemas/PlmnId'
         nrCellId:
           $ref: '#/components/schemas/NrCellId'
+        nid:
+          $ref: '#/components/schemas/Nid'
       required:
         - plmnId
         - nrCellId
@@ -1278,6 +1335,8 @@ components:
           $ref: '#/components/schemas/GNbId'
         ngeNbId:
           $ref: '#/components/schemas/NgeNbId'
+        nid:
+          $ref: '#/components/schemas/Nid'
       oneOf:
         - required: [ n3IwfId ]
         - required: [ gNbId ]
@@ -1315,6 +1374,36 @@ components:
         mptcp:
           type: boolean
           default: false
+    PlmnIdNid:
+      type: object
+      required:
+        - mcc
+        - mnc
+      properties:
+        mcc:
+          $ref: '#/components/schemas/Mcc'
+        mnc:
+          $ref: '#/components/schemas/Mnc'
+        nid:
+          $ref: '#/components/schemas/Nid'
+    SmallDataRateStatus:
+      type: object
+      required:
+        - remainPacketsUl
+        - remainPacketsDl
+        - validityTime
+      properties:
+        remainPacketsUl:
+          type: integer
+          minimum: 0
+        remainPacketsDl:
+          type: integer
+          minimum: 0
+        validityTime:
+          $ref: '#/components/schemas/DateTime'
+        remainExReportsUl:
+          type: integer
+          minimum: 0
 
 
 #
@@ -1413,11 +1502,11 @@ components:
       minimum: 1
       maximum: 4095
       nullable: true
-    SampleRatio:
+    SamplingRatio:
       type: integer
       minimum: 1
       maximum: 100
-    SampleRatioRm:
+    SamplingRatioRm:
       type: integer
       minimum: 1
       maximum: 100

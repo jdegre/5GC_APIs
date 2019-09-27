@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.2'
+  version: '1.1.0.alpha-1'
   title: 'LMF Location'
   description: |
     LMF Location Service.
@@ -60,6 +60,122 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/504'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        EventNotify: 
+          '{$request.body#/hgmlcCallBackURI}':
+            post:
+              requestBody: 
+                description: UE Event Notification
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventNotifyData'
+              responses:
+                '204':
+                  description: Expected response to a valid notification
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                '504':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /cancel-location:
+    post:
+      summary: request cancellation of periodic or triggered location
+      operationId: CancelLocation
+      tags:
+        - Cancel Location
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelLocData'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a successful cancellation
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /location-context-transfer:
+    post:
+      summary: transfer context information for periodic or triggered location
+      operationId: LocationContextTransfer
+      tags:
+        - Location Context Transfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocContextData'
+        required: true
+      responses:
+        '204':
+          description: Expected response to successful location context transfer
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -107,6 +223,22 @@ components:
           $ref: '#/components/schemas/VelocityRequested'
         ueLcsCap:
           $ref: '#/components/schemas/UeLcsCapability'
+        lcsServiceType:
+          $ref: '#/components/schemas/LcsServiceType'
+        ldrType:
+          $ref: '#/components/schemas/LdrType'
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: '#/components/schemas/LdrReference'
+        periodicEventInfo:
+          $ref: '#/components/schemas/PeriodicEventInfo'
+        areaEventInfo:
+          $ref: '#/components/schemas/AreaEventInfo'
+        motionEventInfo:
+          $ref: '#/components/schemas/MotionEventInfo'
+        reportingAccessTypes:
+          $ref: '#/components/schemas/ReportingAccessTypes'
     LocationData:
       type: object
       required:
@@ -140,6 +272,8 @@ components:
           $ref: '#/components/schemas/Altitude'
         barometricPressure:
           $ref: '#/components/schemas/BarometricPressure'
+        servingLMFIdentification:
+          $ref: '#/components/schemas/LMFIdentification'
     GeographicArea:
       anyOf:
         - $ref: '#/components/schemas/Point'
@@ -276,12 +410,12 @@ components:
       properties:
         lon:
           type: number
-          format: float
+          format: double
           minimum: -180
           maximum: 180
         lat:
           type: number
-          format: float
+          format: double
           minimum: -90
           maximum: 90
     UncertaintyEllipse:
@@ -378,6 +512,8 @@ components:
         BLD:
           type: string
         UNIT:
+          type: string
+        FLR:
           type: string
         ROOM:
           type: string
@@ -476,12 +612,203 @@ components:
         lppSupport:
           type: boolean
           default: true
+        ciotOptimisation:
+          type: boolean
+          default: false
+    PeriodicEventInfo:
+      type: object
+      required:
+        - reportingAmount
+        - reportingInterval
+      properties:
+        reportingAmount:
+          $ref: '#/components/schemas/ReportingAmount'
+        reportingInterval:
+          $ref: '#/components/schemas/ReportingInterval'
+    AreaEventInfo:
+      type: object
+      required:
+        - areaDefinition        
+      properties: 
+        areaDefinition:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportingArea'
+          minItems: 1
+          maxItems: 250
+        occurrenceInfo:
+          $ref: '#/components/schemas/OccurrenceInfo'
+        minimumInterval:
+          $ref: '#/components/schemas/MinimumInterval'
+        maximumInterval:
+          $ref: '#/components/schemas/MaximumInterval'
+        samplingInterval:
+          $ref: '#/components/schemas/SamplingInterval'
+        reportingDuration:
+          $ref: '#/components/schemas/ReportingDuration'
+        reportingLocationReq:
+          type: boolean
+          default: true
+    ReportingArea:
+      type: object
+      required:
+        - areaType        
+      properties: 
+        areaType:
+          $ref: '#/components/schemas/ReportingAreaType'
+        tai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+        ecgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        ncgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+    MotionEventInfo:
+      type: object
+      required:
+        - linearDistance        
+      properties: 
+        linearDistance:
+          $ref: '#/components/schemas/LinearDistance'
+        occurrenceInfo:
+          $ref: '#/components/schemas/OccurrenceInfo'
+        minimumInterval:
+          $ref: '#/components/schemas/MinimumInterval'
+        maximumInterval:
+          $ref: '#/components/schemas/MaximumInterval'
+        samplingInterval:
+          $ref: '#/components/schemas/SamplingInterval'
+        reportingDuration:
+          $ref: '#/components/schemas/ReportingDuration'
+        reportingLocationReq:
+          type: boolean
+          default: true
+    ReportingAccessTypes:
+      type: array
+      items:
+        $ref: '#/components/schemas/ReportingAccessType'
+      minItems: 1
+    CancelLocData:
+      type: object
+      required:
+        - hgmlcCallBackURI
+        - ldrReference
+      properties: 
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: '#/components/schemas/LdrReference'
+    LocContextData:
+      type: object
+      required:
+        - amfId
+        - ldrType
+        - hgmlcCallBackURI
+        - ldrReference
+        - eventReportMessage
+      properties: 
+        amfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        locationQoS:
+          $ref: '#/components/schemas/LocationQoS'
+        supportedGADShapes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportedGADShapes'
+          minItems: 1
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        ldrType:
+          $ref: '#/components/schemas/LdrType'
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: '#/components/schemas/LdrReference'
+        periodicEventInfo:
+          $ref: '#/components/schemas/PeriodicEventInfo'
+        areaEventInfo:
+          $ref: '#/components/schemas/AreaEventInfo'
+        motionEventInfo:
+          $ref: '#/components/schemas/MotionEventInfo'
+        eventReportMessage:
+          $ref: '#/components/schemas/EventReportMessage'
+        eventReportingStatus:
+          $ref: '#/components/schemas/EventReportingStatus'
+        ueLocationInfo:
+          $ref: '#/components/schemas/UELocationInfo'
+    EventReportMessage:
+      type: object
+      required:
+        - eventClass
+        - eventContent
+      properties: 
+        eventClass:
+          $ref: '#/components/schemas/EventClass'
+        eventContent:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+    EventReportingStatus:
+      type: object
+      properties: 
+        eventReportCounter:
+          $ref: '#/components/schemas/EventReportCounter'
+        eventReportDuration:
+          $ref: '#/components/schemas/EventReportDuration'
+    UELocationInfo:
+      type: object
+      properties: 
+        locationEstimate:
+          $ref: '#/components/schemas/GeographicArea'
+        ageOfLocationEstimate:
+          $ref: '#/components/schemas/AgeOfLocationEstimate'
+        velocityEstimate:
+          $ref: '#/components/schemas/VelocityEstimate'
+        ageOfVelocityEstimate:
+          $ref: '#/components/schemas/AgeOfLocationEstimate'
+
+    EventNotifyData:
+      type: object
+      required: 
+        - reportedEventType
+        - ldrReference
+      properties:
+        reportedEventType:
+          $ref: '#/components/schemas/ReportedEventType'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: '#/components/schemas/LdrReference'
+        locationEstimate:
+          $ref: '#/components/schemas/GeographicArea'
+        ageOfLocationEstimate:
+          $ref: '#/components/schemas/AgeOfLocationEstimate'
+        civicAddress:
+          $ref: '#/components/schemas/CivicAddress'
+        positioningDataList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositioningMethodAndUsage'
+          minItems: 1
+        gnssPositioningDataList:
+          type: array
+          items:
+            $ref: '#/components/schemas/GnssPositioningMethodAndUsage'
+          minItems: 1
+        servingLMFidentification:
+          $ref: '#/components/schemas/LMFIdentification'
+        terminationCause:
+          $ref: '#/components/schemas/TerminationCause'
+#
 #
 # SIMPLE TYPES
 #
     Altitude:
       type: number
-      format: float
+      format: double
       minimum: -32767
       maximum: 32767
     Angle:
@@ -536,6 +863,52 @@ components:
       type: integer
       minimum: 30000
       maximum: 115000
+    LcsServiceType:
+      type: integer
+      minimum: 0
+      maximum: 127
+    LdrReference:
+      type: string
+      minLength: 2
+      maxLength: 510
+    ReportingAmount:
+      type: integer
+      minimum: 1
+      maximum: 8639999
+    ReportingInterval:
+      type: integer
+      minimum: 1
+      maximum: 8639999
+    MinimumInterval:
+      type: integer
+      minimum: 1
+      maximum: 32767
+    MaximumInterval:
+      type: integer
+      minimum: 1
+      maximum: 86400
+    SamplingInterval:
+      type: integer
+      minimum: 1
+      maximum: 3600
+    ReportingDuration:
+      type: integer
+      minimum: 1
+      maximum: 8640000
+    LinearDistance:
+      type: integer
+      minimum: 1
+      maximum: 10000
+    LMFIdentification:
+      type: string
+    EventReportCounter:
+      type: integer
+      minimum: 1
+      maximum: 8640000
+    EventReportDuration:
+      type: integer
+      minimum: 1
+      maximum: 8640000
 #
 # ENUMS
 #
@@ -638,6 +1011,68 @@ components:
       enum:
         - UPWARD
         - DOWNWARD
+    LdrType:
+      anyOf:
+        - type: string
+          enum:
+            - UE_AVAILABLE
+            - PERIODIC
+            - ENTERING_INTO_AREA
+            - LEAVING_FROM_AREA
+            - BEING_INSIDE_AREA
+            - MOTION
+        - type: string
+    ReportingAreaType:
+      anyOf:
+        - type: string
+          enum:
+            - EPS_TRACKING_AREA_IDENTITY
+            - E-UTRAN_CELL_GLOBAL_IDENTIFICATION
+            - 5GS_TRACKING_AREA_IDENTITY
+            - NR_CELL_GLOBAL_IDENTITY
+        - type: string
+    OccurrenceInfo:
+      anyOf:
+        - type: string
+          enum:
+            - ONE_TIME_EVENT
+            - MULTIPLE_TIME_EVENT
+        - type: string
+    ReportingAccessType:
+      anyOf:
+        - type: string
+          enum:
+            - NR
+            - EUTRA_CONNECTED_TO_5GC
+            - NON_3GPP_CONNECTED_TO_5GC
+        - type: string
+    EventClass:
+      anyOf:
+        - type: string
+          enum:
+            - SUPPLEMENTARY_SERVICES
+        - type: string
+    ReportedEventType:
+      anyOf:
+        - type: string
+          enum:
+            - PERIODIC_EVENT
+            - ENTERING_AREA_EVENT
+            - LEAVING_AREA_EVENT
+            - BEING_INSIDE_AREA_EVENT
+            - MOTION_EVENT
+            - MAXIMUM_INTERVAL_EXPIRATION_EVENT
+            - LOCATION_CANCELLATION_EVENT
+        - type: string
+    TerminationCause:
+      anyOf:
+        - type: string
+          enum:
+            - TERMINATION_BY_UE
+            - TERMINATION_BY_NETWORK
+            - NORMAL_TERMINATION
+        - type: string
+
 externalDocs:
-  description: 3GPP TS 29.572 V15.4.0; 5G System; Location Management Services; Stage 3
+  description: 3GPP TS 29.572 V16.0.0; 5G System; Location Management Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
