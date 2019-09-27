@@ -9,7 +9,7 @@ info:
     All rights reserved.
   
 externalDocs:
-  description: 3GPP TS 29.505 V15.4.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
+  description: 3GPP TS 29.505 V15.5.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
@@ -950,7 +950,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OperatorSpecificDataContainer'
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/OperatorSpecificDataContainer'
           headers:
             Cache-Control:
               description: Cache-Control containing max-age, as described in RFC 7234, 5.2
@@ -2241,12 +2243,6 @@ paths:
       tags:
         - Subs To Notify (Document)
       parameters:
-        - name: ueId
-          in: path
-          description: UE id
-          required: true
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
         - name: subsId
           in: path
           required: true
@@ -2583,23 +2579,25 @@ components:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SmsSubscriptionData'
     OperatorSpecificDataContainer:
       type: object
+      required:
+        - dataType
+        - value
       properties:
-        StringTypeElements:
-          type: object
-          additionalProperties:
-            type: string
-        IntegerTypeElements:
-          type: object
-          additionalProperties:
-            type: integer
-        NumberTypeElements:
-          type: object
-          additionalProperties:
-            type: number
-        BooleanTypeElements:
-          type: object
-          additionalProperties:
-            type: boolean
+        dataType:
+          type: string
+          enum:
+            - string
+            - integer
+            - number
+            - boolean
+            - object
+        value:
+          oneOf:
+            - type: string
+            - type: integer
+            - type: number
+            - type: boolean
+            - type: object
     AuthMethod:
       anyOf:
         - type: string
@@ -2676,7 +2674,6 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
           minItems: 1
-          maxItems: 2
         gpsiList:
           type: array
           items:

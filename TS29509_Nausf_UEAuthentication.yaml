@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.2
+  version: 1.0.3
   title: AUSF API
   description: |
     AUSF UE Authentication Service.
@@ -53,8 +53,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: User does not exist in the HPLMN
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '500':
           description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '501':
+          description: Received protection scheme is not supported by HPLMN
           content:
             application/problem+json:
               schema:
@@ -79,7 +91,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfirmationDataResponse'
-              
+
         '400':
           description: Bad Request
           content:
@@ -113,7 +125,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EapSession'
-              
+
             application/3gppHal+json:
               schema:
                 type: object
@@ -186,7 +198,7 @@ components:
         - authType
         - 5gAuthData
         - _links
-  
+
     Av5gAka:
       type: object
       required:
@@ -258,7 +270,7 @@ components:
       type: string
       pattern: "[A-Fa-f0-9]{32}"
     AuthType:
-      anyOf:
+      anyOf:		
         - type: string
           enum:
             - 5G_AKA
@@ -266,5 +278,5 @@ components:
             - EAP_TLS
         - type: string
 externalDocs:
-  description: 3GPP TS 29.509 V15.4.0; 5G System; 3GPP TS Authentication Server services.
+  description: 3GPP TS 29.509 V15.5.0; 5G System; 3GPP TS Authentication Server services.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.509
