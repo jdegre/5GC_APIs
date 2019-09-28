@@ -13,6 +13,10 @@ Other releases: [Rel-16 (Open)](https://github.com/jdegre/5GC_APIs/tree/master)<
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
 <br/><br/>
 
+## Tools
+* [API Parser/Validator](https://jdegre.github.io/parser.html) 
+<br/><br/>
+
 The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI YAML file of each Network Function (NF) API:
 <br/>
 
