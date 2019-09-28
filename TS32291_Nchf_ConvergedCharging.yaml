@@ -1,11 +1,11 @@
-openapi: 3.0.0
+﻿openapi: 3.0.0
 info:
   description: ConvergedCharging Service
-  version: 2.0.1
+  version: 2.0.2
   title: Nchf_ConvergedCharging
 externalDocs:
   description: >
-    3GPP TS 32.291 V15.3.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V15.4.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -191,6 +191,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         oneTimeEvent:
           type: boolean
+        oneTimeEventType:
+          $ref: '#/components/schemas/oneTimeEventType'
         notifyUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         multipleUnitUsage:
@@ -239,7 +241,7 @@ components:
         roamingQBCInformation:
           $ref: '#/components/schemas/RoamingQBCInformation'
       required:
-        - invocationTimeStamp
+        - nfConsumerIdentification 
         - invocationSequenceNumber
     ChargingNotifyRequest:
       type: object
@@ -277,7 +279,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatingGroup'
         requestedUnit:
           $ref: '#/components/schemas/RequestedUnit'
-        UsedUnitContainer:
+        usedUnitContainer:
           type: array
           items:
             $ref: '#/components/schemas/UsedUnitContainer'
@@ -489,6 +491,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         dnnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        dnnSelectionMode:
+          $ref: '#/components/schemas/dnnSelectionMode'
         chargingCharacteristics:
           type: string
         chargingCharacteristicsSelectionMode:
@@ -622,6 +626,8 @@ components:
       properties:
         qFI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
+        reportTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         timeofFirstUsage:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         timeofLastUsage:
@@ -1025,4 +1031,19 @@ components:
           enum:
             - NO_REPLY_PATH_SET
             - REPLY_PATH_SET
+        - type: string
+    oneTimeEventType:
+      anyOf:
+        - type: string
+          enum:
+            - IEC
+            - PEC
+        - type: string
+    dnnSelectionMode:
+      anyOf:
+        - type: string
+          enum:
+            - VERIFIED
+            - UE_DNN_NOT_VERIFIED
+            - NW_DNN_NOT_VERIFIED
         - type: string
