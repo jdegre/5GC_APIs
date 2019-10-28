@@ -14,7 +14,8 @@ Other releases: [Rel-16 (Open)](https://github.com/jdegre/5GC_APIs/tree/master)<
 <br/><br/>
 
 ## Tools
-* [API Parser/Validator](https://jdegre.github.io/parser.html) 
+* [API Parser/Validator and Linter](https://jdegre.github.io/parser.html)
+* [Data Type Finder](https://jdegre.github.io/types.html)
 <br/><br/>
 
 The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI YAML file of each Network Function (NF) API:
