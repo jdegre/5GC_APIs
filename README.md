@@ -141,5 +141,5 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [Network Parameter Configuration](https://jdegre.github.io/loader.html?yaml=TS29122_NpConfiguration.yaml)
 * [Application Server (AS) Session with QoS](https://jdegre.github.io/loader.html?yaml=TS29122_AsSessionWithQoS.yaml)
 * [MSISDN-less Mobile-Originated SMS](https://jdegre.github.io/loader.html?yaml=TS29122_MsisdnLessMoSms.yaml)
-* [RACS (Radio Capability Signaling) Parameter Provisioning](https://jdegre.github.io/loader.html?yaml=TS29122_RACSParameterProvisioning.yaml)
+* [RACS (Radio Capability Signaling) Parameter Provisioning](https://jdegre.github.io/loader.html?yaml=TS29122_RacsParameterProvisioning.yaml)
 * [Common Data](https://jdegre.github.io/loader.html?yaml=TS29122_CommonData.yaml)
