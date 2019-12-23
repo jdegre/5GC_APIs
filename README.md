@@ -27,17 +27,21 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [NF Discovery](https://jdegre.github.io/loader.html?yaml=TS29510_Nnrf_NFDiscovery.yaml)
 * [Access Token (OAuth2)](https://jdegre.github.io/loader.html?yaml=TS29510_Nnrf_AccessToken.yaml)
 * [Bootstrapping](https://jdegre.github.io/loader.html?yaml=TS29510_Nnrf_Bootstrapping.yaml)
+
 ## LMF (Location Management Function)
 * [Location](https://jdegre.github.io/loader.html?yaml=TS29572_Nlmf_Location.yaml)
 * [Broadcast](https://jdegre.github.io/loader.html?yaml=TS29572_Nlmf_Broadcast.yaml)
+
 ## AMF (Access and Mobility Management Function)
 * [Communication](https://jdegre.github.io/loader.html?yaml=TS29518_Namf_Communication.yaml)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29518_Namf_EventExposure.yaml)
 * [Location](https://jdegre.github.io/loader.html?yaml=TS29518_Namf_Location.yaml)
 * [MT](https://jdegre.github.io/loader.html?yaml=TS29518_Namf_MT.yaml)
+
 ## SMF (Session Management Function)
 * [PDU Session](https://jdegre.github.io/loader.html?yaml=TS29502_Nsmf_PDUSession.yaml)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29508_Nsmf_EventExposure.yaml)
+
 ## UDM (Unified Data Management)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SDM.yaml)
 * [UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_UECM.yaml)
@@ -46,6 +50,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Parameter Provisioning](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_PP.yaml)
 * [NIDD Authorization](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_NIDDAU.yaml)
 * [MT](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_MT.yaml)
+
 ## UDR (Unified Data Repository)
 * [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DataRepository.yaml)
   * [Subscription Data](https://jdegre.github.io/loader.html?yaml=TS29505_Subscription_Data.yaml)
@@ -53,20 +58,26 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
   * [Exposure Data](https://jdegre.github.io/loader.html?yaml=TS29519_Exposure_Data.yaml)
   * [Application Data](https://jdegre.github.io/loader.html?yaml=TS29519_Application_Data.yaml)
 * [Group ID Map](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_GroupIDmap.yaml)
+
 ## AUSF (Authentication Server Function)
 * [UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_UEAuthentication.yaml)
 * [SoR (Steering of Roaming) Protection](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_SoRProtection.yaml)
 * [UPU (UE Parameter Update) Protection](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_UPUProtection.yaml)
+
 ## NSSF (Network Slice Selection Function)
 * [NSSAI Availability](https://jdegre.github.io/loader.html?yaml=TS29531_Nnssf_NSSAIAvailability.yaml)
 * [NS Selection](https://jdegre.github.io/loader.html?yaml=TS29531_Nnssf_NSSelection.yaml)
+
 ## SMSF (SMS Function)
 * [SM Service](https://jdegre.github.io/loader.html?yaml=TS29540_Nsmsf_SMService.yaml)
+
 ## 5G-EIR (5G Equipment Identity Register)
 * [Equipment Identity Check](https://jdegre.github.io/loader.html?yaml=TS29511_N5g-eir_EquipmentIdentityCheck.yaml)
+
 ## NEF (Network Exposure Function)
 * [Packet Flow Description (PFD) Management](https://jdegre.github.io/loader.html?yaml=TS29551_Nnef_PFDmanagement.yaml)
 * [Session Management (SM) Context](https://jdegre.github.io/loader.html?yaml=TS29541_Nnef_SMContext.yaml)
+
 ## PCF (Policy Control Function)
 * [Policy Authorization](https://jdegre.github.io/loader.html?yaml=TS29514_Npcf_PolicyAuthorization.yaml)
 * [Access and Mobility (AM) Policy Control](https://jdegre.github.io/loader.html?yaml=TS29507_Npcf_AMPolicyControl.yaml)
@@ -74,11 +85,14 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Background Data Transfer (BDT) Policy Control](https://jdegre.github.io/loader.html?yaml=TS29554_Npcf_BDTPolicyControl.yaml)
 * [Policy Control Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29523_Npcf_EventExposure.yaml)
 * [UE Policy Control](https://jdegre.github.io/loader.html?yaml=TS29525_Npcf_UEPolicyControl.yaml)
+
 ## BSF (Binding Support Function)
 * [Management](https://jdegre.github.io/loader.html?yaml=TS29521_Nbsf_Management.yaml)
+
 ## NWDAF (Network Data Analytics Function)
 * [Events Subscription](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_EventsSubscription.yaml)
 * [Analytics Info](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_AnalyticsInfo.yaml)
+
 ## HSS (Home Subscriber Server)
 * [UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_UEAU.yaml)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_SDM.yaml)
@@ -86,18 +100,26 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [IMS UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUEAU.yaml)
 * [IMS Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsSDM.yaml)
 * [IMS UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUECM.yaml)
+
+## OTAF (Over-The-Air Function)
+* [Secured Packet](https://jdegre.github.io/loader.html?yaml=TS29544_Notaf_SecuredPacket.yaml)
+
 ## AF (Application Function)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29517_Naf_EventExposure.yaml)
+
 ## CHF (Charging Function)
 * [Spending Limit Control](https://jdegre.github.io/loader.html?yaml=TS29594_Nchf_SpendingLimitControl.yaml)
 * [Converged Charging](https://jdegre.github.io/loader.html?yaml=TS32291_Nchf_ConvergedCharging.yaml)
 * [Offline-Only Charging](https://jdegre.github.io/loader.html?yaml=TS32291_Nchf_OfflineOnlyCharging.yaml)
+
 ## Common Data Types
 * [Common Data](https://jdegre.github.io/loader.html?yaml=TS29571_CommonData.yaml)
+
 ## SEPP N32 APIs
 * [Handshake (N32-c)](https://jdegre.github.io/loader.html?yaml=TS29573_N32_Handshake.yaml)
 * [Forwarding (N32-f)](https://jdegre.github.io/loader.html?yaml=TS29573_JOSEProtectedMessageForwarding.yaml)
 * [Telescopic FQDN Mapping](https://jdegre.github.io/loader.html?yaml=TS29573_SeppTelescopicFqdnMapping.yaml)
+
 ## UCMF (UE Radio Capability Management Function)
 * [UE Radio Capability Management](https://jdegre.github.io/loader.html?yaml=TS29673_Nucmf_UERCM.yaml)
 * [Provisioning](https://jdegre.github.io/loader.html?yaml=TS29675_Nucmf_Provisioning.yaml)
@@ -124,6 +146,11 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Applying BDT Policy](https://jdegre.github.io/loader.html?yaml=TS29522_ApplyingBdtPolicy.yaml)
 * [IPTV Configuration](https://jdegre.github.io/loader.html?yaml=TS29522_IPTVConfiguration.yaml)
 * [Analytics Exposure](https://jdegre.github.io/loader.html?yaml=TS29522_AnalyticsExposure.yaml)
+
+## VAE (V2X Application Enabler)
+* [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2X_Message_Delivery.yaml)
+* [File Distribution](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_File_Distribution.yaml)
+* [Application Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2X_Application_Requirement.yaml)
 
 ## SCEF (Service Capability Exposure Function)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
