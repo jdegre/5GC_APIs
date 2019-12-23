@@ -7,7 +7,7 @@ info:
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V16.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V16.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -242,6 +242,11 @@ paths:
             items:
               $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
             minItems: 1
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: The Traffic Influence Data stored in the UDR are returned.
@@ -743,10 +748,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-  /application-data/bdtPolicy/{bdtPolicyId}:
+  /application-data/bdtPolicyData/{bdtPolicyId}:
     put:
-      summary: Create or update an individual applied BDT Policy Data resource
-      operationId: CreateOrReplaceIndividualAppliedBdtPolicyData
+      summary: Create an individual applied BDT Policy Data resource
+      operationId: CreateIndividualAppliedBdtPolicyData
       tags:
         - Individual BDT Policy Data (Document)
       requestBody:
@@ -775,8 +780,6 @@ paths:
               required: true
               schema:
                 type: string
-        '204':
-          description: No content
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -997,6 +1000,57 @@ paths:
               required: true
               schema:
                 type: string
+        '200':
+          description: The update of an Individual IPTV configuration resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IptvConfigData'
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Partial update an individual IPTV configuration resource
+      operationId: PartialReplaceIndividualIPTVConfigurationData
+      tags:
+        - Individual IPTV Configuration Data 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IptvConfigDataPatch'
+      parameters:
+        - name: configurationId
+          in: path
+          description: The Identifier of an Individual IPTV Configuration Data to be updated. It shall apply the format of Data type string.
+          required: true
+          schema:
+            type: string
+      responses:
         '200':
           description: The update of an Individual IPTV configuration resource.
           content:
@@ -1392,6 +1446,8 @@ components:
           type: boolean
         addrPreserInd:
           type: boolean
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       allOf:
         - oneOf:
           - required: [afAppId]
@@ -1512,8 +1568,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         bdtRefId:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
-          # TO-DO: Temporary fix to pass the validator
-          # $ref: 'TS29122_CommonData.yaml#/components/schemas/bdtReferenceId'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
        - bdtRefId
     BdtPolicyDataPatch:
@@ -1521,8 +1579,6 @@ components:
       properties:
         bdtRefId:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
-          # TO-DO: Temporary fix to pass the validator
-          # $ref: 'TS29122_CommonData.yaml#/components/schemas/bdtReferenceId'
       required:
        - bdtRefId
     IptvConfigData:
@@ -1542,9 +1598,7 @@ components:
         multiAccCtrls:
           type: array
           items:
-            type: object
-            # TO-DO: temporary fix to pass the validator, until the API file in $ref is actually created
-            # $ref: 'TS29522_IptvConfiguration.yaml#/components/schemas/MulticastAccessControl'
+            $ref: 'TS29522_IPTVConfiguration.yaml#/components/schemas/MulticastAccessControl'
       required:
         - dnn
         - snssai
@@ -1553,6 +1607,14 @@ components:
       oneOf:
         - required: [internalGroupId]
         - required: [supi]
+    IptvConfigDataPatch:
+      type: object
+      properties:
+        multiAccCtrls:
+          type: object
+          additionalProperties:
+            $ref: 'TS29522_IPTVConfiguration.yaml#/components/schemas/MulticastAccessControl'
+          minProperties: 1
     ApplicationDataSubs:
       description: Identifies a subscription to application data change notification.
       type: object

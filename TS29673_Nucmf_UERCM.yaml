@@ -1,0 +1,455 @@
+openapi: 3.0.0
+
+info:
+  title: Nucmf_UECapabilityManagement
+  version: 1.0.0.alpha-1
+  description: |
+    Nucmf_UECapabilityManagement Service.
+    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.673 V0.3.0; 5G System; UE Radio Capability Management Services
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.673/
+
+servers:
+  - url: '{apiRoot}/nucmf-uecm/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - nucmf-uecm
+
+paths:
+  /dic-entries:
+    get:
+      summary: retrieve a dictionary entry matching query parameters
+      operationId: RetrieveDictionaryEntry
+      tags:
+        - Dictionary Entry (Store)
+      parameters:
+        - name: ue-radio-capa-id
+          in: query
+          description: UE Radio Capability ID, either PLMN Assigned or Manufacturer Assigned
+          schema:
+            $ref: '#/components/schemas/UeRadioCapaId'
+        - name: tac
+          in: query
+          description: Type Allocation Code in an IMEI or IMEISV
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
+        - name: svn
+          in: query
+          description: Software Version Number in an IMEISV 
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            multipart/related:  # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Request parts
+                  jsonData:
+                    $ref: '#/components/schemas/DicEntryData'
+                  binaryDataUeRadioCapability:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataUeRadioCapability:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    post:
+      summary: Create a dictionary entry in the UCMF
+      tags:
+        - a dictionary entry (Document)
+      operationId: CreateDictionaryEntry
+      requestBody:
+        content:
+          multipart/related:  # message with binary body part(s)
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/DicEntryCreateData'
+                binaryDataUeRadioCapability:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataUeRadioCapability:
+                contentType:  application/vnd.3gpp.ngap
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+        required: true
+      responses:
+        '201':
+          description: Dictionary Created
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nucmf-uecm/<apiVersion>/dic-entries/{dicEntryId}'
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DicEntryCreatedData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /dic-entries/{dicEntryId}:
+    get:
+      summary: Get an individual dictionary entry via dicEntryId 
+      operationId: GetDicEntry
+      tags:
+        - dic Entry Id (Document)
+      parameters:
+        - name: dicEntryId
+          in: path
+          description: the ID of a dictionary entry in the UCMF
+          required: true
+          schema:
+            $ref: '#/components/schemas/DicEntryId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DicEntryData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+
+  /subscriptions:
+    post:
+      summary: Nucmf_UECapabilityManagement Subscribe service Operation
+      operationId: CreateIndividualSubcription
+      tags:
+        - Subscriptions (Collection)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscription'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nucmf-uecm/<apiVersion>/subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        myNotification:
+          '{$request.body#/ucmfNotificationUri}': 
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/UcmfNotification'
+              responses:
+                '204':
+                  description: No Content, Notification was succesfull
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /subscriptions/{subscriptionId}:
+    delete:
+      summary: unsubscribe from notifications
+      operationId: DeleteIndividualSubcription
+      tags:
+        - IndividualSubscription (Document)
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Event Subscription ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content. Resource was succesfully deleted
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nucmf-uecm: Access to the Nucmf_UECapabilityManagement API
+
+  schemas:
+    DicEntryData:
+      type: object
+      required:
+        - ueRadioCapability
+      properties:
+        typeAllocationCode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
+        swVersionNumber:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
+        plmnAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
+        manAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ManAssiUeRadioCapId'
+        ueRadioCapability:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData' 
+
+    DicEntryCreateData:
+      type: object
+      required:
+        - typeAllocationCode
+        - ueRadioCapability
+      properties:
+        typeAllocationCode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
+        swVersionNumber:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
+        ueRadioCapability:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'  
+
+
+    DicEntryCreatedData:
+      type: object
+      required:
+        - plmnAssiUeRadioCapId
+      properties:
+        plmnAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
+
+
+    UeRadioCapaId:
+      type: object
+      properties:
+        plmnAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
+        manAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ManAssiUeRadioCapId'
+
+
+    CreateSubscription:
+      type: object
+      required:
+        - ucmfNotificationUri
+      properties:
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        ucmfNotificationUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        suggestedExpires:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+          
+    CreatedSubscription:
+      type: object
+      required:
+        - dicEntryId
+      properties:
+        dicEntryId:
+          $ref: '#/components/schemas/DicEntryId'
+        confirmedExpires:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    UcmfNotification:
+      type: object
+      required:
+        - dicEntryId
+        - eventType
+      properties:
+        dicEntryId:
+          $ref: '#/components/schemas/DicEntryId'        
+        eventType:
+          $ref: '#/components/schemas/EventType'        
+        delPlmnAssiUeRadioCapIdData:       
+          type: array
+          items:
+            $ref: '#/components/schemas/DelPlmnAssiUeRadioCapIdData'
+          minItems: 1
+
+    DelPlmnAssiUeRadioCapIdData:
+      type: object
+      required:
+        - plmnAssiUeRadioCapId
+        - typeAllocationCode
+      properties:
+        plmnAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'        
+        typeAllocationCode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'        
+        swVersionNumber:       
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
+          
+
+#
+# SIMPLE DATA TYPES
+#
+    DicEntryId:
+      type: integer
+      minimum: 0
+      maximum: 4294967295
+
+#
+# ENUMERATIONS
+#
+
+    EventType:
+      anyOf:
+      - type: string
+        enum:
+          - CREATION_OF_DICTIONARY_ENTRY
+          - DELETION_OF_PLMN_ASSIGNED_IDS
+      - type: string

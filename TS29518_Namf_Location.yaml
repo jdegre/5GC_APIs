@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.0.3
+  version: 1.1.0.alpha-1
   title: Namf_Location
   description: |
     AMF Location Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-loc
 externalDocs:
-  description: 3GPP TS 29.518 V15.5.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.2.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-loc/v1'
@@ -143,6 +143,56 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
+
+  /{ueContextId}/cancel-pos-info:
+    post:
+      summary: Namf_Location CancelLocation service operation
+      tags:
+        - Individual UE context (Document)
+      operationId: CancelLocation
+      parameters:
+        - name: ueContextId
+          in: path
+          description: UE Context Identifier
+          required: true
+          schema:
+            type: string
+            pattern: '^(imsi-[0-9]{5,15}|nai-.+|.+)$'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelPosInfo'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a successful cancellation
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -183,6 +233,30 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         oldGuami:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+        pei:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
+        lcsServiceType:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LcsServiceType'
+        ldrType:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LdrType'
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LdrReference'
+        periodicEventInfo:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/PeriodicEventInfo'
+        areaEventInfo:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/AreaEventInfo'
+        motionEventInfo:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/MotionEventInfo'
+        externalClientIdentification:
+          $ref: 'TS29515_Ngmlc_Location.yaml#/components/schemas/ExternalClientIdentification'
+        afID:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        codeWord:
+          $ref: 'TS29515_Ngmlc_Location.yaml#/components/schemas/CodeWord'
+        privacyCheckRelatedAction:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/PrivacyCheckRelatedAction'
       required:
         - lcsClientType
         - lcsLocation
@@ -223,6 +297,8 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        servingLMFIdentification:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
     NotifiedPosInfo:
       type: object
       properties:
@@ -264,6 +340,14 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/BarometricPressure'
         altitude:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LdrReference'
+        servingLMFIdentification:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
+        terminationCause:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/TerminationCause'
       required:
         - locationEvent
     RequestLocInfo:
@@ -292,7 +376,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         geoInfo:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
-        locatoinAge:
+        locationAge:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/AgeOfLocationEstimate'
         ratType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
@@ -302,6 +386,23 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         oldGuami:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+    CancelPosInfo:
+      type: object
+      properties: 
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        hgmlcCallBackURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        ldrReference:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LdrReference'
+        servingLMFIdentification:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - supi
+        - hgmlcCallBackURI
+        - ldrReference
     LocationType:
       anyOf:
       - type: string
@@ -309,6 +410,8 @@ components:
           - CURRENT_LOCATION
           - CURRENT_OR_LAST_KNOWN_LOCATION
           - INITIAL_LOCATION
+          - NOTIFICATION_VERIFICATION_ONLY
+          - DEFERRED_LOCATION
       - type: string
     LocationEvent:
       anyOf:
@@ -317,4 +420,7 @@ components:
           - EMERGENCY_CALL_ORIGINATION
           - EMERGENCY_CALL_RELEASE
           - EMERGENCY_CALL_HANDOVER
+          - ACTIVATION_OF_DEFERRED_LOCATION
+          - UE_MOBILITY_FOR_DEFERRED_LOCATION
+          - CANCELLATION_OF_DEFERRED_LOCATION
       - type: string

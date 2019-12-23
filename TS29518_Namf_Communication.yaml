@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-2
+  version: 1.1.0.alpha-3
   title: Namf_Communication
   description: |
     AMF Communication Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-comm
 externalDocs:
-  description: 3GPP TS 29.518 V16.1.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.2.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-comm/v1'
@@ -722,6 +722,9 @@ paths:
                 binaryDataN2Information:
                   type: string
                   format: binary
+                binaryMtData:
+                  type: string
+                  format: binary
             encoding:
               jsonData:
                 contentType:  application/json
@@ -733,6 +736,12 @@ paths:
                       type: string
               binaryDataN2Information:
                 contentType:  application/vnd.3gpp.ngap
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+              binaryMtData:
+                contentType:  application/vnd.3gpp.5gnas
                 headers:
                   Content-Id:
                     schema:
@@ -1520,16 +1529,6 @@ components:
           minItems: 1
         ratSelector:
           $ref: '#/components/schemas/RatSelector'
-        ecgiList:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
-          minItems: 1
-        ncgiList:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
-          minItems: 1
         globalRanNodeList:
           type: array
           items:
@@ -1654,6 +1653,8 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/CorrelationID'
         registrationCtxtContainer:
           $ref: '#/components/schemas/RegistrationContextContainer'
+        newLmfIdentification:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
       required:
         - n1MessageContainer
     N1MessageContainer:
@@ -1677,6 +1678,8 @@ components:
           $ref: '#/components/schemas/N1MessageContainer'
         n2InfoContainer:
           $ref: '#/components/schemas/N2InfoContainer'
+        mtData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         skipInd:
           type: boolean
           default: false
@@ -1703,9 +1706,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         oldGuami:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+        maAcceptedInd:
+          type: boolean
+          default: false
         extBufSupport:
           type: boolean
           default: false
+        targetAccess:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+
     N1N2MessageTransferRspData:
       type: object
       properties:
@@ -1738,6 +1747,8 @@ components:
         ueContextRequest:
           type: boolean
           default:  false
+        initialAmfN2ApId:
+          type: integer
         anN2IPv4Addr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         anN2IPv6Addr:
@@ -1848,6 +1859,14 @@ components:
           $ref: '#/components/schemas/5GMmCapability'
         pcfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        pcfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        pcfAmpServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        pcfUepServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        pcfBinding:
+          $ref: '#/components/schemas/SbiBindingLevel'
         pcfAmPolicyUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         amPolicyReqTriggerList:
@@ -1916,6 +1935,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SmallDataRateStatusInfo'
+          minItems: 1
+        restrictedPrimaryRatList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+          minItems: 1
+        restrictedSecondaryRatList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
           minItems: 1
     N2SmInformation:
       type: object
@@ -2044,6 +2073,12 @@ components:
           minItems: 1
         expectedUEbehavior:
           $ref: '#/components/schemas/ExpectedUeBehavior'
+        plmnAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
+        manAssiUeRadioCapId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ManAssiUeRadioCapId'
+        ucmfDicEntryId:
+          type: string
       required:
         - accessType
     SeafData:
@@ -2097,10 +2132,28 @@ components:
           minItems: 1
         hsmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        hsmfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        hsmfServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        smfBinding:
+          $ref: '#/components/schemas/SbiBindingLevel'
         vsmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        vsmfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        vsmfServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        vsmfBinding:
+          $ref: '#/components/schemas/SbiBindingLevel'
         ismfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        ismfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        ismfServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        ismfBinding:
+          $ref: '#/components/schemas/SbiBindingLevel'
         nsInstance:
           $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsiId'
         smfServiceInstanceId:
@@ -2380,6 +2433,7 @@ components:
           - LPP
           - SMS
           - UPDP
+          - LCS
       - type: string
     N1N2MessageTransferCause:
       anyOf:
@@ -2487,6 +2541,8 @@ components:
           - SON_CONFIG_TRANSFER
           - NRPPA_PDU
           - UE_RADIO_CAPABILITY
+          - RIM_INFO_TRANSFER
+          - SECONDARY_RAT_USAGE
       - type: string
     N2InfoNotifyReason:
       anyOf:
@@ -2500,4 +2556,12 @@ components:
         enum:
           - CHANGED
           - REMOVED
+      - type: string
+    SbiBindingLevel:
+      anyOf:
+      - type: string
+        enum:
+          - NF_INSTANCE_BINDING
+          - NF_SET_BINDING
+          - NF_SERVICE_SET_BINDING
       - type: string

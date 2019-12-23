@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-2'
+  version: '1.1.0.alpha-3'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.1.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -239,6 +239,10 @@ components:
           type: boolean
         locationReportingConfiguration:
           $ref: '#/components/schemas/LocationReportingConfiguration'
+        associationType:
+          $ref: '#/components/schemas/AssociationType'
+        datalinkReportCfg:
+          $ref: '#/components/schemas/DatalinkReportingConfiguration'
 
     LocationReportingConfiguration:
       type: object
@@ -251,14 +255,24 @@ components:
           type: boolean
         accuracy:
           $ref: '#/components/schemas/LocationAccuracy'
+        n3gppAccuracy:
+          $ref: '#/components/schemas/LocationAccuracy'
 
     ReportingOptions:
       type: object
       properties:
+        reportMode:
+          $ref: '#/components/schemas/EventReportMode'
         maxNumOfReports:
           $ref: '#/components/schemas/MaxNumOfReports'
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        samplingRatio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+        guardTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        reportPeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
     MonitoringReport:
       type: object
@@ -324,6 +338,17 @@ components:
         oldCnType:
           $ref: '#/components/schemas/CnType'
 
+    DatalinkReportingConfiguration:
+      type: object
+      properties:
+        dddTrafficDes:
+          $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/DddTrafficDescriptor'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        slice:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+
+
 # SIMPLE TYPES:
 
     ReferenceId:
@@ -346,8 +371,9 @@ components:
           - CHANGE_OF_SUPI_PEI_ASSOCIATION
           - ROAMING_STATUS
           - COMMUNICATION_FAILURE
-          - AVAILABILITY_AFTER_DNN_FAILURE
+          - AVAILABILITY_AFTER_DDN_FAILURE
           - CN_TYPE_CHANGE
+          - DL_DATA_DELIVERY_STATUS
         - type: string
 
     LocationAccuracy:
@@ -356,6 +382,9 @@ components:
           enum:
           - CELL_LEVEL
           - TA_LEVEL
+          - N3IWF_LEVEL
+          - UE_IP
+          - UE_PORT
         - type: string
 
     CnType:
@@ -365,4 +394,20 @@ components:
           - SINGLE_4G
           - SINGLE_5G
           - DUAL_4G5G
+        - type: string
+
+    AssociationType:
+      anyOf:
+        - type: string
+          enum:
+          - IMEI_CHANGE
+          - IMEISV_CHANGE
+        - type: string
+
+    EventReportMode:
+      anyOf:
+        - type: string
+          enum:
+          - PERIODIC
+          - ON_EVENT_DETECTION
         - type: string

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-2'
+  version: '1.1.0.alpha-3'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V16.1.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V16.2.0; 5G System; Session Management Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -31,13 +31,6 @@ paths:
       tags:
         - SM contexts collection
       operationId: PostSmContexts
-      parameters:
-        - name: nf-disc-factors
-          in: query
-          description: NF service discovery factors
-          required: false
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/NFDiscFactors'
       requestBody:
         description: representation of the SM context to be created in the SMF
         required: true
@@ -54,6 +47,9 @@ paths:
                 binaryDataN2SmInformation:
                   type: string
                   format: binary
+                binaryDataN2SmInformationExt1:
+                  type: string
+                  format: binary
             encoding:
               jsonData:
                 contentType:  application/json
@@ -64,6 +60,12 @@ paths:
                     schema:
                       type: string
               binaryDataN2SmInformation:
+                contentType:  application/vnd.3gpp.ngap
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+              binaryDataN2SmInformationExt1:
                 contentType:  application/vnd.3gpp.ngap
                 headers:
                   Content-Id:
@@ -671,6 +673,12 @@ paths:
                       type: string
 
       responses:
+        '200':
+          description: successful release of a PDU session with content in the response
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/SmContextReleasedData'
         '204':
           description: successful release of an SM context without content in the response
         '400':
@@ -694,6 +702,66 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /sm-contexts/{smContextRef}/send-mo-data:
+    post:
+      summary:  Send MO Data
+      tags:
+        - Individual SM context
+      operationId: SendMoData
+      parameters:
+        - name: smContextRef
+          in: path
+          description:  SM context reference
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: representation of the payload of Send MO Data Request
+        required: true
+        content:
+          multipart/related:  # message with a binary body part
+            schema:
+              type: object
+              properties: 
+                jsonData:
+                  $ref: '#/components/schemas/SendMoDataReqData'
+                binaryMoData:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryMoData:
+                contentType:  application/vnd.3gpp.5gnas
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+      responses:
+        '204':
+          description: successful sending of MO data
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
   /pdu-sessions:
     post:
@@ -701,13 +769,6 @@ paths:
       tags:
         - PDU sessions collection
       operationId: PostPduSessions
-      parameters:
-        - name: nf-disc-factors
-          in: query
-          description: NF service discovery factors
-          required: false
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/NFDiscFactors'
       requestBody:
         description: representation of the PDU session to be created in the H-SMF or SMF
         required: true
@@ -1121,6 +1182,12 @@ paths:
             schema:
               $ref: '#/components/schemas/ReleaseData'
       responses:
+        '200':
+          description: successful release of a PDU session with content in the response
+          content:
+            application/json: # message without binary body part 
+              schema:
+                $ref: '#/components/schemas/ReleasedData'
         '204':
           description: successful release of a PDU session
         '400':
@@ -1261,6 +1328,9 @@ components:
         cpCiotEnabled:
           type: boolean
           default: false
+        cpOnlyInd:
+          type: boolean
+          default: false
         invokeNef:
           type: boolean
           default: false
@@ -1272,14 +1342,27 @@ components:
           default: false
         n2SmInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfoType:
+          $ref: '#/components/schemas/N2SmInfoType'
+        n2SmInfoExt1:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2SmInfoTypeExt1:
+          $ref: '#/components/schemas/N2SmInfoType'
         smContextRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         upCnxState:
           $ref: '#/components/schemas/UpCnxState'
-        smfId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         smallDataRateStatus:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
+        smfTransferInd:
+          type: boolean
+          default: false
+        oldSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        oldSmContextRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - servingNfId
         - servingNetwork
@@ -1376,6 +1459,16 @@ components:
           default: false
         n9ForwardingTunnel:
           $ref: '#/components/schemas/TunnelInfo'
+        n9DlForwardingTnlList:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndirectDataForwardingTunnelInfo'
+          minItems: 1
+        n9UlForwardingTnlList:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndirectDataForwardingTunnelInfo'
+          minItems: 1
         epsBearerSetup:
           type: array
           items:
@@ -1410,6 +1503,12 @@ components:
           $ref: '#/components/schemas/N2SmInfoType'
         maReleaseInd:
           $ref: '#/components/schemas/MaReleaseIndication'
+        maNwUpgradeInd:
+          type: boolean
+          default: false
+        maRequestInd:
+          type: boolean
+          default: false
         exemptionInd:
           $ref: '#/components/schemas/ExemptionInd'
 
@@ -1448,10 +1547,21 @@ components:
           minItems: 1
         dataForwarding:
           type: boolean
-        n3ForwardingTunnel:
-          $ref: '#/components/schemas/TunnelInfo'
+        n3DlForwardingTnlList:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndirectDataForwardingTunnelInfo'
+          minItems: 1
+        n3UlForwardingTnlList:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndirectDataForwardingTunnelInfo'
+          minItems: 1
         cause:
           $ref: '#/components/schemas/Cause'
+        maAcceptedInd:
+          type: boolean
+          default: false
 
     SmContextReleaseData:
       type: object
@@ -1482,11 +1592,30 @@ components:
           type: boolean
           default: false
 
+    SmContextReleasedData:
+      type: object
+      properties:
+        smallDataRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
     SmContextStatusNotification:
       type: object
       properties:
         statusInfo :
           $ref: '#/components/schemas/StatusInfo'
+        smallDataRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
+        newSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        newSmfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        oldSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        oldSmContextRef:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - statusInfo
 
@@ -1528,6 +1657,10 @@ components:
         vcnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         icnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        n9ForwardingTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        additionalCnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         anType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
@@ -1587,6 +1720,9 @@ components:
         cpCiotEnabled:
           type: boolean
           default: false
+        cpOnlyInd:
+          type: boolean
+          default: false
         invokeNef:
           type: boolean
           default: false
@@ -1613,6 +1749,11 @@ components:
           minItems: 1
         smallDataRateStatus:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
+        dlServingPlmnRateCtl:
+          type: integer
+          minimum: 10
       required:
         - dnn
         - servingNetwork
@@ -1632,6 +1773,8 @@ components:
         hcnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         cnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        additionalCnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         sessionAmbr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ambr'
@@ -1691,6 +1834,9 @@ components:
         ipv6MultiHomingInd:
           type: boolean
           default: false
+        maAcceptedInd:
+          type: boolean
+          default: false
       required:
         - pduSessionType
         - sscMode
@@ -1708,6 +1854,8 @@ components:
         vcnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         icnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
+        additionalCnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
         servingNetwork:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
@@ -1784,6 +1932,12 @@ components:
           default: false
         maReleaseInd:
           $ref: '#/components/schemas/MaReleaseIndication'
+        maNwUpgradeInd:
+          type: boolean
+          default: false
+        maRequestInd:
+          type: boolean
+          default: false
         psaInfo:
           $ref: '#/components/schemas/PsaInformation'
         n4Info:
@@ -1809,6 +1963,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         iSmfServiceInstanceId:
           type: string
+        dlServingPlmnRateCtl:
+          type: integer
+          minimum: 10
+        dnaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
       required:
         - requestIndication
 
@@ -1825,6 +1987,11 @@ components:
           $ref: '#/components/schemas/N4Information'
         cnTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
+        dnaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
 
     ReleaseData:
       type: object
@@ -1852,6 +2019,13 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SecondaryRatUsageInfo'
           minItems: 1
 
+    ReleasedData:
+      type: object
+      properties:
+        smallDataRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
 
     VsmfUpdateData:
       type: object
@@ -1909,10 +2083,21 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         maReleaseInd:
           $ref: '#/components/schemas/MaReleaseIndication'
+        maAcceptedInd:
+          type: boolean
+          default: false
+        additionalCnTunnelInfo:
+          $ref: '#/components/schemas/TunnelInfo'
         dnaiList:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        n4Info:
+          $ref: '#/components/schemas/N4Information'
+        n4InfoExt1:
+          $ref: '#/components/schemas/N4Information'
+        n4InfoExt2:
+          $ref: '#/components/schemas/N4Information'
       required:
         - requestIndication
 
@@ -1974,12 +2159,22 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SecondaryRatUsageInfo'
           minItems: 1
+        n4Info:
+          $ref: '#/components/schemas/N4Information'
+        n4InfoExt1:
+          $ref: '#/components/schemas/N4Information'
+        n4InfoExt2:
+          $ref: '#/components/schemas/N4Information'        
 
     StatusNotification:
       type: object
       properties:
         statusInfo :
           $ref: '#/components/schemas/StatusInfo'
+        smallDataRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
       required:
         - statusInfo
 
@@ -2006,6 +2201,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
         qosFlowProfile:
           $ref: '#/components/schemas/QosFlowProfile'
+        associatedAnType:
+          $ref: '#/components/schemas/QosFlowAccessType'
       required:
         - qfi
         - qosRules
@@ -2023,6 +2220,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
         qosFlowProfile:
           $ref: '#/components/schemas/QosFlowProfile'
+        associatedAnType:
+          $ref: '#/components/schemas/QosFlowAccessType'
       required:
         - qfi
 
@@ -2108,6 +2307,10 @@ components:
           $ref: '#/components/schemas/EpsPdnCnxContainer'
         smContext:
           $ref: '#/components/schemas/SmContext'
+        smallDataRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
       required:
         - ueEpsPdnConnection
 
@@ -2127,6 +2330,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
         gtpTeid:
           $ref: '#/components/schemas/Teid'
+        anType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
       required:
         - gtpTeid
 
@@ -2137,6 +2342,8 @@ components:
           $ref: '#/components/schemas/ResourceStatus'
         cause:
           $ref: '#/components/schemas/Cause'
+        cnAssistedRanPara:
+          $ref: '#/components/schemas/CnAssistedRanPara'
       required:
         - resourceStatus
 
@@ -2275,21 +2482,18 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/5GMmCause'
         recoveryTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        n4Info:
+          $ref: '#/components/schemas/N4Information'
+        n4InfoExt1:
+          $ref: '#/components/schemas/N4Information'
+        n4InfoExt2:
+          $ref: '#/components/schemas/N4Information'        
       required:
         - error
 
     SmContext:
       type: object
       properties:
-        supi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
-        unauthenticatedSupi:
-          type: boolean
-          default:  false
-        pei:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         pduSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         dnn:
@@ -2298,20 +2502,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         hplmnSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        servingNfId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        guami:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
-        serviceName:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/ServiceName'
-        servingNetwork:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
-        anType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
-        ratType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
-        smContextStatusUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        pduSessionType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         hSmfUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         smfUri:
@@ -2322,22 +2516,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         selMode:
           $ref: '#/components/schemas/DnnSelectionMode'
-        traceData:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
         udmGroupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         routingIndicator:
           type: string
-        epsInterworkingInd:
-          $ref: '#/components/schemas/EpsInterworkingIndication'
-        pduSessionType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
-        sscMode:
-          type: string
-          pattern: '^[0-7]$'
         sessionAmbr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ambr'
-        qosFlowsSetupList:
+        qosFlowsList:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowSetupItem'
@@ -2382,14 +2567,9 @@ components:
         - pduSessionId
         - dnn
         - sNssai
-        - servingNfId
-        - servingNetwork
-        - anType
-        - smContextStatusUri
         - pduSessionType
-        - sscMode
         - sessionAmbr
-        - qosFlowsSetupList
+        - qosFlowsList
 
     ExemptionInd:
       type: object
@@ -2442,6 +2622,52 @@ components:
         - n4MessageType
         - n4MessagePayload
 
+    IndirectDataForwardingTunnelInfo:
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        gtpTeid:
+          $ref: '#/components/schemas/Teid'
+        drbId:
+          $ref: '#/components/schemas/DrbId'
+        additionalTnlNb: 
+          $ref: '#/components/schemas/AdditionalTnlNb'
+      required:
+        - gtpTeid
+      not:
+        required: [ drbId, additionalTnlNb ]
+
+    SendMoDataReqData:
+      type: object
+      properties:
+        moData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        ueLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+      required:
+        - moData
+
+    CnAssistedRanPara:
+      type: object
+      properties:
+        stationaryIndication:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/StationaryIndication'
+        communicationDurationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        periodicTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        scheduledCommunicationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ScheduledCommunicationTime'
+        scheduledCommunicationType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ScheduledCommunicationType'
+        trafficProfile:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TrafficProfile'
+        batteryIndication:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BatteryIndication'
+
 
 #
 # SIMPLE DATA TYPES
@@ -2469,6 +2695,17 @@ components:
     EpsBearerContextStatus:
       type: string
       pattern: '^[A-Fa-f0-9]{4}$'
+
+    DrbId:
+      type: integer
+      minimum: 1
+      maximum: 32
+
+    AdditionalTnlNb:
+      type: integer
+      minimum: 1
+      maximum: 3
+
 #
 # ENUMERATIONS
 #
@@ -2479,6 +2716,7 @@ components:
           - ACTIVATED
           - DEACTIVATED
           - ACTIVATING
+          - SUSPENDED
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2489,6 +2727,7 @@ components:
         - ACTIVATED
         - DEACTIVATED
         - ACTIVATING
+        - SUSPENDED
 
     HoState:
       anyOf:
@@ -2595,6 +2834,12 @@ components:
           - HO_FAILURE
           - INSUFFICIENT_UP_RESOURCES
           - PDU_SESSION_HANDED_OVER
+          - PDU_SESSION_RESUMED
+          - CN_ASSISTED_RAN_PARAMETER_TUNING
+          - ISMF_CONTEXT_TRANSFER
+          - SMF_CONTEXT_TRANSFER
+          - REL_DUE_TO_PS_TO_CS_HO
+
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2615,12 +2860,19 @@ components:
         - HO_FAILURE
         - INSUFFICIENT_UP_RESOURCES
         - PDU_SESSION_HANDED_OVER
+        - PDU_SESSION_RESUMED
+        - CN_ASSISTED_RAN_PARAMETER_TUNING
+        - ISMF_CONTEXT_TRANSFER
+        - SMF_CONTEXT_TRANSFER
+        - REL_DUE_TO_PS_TO_CS_HO
 
     ResourceStatus:
       anyOf:
       - type: string
         enum:
           - RELEASED
+          - UNCHANGED
+          - TRANSFERRED
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2629,6 +2881,7 @@ components:
       description: >
         Possible values are
         - RELEASED
+        - UNCHANGED
 
     DnnSelectionMode:
       anyOf:
@@ -2816,6 +3069,24 @@ components:
           - PFCP_SES_REP_REQ
           - PFCP_SES_REP_RSP
 
+    QosFlowAccessType:
+      anyOf:
+      - type: string
+        enum:
+          - 3GPP
+          - NON_3GPP
+          - 3GPP_AND_NON_3GPP
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - 3GPP
+          - NON_3GPP
+          - 3GPP_AND_NON_3GPP
+
 #
 # HTTP request bodies
 #
@@ -2836,11 +3107,38 @@ components:
               binaryDataN1SmInfoToUe:
                 type: string
                 format: binary
+              binaryDataN4Information:
+                type: string
+                format: binary
+              binaryDataN4InformationExt1:
+                type: string
+                format: binary
+              binaryDataN4InformationExt2:
+                type: string
+                format: binary
           encoding:
             jsonData:
               contentType:  application/json
             binaryDataN1SmInfoToUe:
               contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4Information:
+              contentType:  application/vnd.3gpp.pfcp
+              headers:
+                Content-Id:
+                  schema:
+                    type: string   
+            binaryDataN4InformationExt1:
+              contentType:  application/vnd.3gpp.pfcp
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4InformationExt2:
+              contentType:  application/vnd.3gpp.pfcp
               headers:
                 Content-Id:
                   schema:
@@ -2876,6 +3174,15 @@ components:
               binaryDataUnknownN1SmInfo:
                 type: string
                 format: binary
+              binaryDataN4Information:
+                type: string
+                format: binary
+              binaryDataN4InformationExt1:
+                type: string
+                format: binary
+              binaryDataN4InformationExt2:
+                type: string
+                format: binary
           encoding:
             jsonData:
               contentType:  application/json
@@ -2887,6 +3194,24 @@ components:
                     type: string
             binaryDataUnknownN1SmInfo:
               contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4Information:
+              contentType:  application/vnd.3gpp.pfcp
+              headers:
+                Content-Id:
+                  schema:
+                    type: string   
+            binaryDataN4InformationExt1:
+              contentType:  application/vnd.3gpp.pfcp
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4InformationExt2:
+              contentType:  application/vnd.3gpp.pfcp
               headers:
                 Content-Id:
                   schema:
@@ -2960,6 +3285,15 @@ components:
               binaryDataUnknownN1SmInfo:
                 type: string
                 format: binary
+              binaryDataN4Information:
+                type: string
+                format: binary
+              binaryDataN4InformationExt1:
+                type: string
+                format: binary
+              binaryDataN4InformationExt2:
+                type: string
+                format: binary
           encoding:
             jsonData:
               contentType:  application/json
@@ -2971,6 +3305,24 @@ components:
                     type: string
             binaryDataUnknownN1SmInfo:
               contentType:  application/vnd.3gpp.5gnas
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4Information:
+              contentType:  application/vnd.3gpp.pfcp
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4InformationExt1:
+              contentType:  application/vnd.3gpp.pfcp
+              headers:
+                Content-Id:
+                  schema:
+                    type: string
+            binaryDataN4InformationExt2:
+              contentType:  application/vnd.3gpp.pfcp
               headers:
                 Content-Id:
                   schema:

@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.517 V0.3.0; 5G System; Application Function Event Exposure Service; Stage 3.
+  description: 3GPP TS 29.517 V0.5.0; 5G System; Application Function Event Exposure Service; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.517/
 
 servers:
@@ -278,12 +278,26 @@ components:
           $ref: '#/components/schemas/AfEvent'
         timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        svcExprcInfo:
-          $ref: '#/components/schemas/ServiceExperienceInfo'
-        ueMobilityInfo:
-          $ref: '#/components/schemas/UeMobilityInfo'
-        ueCommInfo:
-          $ref: '#/components/schemas/UeCommunicationInfo'
+        svcExprcInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceExperienceInfoPerApp'
+          minItems: 1
+        ueMobilityInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeMobilityCollection'
+          minItems: 1
+        ueCommInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeCommunicationCollection'
+          minItems: 1
+        excepInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExceptionInfo'
+          minItems: 1
       required:
         - event
         - timeStamp
@@ -292,7 +306,7 @@ components:
       properties:
         event:
           $ref: '#/components/schemas/AfEvent'
-        eventfilter:
+        eventFilter:
           $ref: '#/components/schemas/EventFilter'
       required:
         - event
@@ -314,14 +328,115 @@ components:
           type: array
           items:
             type: string
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-    ServiceExperienceInfo:
-      type: string
-    UeMobilityInfo:
-      type: string
-    UeCommunicationInfo:
-      type: string
+        locArea:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+    ServiceExperienceInfoPerApp:
+      type: object
+      properties:
+        appId:
+          type: string
+        svcExpPerFlows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceExperienceInfoPerFlow'
+          minItems: 1
+        gpsis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+      required:
+        - svcExpPerFlows
+    ServiceExperienceInfoPerFlow:
+      type: object
+      properties:
+        svcExprc:
+          $ref: '#/components/schemas/SvcExperience'
+        timeIntev:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        dnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        ipTrafficFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+        ethTrafficFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/EthFlowDescription'
+    SvcExperience:
+      type: object
+      properties:
+        mos:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        upperRange:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        lowerRange:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+    UeMobilityCollection:
+      type: object
+      properties:
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        ueTrajs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeTrajectoryCollection'
+          minItems: 1
+      required:
+        - appId
+        - ueTrajs
+    UeCommunicationCollection:
+      type: object
+      properties:
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        comms:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommunicationCollection'
+          minItems: 1
+      required:
+        - appId
+        - comms
+    UeTrajectoryCollection:
+      type: object
+      properties:
+        ts:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        locArea:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+      required:
+        - ts
+        - locArea
+    CommunicationCollection:
+      type: object
+      properties:
+        startTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        endTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        ulVol:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+        dlVol:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+      required:
+        - startTime
+        - endTime
+        - ulVol
+        - dlVol
+    ExceptionInfo:
+      type: object
+      properties:
+        ipTrafficFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+        ethTrafficFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/EthFlowDescription'
+        exceps:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/Exception'
+          minItems: 1
 
 # Simple data types and Enumerations
 
@@ -332,4 +447,5 @@ components:
           - SVC_EXPERIENCE
           - UE_MOBILITY
           - UE_COMM
+          - EXCEPTIONS
       - type: string

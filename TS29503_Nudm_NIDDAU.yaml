@@ -1,12 +1,12 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.0.alpha-2'
+  version: '1.0.0.alpha-3'
   title: 'Nudm_NIDDAU'
   description: 'Nudm NIDD Authorization Service'
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.1.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -22,46 +22,26 @@ security:
   - {}
 
 paths:
-  /{ueIdentity}/authorization:
-    get:
-      summary: retrieve multiple data sets
-      operationId: GetAuthorizationData
+  /{ueIdentity}/authorize:
+    post:
+      summary: Authorize the NIDD configuration request.
+      operationId: AuthorizeNiddData
       tags:
-        - Retrieval of multiple data sets
+        - Authorize the NIDD configuration request
       parameters:
         - name: ueIdentity
           in: path
-          description: Represents the scope of the UE for which the NIDD Authorizations are retrieved. Contains the GPSI of the user or the external group ID.
+          description: Represents the scope of the UE for which the NIDD configuration are authorized. Contains the GPSI of the user or the external group ID.
           required: true
           schema:
             type: string
             pattern: '^(msisdn-[0-9]{5,15}|.+|extid-[^@]+@[^@]+|extgroupid-[^@]+@[^@]+)$'
-        - name: supported-features
-          in: query
-          description: Supported Features
-          schema:
-             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        - name: nssai
-          in: query
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/Nssai'
-        - name: dnn
-          in: query
-          description: DNN
-          schema:
-             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        - name: mtcProviderInformation
-          in: query
-          description: mtcProviderInformation
-          schema:
-             $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
-        - name: If-None-Match
-          in: header
-          description: Validator for conditional requests, as described in RFC 7232, 3.2
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationInfo'
+        required: true
       responses:
         '200':
           description: Expected response to a valid request
@@ -69,12 +49,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorizationData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
+      callbacks:
+        niddAuthUpdateNotification:
+          '{request.body#/authUpdateCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NiddAuthUpdateNotification'
+              responses:
+                '204':
+                  description: Expected response to a valid request
 
 
 components:
@@ -117,7 +118,43 @@ components:
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
+    NiddAuthUpdateInfo:
+      type: object
+      required:
+        - authorizationData
+      properties:
+        authorizationData:
+          $ref: '#/components/schemas/AuthorizationData'
+        invalidityInd:
+          type: boolean
 
+    NiddAuthUpdateNotification:
+      type: object
+      required:
+        - niddAuthUpdateInfoList
+      properties:
+        niddAuthUpdateInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NiddAuthUpdateInfo'
+          minItems: 1
+
+    AuthorizationInfo:
+      type: object
+      required:
+       - snssai
+       - dnn
+       - mtcProviderInformation
+       - authUpdateCallbackUri
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        authUpdateCallbackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
 
 # SIMPLE TYPES:

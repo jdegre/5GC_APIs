@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-1'
+  version: '1.1.0.alpha-2'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.1.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -185,6 +185,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         expectedUeBehaviourParameters:
           $ref: '#/components/schemas/ExpectedUeBehaviour'
+        ecRestriction:
+          $ref: '#/components/schemas/EcRestriction'
+        acsInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AcsInfoRm'
 
     CommunicationCharacteristics:
       type: object
@@ -195,6 +199,9 @@ components:
           $ref: '#/components/schemas/PpActiveTime'
         ppDlPacketCount:
           $ref: '#/components/schemas/PpDlPacketCount'
+        ppDlPacketCountExt:
+          $ref: '#/components/schemas/PpDlPacketCountExt'
+
 
     PpSubsRegTimer:
       type: object
@@ -257,8 +264,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         sNssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        dnnConfiguration:
-          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/DnnConfiguration'
+        pduSessionTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+          minItems: 1
+        appDescriptors:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/AppDescriptor'
+          minItems: 1
 
     ExpectedUeBehaviour:
       type: object
@@ -271,38 +286,28 @@ components:
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         stationaryIndication:
-          $ref: '#/components/schemas/StationaryIndication'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/StationaryIndicationRm'
         communicationDurationTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
+        scheduledCommunicationType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ScheduledCommunicationTypeRm'
         periodicTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
         scheduledCommunicationTime:
-          $ref: '#/components/schemas/ScheduledCommunicationTime'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ScheduledCommunicationTimeRm'
         expectedUmts:
           type: array
           items:
             $ref: '#/components/schemas/LocationArea'
           minItems: 1
+          nullable: true
           description: Identifies the UE's expected geographical movement. The attribute is only applicable in 5G.
         trafficProfile:
-          $ref: '#/components/schemas/TrafficProfile'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TrafficProfileRm'
+        batteryIndication:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/BatteryIndicationRm'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-
-    ScheduledCommunicationTime:
-      type: object
-      properties:
-        daysOfWeek:
-          type: array
-          items:
-            $ref: '#/components/schemas/DayOfWeek'
-          minItems: 1
-          maxItems: 6
-          description: Identifies the day(s) of the week. If absent, it indicates every day of the week.
-        timeOfDayStart:
-          $ref: '#/components/schemas/TimeOfDay'
-        timeOfDayEnd:
-          $ref: '#/components/schemas/TimeOfDay'
 
     LocationArea:
       type: object
@@ -351,6 +356,49 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
           minItems: 1
 
+    EcRestriction:
+      type: object
+      required:
+        - afInstanceId
+        - referenceId
+      properties:
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        plmnEcInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlmnEcInfo'
+          minItems: 1
+
+    PlmnEcInfo:
+      type: object
+      required:
+        - plmnId
+      properties:
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        ecModeARestricted:
+          type: boolean
+        ecModeBRestricted:
+          type: boolean
+
+
+    PpDlPacketCountExt:
+      type: object
+      required:
+        - afInstanceId
+        - referenceId
+      properties:
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      nullable: true
+
 
 # SIMPLE TYPES:
 
@@ -361,53 +409,6 @@ components:
       type: integer
       nullable: true
 
-    DayOfWeek:
-      type: integer
-      minimum: 1
-      maximum: 7
-      description: integer between and including 1 and 7 denoting a weekday. 1 shall indicate Monday, and the subsequent weekdays shall be indicated with the next higher numbers. 7 shall indicate Sunday.
-
-    TimeOfDay:
-      type: string
-      description: String with format partial-time or full-time as defined in clause 5.6 of IETF RFC 3339. Examples, 20:15:00, 20:15:00-08:00 (for 8 hours behind UTC).
-
 
 
 # ENUMS:
-
-    StationaryIndication:
-      anyOf:
-      - type: string
-        enum:
-          - STATIONARY
-          - MOBILE
-      - type: string
-        description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
-          content defined in the present version of this API.
-      description: >
-        Possible values are
-        - STATIONARY: Identifies the UE is stationary
-        - MOBILE: Identifies the UE is mobile
-
-    TrafficProfile:
-      anyOf:
-      - type: string
-        enum:
-          - SINGLE_TRANS_UL
-          - SINGLE_TRANS_DL
-          - DUAL_TRANS_UL_FIRST
-          - DUAL_TRANS_DL_FIRST
-          - MULTI_TRANS
-      - type: string
-        description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
-          content defined in the present version of this API.
-      description: >
-        Possible values are
-        - SINGLE_TRANS_UL: Uplink single packet transmission.
-        - SINGLE_TRANS_DL: Downlink single packet transmission.
-        - DUAL_TRANS_UL_FIRST: Dual packet transmission, firstly uplink packet transmission with subsequent downlink packet transmission.
-        - DUAL_TRANS_DL_FIRST: Dual packet transmission, firstly downlink packet transmission with subsequent uplink packet transmission.

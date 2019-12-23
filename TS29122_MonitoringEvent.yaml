@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.1.0.alpha-3
+  version: 1.1.0.alpha-4
   description: | 
     API for Monitoring Event.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.3.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.4.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -387,6 +387,11 @@ components:
           type: array
           items:
             $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/DddStatus'
+        apiNames:
+          type: array
+          items:
+            type: string
+          minItems: 1
         monitoringEventReport:
           $ref: '#/components/schemas/MonitoringEventReport'
       required:
@@ -458,6 +463,10 @@ components:
           $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/DddStatus'
         maxWaitTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        apiCaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiCapabilityInfo'
       required:
         - monitoringType
     IdleStatusInfo:
@@ -590,6 +599,16 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
         maximumDetectionTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+    ApiCapabilityInfo:
+      type: object
+      properties:
+        apiName:
+          type: string
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - apiName
+        - suppFeat
     MonitoringType:
       anyOf:
       - type: string
@@ -604,6 +623,7 @@ components:
           - NUMBER_OF_UES_IN_AN_AREA
           - PDN_CONNECTIVITY_STATUS
           - DOWNLINK_DATA_DELIVERY_STATUS
+          - API_SUPPORT_CAPABILITY
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -621,6 +641,7 @@ components:
         - NUMBER_OF_UES_IN_AN_AREA: The SCS/AS requests to be notified the number of UEs in a given geographic area 
         - PDN_CONNECTIVITY_STATUS: The SCS/AS requests to be notified when the 3GPP network detects that the UE’s PDN connection is set up or torn down
         - DOWNLINK_DATA_DELIVERY_STATUS: The AF requests to be notified when the 3GPP network detects that the downlink data delivery status is changed.
+        - API_SUPPORT_CAPABILITY: The SCS/AS requests to be notified of the availability of support of service APIs.
     ReachabilityType:
       anyOf:
       - type: string

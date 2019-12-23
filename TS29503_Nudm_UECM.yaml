@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-1'
+  version: '1.1.0.alpha-2'
   title: 'Nudm_UECM'
   description: |
     Nudm Context Management Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.1.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -382,6 +382,53 @@ paths:
         default:
           description: Unexpected error
 
+  /{ueId}/registrations/smf-registrations:
+    get:
+      summary: retrieve the SMF registration information
+      operationId: GetSmfRegistration
+      tags:
+        - SMF SmfRegistration
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: single-nssai
+          in: query
+          content:
+            application/json:
+              schema:
+               $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        - name: dnn
+          in: query
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        - name: supported-features
+          in: query
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfRegistrationInfo'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
   /{ueId}/registrations/smf-registrations/{pduSessionId}:
     put:
       summary: register as SMF
@@ -441,6 +488,28 @@ paths:
         default:
           description: Unexpected error
       callbacks:
+        deregistrationeNotification:
+          '{request.body#/deregCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/DeregistrationData'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
         pcscfRestorationNotification:
           '{request.body#/pcscfRestorationCallbackUri}':
             post:
@@ -837,7 +906,10 @@ components:
                 $ref: '#/components/schemas/EpsIwkPgw'
         ueSrvccCapability:
           type: boolean
-
+        nid:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Nid'
+        registrationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
 
     Amf3GppAccessRegistrationModification:
@@ -920,6 +992,10 @@ components:
           type: boolean
         amfEeSubscriptionId:
           type: string
+        nid:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Nid'
+        registrationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
 
     AmfNon3GppAccessRegistrationModification:
@@ -966,6 +1042,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         pgwFqdn:
           type: string
+        epdgInd:
+          type: boolean
+          default: false
+        deregCallbackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        registrationReason:
+          $ref: '#/components/schemas/RegistrationReason'
 
     SmsfRegistration:
       type: object
@@ -994,6 +1077,10 @@ components:
           $ref: '#/components/schemas/DeregistrationReason'
         accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        pduSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        newSmfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
 
     PcscfRestorationNotification:
       type: object
@@ -1021,6 +1108,17 @@ components:
       properties:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+
+    SmfRegistrationInfo:
+      type: object
+      required:
+        - smfRegistrationList
+      properties:
+        smfRegistrationList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SmfRegistration'
+          minItems: 1
 
 # SIMPLE TYPES:
 
@@ -1055,4 +1153,12 @@ components:
           - 5GS_TO_EPS_MOBILITY
           - 5GS_TO_EPS_MOBILITY_UE_INITIAL_REGISTRATION
           - REREGISTRATION_REQUIRED
+          - SMF_CONTEXT_TRANSFERRED
         - type: string  
+
+    RegistrationReason:
+      anyOf:
+        - type: string
+          enum:
+          - SMF_CONTEXT_TRANSFERRED
+        - type: string

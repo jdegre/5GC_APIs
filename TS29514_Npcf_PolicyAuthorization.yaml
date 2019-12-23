@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.1.0.alpha-3
+  version: 1.1.0.alpha-4
   description: |
     PCF Policy Authorization Service.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V16.2.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V16.3.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -153,6 +153,45 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /app-sessions/pcscf-restoration:
+    post:
+      summary: "Indicates P-CSCF restoration and does not create an Individual Application Session Context"
+      operationId: PcscfRestoration
+      tags:
+        - PCSCF Restoration Indication
+      requestBody:
+        description: PCSCF Restoration Indication
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PcscfRestorationRequestData'
+      responses:
+        '204':
+          description: The deletion is confirmed without returning additional data.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+#               
   /app-sessions/{appSessionId}:
     get:
       summary: "Reads an existing Individual Application Session Context"
@@ -507,8 +546,8 @@ components:
       properties:
         afAppId:
           $ref: '#/components/schemas/AfAppId'
-        afChargingIdentifier:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
+        afChargId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationChargingId'
         afReqData:
           $ref: '#/components/schemas/AfRequestedData'
         afRoutReq:
@@ -537,6 +576,9 @@ components:
         mpsId:
           description: indication of MPS service request
           type: string
+        mcsId:
+          description: indication of MCS service request
+          type: string
         preemptControlinfo:
           $ref: '#/components/schemas/PreemptionControlInformation'
         resPrio:
@@ -544,7 +586,7 @@ components:
         servInfStatus:
           $ref: '#/components/schemas/ServiceInfoStatus'
         notifUri:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         servUrn:
           $ref: '#/components/schemas/ServiceUrn'
         sliceInfo:
@@ -606,6 +648,9 @@ components:
         mpsId:
           description: indication of MPS service request
           type: string
+        mcsId:
+          description: indication of MCS service request
+          type: string
         preemptControlinfo:
           $ref: '#/components/schemas/PreemptionControlInformationRm'
         resPrio:
@@ -630,7 +675,9 @@ components:
             $ref: '#/components/schemas/AfEventSubscription'
           minItems: 1
         notifUri:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        qosMon:
+          $ref: '#/components/schemas/QosMonitoringInformation'
         reqAni:
           $ref: '#/components/schemas/RequiredAccessInfo'
         usgThres:
@@ -646,7 +693,7 @@ components:
           items:
             $ref: '#/components/schemas/AfEventSubscription'
         notifUri:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         reqAni:
           $ref: '#/components/schemas/RequiredAccessInfo'
         usgThres:
@@ -662,6 +709,13 @@ components:
           $ref: '#/components/schemas/AfAppId'
         afRoutReq:
           $ref: '#/components/schemas/AfRoutingRequirement'
+        qosReference:
+          type: string
+        altSerReqs:
+          type: array
+          items:
+            type: string
+          minItems: 1
         contVer:
           $ref: '#/components/schemas/ContentVersion'
         codecs:
@@ -676,6 +730,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         marBwUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxPacketLossRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRateRm'
+        maxPacketLossRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRateRm'
+        maxSuppBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxSuppBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         medCompN:
           type: integer
         medSubComps:
@@ -685,6 +747,10 @@ components:
           minProperties: 1
         medType:
           $ref: '#/components/schemas/MediaType'
+        minDesBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        minDesBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         mirBwDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         mirBwUl:
@@ -729,6 +795,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         marBwUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        maxPacketLossRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRateRm'
+        maxPacketLossRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRateRm'
+        maxSuppBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        maxSuppBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         medCompN:
           type: integer
         medSubComps:
@@ -738,6 +812,10 @@ components:
           minProperties: 1
         medType:
           $ref: '#/components/schemas/MediaType'
+        minDesBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        minDesBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         mirBwDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
         mirBwUl:
@@ -792,7 +870,7 @@ components:
         flowUsage:
           $ref: '#/components/schemas/FlowUsage'
     MediaSubComponentRm:
-      description: This data type is defined in the same way as the MediaSubComponent data type, but with the OpenAPI nullable property set to true. Removable attributes marBwDland marBwUl are defined with the corresponding removable data type.
+      description: This data type is defined in the same way as the MediaSubComponent data type, but with the OpenAPI nullable property set to true. Removable attributes marBwDl and marBwUl are defined with the corresponding removable data type.
       type: object
       required:
         - fNum
@@ -845,7 +923,7 @@ components:
         anGwAddr:
           $ref: '#/components/schemas/AnGwAddress'
         evSubsUri:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         evNotifs:
           type: array
           items:
@@ -870,6 +948,12 @@ components:
           items:
             $ref: '#/components/schemas/QosNotificationControlInfo'
           minItems: 1
+        ranNasRelCauses:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RanNasRelCause'
+          minItems: 1
+          description: Contains the RAN and/or NAS release cause.
         ratType: 
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         ueLoc:
@@ -888,6 +972,14 @@ components:
           $ref: '#/components/schemas/AfEvent'
         notifMethod:
           $ref: '#/components/schemas/AfNotifMethod'
+        repPeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        waitTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        pduSessRel:
+          type: boolean
+        notifCorreId:
+          type: string
     AfEventNotification:
       description: describes the event information delivered in the notification
       type: object
@@ -911,7 +1003,7 @@ components:
         termCause:
           $ref: '#/components/schemas/TerminationCause'
         resUri:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
     AfRoutingRequirement:
       description: describes the event information delivered in the subscription
       type: object
@@ -1075,6 +1167,12 @@ components:
           items:
             $ref: '#/components/schemas/Flows'
           minItems: 1
+        gfbrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        gfbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        altSerReq:
+          type: string
 #
     AcceptableServiceInfo:
       description: Indicates the maximum bandwidth that shall be authorized by the PCF.
@@ -1131,6 +1229,39 @@ components:
           items:
             $ref: '#/components/schemas/Flows'
           minItems: 1
+#
+    QosMonitoringInformation:
+      description: Indicates the QoS Monitoring information to report, i.e. UL and/or DL and or round trip delay.
+      type: object
+      properties:
+        repThreshDl:
+          type: integer
+        repThreshUl:
+          type: integer
+        repThreshRp:
+          type: integer
+#
+#
+    PcscfRestorationRequestData:
+      description: Indicates P-CSCF restoration.
+      type: object
+      oneOf:
+        - required: [ueIpv4]
+        - required: [ueIpv6]
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        ipDomain:
+          type: string
+        sliceInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        ueIpv4:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ueIpv6:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+
 #
 # EXTENDED PROBLEMDETAILS
 #
@@ -1240,7 +1371,9 @@ components:
           - FAILED_RESOURCES_ALLOCATION
           - OUT_OF_CREDIT
           - PLMN_CHG
+          - QOS_MONITORING
           - QOS_NOTIF
+          - RAN_NAS_CAUSE
           - SUCCESSFUL_RESOURCES_ALLOCATION
           - USAGE_REPORT
       - type: string
@@ -1251,6 +1384,7 @@ components:
         enum:
           - EVENT_DETECTION
           - ONE_TIME
+          - PERIODIC
       - type: string
 #        
     QosNotifType:
@@ -1267,6 +1401,7 @@ components:
         enum:
           - ALL_SDF_DEACTIVATION
           - PDU_SESSION_TERMINATION
+          - PS_TO_CS_HO
       - type: string
 #        
     MediaComponentResourcesStatus:

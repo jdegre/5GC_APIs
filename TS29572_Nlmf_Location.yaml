@@ -1,21 +1,29 @@
 openapi: 3.0.0
+
 info:
-  version: '1.1.0.alpha-1'
+  version: '1.1.0.alpha-2'
   title: 'LMF Location'
   description: |
     LMF Location Service.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.572 V16.1.0; 5G System; Location Management Services; Stage 3
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
+
 servers:
   - url: '{apiRoot}/nlmf-loc/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
 security:
   - {}
   - oAuth2ClientCredentials:
       - nlmf-loc
+
 paths:
   /determine-location:
     post:
@@ -448,6 +456,8 @@ components:
           type: boolean
         responseTime:
           $ref: '#/components/schemas/ResponseTime'
+        lcsQosClass:
+          $ref: '#/components/schemas/LcsQosClass'
     PositioningMethodAndUsage:
       type: object
       required:
@@ -950,11 +960,12 @@ components:
           enum:
             - CELLID
             - ECID
-            - OTDOA         
+            - OTDOA 
             - BAROMETRIC_PRESSURE
             - WLAN
             - BLUETOOTH
-            - MBS   
+            - MBS 
+            - MOTION_SENSOR
         - type: string
     PositioningMode:
       anyOf:
@@ -1072,7 +1083,10 @@ components:
             - TERMINATION_BY_NETWORK
             - NORMAL_TERMINATION
         - type: string
-
-externalDocs:
-  description: 3GPP TS 29.572 V16.0.0; 5G System; Location Management Services; Stage 3
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
+    LcsQosClass:
+      anyOf:
+        - type: string
+          enum:
+            - BEST_EFFORT
+            - ASSURED
+        - type: string

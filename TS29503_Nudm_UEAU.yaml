@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.1'
+  version: '1.1.0.alpha-1'
   title: 'NudmUEAU'
   description: |
     UDM UE Authentication Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 15.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -65,6 +65,67 @@ paths:
         default:
           description: Unexpected error
 
+  /{supiOrSuci}/security-information-rg:
+    get:
+      summary: Get authentication data for the FN-RG
+      operationId: GetRgAuthData
+      tags:
+        - Get Auth Data for FN-RG
+      parameters:
+        - name: supiOrSuci
+          in: path
+          description: SUPI or SUCI of the user
+          required: true
+          schema:
+            $ref: '#/components/schemas/SupiOrSuci'
+        - name: authenticated-ind
+          in: query
+          description: Authenticated indication
+          required: true
+          schema:
+             $ref: '#/components/schemas/AuthenticatedInd'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2 
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3 
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RgAuthCtx'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
   /{supi}/auth-events:
     post:
       summary: Create a new confirmation event
@@ -103,6 +164,45 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+  /{supi}/hss-security-information/generate-av:
+    post:
+      summary: Generate authentication data for the UE in EPS or IMS domain
+      operationId: GenerateAv
+      tags:
+        - Generate HSS Authentication Vectors 
+      parameters:
+        - name: supi
+          in: path
+          description: SUPI of the user
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HssAuthenticationInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HssAuthenticationInfoResult'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -236,6 +336,122 @@ components:
         servingNetworkName:
           $ref: '#/components/schemas/ServingNetworkName'
 
+    RgAuthenticationInfo:
+      type: object
+      required:
+        - ausfInstanceId
+        - authenticatedInd
+      properties:
+        ausfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        authenticatedInd:
+          type: boolean
+          default: false
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    RgAuthCtx:
+      type: object
+      required:
+        - authInd
+      properties:
+        authInd:
+          type: boolean
+          default: false
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    HssAuthenticationInfoRequest:
+      type: object
+      required:
+        - hssAuthType
+        - numOfRequestedVectors
+      properties:
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        hssAuthType:
+          $ref: '#/components/schemas/HssAuthType'
+        numOfRequestedVectors:
+          $ref: '#/components/schemas/NumOfRequestedVectors'
+        servingNetworkId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        resynchronizationInfo:
+          $ref: '#/components/schemas/ResynchronizationInfo'
+        
+    HssAuthenticationInfoResult:
+      type: object
+      required:
+        - hssAuthenticationVectors
+      properties:
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        hssAuthenticationVectors:
+          $ref: '#/components/schemas/HssAuthenticationVectors'
+
+    HssAuthenticationVectors:
+      oneOf:
+        - type: array
+          items:
+            $ref: '#/components/schemas/AvEpsAka'
+          minItems: 1
+          maxItems: 5
+        - type: array
+          items:
+            $ref: '#/components/schemas/AvImsGbaEapAka'
+          minItems: 1
+          maxItems: 5
+        - type: array
+          items:
+            $ref: '#/components/schemas/AvEapAkaPrime'
+          minItems: 1
+          maxItems: 5
+
+    AvEpsAka:
+      type: object
+      required:
+        - avType
+        - rand
+        - xres
+        - autn
+        - kasme
+      properties:
+        avType:
+          $ref: '#/components/schemas/HssAvType'
+        rand:
+          $ref: '#/components/schemas/Rand'
+        xres:
+          $ref: '#/components/schemas/Xres'
+        autn:
+          $ref: '#/components/schemas/Autn'
+        kasme:
+          $ref: '#/components/schemas/Kasme'
+
+    AvImsGbaEapAka:
+      type: object
+      required:
+        - avType
+        - rand
+        - xres
+        - autn
+        - ck
+        - ik
+      properties:
+        avType:
+          $ref: '#/components/schemas/HssAvType'
+        rand:
+          $ref: '#/components/schemas/Rand'
+        xres:
+          $ref: '#/components/schemas/Xres'
+        autn:
+          $ref: '#/components/schemas/Autn'
+        ck:
+          $ref: '#/components/schemas/ConfidentialityKey'
+        ik:
+          $ref: '#/components/schemas/IntegrityKey'
+
+
 # SIMPLE TYPES:
 
     Autn:
@@ -272,14 +488,35 @@ components:
 
     SupiOrSuci:
       type: string
-      pattern: '^(imsi-[0-9]{5,15}|nai-.+| suci-(0-[0-9]{3}-[0-9]{2,3}|[1-7]-.+)-[0-9]{1,4}-(0-0-.+|[a-fA-F1-9]-([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-[a-fA-F0-9]+)|.+)$'
+      pattern: '^(imsi-[0-9]{5,15}|nai-.+|suci-(0-[0-9]{3}-[0-9]{2,3}|[1-7]-.+)-[0-9]{1,4}-(0-0-.+|[a-fA-F1-9]-([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-[a-fA-F0-9]+)|.+)$'
 
     ServingNetworkName:
       type: string
-      pattern: '^5G:mnc[0-9]{3}[.]mcc[0-9]{3}[.]3gppnetwork[.]org$'
+      pattern: '^5G:mnc[0-9]{3}[.]mcc[0-9]{3}[.]3gppnetwork[.]org(:[A-F0-9]{13})?$'
 
     Success:
       type: boolean
+
+    AuthenticatedInd:
+      type: boolean
+
+    ConfidentialityKey:
+      type: string
+      pattern: '^[A-Fa-f0-9]{32}$'
+
+    IntegrityKey:
+      type: string
+      pattern: '^[A-Fa-f0-9]{32}$'
+
+    Kasme:
+      type: string
+      pattern: '^[A-Fa-f0-9]{64}$'
+
+    NumOfRequestedVectors:
+      type: integer
+      minimum: 1
+      maximum: 5
+
 
 # ENUMS:
 
@@ -298,4 +535,25 @@ components:
           enum:
           - 5G_HE_AKA
           - EAP_AKA_PRIME
+        - type: string
+
+    HssAuthType:
+      anyOf:
+        - type: string
+          enum:
+          - EPS_AKA
+          - EAP_AKA
+          - EAP_AKA_PRIME
+          - IMS_AKA
+          - GBA_AKA
+        - type: string
+
+    HssAvType:
+      anyOf:
+        - type: string
+          enum:
+          - EPS_AKA
+          - EAP_AKA
+          - IMS_AKA
+          - GBA_AKA
         - type: string

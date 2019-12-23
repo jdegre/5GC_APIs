@@ -1,0 +1,214 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0.alpha-1
+  title: VAE_V2X_Application_Requirement
+  description: VAE_V2X_Application_Requirement Service
+externalDocs:
+  description: 3GPP TS 29.486 V0.3.0 V2X Application Enabler (VAE) Services
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+servers:
+  - url: '{apiRoot}/vae-v2x-application-requirement/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+paths:
+  /application-requirements:
+    post:
+      summary: VAE_V2X_Application_Requirements resource create service Operation
+      tags:
+        - application requirements collection (Document)
+      operationId: CreateApplicationRequirement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V2xApplicationRequirementData'
+        required: true
+      responses:
+        '201':
+          description: Application Requirement Resource Created
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/vae-v2x-application-requirement/v1/application-requirements/{requirementId}'
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2xApplicationRequirementData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        NetworkResourceAdaptationNotification:
+          '{$request.body#/notifUri}/notify': 
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/AppReqNotification'
+              responses:
+                '204':
+                  description: No Content, Notification was succesfull
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /application-requirement/{requirementId}:
+    get:
+      parameters:
+        - name: requirementId
+          in: path
+          description: Identifier of an application requirement resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. Resource representation is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2xApplicationRequirementData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: VAE V2X Application Requirement resource delete service Operation
+      tags:
+        - Individual application requirement (Document)
+      operationId: DeleteApplicationRequirement
+      parameters:
+        - name: requirementId
+          in: path
+          required: true
+          description: Unique ID of the application requirement to be deleted
+          schema:
+            type: string
+      responses:
+        '200':
+          description: application requirement resource deleted successfully
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows: 
+        clientCredentials: 
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            vae-v2x-application-requirement: Access to the VAE_V2X_Application_Requirement API
+  schemas:
+    V2xApplicationRequirementData:
+      type: object
+      properties:
+        ueId:
+          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xUeId'
+        groupId:
+          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xGroupId'
+        duration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        serviceId:
+          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xServiceId'
+        appRequirement:
+          $ref: '#/components/schemas/ApplicationRequirement'
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        requestTestNotification:
+          type: boolean
+          description: Set to true by the NF service consumer to request the VAE server to send a test notification as defined in subclause 6.1.5.3. Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - serviceId
+        - appRequirement
+        - notifUri
+    ApplicationRequirement:
+      type: object
+      properties:
+        ServiceLevel:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+    AppReqNotification:
+      type: object
+      properties:
+        resourceUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        result:
+          type: string
+      required:
+        - resourceUri
+        - result

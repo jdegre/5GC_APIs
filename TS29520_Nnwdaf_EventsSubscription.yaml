@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-2
+  version: 1.1.0.alpha-3
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.
     © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.520 V16.1.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V16.2.0; 5G System; Network Data Analytics Services.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 security:
   - {}
@@ -205,6 +205,8 @@ components:
             $ref: '#/components/schemas/EventSubscription'
           minItems: 1
           description: Subscribed events
+        evtReq:
+          $ref: '#/components/schemas/EventReportingRequirement'
         notificationURI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         supportedFeatures:
@@ -240,12 +242,20 @@ components:
           description: Shall be supplied for notification method "THRESHOLD". Indicates that the NWDAF shall report the corresponding network slice load level to the NF service consumer where the load level of the network slice instance identified by snssai is reached.
         notificationMethod:
           $ref: '#/components/schemas/NotificationMethod'
-        networkAreas:
+        networkArea:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        qosRequ:
+          $ref: '#/components/schemas/QosRequirement'
+        qosFlowRetainThresholds:
           type: array
           items:
-            $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+            $ref: '#/components/schemas/ThresholdLevel'
           minItems: 1
-          description: Identification(s) of network area to which the subscription applies. When subscribed event is "SERVICE_EXPERIENCE", the absence of networkAreas means subscription to all network areas.
+        ranUeThroughputThresholds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThresholdLevel'
+          minItems: 1
         repetitionPeriod:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         snssaia:
@@ -254,10 +264,15 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 1
           description: Identification(s) of network slice to which the subscription applies. When subscribed event is "SLICE_LOAD_LEVEL", either information about slice(s) identified by snssai, or anySlice set to "TRUE" shall be included. It corresponds to snssais in the data model definition of 3GPP TS 29.520. When subscribed is “QOS_SUSTAINABILITY”, the identifications of network slices is optional.
-        startTimeStamp:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        endTimeStamp:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        maxAnaEntry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        tgtUe:
+          $ref: '#/components/schemas/TargetUeInformation'
+        congThresholds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThresholdLevel'
+          minItems: 1
       required:
         - event
     NnwdafEventsSubscriptionNotification:
@@ -280,21 +295,43 @@ components:
       properties:
         event:
           $ref: '#/components/schemas/NwdafEvent'
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         sliceLoadLevelInfo:
           $ref: '#/components/schemas/SliceLoadLevelInformation'
         svcExpInfo:
           $ref: '#/components/schemas/ServiceExperienceInfo'
         qosSustainInfo:
-          $ref: '#/components/schemas/QosSustainabilityInfo'
+          type: array
+          items:
+            $ref: '#/components/schemas/QosSustainabilityInfo'
+          minItems: 1
+        ueComms:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeCommunication'
+          minItems: 1
+        ueMobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeMobility'
+          minItems: 1
+        userDataCongInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataCongestionInfo'
+          minItems: 1
+        abnorBehavrs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbnormalBehaviour'
+          minItems: 1
       required:
         - event
 #
 # Editor's note: The data type ServiceExperienceInformation is FFS.
-# Editor's note: The data type QosSustainabilityInfo is FFS.
 #
     ServiceExperienceInfo:
-      type: string
-    QosSustainabilityInfo:
       type: string
     SliceLoadLevelInformation:
       type: object
@@ -310,12 +347,202 @@ components:
       required:
         - loadLevelInformation
         - snssais
+    EventReportingRequirement:
+      type: object
+      properties:
+        accuracy:
+          $ref: '#/components/schemas/Accuracy'
+        startTs:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        endTs:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    TargetUeInformation:
+      type: object
+      properties:
+        anyUe:
+          type: boolean
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        intGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+    UeMobility:
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        ueTraj:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeTrajectory'
+          minItems: 1
+      required:
+        - ueTraj
+    UeTrajectory:
+      type: object
+      properties:
+        ts:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        recurringTime:
+          $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+        duration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        locInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationInfo'
+          minItems: 1
+      required:
+        - duration
+        - locInfo
+    LocationInfo:
+      type: object
+      properties:
+        loc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      required:
+        - loc
+    UeCommunication:
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        comm:
+          type: array
+          items:
+            $ref: '#/components/schemas/Communication'
+          minItems: 1
+    Communication:
+      type: object
+      properties:
+        commDur:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        perioTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        ts:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        recurringTime:
+          $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+        trafChar:
+          $ref: '#/components/schemas/TrafficCharacterization'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      required:
+        - commDur
+    TrafficCharacterization:
+      type: object
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        ethfDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+        fDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
+          minItems: 1
+        ulVol:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+        dlVol:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+    UserDataCongestionInfo:
+      type: object
+      properties:
+        networkArea:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        congestionInfo:
+          $ref: '#/components/schemas/CongestionInfo'
+    CongestionInfo:
+      type: object
+      properties:
+        congType:
+          $ref: '#/components/schemas/CongestionType'
+        timeIntev:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        nsi:
+          $ref: '#/components/schemas/ThresholdLevel'
+      required:
+        - congType
+        - timeIntev
+        - nsi
+    QosSustainabilityInfo:
+      type: object
+      properties:
+        areaInfo:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        startTs:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        endTs:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        crossedQosFlowRetainThresholds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThresholdLevel'
+          minItems: 1
+        crossedRanUeThroughputThresholds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThresholdLevel'
+          minItems: 1
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+    QosRequirement:
+      type: object
+      properties:
+        5qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
+        pdb:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        per:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
+      required:
+        - 5qi
     AnySlice:
       type: boolean
       description: FALSE represents not applicable for all slices. TRUE represents applicable for all slices.
     LoadLevelInformation:
       type: integer
       description: Load level information of the network slice instance.
+    ThresholdLevel:
+      type: integer
+#
+# Editor's note: The data type ThresholdLevel is FFS.
+#
+    AbnormalBehaviour:
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        exceps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exception'
+          minItems: 1
+      required:
+        - exceps
+    Exception:
+      type: object
+      properties:
+        excepId:
+          $ref: '#/components/schemas/ExceptionId'
+        excepLevel:
+          type: integer
+        excepTrend:
+          $ref: '#/components/schemas/ExceptionTrend'
+        addtMeasInfo:
+          type: string
+      required:
+        - excepId
     NotificationMethod:
       anyOf:
       - type: string
@@ -338,6 +565,8 @@ components:
           - SLICE_LOAD_LEVEL
           - SERVICE_EXPERIENCE
           - QOS_SUSTAINABILITY
+          - ABNORMAL_BEHAVIOUR
+          - USER_DATA_CONGESTION
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -348,3 +577,85 @@ components:
         - SLICE_LOAD_LEVEL: Indicates that the event subscribed is load level information of Network Slice instance
         - SERVICE_EXPERIENCE: Indicates that the event subscribed is service experience.
         - QOS_SUSTAINABILITY: Indicates that the event subscribed is QoS sustainability.
+        - ABNORMAL_BEHAVIOUR: Indicates that the event subscribed is abnormal behaviour.
+        - USER_DATA_CONGESTION: Indicates that the event subscribed is user data congestion information.
+    Accuracy:
+      anyOf:
+      - type: string
+        enum:
+          - LOW
+          - HIGH
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - LOW: Low accuracy.
+        - HIGH: High accuracy.
+    CongestionType:
+      anyOf:
+      - type: string
+        enum:
+          - USER_PLANE
+          - CONTROL_PLANE
+          - USER_AND_CONTROL_PLANE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - USER_PLANE: The congestion analytics type is User Plane. 
+        - CONTROL_PLANE: The congestion analytics type is Control Plane.
+        - USER_AND_CONTROL_PLANE: The congestion analytics type is User Plane and Control Plane.
+    ExceptionId:
+      anyOf:
+      - type: string
+        enum:
+          - UNEXPECTED_UE_LOCATION
+          - UNEXPECTED_LONG_LIVE_FLOW
+          - UNEXPECTED_LARGE_RATE_FLOW
+          - UNEXPECTED_WAKEUP
+          - SUSPICION_OF_DDOS_ATTACK
+          - WRONG_DESTINATION_ADDRESS
+          - PING_PONG_STATIONARY_UE
+          - TOO_FREQUENT_SERVICE_ACCESS
+          - ABNORMAL_TRAFFIC_VOLUME
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - UNEXPECTED_UE_LOCATION: Unexpected UE location
+          - UNEXPECTED_LONG_LIVE_FLOW: Unexpected long-live rate flows
+          - UNEXPECTED_LARGE_RATE_FLOW: Unexpected large rate flows
+          - UNEXPECTED_WAKEUP: Unexpected wakeup
+          - SUSPICION_OF_DDOS_ATTACK: Suspicion of DDoS attack
+          - WRONG_DESTINATION_ADDRESS: Wrong destination address
+          - PING_PONG_STATIONARY_UE: Ping-pong stationary UE
+          - TOO_FREQUENT_SERVICE_ACCESS: Too frequent Service Access
+          - ABNORMAL_TRAFFIC_VOLUME: Abnormal traffic volume
+    ExceptionTrend:
+      anyOf:
+      - type: string
+        enum:
+          - UP
+          - DOWN
+          - UNKNOW
+          - STABLE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - UP: Up trend of the exception level.
+          - DOWN: Down trend of the exception level.
+          - UNKNOW: Unknown trend of the exception level.
+          - STABLE: Stable trend of the exception level.
