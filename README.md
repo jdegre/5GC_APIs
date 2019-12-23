@@ -100,7 +100,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Telescopic FQDN Mapping](https://jdegre.github.io/loader.html?yaml=TS29573_SeppTelescopicFqdnMapping.yaml)
 ## UCMF (UE Radio Capability Management Function)
 * [UE Radio Capability Management](https://jdegre.github.io/loader.html?yaml=TS29673_Nucmf_UERCM.yaml)
-* [Provisioning](https://jdegre.github.io/loader.html?yaml=TS29673_Nucmf_Provisioning.yaml)
+* [Provisioning](https://jdegre.github.io/loader.html?yaml=TS29675_Nucmf_Provisioning.yaml)
 ## GMLC (Gateway Mobile Location Center)
 * [Location](https://jdegre.github.io/loader.html?yaml=TS29515_Ngmlc_Location.yaml)
 
