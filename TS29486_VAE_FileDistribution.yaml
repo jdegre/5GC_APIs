@@ -1,16 +1,19 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0.alpha-2
-  title: VAE_V2X_File_Distribution
-  description: VAE V2X File Distribution Service
+  version: 1.0.0.alpha-3
+  title: VAE_FileDistribution
+  description: |
+    API for VAE File Distribution Service
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 29.486 V16.0.0 V2X Application Enabler (VAE) Services
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
 security:
   - {}
   - oAuth2ClientCredentials: []
-externalDocs:
-  description: 3GPP TS 29.486 V0.3.0 V2X Application Enabler (VAE) Services
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
 servers:
-  - url: '{apiRoot}/vae-v2x-file-distribution/v1'
+  - url: '{apiRoot}/vae-file-distribution/v1'
     variables:
       apiRoot:
         default: https://example.com
@@ -18,7 +21,7 @@ servers:
 paths:
   /file-distributions:
     post:
-      summary: VAE V2X File Distributions resource create service Operation
+      summary: VAE File Distributions resource create service Operation
       tags:
         - file distributions collection (Document)
       operationId: CreateFileDistributions
@@ -26,25 +29,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/V2xFileDistributionData'
+              $ref: '#/components/schemas/FileDistributionData'
         required: true
       responses:
         '201':
           description: File Distribution Resource Created
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/vae-v2x-file-distribution/v1/file-distributions/{distributionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/vae-file-distribution/v1/file-distributions/{distributionId}'
               required: true
               schema:
                 type: string
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V2xFileDistributionData'
+                $ref: '#/components/schemas/FileDistributionData'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
@@ -61,6 +68,10 @@ paths:
           description: Unexpected error
   /file-distributions/{distributionId}:
     get:
+      summary: Get an existing individual file distribution resource
+      operationId: ReadIndividualFileDistribution
+      tags:
+        - Individual File Distribution (Document)
       parameters:
         - name: distributionId
           in: path
@@ -74,7 +85,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V2xFileDistributionData'
+                $ref: '#/components/schemas/FileDistributionData'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -94,7 +105,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
-      summary: VAE V2X File Distribution resource delete service Operation
+      summary: VAE File Distribution resource delete service Operation
       tags:
         - Individual file distribution (Document)
       operationId: DeleteFileDistribution
@@ -106,18 +117,16 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: file distribution resource deleted successfully
+        '204':
+          description: The subscription was terminated successfully.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -132,15 +141,14 @@ components:
       type: oauth2
       flows: 
         clientCredentials: 
-          tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes:
-            vae-v2x-file-distribution: Access to the VAE_V2X_File_Distribution API
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
   schemas:
-    V2xFileDistributionData:
+    FileDistributionData:
       type: object
       properties:
         groupId:
-          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xGroupId'
+          $ref: 'TS29486_VAE_MessageDelivery.yaml#/components/schemas/V2xGroupId'
         fileLists:
           type: array
           items:
@@ -153,9 +161,7 @@ components:
         maxBitrate:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         maxDelay:
-          type: integer
-        qoeRepConfig:
-          $ref: '#/components/schemas/QoeReportingConfiguration'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -163,7 +169,6 @@ components:
         - geoArea
         - maxBitrate
         - maxDelay
-        - qoeRepConfig
     FileList:
       type: object
       properties:
@@ -176,7 +181,7 @@ components:
         fileLatFetchTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         fileSize:
-          type: integer
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         fileStatus:
           $ref: '#/components/schemas/FileStatus'
         completionTime:
@@ -195,33 +200,9 @@ components:
         - fileStatus
         - completionTime
         - keepUpdateInterval
-        - fileRepetition
-
-    QoeReportingConfiguration:
-      type: object
-      properties:
-        metricName:
-          type: string
-        metricType:
-          type: string
-        reportingInterval:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        samPercentage:
-          type: integer
-        startTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        endTime:	
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-      required:
-        - metricName
-        - metricType
-        - reportingInterval
-        - samPercentage
-        - startTime
-        - endTime
 
     FileStatus:
-      anyOf:	
+      anyOf:
       - type: string
         enum:
           - PENDING

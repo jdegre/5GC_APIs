@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nucmf_UECapabilityManagement
-  version: 1.0.0.alpha-1
+  version: 1.0.0.alpha-2
   description: |
     Nucmf_UECapabilityManagement Service.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.673 V0.3.0; 5G System; UE Radio Capability Management Services
+  description: 3GPP TS 29.673 V16.0.0; 5G System; UE Radio Capability Management Services
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.673/
 
 servers:
@@ -37,16 +37,6 @@ paths:
           description: UE Radio Capability ID, either PLMN Assigned or Manufacturer Assigned
           schema:
             $ref: '#/components/schemas/UeRadioCapaId'
-        - name: tac
-          in: query
-          description: Type Allocation Code in an IMEI or IMEISV
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
-        - name: svn
-          in: query
-          description: Software Version Number in an IMEISV 
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
       responses:
         '200':
           description: Expected response to a valid request
@@ -158,7 +148,7 @@ paths:
 
   /dic-entries/{dicEntryId}:
     get:
-      summary: Get an individual dictionary entry via dicEntryId 
+      summary: Get an individual dictionary entry via dicEntryId
       operationId: GetDicEntry
       tags:
         - dic Entry Id (Document)
@@ -253,7 +243,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
         myNotification:
-          '{$request.body#/ucmfNotificationUri}': 
+          '{$request.body#/ucmfNotificationUri}':
             post:
               requestBody:
                 required: true
@@ -325,8 +315,8 @@ components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      flows: 
-        clientCredentials: 
+      flows:
+        clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nucmf-uecm: Access to the Nucmf_UECapabilityManagement API
@@ -339,16 +329,12 @@ components:
       properties:
         typeAllocationCode:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
-        swVersionNumber:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
         plmnAssiUeRadioCapId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
         manAssiUeRadioCapId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ManAssiUeRadioCapId'
         ueRadioCapability:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData' 
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
 
     DicEntryCreateData:
       type: object
@@ -358,10 +344,8 @@ components:
       properties:
         typeAllocationCode:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
-        swVersionNumber:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
         ueRadioCapability:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'  
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
 
 
     DicEntryCreatedData:
@@ -393,7 +377,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         suggestedExpires:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-          
+
     CreatedSubscription:
       type: object
       required:
@@ -411,28 +395,29 @@ components:
         - eventType
       properties:
         dicEntryId:
-          $ref: '#/components/schemas/DicEntryId'        
+          $ref: '#/components/schemas/DicEntryId'
         eventType:
-          $ref: '#/components/schemas/EventType'        
-        delPlmnAssiUeRadioCapIdData:       
-          type: array
-          items:
-            $ref: '#/components/schemas/DelPlmnAssiUeRadioCapIdData'
+          $ref: '#/components/schemas/EventType'
+        manAssOpRequestlist:
+          $ref: '#/components/schemas/manAssOpRequestlist'
           minItems: 1
 
-    DelPlmnAssiUeRadioCapIdData:
+    manAssOpRequestlist:
       type: object
-      required:
-        - plmnAssiUeRadioCapId
-        - typeAllocationCode
+      oneOf:
+        - required: [plmnAssiUeRadioCapId]
+        - required: [typeAllocationCod]
       properties:
         plmnAssiUeRadioCapId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'        
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
+          minItems: 1
         typeAllocationCode:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'        
-        swVersionNumber:       
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SwVersionNumber'
-          
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
+
 
 #
 # SIMPLE DATA TYPES

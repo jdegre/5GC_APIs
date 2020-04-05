@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-3'
+  version: '1.1.0.alpha-4'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V16.2.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V16.3.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -32,6 +32,11 @@ paths:
       tags:
         - NF Instances (Store)
       parameters:
+        - name: Accept-Encoding
+          in: header
+          description: Accept-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
         - name: target-nf-type
           in: query
           description: Type of the target NF
@@ -364,6 +369,27 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/ExternalClientType'
+        - name: lmf-id
+          in: query
+          description: LMF identification to be discovered
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
+        - name: an-node-type
+          in: query
+          description: Requested AN node type served by the NF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/AnNodeType'
+        - name: rat-type
+          in: query
+          description: Requested RAT type served by the NF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         - name: preferred-tai
           in: query
           description: preferred Tracking Area Identity
@@ -414,6 +440,13 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TngfInfo'
+        - name: twif-info
+          in: query
+          description: UPF collocated with TWIF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TwifInfo'
         - name: target-nf-set-id
           in: query
           description: Target NF Set ID
@@ -459,6 +492,21 @@ paths:
                 additionalProperties:
                   type: string
                 minProperties: 1
+        - name: v2x-support-ind
+          in: query
+          description: PCF supports V2X
+          schema:
+            type: boolean
+        - name: redundant-gtpu
+          in: query
+          description: UPF supports redundant gtp-u to be discovered
+          schema:
+            type: boolean
+        - name: redundant-transport
+          in: query
+          description: UPF supports redundant transport path to be discovered
+          schema:
+            type: boolean
       responses:
         '200':
           description: Expected response to a valid request
@@ -488,6 +536,10 @@ paths:
                 type: string
             ETag:
               description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
+              schema:
+                type: string
+            Content-Encoding:
+              description: Content-Encoding, described in IETF RFC 7231
               schema:
                 type: string
         '307':
@@ -532,6 +584,11 @@ paths:
         - Stored Search (Document)
       parameters:
         - $ref: '#/components/parameters/searchId'
+        - name: Accept-Encoding
+          in: header
+          description: Accept-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
       responses:
         '200':
           $ref: '#/components/responses/200'
@@ -543,6 +600,11 @@ paths:
         - Complete Stored Search (Document)
       parameters:
         - $ref: '#/components/parameters/searchId'
+        - name: Accept-Encoding
+          in: header
+          description: Accept-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
       responses:
         '200':
           $ref: '#/components/responses/200'
@@ -580,8 +642,13 @@ components:
           description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
           schema:
             type: string
+        Content-Encoding:
+          description: Content-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
   schemas:
     SearchResult:
+      description: Contains the list of NF Profiles returned in a Discovery response
       type: object
       required:
         - nfInstances
@@ -601,6 +668,7 @@ components:
         nrfSupportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     StoredSearchResult:
+      description: Contains a complete search result (i.e. a number of discovered NF Instances), stored by NRF as a consequence of a prior search result
       type: object
       required:
         - nfInstances
@@ -610,6 +678,7 @@ components:
           items:
             $ref: '#/components/schemas/NFProfile'
     NFProfile:
+      description: Information of an NF Instance discovered by the NRF
       type: object
       required:
         - nfInstanceId
@@ -664,6 +733,8 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        loadTimeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         locality:
           type: string
         priority:
@@ -733,6 +804,13 @@ components:
           items:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/ChfInfo'
           minItems: 1
+        udsfInfo:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/UdsfInfo'
+        udsfInfoExt:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/UdsfInfo'
+          minItems: 1
         nwdafInfo:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NwdafInfo'
         nefInfo:
@@ -782,7 +860,14 @@ components:
           items:
             type: string
           minItems: 1
+        lcHSupportInd:
+          type: boolean
+          default: false
+        olcHSupportInd:
+          type: boolean
+          default: false
     NFService:
+      description: Information of a given NF Service Instance; it is part of the NFProfile of an NF Instance discovered by the NRF
       type: object
       required:
         - serviceInstanceId
@@ -826,6 +911,8 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        loadTimeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         priority:
           type: integer
           minimum: 0
@@ -841,7 +928,29 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
           minItems: 1
+        sNssais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        perPlmnSnssaiList:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/PlmnSnssai'
+          minItems: 1
+        vendorId:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/VendorId'
+        supportedVendorSpecificFeatures:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/VendorSpecificFeature'
+          minProperties: 1
+        oauth2Required:
+          type: boolean
     PreferredSearch:
+      description: Contains information on whether the returned NFProfiles match the preferred query parameters
       type: object
       properties:
         preferredTaiMatchInd:

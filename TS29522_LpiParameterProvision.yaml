@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: 3gpp-iptvconfiguration
-  version: 1.0.0.alpha-2
+  title: 3gpp-lpi-pp
+  version: 1.0.0.alpha-1
   description: |
-    API for IPTV configuration.
+    API for Location Privacy Indication Parameters Provisioning.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
@@ -13,17 +13,17 @@ security:
   - {}
   - oAuth2ClientCredentials: []
 servers:
-  - url: '{apiRoot}/3gpp-iptvconfiguration/v1'
+  - url: '{apiRoot}/3gpp-lpi-pp/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
 paths:
-  /{afId}/configurations:
+  /{afId}/provisionedLpis:
     get:
-      summary: read all of the active configurations for the AF
+      summary: read all of the active LPI Parameters Provisioning resources for the AF
       tags:
-        - AF level GET Operation
+        - Resource collection level GET Operation
       parameters:
         - name: afId
           in: path
@@ -33,14 +33,14 @@ paths:
             type: string
       responses:
         '200':
-          description: OK (Successful get all of the active configurations for the AF)
+          description: OK (Successful get all of the active resources for the AF)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IptvConfigData'
-                minItems: 0
+                  $ref: '#/components/schemas/LpiParametersProvision'
+                minItems: 1
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -61,9 +61,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Creates a new configuration resource
+      summary: Creates a new LPI Parameters Provisioning resource
       tags:
-        - Configuration level POST Operation
+        - Resource collection level POST Operation
       parameters:
         - name: afId
           in: path
@@ -72,27 +72,25 @@ paths:
           schema:
             type: string
       requestBody:
-        description: new configuration creation
+        description: new resource creation
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IptvConfigData'
+              $ref: '#/components/schemas/LpiParametersProvision'
       responses:
         '201':
-          description: Created (Successful creation of configuration)
+          description: Created (Successful creation)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: '#/components/schemas/LpiParametersProvision'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
               required: true
               schema:
                 type: string
-        '204':
-          description: Successful case. The resource has been successfully created and no additional content is to be sent in the response message.
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -116,11 +114,11 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-  /{afId}/configurations/{configurationId}:
+  /{afId}/provisionedLpis/{provisionedLpiId}:
     get:
-      summary: read an active configuration for the AF and the configuration Id
+      summary: read an active LPI Parameters Provisioning resource for the AF and the provisioned LPI Id
       tags:
-        - Configuration level GET Operation
+        - Individual resource level GET Operation
       parameters:
         - name: afId
           in: path
@@ -128,19 +126,19 @@ paths:
           required: true
           schema:
             type: string
-        - name: configurationId
+        - name: provisionedLpiId
           in: path
-          description: Identifier of the configuration resource
+          description: Identifier of the provisioned LPI parameter resource
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: OK (Successful get the active configuration)
+          description: OK (Successful get the active resource)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: '#/components/schemas/LpiParametersProvision'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -161,9 +159,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Updates/replaces an existing configuration resource
+      summary: Updates/replaces an existing LPI Parameters Provisioning resource
       tags:
-        - Configuration level PUT Operation
+        - Individual resource level PUT Operation
       parameters:
         - name: afId
           in: path
@@ -171,83 +169,28 @@ paths:
           required: true
           schema:
             type: string
-        - name: configurationId
+        - name: provisionedLpiId
           in: path
-          description: Identifier of the configuration resource
+          description: Identifier of the provisioned LPI parameter resource
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to update/replace the existing configuration
+        description: Parameters to update/replace the existing resource
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IptvConfigData'
+              $ref: '#/components/schemas/LpiParametersProvision'
       responses:
         '200':
-          description: OK (Successful deletion of the existing configuration)
+          description: OK (Successful update of the existing resource)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: '#/components/schemas/LpiParametersProvision'
         '204':
-          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
-    patch:
-      summary: Partial updates an existing configuration resource
-      tags:
-        - Configuration level PATCH Operation
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: configurationId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/merge-patch+json:
-            schema:
-              $ref: '#/components/schemas/IptvConfigDataPatch'
-      responses:
-        '200':
-          description: OK. The configuration was modified successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IptvConfigData'
-        '204':
-          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
+          description: Successful case. The resource has been successfully updated and no additional content is sent in the response message.
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -272,9 +215,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing configuration
+      summary: Deletes an already existing LPI Parameters Provisioning resource
       tags:
-        - Configuration level DELETE Operation
+        - Individual resource level DELETE Operation
       parameters:
         - name: afId
           in: path
@@ -282,15 +225,15 @@ paths:
           required: true
           schema:
             type: string
-        - name: configurationId
+        - name: provisionedLpiId
           in: path
-          description: Identifier of the configuration resource
+          description: Identifier of the provisioned LPI parameter resource
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: No Content (Successful deletion of the existing configuration)
+          description: No Content (Successful deletion of the existing resource)
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -316,65 +259,19 @@ components:
           tokenUrl: '{tokenUrl}'
           scopes: {}
   schemas: 
-    IptvConfigData:
+    LpiParametersProvision:
       type: object
       properties:
         self:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         exterGroupId:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
-        afAppId:
-          type: string
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MulticastAccessControl'
-          minProperties: 1
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        lpi:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/Lpi'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
-        - afAppId
-        - multiAccCtrls
+        - lpi
         - suppFeat
-    IptvConfigDataPatch:
-      type: object
-      properties:
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MulticastAccessControl'
-          minProperties: 1
-    MulticastAccessControl:
-      type: object
-      properties:
-        srcIpv4Addr:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
-        srcIpv6Addr:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
-        multicastV4Addr:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
-        multicastV6Addr:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
-        accStatus:
-          $ref: '#/components/schemas/AccessRightStatus'
-      required:
-        - accStatus
-    AccessRightStatus:
-      anyOf:
-        - type: string
-          enum:
-            - FULLY_ALLOWED
-            - PREVIEW_ALLOWED
-            - NO_ALLOWED
-        - type: string
-      description: >
-        Possible values are
-        - FULLY_ALLOWED: The User is fully allowed to access to the channel.
-        - PREVIEW_ALLOWED: The User is preview allowed to access to the channel.
-        - NO_ALLOWED: The User is not allowed to access to the channel.

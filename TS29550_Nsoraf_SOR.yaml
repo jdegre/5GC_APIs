@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: 'Nsoraf_SOR'
+  version: 1.0.0.alpha-1
+  description: |
+    Nsoraf Steering Of Roaming Service.
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 29.550 V16.0.0; Steering Of Roaming Application Function Services.
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.550/
+servers:
+  - url: '{apiRoot}/nsoraf-sor/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - nsoraf-sor
+paths:
+  /{supi}/sor-information:
+    get:
+      summary: retrieve the steering of roaming information for a UE
+      operationId: GetSorInformation
+      tags:
+        - SoR Information Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: plmn-id
+          in: query
+          description: serving PLMN ID
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SorInformation'
+          headers:
+            Cache-Control:
+              description: Cache-Control (as described in RFC 7234) with value "no-cache" to indicate that the returned SoR information should not be cached
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+  /{supi}/sor-information/sor-ack:
+    put:
+      summary: SoR Acknowledgment Reception Notification
+      operationId: SorAckInfo
+      tags:
+        - Providing the reception status of the acknowledgement of Steering of Roaming information reception by the UE
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SorAckInfo'
+      responses:
+        '204':
+          description: Successful reception of the indication
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nsoraf-sor: Access to the Nsoraf_SOR API
+  schemas:
+    # API specific definitions
+    SorInformation:
+      type: object
+      required:
+        - sorAckIndication
+        - sorSendingTime
+      properties:
+        steeringContainer:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SteeringContainer'
+        sorAckIndication:
+          type: boolean
+        sorSendingTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    SorAckInfo:
+      type: object
+      required:
+        - sorAckStatus
+        - sorSendingTime
+      properties:
+        sorAckStatus:
+          $ref: '#/components/schemas/SorAckStatus'
+        sorSendingTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    SorAckStatus:
+      anyOf:
+        - type: string
+          enum:
+          - ACK_SUCCESSFUL
+          - ACK_NOT_RECEIVED
+          - ACK_NOT_SUCCESSFUL
+        - type: string

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-3
+  version: 1.1.0.alpha-4
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.508 V16.2.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V16.3.0; 5G System; Session Management Event Exposure Service.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 servers:
   - url: '{apiRoot}/nsmf_event-exposure/v1'
@@ -355,12 +355,20 @@ components:
           $ref: '#/components/schemas/SmfEvent'
         dnaiChgType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
-        dddTraDes:
-          $ref: '#/components/schemas/DddTrafficDescriptor'
+        dddTraDescriptors: 
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DddTrafficDescriptor'
+          minItems: 1
         dddStati:
           type: array
           items:
-            $ref: '#/components/schemas/DddStatus'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DlDataDeliveryStatus'
+          minItems: 1
+        appIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
           minItems: 1
       required:
         - event
@@ -410,25 +418,65 @@ components:
         pduSeId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         dddStatus:
-          $ref: '#/components/schemas/DddStatus'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DlDataDeliveryStatus'
+        dddTraDescriptor:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DddTrafficDescriptor'
         maxWaitTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         commFailure:
           $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/CommunicationFailure'
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Prefixes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+          minItems: 1
+        ipv6Addrs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
+        pduSessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+        qfi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        ethfDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+          maxItems: 2
+        fDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
+          minItems: 1
+          maxItems: 2
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        ulDelays:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minItems: 1
+        dlDelays:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minItems: 1
+        rtDelays:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minItems: 1
       required:
         - event
         - timeStamp
-    DddTrafficDescriptor:
-      type: object
-      properties:
-        ipv4Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-        ipv6Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        port:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        macAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
     SubId:
       type: string
       format: SubId
@@ -458,6 +506,9 @@ components:
           - UE_IP_CH
           - DDDS
           - COMM_FAIL
+          - PDU_SES_EST
+          - QFI_ALLOC
+          - QOS_MON
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -472,6 +523,9 @@ components:
         - UE_IP_CH: UE IP address change
         - DDDS: Downlink data delivery status
         - COMM_FAIL: Communication Failure
+        - PDU_SES_EST: PDU Session Establishment
+        - QFI_ALLOC: QFI allocation
+        - QOS_MON: QoS Monitoring
     NotificationMethod:
       anyOf:
       - type: string
@@ -489,20 +543,3 @@ components:
         - PERIODIC
         - ONE_TIME
         - ON_EVENT_DETECTION
-    DddStatus:
-      anyOf:
-      - type: string
-        enum:
-          - BUFFERED
-          - TRANSMITTED
-          - DISCARDED
-      - type: string
-        description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
-          content defined in the present version of this API.
-      description: >
-        Possible values are
-        - BUFFERED: The first downlink data is buffered with extended buffering matching the source of the downlink traffic.
-        - TRANSMITTED: The first downlink data matching the source of the downlink traffic is transmitted after previous buffering or discarding of corresponding packet(s) because the UE of the PDU Session becomes ACTIVE, and buffered data can be delivered to UE.
-        - DISCARDED: The first downlink data matching the source of the downlink traffic is discarded because the Extended Buffering time, as determined by the SMF, expires or the amount of downlink data to be buffered is exceeded.

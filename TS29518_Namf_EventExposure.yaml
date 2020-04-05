@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-2
+  version: 1.1.0.alpha-3
   title: Namf_EventExposure
   description: |
     AMF Event Exposure Service
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 security:
   - {}
   - oAuth2ClientCredentials:
       - namf-evts
 externalDocs:
-  description: 3GPP TS 29.518 V16.2.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.3.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-evts/v1'
@@ -267,6 +267,11 @@ components:
           minItems: 1
         refId:
           $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
+        trafficDescriptorList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrafficDescriptor'
+          minItems: 1
       required:
         - type
     AmfEventNotification:
@@ -337,6 +342,11 @@ components:
           items:
             $ref: '#/components/schemas/5GsUserStateInfo'
           minItems: 1
+        typeCode:
+          type: string
+          pattern: '^imeitac-[0-9]{8}$'
+        registrationNumber:
+          type: integer
       required:
         - type
         - state
@@ -487,6 +497,18 @@ components:
       required:
         - 5gsUserState
         - accessType
+    TrafficDescriptor:
+      type: object
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        sNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dddTrafficDescriptorList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DddTrafficDescriptor'
+          minItems: 1
     5gGuti:
       type: string
     AmfEventType:
@@ -506,6 +528,9 @@ components:
           - SUBSCRIPTION_ID_ADDITION
           - LOSS_OF_CONNECTIVITY
           - 5GS_USER_STATE_REPORT
+          - AVAILABILITY_AFTER_DDN_FAILURE
+          - TYPE_ALLOCATION_CODE_REPORT
+          - FREQUENT_MOBILITY_REGISTRATION_REPORT
       - type: string
     AmfEventTrigger:
       anyOf:

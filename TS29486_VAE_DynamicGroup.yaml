@@ -1,50 +1,57 @@
 openapi: 3.0.0
 info:
   version: 1.0.0.alpha-1
-  title: VAE_V2X_Application_Requirement
-  description: VAE_V2X_Application_Requirement Service
+  title: VAE_DynamicGroup
+  description: |
+    VAE_Dynamic_Group Service
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.486 V0.3.0 V2X Application Enabler (VAE) Services
+  description: 3GPP TS 29.486 V16.0.0 V2X Application Enabler (VAE) Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
 security:
   - {}
   - oAuth2ClientCredentials: []
 servers:
-  - url: '{apiRoot}/vae-v2x-application-requirement/v1'
+  - url: '{apiRoot}/vae-dynamic-group/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501
 paths:
-  /application-requirements:
+  /group-configurations:
     post:
-      summary: VAE_V2X_Application_Requirements resource create service Operation
+      summary: VAE_Dynamice_Group resource create service Operation
       tags:
         - application requirements collection (Document)
-      operationId: CreateApplicationRequirement
+      operationId: CreateGroupConfiguration
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/V2xApplicationRequirementData'
+              $ref: '#/components/schemas/GroupConfigurationData'
         required: true
       responses:
         '201':
           description: Application Requirement Resource Created
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/vae-v2x-application-requirement/v1/application-requirements/{requirementId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/vae-group-configuration/v1/group-configurations/{configId}'
               required: true
               schema:
                 type: string
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V2xApplicationRequirementData'
+                $ref: '#/components/schemas/GroupConfigurationData'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
@@ -60,15 +67,15 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
-        NetworkResourceAdaptationNotification:
-          '{$request.body#/notifUri}/notify': 
+        NotifyDynamicGroup:
+          '{$request.body#/notifUri}': 
             post:
               requestBody:
                 required: true
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/AppReqNotification'
+                      $ref: '#/components/schemas/DynamicGroupNotification'
               responses:
                 '204':
                   description: No Content, Notification was succesfull
@@ -94,12 +101,16 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-  /application-requirement/{requirementId}:
+  /group-configuration/{configId}:
     get:
+      summary: VAE Group Configuration resource read service Operation
+      tags:
+        - Individual Group Configuration(Document)
+      operationId: ReadDynamicGroupConfiguration
       parameters:
-        - name: requirementId
+        - name: configId
           in: path
-          description: Identifier of an application requirement resource
+          description: Identifier of an group configuration resource
           required: true
           schema:
             type: string
@@ -109,7 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V2xApplicationRequirementData'
+                $ref: '#/components/schemas/GroupConfigurationData'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -129,30 +140,28 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
-      summary: VAE V2X Application Requirement resource delete service Operation
+      summary: VAE Group Configuration resource delete service Operation
       tags:
-        - Individual application requirement (Document)
-      operationId: DeleteApplicationRequirement
+        - Individual group configuration (Document)
+      operationId: DeleteGroupConfiguration
       parameters:
-        - name: requirementId
+        - name: configId
           in: path
           required: true
-          description: Unique ID of the application requirement to be deleted
+          description: Unique ID of the group configuration to be deleted
           schema:
             type: string
       responses:
-        '200':
-          description: application requirement resource deleted successfully
+        '204':
+          description: The subscription was terminated successfully.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -167,48 +176,48 @@ components:
       type: oauth2
       flows: 
         clientCredentials: 
-          tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes:
-            vae-v2x-application-requirement: Access to the VAE_V2X_Application_Requirement API
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
   schemas:
-    V2xApplicationRequirementData:
+    GroupConfigurationData:
       type: object
       properties:
-        ueId:
-          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xUeId'
         groupId:
-          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xGroupId'
-        duration:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        serviceId:
-          $ref: 'TS29486_VAE_V2X_Message_Delivery.yaml#/components/schemas/V2xServiceId'
-        appRequirement:
-          $ref: '#/components/schemas/ApplicationRequirement'
+          $ref: 'TS29486_VAE_MessageDelivery.yaml#/components/schemas/V2xGroupId'
+        definition:
+          type: string
+        leaderId:
+          $ref: 'TS29486_VAE_MessageDelivery.yaml#/components/schemas/V2xUeId'
         notifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        duration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         requestTestNotification:
           type: boolean
-          description: Set to true by the NF service consumer to request the VAE server to send a test notification as defined in subclause 6.1.5.3. Set to false or omitted otherwise.
+          description: Set to true by the NF service consumer to request the VAE server to send a test notification as defined in clause 6.4.5.3. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
-        - serviceId
-        - appRequirement
+        - groupId
+        - definition
+        - leaderId
         - notifUri
-    ApplicationRequirement:
-      type: object
-      properties:
-        ServiceLevel:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-    AppReqNotification:
+    DynamicGroupNotification:
       type: object
       properties:
         resourceUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-        result:
-          type: string
+        joinedUeIds:
+          type: array
+          items:
+            $ref: 'TS29486_VAE_MessageDelivery.yaml#/components/schemas/V2xUeId'
+          minItems: 1
+        leftUeIds:
+          type: array
+          items:
+            $ref: 'TS29486_VAE_MessageDelivery.yaml#/components/schemas/V2xUeId'
+          minItems: 1
       required:
         - resourceUri
-        - result

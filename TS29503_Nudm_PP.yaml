@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-2'
+  version: '1.1.0.alpha-3'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.2.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -25,19 +25,24 @@ security:
   - {}
 
 paths:
-  /{gpsi}/pp-data:
+  /{ueId}/pp-data:
     patch:
       summary: provision parameters
       operationId: Update
       tags:
         - Subscription Data Update
       parameters:
-        - name: gpsi
+        - name: ueId
           in: path
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       requestBody:
         content:
           application/merge-patch+json:
@@ -138,6 +143,11 @@ paths:
           required: true
           schema:
             $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       requestBody:
         content:
           application/merge-patch+json:
@@ -147,6 +157,12 @@ paths:
       responses:
         '204':
           description: Expected response to a valid request
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -189,6 +205,10 @@ components:
           $ref: '#/components/schemas/EcRestriction'
         acsInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AcsInfoRm'
+        stnSr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/StnSrRm'
+        lcsPrivacy:
+          $ref: '#/components/schemas/LcsPrivacy'
 
     CommunicationCharacteristics:
       type: object
@@ -201,6 +221,10 @@ components:
           $ref: '#/components/schemas/PpDlPacketCount'
         ppDlPacketCountExt:
           $ref: '#/components/schemas/PpDlPacketCountExt'
+        ppMaximumResponseTime:
+          $ref: '#/components/schemas/PpMaximumResponseTime'
+        ppMaximumLatency:
+          $ref: '#/components/schemas/PpMaximumLatency'
 
 
     PpSubsRegTimer:
@@ -398,6 +422,50 @@ components:
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       nullable: true
+
+    PpMaximumResponseTime:
+      type: object
+      required:
+        - maximumResponseTime
+        - afInstanceId
+        - referenceId
+      properties:
+        maximumResponseTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      nullable: true
+
+    PpMaximumLatency:
+      type: object
+      required:
+        - maximumLatency
+        - afInstanceId
+        - referenceId
+      properties:
+        maximumLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      nullable: true
+
+    LcsPrivacy:
+      type: object
+      properties:
+        afInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        lpi:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/Lpi'
 
 
 # SIMPLE TYPES:

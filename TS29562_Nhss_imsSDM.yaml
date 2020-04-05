@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.0.alpha-1'
+  version: '1.0.0.alpha-2'
   title: 'Nhss_imsSDM'
   description: |
     Nhss Subscriber Data Management Service for IMS.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.562 Unified Data Management Services, version 0.3.0
+  description: 3GPP TS 29.562 Unified Data Management Services, version 16.0.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.562/'
 
 servers:
@@ -25,6 +25,229 @@ security:
   - {}
 
 paths:
+  /{imsUeId}/ims-data/registration-status:
+    get:
+      summary: Retrieve the registration status of a user
+      operationId: GetRegistrationStatus
+      tags:
+        - Registration Status retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsRegistrationStatus'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/ims-data/profile-data/profile-data:
+    get:
+      summary: Retrieve the complete IMS profile for a given IMS public identity (and public identities in the same IRS)
+      operationId: GetProfileData
+      tags:
+        - IMS Profile Data Retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity. In this case it shall be an IMS public identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsProfileData'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/ims-data/profile-data/priority-levels:
+    get:
+      summary: Retrieve the service priority levels associated to the user
+      operationId: GetPriorityInfo
+      tags:
+        - Priority Info Retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriorityLevels'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/ims-data/profile-data/ifcs:
+    get:
+      summary: Retrieve the Initial Filter Criteria for the associated IMS subscription
+      operationId: GetIfcs
+      tags:
+        - IFCs Retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ifcs'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/ims-data/profile-data/service-level-trace-information:
+    get:
+      summary: Retrieve the IMS service level trace information for the associated user
+      operationId: GetServiceTraceInfo
+      tags:
+        - Service Trace Info Retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceLevelTraceInformation'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/ims-data/location-data/server-name:
+    get:
+      summary: Retrieve the server name for the associated user
+      operationId: GetSserverName
+      tags:
+        - Server Name retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsLocationData'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /{imsUeId}/ims-data/location-data/scscf-capabilities:
     get:
       summary: Retrieve the S-CSCF capabilities for the associated IMS subscription
@@ -58,7 +281,211 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /{imsUeId}/access-data/ps-domain/location-data:
+    get:
+      summary: Retrieve the location data in PS domain
+      operationId: GetLocPsDomain
+      tags:
+        - PS location retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: requestedNodes
+          in: query
+          description: Indicates the serving node(s) for which the request is applicable.
+          schema:
+            $ref: '#/components/schemas/RequestedNodes'
+        - name: servingNode
+          in: query
+          description: Indicates that only the stored NF id/address of the serving node(s) is required
+          schema:
+            $ref: '#/components/schemas/ServingNode'
+        - name: localTime
+          in: query
+          description: Indicates that only the Local Time Zone information of the location in the visited network where the UE is attached is requested
+          schema:
+            $ref: '#/components/schemas/LocalTime'
+        - name: currentLocation
+          in: query
+          description: Indicates whether an active location retrieval has to be initiated by the requested node
+          schema:
+            $ref: '#/components/schemas/CurrentLocation'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PsLocation'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/access-data/cs-domain/location-data:
+    get:
+      summary: Retrieve the location data in CS domain
+      operationId: GetLocCsDomain
+      tags:
+        - CS location retrieval
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: servingNode
+          in: query
+          description: Indicates that only the stored NF id/address of the serving node(s) is required
+          schema:
+            $ref: '#/components/schemas/ServingNode'
+        - name: localTime
+          in: query
+          description: Indicates that only the Local Time Zone information of the location in the visited network where the UE is attached is requested
+          schema:
+            $ref: '#/components/schemas/LocalTime'
+        - name: currentLocation
+          in: query
+          description: Indicates whether an active location retrieval has to be initiated by the requested node
+          schema:
+            $ref: '#/components/schemas/CurrentLocation'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsLocation'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /{imsUeId}/repository-data/{serviceIndication}:
+    put:
+      summary: Update the repository data associated to an IMPU and service indication
+      operationId: UpdateRepositoryDataServInd
+      tags:
+        - Update repository data
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: serviceIndication
+          in: path
+          description: Identifier of a service related data
+          required: true
+          schema:
+            $ref: '#/components/schemas/ServiceIndication'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryData'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryData'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-ims-sdm/v1/{imsUeId}/repository-data/{serviceIndication}'
+              required: true
+              schema:
+                type: string
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryData'
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '409':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/409'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    delete:
+      summary: delete the Repository Data for a Service Indication
+      operationId: DeleteRepositoryDataServInd
+      tags:
+        - Delete repository data
+      parameters:
+        - name: imsUeId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: serviceIndication
+          in: path
+          description: Identifier of a service related data
+          required: true
+          schema:
+            $ref: '#/components/schemas/ServiceIndication'
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
     get:
       summary: Retrieve the repository data associated to an IMPU and service indication
       operationId: GetRepositoryDataServInd
@@ -168,6 +595,475 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /{imsUeId}/srvcc-data:
+    get:
+      summary: Retrieve the srvcc data
+      operationId: GetSrvccData
+      tags:
+        - Retrieval of UE SRVCC capability and STN-SR
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity or IMS Private Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SrvccData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    patch:
+      summary: Patch
+      operationId: UpdateSrvccData
+      tags:
+        - Update SRVCC data
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity or IMS Private Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '204': 
+          description: Successful response
+        '403': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          description: Unexpected error
+
+  /{imsUeId}/service-data/psi-status:
+    get:
+      summary: Retrieve the PSI activation state data
+      operationId: GetPsiState
+      tags:
+        - Retrieval of PSI activation state
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Private Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PsiActivationState'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    patch:
+      summary: Patch
+      operationId: UpdatePsiState
+      tags:
+        - Update PSI state data
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Service Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '204': 
+          description: Successful response
+        '403': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          description: Unexpected error
+
+  /{imsUeId}/subscriptions:
+    post:
+      summary: subscribe to notifications
+      operationId: ImdSdmSubscribe
+      tags:
+        - SDM Subscription Creation
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImsSdmSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsSdmSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-ims-sdm/<apiVersion>/{imsUeId}/subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+      callbacks:
+        datachangeNotification:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ModificationNotification'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
+
+  /{imsUeId}/subscriptions/{subscriptionId}:
+    delete:
+      summary: unsubscribe from notifications
+      operationId: ImsSdmUnsubscribe
+      tags:
+        - SDM Subscription Deletion
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: subscriptionId
+          in: path
+          description: Id of the Subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    patch:
+      summary: modify the subscription
+      operationId: ImsSdmSubsModify
+      tags:
+        - SDM Subscription Modification
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Public Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: subscriptionId
+          in: path
+          description: Id of the Subscription
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsSdmSubscription'
+        '204':
+          description: Successful modification
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+  /shared-data-subscriptions:
+    post:
+      summary: subscribe to notifications for shared data
+      operationId: SubscribeToSharedData
+      tags:
+        - Subscription Creation for shared data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImsSdmSubscription'
+        required: true
+      responses:
+        '201':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsSdmSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-ims-dm/<apiVersion>/shared-data-subscriptions/{subscriptionId}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          description: Unexpected error
+      callbacks:
+        datachangeNotification:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ModificationNotification'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
+
+  /shared-data-subscriptions/{subscriptionId}:
+    delete:
+      summary: unsubscribe from notifications for shared data
+      operationId: UnsubscribeForSharedData
+      tags:
+        - Subscription Deletion for shared data
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Id of the Shared data Subscription 
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    patch:
+      summary: modify the subscription
+      operationId: ModifySharedDataSubs
+      tags:
+        - Subscription Modification
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Id of the SDM Subscription
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImsSdmSubscription'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+  /shared-data:
+    get:
+      summary: retrieve shared data
+      operationId: GetSharedData
+      tags:
+        - Retrieval of shared data
+      parameters:
+        - name: shared-data-ids
+          in: query
+          description: List of shared data ids
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+               $ref: '#/components/schemas/SharedDataId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SharedData'
+                minItems: 1
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
 components:
   schemas:
 
@@ -243,6 +1139,396 @@ components:
         aliasGroupId:
           type: integer
 
+    ImsSdmSubscription:
+      type: object
+      required:
+        - nfInstanceId
+        - callbackReference
+        - monitoredResourceUris
+      properties:
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        callbackReference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        monitoredResourceUris:
+          type: array
+          items: 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        expires:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    ImsRegistrationStatus:
+      type: object
+      required:
+        - imsUserStatus
+      properties:
+        imsUserStatus:
+          $ref: '#/components/schemas/ImsRegistrationState'
+
+    PriorityLevels:
+      type: object
+      required:
+        - servicePriorityLevelList
+      properties:
+        servicePriorityLevelList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NameSpacePriority'
+          minItems: 1
+          uniqueItems: true
+
+    Ifcs:
+      type: object
+      properties:
+        ifcList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ifc'
+          minItems: 1
+        cscfFilterSetIdList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CscfFilterSetId'
+          minItems: 1
+      anyOf:
+        - required: [ ifcList ]
+        - required: [ cscfFilterSetIdList ]
+
+    Ifc:
+      type: object
+      required:
+        - priority
+        - appServer
+      properties:
+        priority:
+          type: integer
+          minimum: 1
+        trigger:
+          $ref: '#/components/schemas/TriggerPoint'
+        appServer:
+          $ref: '#/components/schemas/ApplicationServer'
+
+    TriggerPoint:
+      type: object
+      required:
+        - conditionType
+        - sptList
+      properties:
+        conditionType:
+          $ref: '#/components/schemas/TypeOfCondition'
+        sptList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Spt'
+          minItems: 1
+
+    Spt:
+      type: object
+      required:
+        - conditionNegated
+        - sptGroup
+      properties:
+        conditionNegated:
+          type: boolean
+        sptGroup:
+          type: array
+          items:
+            $ref: '#/components/schemas/SptGroupId'
+          minItems: 1
+        regType:
+          items:
+            $ref: '#/components/schemas/RegistrationType'
+          minItems: 1
+          maxItems: 2
+        requestUri:
+          type: string
+        sipMethod:
+          type: string
+        sipHeader:
+          $ref: '#/components/schemas/HeaderSipRequest'
+        sessionCase:
+          $ref: '#/components/schemas/RequestDirection'
+        sessionDescription:
+          $ref: '#/components/schemas/SdpDescription'
+
+    HeaderSipRequest:
+      type: object
+      required:
+        - header
+      properties:
+        header:
+          type: string
+        content:
+          type: string
+
+    SdpDescription:
+      type: object
+      required:
+        - line
+      properties:
+        line:
+          type: string
+        content:
+          type: string
+
+    ApplicationServer:
+      type: object
+      required:
+        - asUri
+      properties:
+        asUri:
+          type: string
+        sessionContinue:
+          type: boolean
+        serviceInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInformation'
+          minItems: 1
+
+    ImsLocationData:
+      type: object
+      required:
+        - scscfName
+      properties:
+        scscfName:
+          type: string
+
+    ImsProfileDataTraceInfo:
+      type: object
+      required:
+        - serviceLevelTraceInfo
+      properties:
+        serviceLevelTraceInfo:
+          type: string
+
+    RequestedNodes:
+      type: array
+      minItems: 1
+      uniqueItems: true
+      properties:
+        requestedNode:
+          $ref: '#/components/schemas/RequestedNode'
+
+    PsLocation:
+      type: object
+      oneOf:
+        - required:
+          - sgsnLocationData
+        - required:
+          - mmeLocationData
+        - required:
+          - amfLocationData
+        - required:
+          - twanLocationData
+      properties:
+        sgsnLocationData:
+          $ref: '#/components/schemas/SgsnLocationData'
+        mmeLocationData:
+          $ref: '#/components/schemas/MmeLocationData'
+        amfLocationData:
+          $ref: '#/components/schemas/AmfLocationData'
+        twanLocationData:
+          $ref: '#/components/schemas/TwanLocationData'
+
+    SgsnLocationData:
+      type: object
+      required:
+        - sgsnNumber
+        - plmnId
+      properties:
+        sgsnNumber:
+          type: string
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        sgsnLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UtraLocation'
+        csgInformation:
+          $ref: '#/components/schemas/CsgInformation'
+        timeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        ratType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+
+    MmeLocationData:
+      type: object
+      required:
+        - mmeAddress
+        - plmnId
+      properties:
+        mmeAddress:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        mmeLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EutraLocation'
+        csgInformation:
+          $ref: '#/components/schemas/CsgInformation'
+        timeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        ratType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+
+    AmfLocationData:
+      type: object
+      required:
+        - amfAddress
+        - plmnId
+      properties:
+        amfAddress:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        amfLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NrLocation'
+        SmsfAddress:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        timeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        ratType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+
+    TwanLocationData:
+      type: object
+      required:
+        - twanSsid
+        - plmnId
+      properties:
+        twanSsid:
+          type: string
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        twanBssid:
+          type: string
+        civicAddress:
+          type: string
+          format: byte
+        twanOperatorName:
+          type: string
+        timeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        logicalAccessId:
+          type: string
+
+    CsLocation:
+      type: object
+      required:
+        - mscNumber
+        - vlrNumber
+        - plmnId
+      properties:
+        mscNumber:
+          type: string
+        vlrNumber:
+          type: string
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        vlrLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GeraLocation'
+        csgInformation:
+          $ref: '#/components/schemas/CsgInformation'
+        timeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        ratType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+    CsgInformation:
+      type: object
+      required:
+        - csgId
+      properties:
+        csgId:
+          type: string
+          format: byte
+        accessMode:
+          type: string
+          format: byte
+        cMi:
+          type: boolean
+
+    SrvccData:
+      type: object
+      required:
+        - stnSr
+      properties:
+        stnSr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/StnSr'
+        ueSrvccCapabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/SrvccCapability'
+          minItems: 1
+          uniqueItems: true
+
+    PsiActivationState:
+      type: object
+      required:
+        - activationState
+      properties:
+        activationState:
+          $ref: '#/components/schemas/PsiState'
+
+    SharedData:
+      type: object
+      required:
+        - sharedDataId
+      properties:
+        sharedDataId:
+          $ref: '#/components/schemas/SharedDataId'
+        sharedImsIfcData:
+          $ref: '#/components/schemas/Ifcs'
+      minProperties: 1
+
+    ImsProfileData:
+      type: object
+      required:
+       - imsServiceProfiles
+      properties:
+        imsServiceProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImsServiceProfile'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        maxAllowedSimulReg:
+          type: integer
+
+    ImsServiceProfile:
+      type: object
+      required:
+       - publicIdentifierList
+      properties:
+        publicIdentifierList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicIdentifier'
+        ifcs:
+          $ref: '#/components/schemas/Ifcs'
+
+    PublicIdentifier:
+      type: object
+      required:
+       - publicIdentity
+      properties:
+        publicIdentity:
+          $ref: '#/components/schemas/PublicIdentity'
+        displayName:
+          type: string
+        imsServicePriority:
+          $ref: '#/components/schemas/PriorityLevels'
+        serviceLevelTraceInfo:
+          $ref: '#/components/schemas/ServiceLevelTraceInformation'
+        barringIndicator:
+          type: boolean
+        wildcardedImpu:
+          type: string
+
+    ServiceLevelTraceInformation:
+      type: object
+      properties:
+        serviceLevelTraceInfo:
+          type: string
+
 # SIMPLE TYPES:
 
     Capability:
@@ -250,7 +1536,7 @@ components:
 
     ImsUeId:
       type: string
-      pattern: '^sip\:([a-zA-Z0-9_\-.!~*()&=+$,;?\/]+)\@([A-Za-z0-9]+([-A-Za-z0-9]+)\.)+[a-z]{2,}$|^tel\:\+[0-9]{5,15}$'
+      pattern: '^(impu-sip\:([a-zA-Z0-9_\-.!~*()&=+$,;?\/]+)\@([A-Za-z0-9]+([-A-Za-z0-9]+)\.)+[a-z]{2,}|impu-tel\:\+[0-9]{5,15}|impi-.+|.+)$'
 
     SequenceNumber:
       type: integer
@@ -270,6 +1556,31 @@ components:
       type: string
       pattern: '^(sip\:([a-zA-Z0-9_\-.!~*()&=+$,;?\/]+)\@([A-Za-z0-9]+([-A-Za-z0-9]+)\.)+[a-z]{2,}|tel\:\+[0-9]{5,15})$'
 
+    NameSpacePriority:
+      type: string
+      pattern: '^[0-9a-zA-Z-\!%\*_\+`''~]+.[0-9a-zA-Z-\!%\*_\+`''~]+$'
+
+    CscfFilterSetId:
+      type: integer
+      minimum: 0
+
+    SptGroupId:
+      type: integer
+      minimum: 0
+
+    ServingNode:
+      type: boolean
+
+    LocalTime:
+      type: boolean
+
+    CurrentLocation:
+      type: boolean
+
+    SharedDataId:
+      type: string
+      pattern: '^[0-9]{5,6}-.+$'
+
 # ENUMS:
 
     IdentityType:
@@ -280,4 +1591,77 @@ components:
           - DISTINCT_PSI
           - WILDCARDED_IMPU
           - WILDCARDED_PSI
+        - type: string
+
+    ImsRegistrationState:
+      anyOf:
+        - type: string
+          enum:
+          - REGISTERED
+          - NOT_REGISTERED
+          - AUTHENTICATION_PENDING
+          - REGISTERED_UNREG_SERVICES
+        - type: string
+
+    TypeOfCondition:
+      anyOf:
+        - type: string
+          enum:
+            - CNF
+            - DNF
+        - type: string
+
+    RegistrationType:
+      anyOf:
+        - type: string
+          enum:
+            - INITIAL_REGISTRATION
+            - RE_REGISTRATION
+            - DE_REGISTRATION
+        - type: string
+
+    RequestDirection:
+      anyOf:
+        - type: string
+          enum:
+            - ORIGINATING_REGISTERED
+            - ORIGINATING_UNREGISTERED
+            - ORIGINATING_CDIV
+            - TERMINATING_REGISTERED
+            - TERMINATING_UNREGISTERED
+        - type: string
+
+    ServiceInformation:
+      anyOf:
+        - type: string
+          enum:
+            - INCLUDE_REGISTER_REQUEST
+            - INCLUDE_REGISTER_RESPONSE
+            - INCLUDE_IMSI
+        - type: string
+
+    RequestedNode:
+      anyOf:
+        - type: string
+          enum:
+          - SGSN
+          - MME
+          - AMF
+          - 3GPP_AAA_SERVER_TWAN
+        - type: string
+
+    SrvccCapability:
+      anyOf:
+        - type: string
+          enum:
+          - UE_4G_SRVCC_CAPABLE
+          - UE_5G_SRVCC_CAPABLE
+        - type: string
+
+    PsiState:
+      anyOf:
+        - type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
         - type: string

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.1.0.alpha-4
+  version: 1.1.0.alpha-5
   description: | 
     API for Monitoring Event.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.4.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.5.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -381,12 +381,16 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea'
         locationArea5G:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
-        dddTraDes:
-          $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/DddTrafficDescriptor'
+        dddTraDescriptors: 
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DddTrafficDescriptor'
+          minItems: 1
         dddStati:
           type: array
           items:
-            $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/DddStatus'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DlDataDeliveryStatus'
+          minItems: 1
         apiNames:
           type: array
           items:
@@ -460,7 +464,9 @@ components:
         pdnConnInfo:
           $ref: '#/components/schemas/PdnConnectionInformation'
         dddStatus:
-          $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/DddStatus'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DlDataDeliveryStatus'
+        dddTrafDescriptor:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DddTrafficDescriptor'
         maxWaitTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
         apiCaps:
@@ -570,14 +576,14 @@ components:
           $ref: '#/components/schemas/InterfaceIndication'
         ipv4Addr:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
-        ipv6Addr:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        ipv6Addrs: 
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
       required:
         - status
         - pdnType
-      anyOf:
-        - required: [ipv4Addr]
-        - required: [ipv6Addr] 
     AppliedParameterConfiguration:
       type: object
       properties:
@@ -729,8 +735,11 @@ components:
       anyOf:
       - type: string
         enum:
-          - IP
+          - IPV4
+          - IPV6
+          - IPV4V6
           - NON_IP
+          - ETHERNET
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -738,8 +747,11 @@ components:
           content defined in the present version of this API.
       description: >
         Possible values are
-        - IP: PDN connection of IP type.
-        - NON_IP: PDN connection of non-IP type.
+        - IPV4: PDN connection of IPv4 type. 
+        - IPV6: PDN connection of IPv6 type.
+        - IPV4V6: PDN connection of IPv4v6 type.
+        - NON_IP: PDN connection of non-IP type. 
+        - ETHERNET: PDN connection of Ethernet type.
     InterfaceIndication:
       anyOf:
       - type: string

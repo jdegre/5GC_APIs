@@ -4,10 +4,10 @@ info:
   title: Unified Data Repository Service API file for policy data
   description: |
     The API version is defined in 3GPP TS 29.504
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V16.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V16.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -1161,8 +1161,7 @@ components:
         bdtRefIds:
           type: object
           additionalProperties:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
-            nullable: true
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceIdRm'
           minProperties: 1
           nullable: true
       required:
@@ -1272,6 +1271,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         volPerUe:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
         - aspId
         - transPolicy
@@ -1281,10 +1284,17 @@ components:
       properties:
         notificationUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifId:
+          type: string
         monitoredResourceUris:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        monResItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceItem'
+          minItems: 1
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         supportedFeatures:
@@ -1326,6 +1336,13 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        notifId:
+          type: string
+        reportedFragments:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationItem'
           minItems: 1
     PlmnRouteSelectionDescriptor:
       description: Contains the route selection descriptors (combinations of SNSSAI, DNNs, PDU session types, and SSC modes) allowed by subscription to the UE for a serving PLMN
@@ -1408,12 +1425,55 @@ components:
         bdtRefIds:
           type: object
           additionalProperties:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
-            nullable: true
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceIdRm'
           minProperties: 1
           nullable: true
       required:
         - dnn
+#
+    ResourceItem:
+      description: Identifies a subscription to policy data change notification when the change occurs in a fragment (subset of resource data) of a given resource.
+      type: object
+      properties:
+        monResourceUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        items:
+          type: array
+          items: 
+            $ref: '#/components/schemas/ItemPath'
+          minItems: 1
+      required:
+        - monResourceUri
+        - items
+#
+
+    NotificationItem:
+      description: Identifies a data change notification when the change occurs in a fragment (subset of resource data) of a given resource.
+      type: object
+      properties:
+        resourceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifItems:
+          type: array
+          items: 
+            $ref: '#/components/schemas/UpdatedItem'
+          minItems: 1
+      required:
+        - resourceId
+        - notifItems
+#
+    UpdatedItem:
+      description: Identifies a fragment of a resource.
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/ItemPath'
+        value: {}
+      required:
+        - item
+        - value
+#
+
     IpIndex:
       type: integer
     OsId:
@@ -1436,3 +1496,8 @@ components:
           - DAILY
           - HOURLY
       - type: string
+#
+
+    ItemPath:
+      description: Identifies a fragment (subset of resource data) of a given resource.
+      type: string

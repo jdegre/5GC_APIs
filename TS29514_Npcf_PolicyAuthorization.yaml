@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.1.0.alpha-4
+  version: 1.1.0.alpha-5
   description: |
     PCF Policy Authorization Service.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V16.3.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V16.4.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -128,6 +128,40 @@ paths:
                   application/json:
                     schema:
                       $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        new5GsBridge:
+          '{$request.body#/ascReqData/evSubsc/notifUri}/new-bridge':
+            post:
+              requestBody:
+                description: Notification of a new 5GS Bridge detected in the PCF.
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NewTsnBridge'
               responses:
                 '204':
                   description: The receipt of the notification is acknowledged
@@ -579,7 +613,7 @@ components:
         mcsId:
           description: indication of MCS service request
           type: string
-        preemptControlinfo:
+        preemptControlInfo:
           $ref: '#/components/schemas/PreemptionControlInformation'
         resPrio:
           $ref: '#/components/schemas/ReservPriority'
@@ -607,6 +641,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
         ueMac:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        tsnPortManContDstt:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+        tsnPortManContNwtts:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+          minItems: 1
     AppSessionContextRespData:
       description: Describes the authorization data of an Individual Application Session Context created by the PCF.
       type: object
@@ -651,7 +692,7 @@ components:
         mcsId:
           description: indication of MCS service request
           type: string
-        preemptControlinfo:
+        preemptControlInfo:
           $ref: '#/components/schemas/PreemptionControlInformationRm'
         resPrio:
           $ref: '#/components/schemas/ReservPriority'
@@ -663,6 +704,13 @@ components:
           $ref: '#/components/schemas/SponId'
         sponStatus:
           $ref: '#/components/schemas/SponsoringStatus'
+        tsnPortManContDstt:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+        tsnPortManContNwtts:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+          minItems: 1
     EventsSubscReqData:
       description: Identifies the events the application subscribes to.
       type: object
@@ -676,12 +724,19 @@ components:
           minItems: 1
         notifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        reqQosMonParams:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RequestedQosMonitoringParameter'
+          minItems: 1
         qosMon:
           $ref: '#/components/schemas/QosMonitoringInformation'
         reqAni:
           $ref: '#/components/schemas/RequiredAccessInfo'
         usgThres:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
+        notifCorreId:
+          type: string
     EventsSubscReqDataRm:
       description: this data type is defined in the same way as the EventsSubscReqData data type, but with the OpenAPI nullable property set to true.
       type: object
@@ -694,10 +749,19 @@ components:
             $ref: '#/components/schemas/AfEventSubscription'
         notifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        reqQosMonParams:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RequestedQosMonitoringParameter'
+          minItems: 1
+        qosMon:
+          $ref: '#/components/schemas/QosMonitoringInformationRm'
         reqAni:
           $ref: '#/components/schemas/RequiredAccessInfo'
         usgThres:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
+        notifCorreId:
+          type: string
       nullable: true
     MediaComponent:
       description: Identifies a media component.
@@ -724,6 +788,12 @@ components:
             $ref: '#/components/schemas/CodecData'
           minItems: 1
           maxItems: 2
+        desMaxLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        desMaxLoss:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        flusId:
+          type: string
         fStatus:
           $ref: '#/components/schemas/FlowStatus'
         marBwDl:
@@ -771,6 +841,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         sharingKeyUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        tsnQos:
+          $ref: '#/components/schemas/TsnQosContainer'
+        tscaiInputDl:
+          $ref: '#/components/schemas/TscaiInputContainer'
+        tscaiInputUl:
+          $ref: '#/components/schemas/TscaiInputContainer'
     MediaComponentRm:
       description: This data type is defined in the same way as the MediaComponent data type, but with the OpenAPI nullable property set to true
       type: object
@@ -781,6 +857,15 @@ components:
           $ref: '#/components/schemas/AfAppId'
         afRoutReq:
           $ref: '#/components/schemas/AfRoutingRequirementRm'
+        qosReference:
+          type: string
+          nullable: true
+        altSerReqs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          nullable: true
         contVer:
           $ref: '#/components/schemas/ContentVersion'
         codecs:
@@ -789,6 +874,13 @@ components:
             $ref: '#/components/schemas/CodecData'
           minItems: 1
           maxItems: 2
+        desMaxLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/FloatRm'
+        desMaxLoss:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/FloatRm'
+        flusId:
+          type: string
+          nullable: true
         fStatus:
           $ref: '#/components/schemas/FlowStatus'
         marBwDl:
@@ -836,6 +928,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32Rm'
         sharingKeyUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32Rm'
+        tsnQos:
+          $ref: '#/components/schemas/TsnQosContainerRm'
+        tscaiInputDl:
+          $ref: '#/components/schemas/TscaiInputContainer'
+        tscaiInputUl:
+          $ref: '#/components/schemas/TscaiInputContainer'
       nullable: true
     MediaSubComponent:
       description: Identifies a media subcomponent
@@ -869,6 +967,10 @@ components:
           $ref: '#/components/schemas/TosTrafficClass'
         flowUsage:
           $ref: '#/components/schemas/FlowUsage'
+        tscaiInputDl:
+          $ref: '#/components/schemas/TscaiInputContainer'
+        tscaiInputUl:
+          $ref: '#/components/schemas/TscaiInputContainer'
     MediaSubComponentRm:
       description: This data type is defined in the same way as the MediaSubComponent data type, but with the OpenAPI nullable property set to true. Removable attributes marBwDl and marBwUl are defined with the corresponding removable data type.
       type: object
@@ -903,6 +1005,10 @@ components:
           $ref: '#/components/schemas/TosTrafficClassRm'
         flowUsage:
           $ref: '#/components/schemas/FlowUsage'
+        tscaiInputDl:
+          $ref: '#/components/schemas/TscaiInputContainer'
+        tscaiInputUl:
+          $ref: '#/components/schemas/TscaiInputContainer'
       nullable: true
     EventsNotification:
       description: describes the notification of a matched event
@@ -948,6 +1054,11 @@ components:
           items:
             $ref: '#/components/schemas/QosNotificationControlInfo'
           minItems: 1
+        qosMonReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosMonitoringReport'
+          minItems: 1
         ranNasRelCauses:
           type: array
           items:
@@ -962,6 +1073,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         usgRep:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/AccumulatedUsage'
+        tsnBridgeInfo: 
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/TsnBridgeInfo'
+        tsnPortManContDstt: 
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+        tsnPortManContNwtts: 
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+          minItems: 1
     AfEventSubscription:
       description: describes the event information delivered in the subscription
       type: object
@@ -976,10 +1096,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         waitTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        pduSessRel:
-          type: boolean
-        notifCorreId:
-          type: string
     AfEventNotification:
       description: describes the event information delivered in the notification
       type: object
@@ -1155,7 +1271,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 #
     QosNotificationControlInfo:
-      description: Indicates whether the QoS targets for a GRB flow are not  guaranteed or guaranteed again
+      description: Indicates whether the QoS targets for a GRB flow are not guaranteed or guaranteed again
       type: object
       required:
         - notifType
@@ -1167,10 +1283,6 @@ components:
           items:
             $ref: '#/components/schemas/Flows'
           minItems: 1
-        gfbrUl:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
-        gfbrDl:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         altSerReq:
           type: string
 #
@@ -1242,6 +1354,35 @@ components:
           type: integer
 #
 #
+    NewTsnBridge:
+      description: Contains the new 5GS Bridge information and may contain the DS-TT port and/or NW-TT port management information.
+      type: object
+      required:
+        - tsnBridgeInfo
+      properties:
+        tsnBridgeInfo: 
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/TsnBridgeInfo'
+        tsnPortManContDstt: 
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+        tsnPortManContNwtts: 
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
+          minItems: 1
+
+#
+    QosMonitoringInformationRm:
+      description: this data type is defined in the same way as the QosMonitoringInformation data type, but with the OpenAPI nullable property set to true.
+      type: object
+      properties:
+        repThreshDl:
+          type: integer
+        repThreshUl:
+          type: integer
+        repThreshRp:
+          type: integer
+      nullable: true
+#
     PcscfRestorationRequestData:
       description: Indicates P-CSCF restoration.
       type: object
@@ -1262,6 +1403,66 @@ components:
         ueIpv6:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
 
+#
+#
+    QosMonitoringReport:
+      description: QoS Monitoring reporting information
+      type: object
+      properties:
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flows'
+          minItems: 1
+        ulDelays:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+        dlDelays:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+        rtDelays:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+#
+    TsnQosContainer:
+      description: Indicates TSC Traffic QoS.
+      type: object
+      properties:
+        maxTscBurstSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtMaxDataBurstVol'
+        tscPackDelay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        tscPrioLevel:
+          $ref: '#/components/schemas/TscPriorityLevel'
+#
+#
+    TsnQosContainerRm:
+      description: Indicates removable TSC Traffic QoS.
+      type: object
+      properties:
+        maxTscBurstSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtMaxDataBurstVolRm'
+        tscPackDelay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudgetRm'
+        tscPrioLevel:
+          $ref: '#/components/schemas/TscPriorityLevelRm'
+      nullable: true
+#
+    TscaiInputContainer:
+      description: Indicates TSC Traffic pattern.
+      type: object
+      properties:
+        periodicity:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        burstArrivalTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      nullable: true
 #
 # EXTENDED PROBLEMDETAILS
 #
@@ -1304,6 +1505,15 @@ components:
     TosTrafficClassRm:
       description: this data type is defined in the same way as the TosTrafficClass data type, but with the OpenAPI nullable property set to true
       type: string
+      nullable: true
+    TscPriorityLevel:
+      type: integer
+      minimum: 1
+      maximum: 8
+    TscPriorityLevelRm:
+      type: integer
+      minimum: 1
+      maximum: 8
       nullable: true
 #
 # ENUMERATIONS DATA TYPES
@@ -1368,6 +1578,7 @@ components:
           - ACCESS_TYPE_CHANGE
           - ANI_REPORT
           - CHARGING_CORRELATION
+          - EPS_FALLBACK
           - FAILED_RESOURCES_ALLOCATION
           - OUT_OF_CREDIT
           - PLMN_CHG
@@ -1375,6 +1586,8 @@ components:
           - QOS_NOTIF
           - RAN_NAS_CAUSE
           - SUCCESSFUL_RESOURCES_ALLOCATION
+          - TSN_ETHER_PORT
+          - TSN_CONTAINER
           - USAGE_REPORT
       - type: string
 #        
@@ -1385,6 +1598,7 @@ components:
           - EVENT_DETECTION
           - ONE_TIME
           - PERIODIC
+          - PDU_SESSION_RELEASE
       - type: string
 #        
     QosNotifType:
@@ -1484,10 +1698,5 @@ components:
 #        
     PreemptionControlInformationRm:
       anyOf:
-        - type: string
-          enum:
-            - MOST_RECENT
-            - LEAST_RECENT
-            - HIGHEST_BW
-        - type: string
-      nullable: true
+        - $ref: '#/components/schemas/PreemptionControlInformation'
+        - $ref: 'TS29571_CommonData.yaml#/components/schemas/NullValue'
