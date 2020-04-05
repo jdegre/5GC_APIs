@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **December 2019**<br/>
+API version: **March 2020**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -42,6 +42,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 ## SMF (Session Management Function)
 * [PDU Session](https://jdegre.github.io/loader.html?yaml=TS29502_Nsmf_PDUSession.yaml)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29508_Nsmf_EventExposure.yaml)
+* [NIDD (Non-IP Data Delivery)](https://jdegre.github.io/loader.html?yaml=TS29542_Nsmf_NIDD.yaml)
 
 ## UDM (Unified Data Management)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SDM.yaml)
@@ -59,6 +60,9 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
   * [Exposure Data](https://jdegre.github.io/loader.html?yaml=TS29519_Exposure_Data.yaml)
   * [Application Data](https://jdegre.github.io/loader.html?yaml=TS29519_Application_Data.yaml)
 * [Group ID Map](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_GroupIDmap.yaml)
+
+## UDSF (Unstructured Data Storage Function)
+* [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29598_Nudsf_DataRepository.yaml)
 
 ## AUSF (Authentication Server Function)
 * [UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_UEAuthentication.yaml)
@@ -78,6 +82,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 ## NEF (Network Exposure Function)
 * [Packet Flow Description (PFD) Management](https://jdegre.github.io/loader.html?yaml=TS29551_Nnef_PFDmanagement.yaml)
 * [Session Management (SM) Context](https://jdegre.github.io/loader.html?yaml=TS29541_Nnef_SMContext.yaml)
+* [NEF Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_EventExposure.yaml)
 
 ## PCF (Policy Control Function)
 * [Policy Authorization](https://jdegre.github.io/loader.html?yaml=TS29514_Npcf_PolicyAuthorization.yaml)
@@ -102,8 +107,11 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [IMS Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsSDM.yaml)
 * [IMS UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUECM.yaml)
 
-## OTAF (Over-The-Air Function)
-* [Secured Packet](https://jdegre.github.io/loader.html?yaml=TS29544_Notaf_SecuredPacket.yaml)
+## SOR-AF (Steering of Roaming Application Function)
+* [Secured Packet](https://jdegre.github.io/loader.html?yaml=TS29550_Nsoraf_SOR.yaml)
+
+## SP-AF (Over-The-Air Function)
+* [Secured Packet](https://jdegre.github.io/loader.html?yaml=TS29544_Nspaf_SecuredPacket.yaml)
 
 ## AF (Application Function)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29517_Naf_EventExposure.yaml)
@@ -124,6 +132,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 ## UCMF (UE Radio Capability Management Function)
 * [UE Radio Capability Management](https://jdegre.github.io/loader.html?yaml=TS29673_Nucmf_UERCM.yaml)
 * [Provisioning](https://jdegre.github.io/loader.html?yaml=TS29675_Nucmf_Provisioning.yaml)
+
 ## GMLC (Gateway Mobile Location Center)
 * [Location](https://jdegre.github.io/loader.html?yaml=TS29515_Ngmlc_Location.yaml)
 
@@ -139,6 +148,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Logging API Invocation](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Logging_API_Invocation_API.yaml)
 * [Auditing](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Auditing_API.yaml)
 * [AEF Authentication](https://jdegre.github.io/loader.html?yaml=TS29222_AEF_Security_API.yaml)
+* [API Provider Management](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_API_Provider_Management_API.yaml)
 
 ## NEF (Network Exposure Function)
 * [Traffic Influence](https://jdegre.github.io/loader.html?yaml=TS29522_TrafficInfluence.yaml)
@@ -147,11 +157,21 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Applying BDT Policy](https://jdegre.github.io/loader.html?yaml=TS29522_ApplyingBdtPolicy.yaml)
 * [IPTV Configuration](https://jdegre.github.io/loader.html?yaml=TS29522_IPTVConfiguration.yaml)
 * [Analytics Exposure](https://jdegre.github.io/loader.html?yaml=TS29522_AnalyticsExposure.yaml)
+* [LPI (Location Privacy Indicator) Parameter Provision](https://jdegre.github.io/loader.html?yaml=TS29522_LpiParameterProvision.yaml)
+* [Service Parameter](https://jdegre.github.io/loader.html?yaml=TS29522_ServiceParameter.yaml)
 
 ## VAE (V2X Application Enabler)
-* [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2X_Message_Delivery.yaml)
-* [File Distribution](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_File_Distribution.yaml)
-* [Application Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2X_Application_Requirement.yaml)
+* [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_MessageDelivery.yaml)
+* [File Distribution](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_FileDistribution.yaml)
+* [Application Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ApplicationRequirement.yaml)
+* [Dynamic Group](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_DynamicGroup.yaml)
+* [Service Continuity](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ServiceContinuity.yaml)
+
+## SEAL (Service Enabler Architecture Layer)
+* [Network Resource Adaptation](https://jdegre.github.io/loader.html?yaml=TS29549_SS_NetworkResourceAdaptation.yaml)
+* [User Profile Retrival](https://jdegre.github.io/loader.html?yaml=TS29549_SS_UserProfileRetrieval.yaml)
+* [Events](https://jdegre.github.io/loader.html?yaml=TS29549_SS_Events.yaml)
+* [Group Management](https://jdegre.github.io/loader.html?yaml=TS29549_SS_GroupManagement.yaml)
 
 ## SCEF (Service Capability Exposure Function)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
