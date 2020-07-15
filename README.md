@@ -7,8 +7,8 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **March 2020**<br/>
-Release status: **Open** <sup>&#x2705;</sup><br/>
+API version: **June 2020**<br/>
+Release status: **Frozen** <sup>&#x1F512;</sup><br/>
 Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
 <br/><br/>
@@ -69,6 +69,9 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [SoR (Steering of Roaming) Protection](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_SoRProtection.yaml)
 * [UPU (UE Parameter Update) Protection](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_UPUProtection.yaml)
 
+## NSSAAF (Network Slice Specific Authentication and Authorization Function)
+* [NSSAA](https://jdegre.github.io/loader.html?yaml=TS29526_Nnssaaf_NSSAA.yaml)
+
 ## NSSF (Network Slice Selection Function)
 * [NSSAI Availability](https://jdegre.github.io/loader.html?yaml=TS29531_Nnssf_NSSAIAvailability.yaml)
 * [NS Selection](https://jdegre.github.io/loader.html?yaml=TS29531_Nnssf_NSSelection.yaml)
@@ -103,6 +106,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_UEAU.yaml)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_SDM.yaml)
 * [UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_UECM.yaml)
+* [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_EE.yaml)
 * [IMS UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUEAU.yaml)
 * [IMS Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsSDM.yaml)
 * [IMS UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUECM.yaml)
@@ -149,6 +153,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Auditing](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Auditing_API.yaml)
 * [AEF Authentication](https://jdegre.github.io/loader.html?yaml=TS29222_AEF_Security_API.yaml)
 * [API Provider Management](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_API_Provider_Management_API.yaml)
+* [Routing Information](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Routing_Info_API.yaml)
 
 ## NEF (Network Exposure Function)
 * [Traffic Influence](https://jdegre.github.io/loader.html?yaml=TS29522_TrafficInfluence.yaml)
@@ -159,6 +164,8 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Analytics Exposure](https://jdegre.github.io/loader.html?yaml=TS29522_AnalyticsExposure.yaml)
 * [LPI (Location Privacy Indicator) Parameter Provision](https://jdegre.github.io/loader.html?yaml=TS29522_LpiParameterProvision.yaml)
 * [Service Parameter](https://jdegre.github.io/loader.html?yaml=TS29522_ServiceParameter.yaml)
+* [ACS Parameter Provision](https://jdegre.github.io/loader.html?yaml=TS29522_ACSParameterProvision.yaml)
+* [MO LCS Notify](https://jdegre.github.io/loader.html?yaml=TS29522_MoLcsNotify.yaml)
 
 ## VAE (V2X Application Enabler)
 * [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_MessageDelivery.yaml)
@@ -172,6 +179,8 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [User Profile Retrival](https://jdegre.github.io/loader.html?yaml=TS29549_SS_UserProfileRetrieval.yaml)
 * [Events](https://jdegre.github.io/loader.html?yaml=TS29549_SS_Events.yaml)
 * [Group Management](https://jdegre.github.io/loader.html?yaml=TS29549_SS_GroupManagement.yaml)
+* [Location Reporting](https://jdegre.github.io/loader.html?yaml=TS29549_SS_LocationReporting.yaml)
+* [Key Information Retrieval](https://jdegre.github.io/loader.html?yaml=TS29549_SS_KeyInfoRetrieval.yaml)
 
 ## SCEF (Service Capability Exposure Function)
 NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by the 4G SCEF to the SCS/AS
