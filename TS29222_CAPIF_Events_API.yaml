@@ -5,9 +5,9 @@ info:
     API for event subscription management.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.1.0.alpha-2"
+  version: "1.1.0"
 externalDocs:
-  description: 3GPP TS 29.222 V16.2.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V16.3.0 Common API Framework for 3GPP Northbound APIs
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/capif-events/v1'
@@ -234,6 +234,8 @@ components:
             $ref: 'TS29222_CAPIF_Logging_API_Invocation_API.yaml#/components/schemas/InvocationLog'
           minItems: 1
           description: Invocation logs.
+        apiTopoHide:
+          $ref: '#/components/schemas/TopologyHiding'
     AccessControlPolicyListExt:
       allOf:
         - $ref: 'TS29222_CAPIF_Access_Control_Policy_API.yaml#/components/schemas/AccessControlPolicyList'
@@ -243,6 +245,19 @@ components:
               type: string
       required:
         - apiId
+    TopologyHiding:
+      type: object
+      properties:
+        apiId:
+          type: string
+        routingRules:
+          type: array
+          items:
+            $ref: 'TS29222_CAPIF_Routing_Info_API.yaml#/components/schemas/RoutingRule'
+          minItems: 1
+      required:
+        - apiId
+        - routingRules
     CAPIFEvent:
       anyOf:
       - type: string
@@ -258,6 +273,8 @@ components:
           - ACCESS_CONTROL_POLICY_UNAVAILABLE
           - API_INVOKER_AUTHORIZATION_REVOKED
           - API_INVOKER_UPDATED
+          - API_TOPOLOGY_HIDING_CREATED
+          - API_TOPOLOGY_HIDING_REVOKED
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -272,6 +289,9 @@ components:
         - API_INVOKER_OFFBOARDED: Events related to API invoker offboarded from CAPIF.
         - SERVICE_API_INVOCATION_SUCCESS: Events related to the successful invocation of service APIs.
         - SERVICE_API_INVOCATION_FAILURE: Events related to the failed invocation of service APIs.
-        - ACCESS_CONTROL_POLICY_UPDATE: Events related to the update for the access control policy related to the service APIs.        - ACCESS_CONTROL_POLICY_UNAVAILABLE: Events related to the unavailability of the access control policy related to the service APIs.
+        - ACCESS_CONTROL_POLICY_UPDATE: Events related to the update for the access control policy related to the service APIs.
+        - ACCESS_CONTROL_POLICY_UNAVAILABLE: Events related to the unavailability of the access control policy related to the service APIs.
         - API_INVOKER_AUTHORIZATION_REVOKED: Events related to the revocation of the authorization of API invokers to access the service APIs.
         - API_INVOKER_UPDATED: Events related to API invoker profile updated to CAPIF.
+        - API_TOPOLOGY_HIDING_CREATED: Events related to the creation or update of the API topology hiding information of the service APIs after the service APIs are published.
+        - API_TOPOLOGY_HIDING_REVOKED: Events related to the revocation of the API topology hiding information of the service APIs after the service APIs are unpublished.

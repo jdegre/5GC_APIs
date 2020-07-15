@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-3'
+  version: '1.1.0'
   title: 'LMF Location'
   description: |
     LMF Location Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.572 V16.2.0; 5G System; Location Management Services; Stage 3
+  description: 3GPP TS 29.572 V16.3.0; 5G System; Location Management Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
 
 servers:
@@ -62,6 +62,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocationData'
+        '204':
+          description: Expected response for MO-LR requesting location assistance data.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -87,10 +89,10 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
-        EventNotify: 
+        EventNotify:
           '{$request.body#/hgmlcCallBackURI}':
             post:
-              requestBody: 
+              requestBody:
                 description: UE Event Notification
                 content:
                   application/json:
@@ -206,8 +208,8 @@ components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      flows: 
-        clientCredentials: 
+      flows:
+        clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nlmf-loc: Access to the Nlmf_Location API
@@ -223,7 +225,7 @@ components:
         externalClientType:
           $ref: '#/components/schemas/ExternalClientType'
         correlationID:
-          $ref: '#/components/schemas/CorrelationID'        
+          $ref: '#/components/schemas/CorrelationID'
         amfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         locationQoS:
@@ -331,11 +333,11 @@ components:
         propertyName: shape
         mapping:
           POINT: '#/components/schemas/Point'
-          POINT_UNCERTAINTY_CIRCLE: '#/components/schemas/PointUncertaintyCircle'          
-          POINT_UNCERTAINTY_ELLIPSE: '#/components/schemas/PointUncertaintyEllipse'          
-          POLYGON: '#/components/schemas/Polygon'          
-          POINT_ALTITUDE: '#/components/schemas/PointAltitude'          
-          POINT_ALTITUDE_UNCERTAINTY: '#/components/schemas/PointAltitudeUncertainty'          
+          POINT_UNCERTAINTY_CIRCLE: '#/components/schemas/PointUncertaintyCircle'
+          POINT_UNCERTAINTY_ELLIPSE: '#/components/schemas/PointUncertaintyEllipse'
+          POLYGON: '#/components/schemas/Polygon'
+          POINT_ALTITUDE: '#/components/schemas/PointAltitude'
+          POINT_ALTITUDE_UNCERTAINTY: '#/components/schemas/PointAltitudeUncertainty'
           ELLIPSOID_ARC: '#/components/schemas/EllipsoidArc'
     Point:
       allOf:
@@ -438,7 +440,7 @@ components:
             includedAngle:
               $ref: '#/components/schemas/Angle'
             confidence:
-              $ref: '#/components/schemas/Confidence'     
+              $ref: '#/components/schemas/Confidence'
     GeographicalCoordinates:
       type: object
       required:
@@ -500,6 +502,10 @@ components:
           $ref: '#/components/schemas/PositioningMode'
         usage:
           $ref: '#/components/schemas/Usage'
+        methodCode:
+          type: integer
+          minimum: 16
+          maximum: 31
     GnssPositioningMethodAndUsage:
       type: object
       required:
@@ -667,8 +673,8 @@ components:
     AreaEventInfo:
       type: object
       required:
-        - areaDefinition        
-      properties: 
+        - areaDefinition
+      properties:
         areaDefinition:
           type: array
           items:
@@ -691,8 +697,8 @@ components:
     ReportingArea:
       type: object
       required:
-        - areaType        
-      properties: 
+        - areaType
+      properties:
         areaType:
           $ref: '#/components/schemas/ReportingAreaType'
         tai:
@@ -704,8 +710,8 @@ components:
     MotionEventInfo:
       type: object
       required:
-        - linearDistance        
-      properties: 
+        - linearDistance
+      properties:
         linearDistance:
           $ref: '#/components/schemas/LinearDistance'
         occurrenceInfo:
@@ -731,7 +737,7 @@ components:
       required:
         - hgmlcCallBackURI
         - ldrReference
-      properties: 
+      properties:
         hgmlcCallBackURI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         ldrReference:
@@ -744,7 +750,7 @@ components:
         - hgmlcCallBackURI
         - ldrReference
         - eventReportMessage
-      properties: 
+      properties:
         amfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         locationQoS:
@@ -781,21 +787,21 @@ components:
       required:
         - eventClass
         - eventContent
-      properties: 
+      properties:
         eventClass:
           $ref: '#/components/schemas/EventClass'
         eventContent:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
     EventReportingStatus:
       type: object
-      properties: 
+      properties:
         eventReportCounter:
           $ref: '#/components/schemas/EventReportCounter'
         eventReportDuration:
           $ref: '#/components/schemas/EventReportDuration'
     UELocationInfo:
       type: object
-      properties: 
+      properties:
         locationEstimate:
           $ref: '#/components/schemas/GeographicArea'
         ageOfLocationEstimate:
@@ -807,7 +813,7 @@ components:
 
     EventNotifyData:
       type: object
-      required: 
+      required:
         - reportedEventType
         - ldrReference
       properties:
@@ -844,7 +850,7 @@ components:
 
     UeConnectivityState:
       type: object
-      required: 
+      required:
         - accessType
       properties:
         accessType:
@@ -992,6 +998,7 @@ components:
           enum:
             - LOW_DELAY
             - DELAY_TOLERANT
+            - NO_DELAY
         - type: string
     PositioningMethod:
       anyOf:
@@ -999,12 +1006,19 @@ components:
           enum:
             - CELLID
             - ECID
-            - OTDOA 
+            - OTDOA
             - BAROMETRIC_PRESSURE
             - WLAN
             - BLUETOOTH
-            - MBS 
+            - MBS
             - MOTION_SENSOR
+            - DL_TDOA
+            - DL_AOD
+            - MULTI-RTT
+            - NR_ECID
+            - UL_TDOA
+            - UL_AOA
+            - NETWORK_SPECIFIC
         - type: string
     PositioningMode:
       anyOf:

@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nudsf_DataRepository
-  version: 1.0.0.alpha-1
+  version: 1.0.0
   description: |
     Nudsf Data Repository Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.598 UDSF Services, V16.0.0.
+  description: 3GPP TS 29.598 UDSF Services, V16.1.0.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.598/'
 
 servers:
@@ -259,6 +259,7 @@ paths:
           description: >-
             Create case. The resource has been successfully created, location header indicates
             the URI of the created Record.
+            $ref: '#/components/responses/RecordBody'
           headers:
             Location:
               $ref: '#/components/headers/Location'
@@ -618,6 +619,8 @@ paths:
                       schema:
                         type: string
                       required: true
+        '204':
+          description: Successful response, the record contains no blocks
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -897,6 +900,458 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  '/{realmId}/{storageId}/subs-to-notify':
+    summary: The notification subscription collection resource
+    description: >-
+      Access to the subscription resource
+    get:
+      summary: Notification subscription retrieval
+      description: retrieve all notification subscriptions of the storage
+      operationId: GetNotificationSubscriptions
+      tags:
+      - NotificationSubscriptions CRUD
+      parameters:
+      - name: realmId
+        in: path
+        description: Identifier of the Realm
+        required: true
+        schema:
+          type: string
+          example: Realm01
+      - name: storageId
+        in: path
+        description: Identifier of the Storage
+        required: true
+        schema:
+          type: string
+          example: Storage01
+      - name: limit-range
+        in: query
+        description: The number of NotificationSubscriptions to fetch per page
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      - name: page-number
+        in: query
+        description: The NotificationSubscription page number to fetch
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      - name: supported-features
+        in: query
+        description: Features required to be supported by the target NF
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationSubscription'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  '/{realmId}/{storageId}/subs-to-notify/{subscriptionId}':
+    summary: The notification subscription resource
+    description: >-
+      Access to the subscription resource
+    get:
+      summary: Notification subscription retrieval
+      description: retrieve a single notification subscription of the storage
+      operationId: GetNotificationSubscription
+      tags:
+      - NotificationSubscription CRUD
+      parameters:
+      - name: realmId
+        in: path
+        description: Identifier of the Realm
+        required: true
+        schema:
+          type: string
+          example: Realm01
+      - name: storageId
+        in: path
+        description: Identifier of the Storage
+        required: true
+        schema:
+          type: string
+          example: Storage01
+      - name: subscriptionId
+        in: path
+        description: Identifier of the NotificationSubscription
+        required: true
+        schema:
+          type: string
+          example: Subscription01
+      - name: supported-features
+        in: query
+        description: Features required to be supported by the target NF
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      - name: If-None-Match
+        in: header
+        description: Validator for conditional requests, as described in RFC 7232, 3.2
+        schema:
+          type: string
+      - name: If-Modified-Since
+        in: header
+        description: Validator for conditional requests, as described in RFC 7232, 3.3
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSubscription'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    delete:
+      summary: Delete a Notification Subscription of the storage
+      description: delete a single subscriptions of the storage
+      operationId: DeleteNotificationSubscription
+      tags:
+      - NotificationSubscription CRUD
+      parameters:
+      - name: realmId
+        in: path
+        description: Identifier of the Realm
+        required: true
+        schema:
+          type: string
+          example: Realm01
+      - name: storageId
+        in: path
+        description: Identifier of the Storage
+        required: true
+        schema:
+          type: string
+          example: Storage01
+      - name: subscriptionId
+        in: path
+        description: Identifier of the NotificationSubscription
+        required: true
+        schema:
+          type: string
+          example: Subscription01
+      - name: client-id
+        in: query
+        description: Identifies the NF or NFSet
+        required: true
+        schema:
+          $ref: '#/components/schemas/ClientId'
+      - name: get-previous
+        in: query
+        description: Retrieve the NotificationSubscription before delete
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: If-Match
+        in: header
+        description: Record validator for conditional requests, as described in RFC 7232, 3.2
+        schema:
+          type: string
+      - name: supported-features
+        in: query
+        description: Features required to be supported by the target NF
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Deleted NotificationSubscription if requested with get-previous
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationSubscription'
+        '204':
+          description: >-
+            Successful case. The SubscriptionNotification has been successfully deleted.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
+        '412':
+          description: Return previous NotificationSubscription value if get-previous=true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSubscription'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    patch: # patch NotificationSubscription data
+      summary: NotificationSubscription update
+      description: update a specific NotificationSubscription
+      operationId: UpdateNotificationSubscription
+      tags:
+      - NotificationSubscription CRUD
+      parameters:
+      - name: realmId
+        in: path
+        description: Identifier of the Realm
+        required: true
+        schema:
+          type: string
+          example: Realm01
+      - name: storageId
+        in: path
+        description: Identifier of the Storage
+        required: true
+        schema:
+          type: string
+          example: Storage01
+      - name: subscriptionId
+        in: path
+        description: Identifier of the NotificationSubscription
+        required: true
+        schema:
+          type: string
+          example: Subscription01
+      - name: If-Match
+        in: header
+        description: Validator for conditional requests, as described in RFC 7232, 3.2
+        schema:
+          type: string
+      - name: supported-features
+        in: query
+        description: Features required to be supported by the target NF
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        description: data to patch
+        content:
+          application/json-patch+json:
+            example: 'TBD'
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '200':
+          description: >-
+            One or more modification instructions have been discarded, the execution report is returned in response PatchResult.
+          content:
+            application/json:
+              example:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+        '204':
+          description: >-
+            Successful case. The meta has been successfully updated and no return is expected.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    put:
+      summary: NotificationSubscription Create/Update
+      operationId: CreateAndUpdateNotificationSubscription
+      tags:
+        - NotificationSubscription CRUD
+      parameters:
+      - name: realmId
+        in: path
+        description: Identifier of the Realm
+        required: true
+        schema:
+          type: string
+          example: Realm01
+      - name: storageId
+        in: path
+        description: Identifier of the Storage
+        required: true
+        schema:
+          type: string
+          example: Storage01
+      - name: subscriptionId
+        in: path
+        description: Identifier of the NotificationSubscription
+        required: true
+        schema:
+          type: string
+          example: Subscription01
+      - name: supported-features
+        in: query
+        description: Features required to be supported by the target NF
+        schema:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      - name: If-None-Match
+        in: header
+        description: Validator for conditional requests, as described in RFC 7232, 3.2
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        description: Record validator for conditional requests, as described in RFC 7232, 3.2
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSubscription'
+        required: true
+      responses:
+        '200' : # Update
+          description: Expected response to a valid update request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSubscription'
+        '201':
+          description: Expected response to a valid create request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource according to the structure: {apiRoot}/nudsf-dr/<apiVersion>/{realmId}/{storageId}/subs-to-notify/{subscriptionId}'
+              required: true
+              schema:
+                type: string
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
+        '409':
+          description: Conflict
+          content:
+           application/json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        '412':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/412'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      callbacks:
+        onDataChange:
+          '{request.body#/callbackReference}':
+            post:
+              requestBody:
+                $ref: '#/components/requestBodies/RecordNotificationBody'
+              responses:
+                '204':
+                  description: Callback executed successfully
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -918,6 +1373,8 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - count
     RecordMeta:
@@ -963,6 +1420,92 @@ components:
       description: A Block can be of any type
       example: >-
         "QmxvY2sgY29udGVudA=="
+    NotificationSubscription:
+      description: Definition of a notification subscription
+      type: object
+      properties:
+        clientId:
+          $ref: '#/components/schemas/ClientId'
+        subscriptionId:
+          # unique identifier of the NotificationSubscription
+          type: string
+        callbackReference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        subFilter:
+          $ref: '#/components/schemas/SubscriptionFilter'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - clientId
+        - callbackReference
+
+    RecordNotification:
+      description: Definition of a notification on a record
+      type: object
+      properties:
+        descriptor:
+          # json representation of the notification description
+          $ref: '#/components/schemas/NotificationDescription'
+        meta:
+          # json representation of the Meta Data
+          $ref: '#/components/schemas/RecordMeta'
+        blocks:
+          # List of multipart data
+          type: array
+          description: list of opaque Block's in this Record
+          items:
+            $ref: '#/components/schemas/Block'
+      required:
+        - meta
+      example: >-
+        {"descriptor": { "recordRef" : "...", "operationType" : "DELETED"}, "meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-ID": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
+
+    NotificationDescription:
+      description: Description of a record notification
+      type: object
+      properties:
+        recordRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        operationType:
+          $ref: '#/components/schemas/RecordOperation'
+      example: >-
+        { "record" : "...", "operationType" : "DELETED"}
+
+    SubscriptionFilter:
+      description: A subscription filter
+      type: object
+      properties:
+        monitoredResourceUris:
+          type: array
+          description: list of resources applicable to the subscription
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        operations:
+          type: array
+          description: list of resources applicable to the subscription
+          items:
+            $ref: '#/components/schemas/RecordOperation'
+          maxItems: 3
+
+    ClientId:
+      description: Defines the identity of the NF Consumer
+      type: object
+      properties:
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+
+    RecordOperation:
+      description: Indicate operation made on a record
+      type: string
+      enum:
+         - CREATED
+         - UPDATED
+         - DELETED
 
     ConditionOperator:
       description: TBD
@@ -1070,6 +1613,40 @@ components:
             $ref: '#/components/schemas/Record'
           encoding:
             meta: # The meta part shall be the first part and is mandatory but can be empty
+              contentType: application/json
+              headers:
+                Content-ID:
+                  schema:
+                    type: string
+                  required: true
+            blocks: # 0 or more block parts may follow the meta part
+              contentType: '*/*' # Block part can be of any type
+              headers:
+                Content-ID: # Block identifier is defined by the Content-ID header.
+                  schema:
+                    type: string
+                  required: true
+                Content-Transfer-Encoding:
+                  schema:
+                    type: string
+                  required: true
+
+    RecordNotificationBody:
+      description: The record notification multipart request body. The descriptor part shall be the first one, followed by record meta part and by zero or more block parts.
+      required: true
+      content:
+        multipart/mixed:
+          schema:
+            $ref: '#/components/schemas/RecordNotification'
+          encoding:
+            descriptor: # The descriptor part shall be the first part and is mandatory
+              contentType: application/json
+              headers:
+                Content-ID:
+                  schema:
+                    type: string
+                  required: true
+            meta: # The meta part shall be the second part and is mandatory but can be empty
               contentType: application/json
               headers:
                 Content-ID:

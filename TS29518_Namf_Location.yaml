@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-2
+  version: 1.1.0
   title: Namf_Location
   description: |
     AMF Location Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-loc
 externalDocs:
-  description: 3GPP TS 29.518 V16.3.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.4.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-loc/v1'
@@ -255,8 +255,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         codeWord:
           $ref: 'TS29515_Ngmlc_Location.yaml#/components/schemas/CodeWord'
-        lcsServiceAuthInfo:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/LcsServiceAuth'
+        uePrivacyRequirements:
+          $ref: 'TS29515_Ngmlc_Location.yaml#/components/schemas/UePrivacyRequirements'
       required:
         - lcsClientType
         - lcsLocation
@@ -299,6 +299,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         servingLMFIdentification:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
+        locationPrivacyVerResult:
+          $ref: '#/components/schemas/LocationPrivacyVerResult'
     NotifiedPosInfo:
       type: object
       properties:
@@ -388,7 +390,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
     CancelPosInfo:
       type: object
-      properties: 
+      properties:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         hgmlcCallBackURI:
@@ -423,4 +425,13 @@ components:
           - ACTIVATION_OF_DEFERRED_LOCATION
           - UE_MOBILITY_FOR_DEFERRED_LOCATION
           - CANCELLATION_OF_DEFERRED_LOCATION
+      - type: string
+
+    LocationPrivacyVerResult:
+      anyOf:
+      - type: string
+        enum:
+          - LOCATION_ALLOWED
+          - LOCATION_NOT_ALLOWED
+          - RESPONSE_TIME_OUT
       - type: string

@@ -7,7 +7,7 @@ info:
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V16.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V16.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -152,7 +152,7 @@ paths:
                 $ref: '#/components/schemas/PfdDataForAppExt'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/pfds/{appId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/application-data/pfds/{appId}'
               required: true
               schema:
                 type: string
@@ -231,7 +231,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
             minItems: 1
         - name: supis
           in: query
@@ -244,6 +244,7 @@ paths:
             minItems: 1
         - name: supp-feat
           in: query
+          required: false
           description: Supported Features
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
@@ -304,7 +305,7 @@ paths:
                 $ref: '#/components/schemas/TrafficInfluData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/influenceData/{influenceId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/application-data/influenceData/{influenceId}'
               required: true
               schema:
                 type: string
@@ -348,7 +349,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/TrafficInfluDataPatch'
       parameters:
@@ -530,7 +531,7 @@ paths:
           description: Identifies a group of users.
           required: false
           schema:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         - name: supi
           in: query
           description: Identifies a user.
@@ -710,7 +711,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
             minItems: 1
         - name: supis
           in: query
@@ -778,7 +779,7 @@ paths:
                 $ref: '#/components/schemas/BdtPolicyData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/bdtPolicyData/{bdtPolicyId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/application-data/bdtPolicyData/{bdtPolicyId}'
               required: true
               schema:
                 type: string
@@ -939,7 +940,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
             minItems: 1
       responses:
         '200':
@@ -1044,7 +1045,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: '#/components/schemas/IptvConfigDataPatch'
+              $ref: 'TS29522_IPTVConfiguration.yaml#/components/schemas/IptvConfigDataPatch'
       parameters:
         - name: configurationId
           in: path
@@ -1159,7 +1160,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
             minItems: 1
         - name: supis
           in: query
@@ -1186,9 +1187,9 @@ paths:
           schema:
             type: array
             items:
-              $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
             minItems: 1
-        - name: ue-mac
+        - name: ue-macs
           in: query
           description: Each element identifies the user.
           required: false
@@ -1200,6 +1201,7 @@ paths:
         - name: supp-feat
           in: query
           description: Supported Features
+          required: false
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
@@ -1259,7 +1261,7 @@ paths:
                 $ref: '#/components/schemas/ServiceParameterData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/{apiVersion}/application-data/serviceParamData/{serviceParamId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/application-data/serviceParamData/{serviceParamId}'
               required: true
               schema:
                 type: string
@@ -1382,6 +1384,7 @@ paths:
       tags:
         - ApplicationDataSubscriptions (Collection)
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1515,6 +1518,7 @@ paths:
       tags:
         - IndividualApplicationDataSubscription (Document)
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1639,7 +1643,7 @@ components:
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         interGroupId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           description: Identifies a group of users. 
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
@@ -1712,7 +1716,7 @@ components:
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         internalGroupId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           description: Identifies a group of users. 
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
@@ -1767,7 +1771,7 @@ components:
         internalGroupIds:
           type: array
           items:
-            type: string
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
           description: Each element identifies a group of users. 
         supis:
@@ -1797,7 +1801,7 @@ components:
         trafficInfluData:
           $ref: '#/components/schemas/TrafficInfluData'
       required:
-        - resourceId
+        - resUri
     PfdDataForAppExt:
       allOf:
         - $ref: 'TS29551_Nnef_PFDmanagement.yaml#/components/schemas/PfdDataForApp'
@@ -1809,7 +1813,7 @@ components:
       type: object
       properties:
         interGroupId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           description: Identifies a group of users. 
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
@@ -1834,7 +1838,7 @@ components:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         interGroupId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           description: Identifies a group of users. 
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
@@ -1852,18 +1856,9 @@ components:
       required:
         - afAppId
         - multiAccCtrls
-        - suppFeat
       oneOf:
         - required: [interGroupId]
         - required: [supi]
-    IptvConfigDataPatch:
-      type: object
-      properties:
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: 'TS29522_IPTVConfiguration.yaml#/components/schemas/MulticastAccessControl'
-          minProperties: 1
     ServiceParameterData:
       type: object
       properties:
@@ -1875,16 +1870,18 @@ components:
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         interGroupId:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           description: Identifies a group of users. 
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
-        ipv4Addr:
+        ueIpv4:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
-        ipv6Addr:
+        ueIpv6:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
-        macAddr:
+        ueMac:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        anyUeInd:
+          type: boolean
         paramOverPc5:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverPc5'
         paramOverUu:
@@ -1943,7 +1940,7 @@ components:
         internalGroupIds:
           type: array
           items:
-            type: string
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
         supis:
           type: array
@@ -1972,14 +1969,6 @@ components:
           minItems: 1
       required:
         - dataInd
-      oneOf:
-        - required: [dnns]
-        - required: [snssais]
-        - required: [internalGroupIds]
-        - required: [supis]
-        - required: [ueIpv4s]
-        - required: [ueIpv6s]
-        - required: [ueMacs]
     DataInd:
       anyOf:
       - type: string

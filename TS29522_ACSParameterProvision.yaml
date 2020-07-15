@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: 3gpp-iptvconfiguration
+  title: 3gpp-acs-pp
   version: 1.0.0
   description: |
-    API for IPTV configuration.
+    API for 5G ACS Parameter Provision.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
@@ -13,17 +13,17 @@ security:
   - {}
   - oAuth2ClientCredentials: []
 servers:
-  - url: '{apiRoot}/3gpp-iptvconfiguration/v1'
+  - url: '{apiRoot}/3gpp-acs-pp/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
 paths:
-  /{afId}/configurations:
+  /{afId}/subscriptions:
     get:
-      summary: read all of the active configurations for the AF
+      summary: read all of the active subscriptions for the AF
       tags:
-        - IPTV Configurations
+        - ACS Configuration Subscriptions
       parameters:
         - name: afId
           in: path
@@ -33,13 +33,13 @@ paths:
             type: string
       responses:
         '200':
-          description: OK (Successful get all of the active configurations for the AF)
+          description: OK (Successful get all of the active subscriptions for the AF)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IptvConfigData'
+                  $ref: '#/components/schemas/AcsConfigurationData'
                 minItems: 0
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
@@ -61,9 +61,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Creates a new configuration resource
+      summary: Creates a new subscription resource
       tags:
-        - IPTV Configurations
+        - ACS Configuration Subscriptions
       parameters:
         - name: afId
           in: path
@@ -72,19 +72,19 @@ paths:
           schema:
             type: string
       requestBody:
-        description: new configuration creation
+        description: new subscription creation
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IptvConfigData'
+              $ref: '#/components/schemas/AcsConfigurationData'
       responses:
         '201':
-          description: Created (Successful creation of configuration)
+          description: Created (Successful creation)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: '#/components/schemas/AcsConfigurationData'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
@@ -114,11 +114,11 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-  /{afId}/configurations/{configurationId}:
+  /{afId}/subscriptions/{subscriptionId}:
     get:
-      summary: read an active configuration for the AF and the configuration Id
+      summary: read an active subscription for the AF and the subscription Id
       tags:
-        - Individual IPTV Configuration
+        - Individual ACS Configuration Subscription
       parameters:
         - name: afId
           in: path
@@ -126,19 +126,19 @@ paths:
           required: true
           schema:
             type: string
-        - name: configurationId
+        - name: subscriptionId
           in: path
-          description: Identifier of the configuration resource
+          description: Identifier of the subscription resource
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: OK (Successful get the active configuration)
+          description: OK (Successful get the active subscription)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: '#/components/schemas/AcsConfigurationData'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -159,9 +159,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Updates/replaces an existing configuration resource
+      summary: Updates/replaces an existing subscription resource
       tags:
-        - Individual IPTV Configuration
+        - Individual ACS Configuration Subscription
       parameters:
         - name: afId
           in: path
@@ -169,81 +169,26 @@ paths:
           required: true
           schema:
             type: string
-        - name: configurationId
+        - name: subscriptionId
           in: path
-          description: Identifier of the configuration resource
+          description: Identifier of the subscription resource
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to update/replace the existing configuration
+        description: Parameters to update/replace the existing subscription
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IptvConfigData'
+              $ref: '#/components/schemas/AcsConfigurationData'
       responses:
         '200':
-          description: OK (Successful deletion of the existing configuration)
+          description: OK (Successful update of the existing subscription)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
-        '204':
-          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
-    patch:
-      summary: Partial updates an existing configuration resource
-      tags:
-        - Individual IPTV Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: configurationId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/merge-patch+json:
-            schema:
-              $ref: '#/components/schemas/IptvConfigDataPatch'
-      responses:
-        '200':
-          description: OK. The configuration was modified successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: '#/components/schemas/AcsConfigurationData'
         '204':
           description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
         '400':
@@ -270,9 +215,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing configuration
+      summary: Deletes an already existing subscription
       tags:
-        - Individual IPTV Configuration
+        - Individual ACS Configuration Subscription
       parameters:
         - name: afId
           in: path
@@ -280,15 +225,15 @@ paths:
           required: true
           schema:
             type: string
-        - name: configurationId
+        - name: subscriptionId
           in: path
-          description: Identifier of the configuration resource
+          description: Identifier of the subscription resource
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: No Content (Successful deletion of the existing configuration)
+          description: No Content (Successful deletion of the existing subscription)
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -314,65 +259,19 @@ components:
           tokenUrl: '{tokenUrl}'
           scopes: {}
   schemas: 
-    IptvConfigData:
+    AcsConfigurationData:
       type: object
       properties:
         self:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         exterGroupId:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
-        afAppId:
-          type: string
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MulticastAccessControl'
-          minProperties: 1
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        acsInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AcsInfo'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
-        - afAppId
-        - multiAccCtrls
+        - acsInfo
         - suppFeat
-    IptvConfigDataPatch:
-      type: object
-      properties:
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MulticastAccessControl'
-          minProperties: 1
-    MulticastAccessControl:
-      type: object
-      properties:
-        srcIpv4Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-        srcIpv6Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        multicastV4Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-        multicastV6Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        accStatus:
-          $ref: '#/components/schemas/AccessRightStatus'
-      required:
-        - accStatus
-    AccessRightStatus:
-      anyOf:
-        - type: string
-          enum:
-            - FULLY_ALLOWED
-            - PREVIEW_ALLOWED
-            - NO_ALLOWED
-        - type: string
-      description: >
-        Possible values are
-        - FULLY_ALLOWED: The User is fully allowed to access to the channel.
-        - PREVIEW_ALLOWED: The User is preview allowed to access to the channel.
-        - NO_ALLOWED: The User is not allowed to access to the channel.

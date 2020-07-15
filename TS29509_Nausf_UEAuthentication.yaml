@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-4
+  version: 1.1.0
   title: AUSF API
   description: |
     AUSF UE Authentication Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.509 V16.3.0; 5G System; 3GPP TS Authentication Server services.
+  description: 3GPP TS 29.509 V16.4.0; 5G System; 3GPP TS Authentication Server services.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
 
 servers:
@@ -17,7 +17,6 @@ servers:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
-
 security:
   - {}
   - oAuth2ClientCredentials:
@@ -75,6 +74,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+  /ue-authentications/deregister:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeregistrationInfo'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a successful removal of security context
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+
   /ue-authentications/{authCtxId}/5g-aka-confirmation:
     put:
       parameters:
@@ -275,6 +288,9 @@ components:
           pattern: '^[0-9]{1,4}$'
         cagId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/CagId'
+        n5gcInd:
+          type: boolean
+          default: false
       required:
         - supiOrSuci
         - servingNetworkName
@@ -347,6 +363,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
       required:
         - eapPayload
+    DeregistrationInfo:
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+      required:
+        - supi
     RgAuthenticationInfo:
       type: object
       properties:

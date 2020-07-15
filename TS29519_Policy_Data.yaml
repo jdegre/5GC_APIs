@@ -7,7 +7,7 @@ info:
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V16.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V16.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -60,7 +60,14 @@ paths:
       summary: Retrieves the UE policy set data for a subscriber
       operationId: ReadUEPolicySet
       tags:
-        - UEPolicySet (Document)
+        - UEPolicySet (Document) 
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: Upon success, a response body containing UE policies shall be returned.
@@ -91,7 +98,8 @@ paths:
       operationId: CreateOrReplaceUEPolicySet
       tags:
         - UEPolicySet (Document)
-      requestBody:
+      requestBody: 
+        required: true
         content:
           application/json:
             schema:
@@ -144,7 +152,8 @@ paths:
       operationId: UpdateUEPolicySet
       tags:
         - UEPolicySet (Document)
-      requestBody:
+      requestBody: 
+        required: true
         content:
           application/merge-patch+json:
             schema:
@@ -211,6 +220,7 @@ paths:
        - name: supp-feat
          in: query
          description: Supported Features
+         required: false
          schema:
            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
@@ -251,7 +261,8 @@ paths:
          required: true
          schema:
            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
-      requestBody:
+      requestBody: 
+        required: true
         content:
           application/merge-patch+json:
             schema:
@@ -305,6 +316,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: Successful case. The usage monitoring data is returned.
@@ -351,6 +368,7 @@ paths:
          schema:
            type: string
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -478,6 +496,7 @@ paths:
         - name: bdt-ref-ids
           in: query
           description: List of the BDT reference identifiers.
+          required: false
           schema:
             type: array
             items:
@@ -485,6 +504,12 @@ paths:
             minItems: 1
           style: form
           explode: false
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: Upon success, a response body containing the BDT data shall be returned.
@@ -524,7 +549,14 @@ paths:
       summary: Retrieves the BDT data information associated with a BDT reference Id
       operationId: ReadIndividualBdtData
       tags:
-        - IndividualBdtData (Document)
+        - IndividualBdtData (Document) 
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: Upon success, a response body containing the BDT data shall be returned.
@@ -555,7 +587,8 @@ paths:
       operationId: CreateIndividualBdtData
       tags:
         - IndividualBdtData (Document)
-      requestBody:
+      requestBody: 
+        required: true
         content:
           application/json:
             schema:
@@ -629,6 +662,7 @@ paths:
       tags:
         - PolicyDataSubscriptions (Collection)
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -720,6 +754,7 @@ paths:
       tags:
         - IndividualPolicyDataSubscription (Document)
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -805,6 +840,7 @@ paths:
         - name: supp-feat
           in: query
           description: Supported Features
+          required: false
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:  
@@ -1034,6 +1070,8 @@ components:
           items:
             $ref: '#/components/schemas/OsId'
           minItems: 1
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     UePolicySetPatch:
       description: Contains the UE policy set for a given subscriber.
       type: object
@@ -1164,6 +1202,8 @@ components:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceIdRm'
           minProperties: 1
           nullable: true
+        locRoutNotAllowed:
+          type: boolean
       required:
         - dnn
     UsageMonDataLimit:
@@ -1206,6 +1246,8 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
         resetTime:
           $ref: '#/components/schemas/TimePeriod'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - limitId
     LimitIdToMonitoringKey:
@@ -1275,6 +1317,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        trafficDes:
+          $ref: 'TS29122_ResourceManagementOfBdt.yaml#/components/schemas/TrafficDescriptor'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - aspId
         - transPolicy
@@ -1322,6 +1368,11 @@ components:
           $ref: '#/components/schemas/BdtData'
         opSpecData:
           $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+        opSpecDataMap:
+          type: object
+          additionalProperties:
+            $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+          minProperties: 1
         ueId:
          $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
         sponsorId:

@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.1.0.alpha-5
+  version: 1.1.0
   description: |
     PCF Policy Authorization Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V16.4.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V16.5.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -50,7 +50,13 @@ paths:
               schema:
                 type: string
         '303':
-          description: See Other. The result of the HTTP POST request would be equivalent to the existing Application Session Context. The HTTP response shall contain a Location header field set to the URI of the existing individual Application Session Context resource
+          description: See Other. The result of the HTTP POST request would be equivalent to the existing Application Session Context.
+          headers:
+            Location:
+              description: 'Contains the URI of the existing individual Application Session Context resource.'
+              required: true
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -90,6 +96,7 @@ paths:
             post:
               requestBody:
                 description: Request of the termination of the Individual Application Session Context
+                required: true
                 content:
                   application/json:
                     schema:
@@ -124,6 +131,7 @@ paths:
             post:
               requestBody:
                 description: Notification of an event occurrence in the PCF.
+                required: true
                 content:
                   application/json:
                     schema:
@@ -153,15 +161,16 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-        new5GsBridge:
+        detected5GsBridgeForPduSession:
           '{$request.body#/ascReqData/evSubsc/notifUri}/new-bridge':
             post:
               requestBody:
                 description: Notification of a new 5GS Bridge detected in the PCF.
+                required: true
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/NewTsnBridge'
+                      $ref: '#/components/schemas/PduSessionTsnBridge'
               responses:
                 '204':
                   description: The receipt of the notification is acknowledged
@@ -195,7 +204,7 @@ paths:
         - PCSCF Restoration Indication
       requestBody:
         description: PCSCF Restoration Indication
-        required: false
+        required: true
         content:
           application/json:
             schema:
@@ -331,6 +340,7 @@ paths:
             post:
               requestBody:
                 description: Notification of an event occurrence in the PCF.
+                required: true
                 content:
                   application/json:
                     schema:
@@ -440,9 +450,7 @@ paths:
           content:
             application/json:
               schema:
-                anyOf:
-                  - $ref: '#/components/schemas/EventsSubscReqData'
-                  - $ref: '#/components/schemas/EventsNotification'
+                $ref: '#/components/schemas/EventsSubscPutData'
           headers:
             Location:
               description: 'Contains the URI of the created Events Subscription resource, according to the structure: {apiRoot}/npcf-policyauthorization/v1/app-sessions/{appSessionId}/events-subscription}'
@@ -450,13 +458,11 @@ paths:
               schema:
                 type: string
         '200':
-          description: The modification of the of the Events Subscription resource is confirmed its representation is returned.
+          description: The modification of the Events Subscription resource is confirmed its representation is returned.
           content:
             application/json:
-                schema:
-                  anyOf:
-                  - $ref: '#/components/schemas/EventsSubscReqData'
-                  - $ref: '#/components/schemas/EventsNotification'
+              schema:
+                $ref: '#/components/schemas/EventsSubscPutData'
         '204':
           description: The modification of the Events Subscription subresource is confirmed without returning additional data.
         '400':
@@ -487,6 +493,7 @@ paths:
             post:
               requestBody:
                 description: Contains the information for the notification of an event occurrence in the PCF.
+                required: true
                 content:
                   application/json:
                     schema:
@@ -641,6 +648,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
         ueMac:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        tsnBridgeManCont:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/BridgeManagementContainer'
         tsnPortManContDstt:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
         tsnPortManContNwtts:
@@ -704,6 +713,8 @@ components:
           $ref: '#/components/schemas/SponId'
         sponStatus:
           $ref: '#/components/schemas/SponsoringStatus'
+        tsnBridgeManCont:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/BridgeManagementContainer'
         tsnPortManContDstt:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
         tsnPortManContNwtts:
@@ -967,10 +978,6 @@ components:
           $ref: '#/components/schemas/TosTrafficClass'
         flowUsage:
           $ref: '#/components/schemas/FlowUsage'
-        tscaiInputDl:
-          $ref: '#/components/schemas/TscaiInputContainer'
-        tscaiInputUl:
-          $ref: '#/components/schemas/TscaiInputContainer'
     MediaSubComponentRm:
       description: This data type is defined in the same way as the MediaSubComponent data type, but with the OpenAPI nullable property set to true. Removable attributes marBwDl and marBwUl are defined with the corresponding removable data type.
       type: object
@@ -1005,10 +1012,6 @@ components:
           $ref: '#/components/schemas/TosTrafficClassRm'
         flowUsage:
           $ref: '#/components/schemas/FlowUsage'
-        tscaiInputDl:
-          $ref: '#/components/schemas/TscaiInputContainer'
-        tscaiInputUl:
-          $ref: '#/components/schemas/TscaiInputContainer'
       nullable: true
     EventsNotification:
       description: describes the notification of a matched event
@@ -1019,6 +1022,10 @@ components:
       properties:
         accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        addAccessInfo:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/AdditionalAccessInfo'
+        relAccessInfo:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/AdditionalAccessInfo'
         anChargAddr:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/AccNetChargingAddress'
         anChargIds:
@@ -1041,14 +1048,14 @@ components:
             $ref: '#/components/schemas/ResourcesAllocationInfo'
           minItems: 1
         noNetLocSupp:
-          type: boolean
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/NetLocAccessSupport'
         outOfCredReports:
           type: array
           items:
             $ref: '#/components/schemas/OutOfCreditInformation'
           minItems: 1
         plmnId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         qncReports:
           type: array
           items:
@@ -1075,6 +1082,8 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/AccumulatedUsage'
         tsnBridgeInfo: 
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/TsnBridgeInfo'
+        tsnBridgeManCont:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/BridgeManagementContainer'
         tsnPortManContDstt: 
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
         tsnPortManContNwtts: 
@@ -1294,6 +1303,7 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/MediaComponent'
+          minProperties: 1
         marBwUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         marBwDl:
@@ -1354,7 +1364,7 @@ components:
           type: integer
 #
 #
-    NewTsnBridge:
+    PduSessionTsnBridge:
       description: Contains the new 5GS Bridge information and may contain the DS-TT port and/or NW-TT port management information.
       type: object
       required:
@@ -1362,6 +1372,8 @@ components:
       properties:
         tsnBridgeInfo: 
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/TsnBridgeInfo'
+        tsnBridgeManCont: 
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/BridgeManagementContainer'
         tsnPortManContDstt: 
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
         tsnPortManContNwtts: 
@@ -1463,6 +1475,13 @@ components:
         burstArrivalTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       nullable: true
+#
+#
+    EventsSubscPutData:
+      description: Identifies the events the application subscribes to within an Events Subscription sub-resource data. It may contain the notification of the already met events
+      anyOf:
+        - $ref: '#/components/schemas/EventsSubscReqData'
+        - $ref: '#/components/schemas/EventsNotification'
 #
 # EXTENDED PROBLEMDETAILS
 #
@@ -1585,9 +1604,9 @@ components:
           - QOS_MONITORING
           - QOS_NOTIF
           - RAN_NAS_CAUSE
+          - REALLOCATION_OF_CREDIT
           - SUCCESSFUL_RESOURCES_ALLOCATION
-          - TSN_ETHER_PORT
-          - TSN_CONTAINER
+          - TSN_BRIDGE_INFO
           - USAGE_REPORT
       - type: string
 #        

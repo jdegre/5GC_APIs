@@ -1,20 +1,20 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-4
+  version: 1.1.0
   title: Npcf_UEPolicyControl
   description: |
     UE Policy Control Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.525 V16.3.0; 5G System; UE Policy Control Service.
+  description: 3GPP TS 29.525 V16.4.0; 5G System; UE Policy Control Service.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.525/'
 servers:
   - url: '{apiRoot}/npcf-ue-policy-control/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
 security:
   - {}
   - oAuth2ClientCredentials:
@@ -79,7 +79,7 @@ paths:
                       $ref: '#/components/schemas/PolicyUpdate'
               responses:
                 '204':
-                  description: No Content, Notification was succesfull
+                  description: No Content, Notification was successful
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -113,9 +113,15 @@ paths:
                       $ref: '#/components/schemas/TerminationNotification'
               responses:
                 '204':
-                  description: No Content, Notification was succesfull
+                  description: No Content, Notification was successful
                 '307':
                   description: temporary redirect
+                  headers:
+                    Location:
+                      description: 'A URI pointing to the endpoint of another NF service consumer to which the notification should be sent.'
+                      required: true
+                      schema:
+                        type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -190,7 +196,7 @@ paths:
             type: string
       responses:
         '204':
-          description: No Content. Resource was succesfully deleted
+          description: No Content. Resource was successfully deleted
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -210,7 +216,7 @@ paths:
   /policies/{polAssoId}/update:
     post:
       operationId: ReportObservedEventTriggersForIndividualUEPolicyAssociation
-      summary: Report obeserved event triggers and possibly obtain updated policies for an individual UE policy association.
+      summary: Report observed event triggers and possibly obtain updated policies for an individual UE policy association.
       tags:
         - Individual UE Policy Association (Document)
       requestBody:
@@ -263,7 +269,7 @@ components:
         clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
-            npcf-ue-policy-control: Access to the Npcf_AMPolicyControl API
+            npcf-ue-policy-control: Access to the Npcf_UEPolicyControl API
   schemas:
     PolicyAssociation:
       type: object
@@ -305,7 +311,13 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
           minItems: 1
-          description: Alternate or backup IPv6 Address(es) where to send Notifications.
+          description: Alternate or backup IPv6 Address(es) where to send Notifications. 
+        altNotifFqdns:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          minItems: 1
+          description: Alternate or backup FQDN(s) where to send Notifications.
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
@@ -361,7 +373,13 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
           minItems: 1
-          description: Alternate or backup IPv6 Address(es) where to send Notifications.
+          description: Alternate or backup IPv6 Address(es) where to send Notifications. 
+        altNotifFqdns:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          minItems: 1
+          description: Alternate or backup FQDN(s) where to send Notifications.
         triggers:
           type: array
           items:
@@ -462,7 +480,7 @@ components:
         Possible values are
         - LOC_CH: Location change (tracking area). The tracking area of the UE has changed.
         - PRA_CH: Change of UE presence in PRA. The UE is entering/leaving a Presence Reporting Area.
-        - UE_POLICY: A MANAGE UE POLICY COMPLETE message or a MANAGE UE POLICY COMMAND REJECT message, as defined in Annex D.5 of 3GPP TS 24.501 or a "UE POLICY PROVISIONING REQUEST" message, as defined in subclause 7.2.1.1 of 3GPP TS 24.587 [24], has been received by the AMF and is being forwarded.
+        - UE_POLICY: A MANAGE UE POLICY COMPLETE message or a MANAGE UE POLICY COMMAND REJECT message, as defined in Annex D.5 of 3GPP TS 24.501 or a "UE POLICY PROVISIONING REQUEST" message, as defined in subclause 7.2.1.1 of 3GPP TS 24.587 , has been received by the AMF and is being forwarded.
         - PLMN_CH: PLMN change. the serving PLMN of UE has changed. 
         - CON_STATE_CH: Connectivity state change: the connectivity state of UE has changed.
     PolicyAssociationReleaseCause:

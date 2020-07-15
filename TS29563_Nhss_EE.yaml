@@ -2,9 +2,9 @@ openapi: 3.0.0
 
 info:
   version: '1.0.0'
-  title: 'Nhss_SDM'
+  title: 'Nhss_EE'
   description: |
-    HSS Subscriber Data Management.
+    HSS Event Exposure
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
@@ -13,69 +13,36 @@ externalDocs:
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.563/'
 
 servers:
-  - url: '{apiRoot}/nhss-sdm/v1'
+  - url: '{apiRoot}/nhss-ee/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 
 security:
-  - oAuth2ClientCredentials:
-    - nhss-sdm
   - {}
+  - oAuth2ClientCredentials:
+    - nhss-ee
 
 paths:
-  /{ueId}/ue-context-in-pgw-data:
-    get:
-      summary: Retrieve the UE Context In PGW
-      operationId: GetUeCtxInPgwData
-      tags:
-        - UE Context In PGW Data Retrieval
-      parameters:
-        - name: ueId
-          in: path
-          description: Identifier of the UE
-          required: true
-          schema:
-            type: string
-            pattern: '^(imsi-[0-9]{5,15})$'
-      responses:
-        '200':
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UeContextInPgwData'
-        '400':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-        '404':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '500':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-        default:
-          description: Unexpected error
-
-  /{ueId}/subscriptions:
+  /{ueId}/ee-subscriptions:
     post:
-      summary: subscribe to notifications
-      operationId: Subscribe
+      summary: Subscribe
+      operationId: CreateEeSubscription
       tags:
-        - Subscription Creation
+        - EE Subscription (Collection)
       parameters:
         - name: ueId
           in: path
-          description: IMSI of the user
+          description: IMSI of the subscriber
           required: true
           schema:
-            type: string
-            pattern: '^(imsi-[0-9]{5,15})$'
+            $ref: '#/components/schemas/Imsi'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriptionData'
+              $ref: '#/components/schemas/EeSubscription'
         required: true
       responses:
         '201':
@@ -83,15 +50,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubscriptionData'
+                $ref: '#/components/schemas/CreatedEeSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-sdm/<apiVersion>/{ueId}/subscriptions/{subscriptionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-ee/v1/{ueIdentity}/ee-subscriptions/{subscriptionId}'
               required: true
               schema:
                 type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '500':
@@ -103,7 +72,7 @@ paths:
         default:
           description: Unexpected error
       callbacks:
-        datachangeNotification:
+        eventOccurrenceNotification:
           '{request.body#/callbackReference}':
             post:
               requestBody:
@@ -111,7 +80,10 @@ paths:
                 content:
                   application/json:
                     schema:
-                      $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ModificationNotification'
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/MonitoringReport'
+                      minItems: 1
               responses:
                 '204':
                   description: Successful Notification response
@@ -126,23 +98,22 @@ paths:
                 default:
                   description: Unexpected error
 
-  /{ueId}/subscriptions/{subscriptionId}:
+  /{ueId}/ee-subscriptions/{subscriptionId}:
     delete:
-      summary: unsubscribe from notifications
-      operationId: Unsubscribe
+      summary: Unsubscribe
+      operationId: DeleteEeSubscription
       tags:
-        - Subscription Deletion
+        - Delete EE Subscription
       parameters:
         - name: ueId
           in: path
-          description: IMSI of the user
+          description: IMSI of the subscriber
           required: true
           schema:
-            type: string
-            pattern: '^(imsi-[0-9]{5,15})$'
+            $ref: '#/components/schemas/Imsi'
         - name: subscriptionId
           in: path
-          description: Id of the Subscription
+          description: Id of the EE Subscription
           required: true
           schema:
             type: string
@@ -160,21 +131,20 @@ paths:
         default:
           description: Unexpected error
     patch:
-      summary: modify the subscription
-      operationId: Modify
+      summary: Patch
+      operationId: UpdateEeSubscription
       tags:
-        - Subscription Modification
+        - Update EE Subscription
       parameters:
         - name: ueId
           in: path
-          description: IMSI of the user
+          description: IMSI of the subscriber
           required: true
           schema:
-            type: string
-            pattern: '^(imsi-[0-9]{5,15})$'
+            $ref: '#/components/schemas/Imsi'
         - name: subscriptionId
           in: path
-          description: Id of the Subscription
+          description: Id of the EE Subscription
           required: true
           schema:
             type: string
@@ -188,18 +158,18 @@ paths:
               minItems: 1
         required: true
       responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
-          description: Successful modification
-        '400':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+          description: Successful response
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '500':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
 
@@ -211,29 +181,79 @@ components:
         clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
-            nhss-sdm: Access to the nhss-sdm API
-
+            nhss-ee: Access to the nhss-ee API
 
   schemas:
 
 # COMPLEX TYPES:
 
-    UeContextInPgwData:
+    Imsi:
+      type: string
+      pattern: '^(imsi-[0-9]{5,15})$'
+
+    EeSubscription:
       type: object
+      required:
+        - callbackReference
       properties:
-        pgwInfo:
+        callbackReference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        scefId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        monitoringConfigurations:
+          description: A map (list of key-value pairs where ReferenceId serves as key) of MonitoringConfigurations
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MonitoringConfiguration'
+          minProperties: 1
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    CreatedEeSubscription:
+      type: object
+      required:
+        - eeSubscription
+      properties:
+        eeSubscription:
+            $ref: '#/components/schemas/EeSubscription'
+        eventReports:
           type: array
           items:
-            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/PgwInfo'
+            $ref: '#/components/schemas/MonitoringReport'
           minItems: 1
-        emergencyFqdn:
-          type: string
 
-    SubscriptionData:
+    MonitoringConfiguration:
       type: object
-      # FFS
+      required:
+        - eventType
+      properties:
+        eventType:
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EventType'
+        immediateReport:
+          type: boolean
+
+    MonitoringReport:
+      type: object
+      required:
+        - referenceId
+        - eventType
+        - timeStamp
+      properties:
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        eventType:
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EventType'
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        report:
+          $ref: '#/components/schemas/Report'
+
+    Report:
+      type: object  # TBD
 
 # SIMPLE TYPES:
 
+    ReferenceId:
+      type: integer
 
 # ENUMS:

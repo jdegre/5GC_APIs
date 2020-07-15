@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nnef_SMContext
-  version: 1.0.0.alpha-2
+  version: 1.0.0
   description: |
     Nnef SMContext Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.541 V16.0.0; 5G System; Session Management Services for Non-IP Data Delivery (NIDD).
+  description: 3GPP TS 29.541 V16.1.0; 5G System; Session Management Services for Non-IP Data Delivery (NIDD).
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.541/
 
 servers:
@@ -302,13 +302,24 @@ components:
           description: This IE shall contain the NEF ID of the target NEF.
         rdsSupport:
           type: boolean
+          default: false
           description: |
             When present, this IE shall indicate the NEF capability to support RDS.
             The value of this IE shall be set as following
               - true  NEF supports RDS
               - false (default)  NEF does not support RDS
+        extBufSupport:
+          type: boolean
+          default: false
+          description: |
+            When present, this IE shall indicate whether Extended Buffering applies or not.
+            The value of this IE shall be set as following
+              - true  Extended Buffering applies
+              - false (default)  Extended Buffering does not apply
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        maxPacketSize:
+          type: integer
       required:
         - supi
         - pduSessionId
@@ -329,6 +340,8 @@ components:
       properties:
         smallDataRateStatus:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
 
     SmContextStatusNotification:
       type: object
@@ -337,8 +350,12 @@ components:
           $ref: '#/components/schemas/SmContextStatus'
         smContextId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        cause:
+          $ref: '#/components/schemas/ReleaseCause'
         smallDataRateStatus:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        apnRateStatus:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
       required:
         - status
         - smContextId
@@ -402,8 +419,6 @@ components:
       properties:
         data:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
-        moExpDataInd:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MoExceptionDataFlag'
       required:
         - data
 #

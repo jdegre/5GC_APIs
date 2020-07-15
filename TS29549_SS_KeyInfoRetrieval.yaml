@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: SS_UserProfileRetrieval
+  title: SS_KeyInfoRetrieval
   description: |
-    API for SEAL User Profile Retrieval.
+    API for SEAL Key Information Retrieval.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
   version: "1.0.0"
@@ -13,38 +13,35 @@ security:
   - {}
   - oAuth2ClientCredentials: []
 servers:
-  - url: '{apiRoot}/ss-upr/v1'
+  - url: '{apiRoot}/ss-kir/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
 paths:
-  /val-services:
+  /key-records:
     get:
-      description: Retrieve VAL User or VAL UE profile information.
+      description: Retrieve Key mamangement information specific to VAL service.
       parameters: 
         - name: val-service-id
           in: query
           description: String identifying an individual VAL service
-          required: false
+          required: true
           schema:
             type: string
         - name: val-tgt-ue
           in: query
-          description: Identifying a VAL target UE.
-          required: true 
+          description: Identifying a VAL target. 
+          required: false
           schema:
-            $ref: '#/components/schemas/ValTargetUe'
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
       responses:
         '200':
-          description: The Profile information of the VAL User or VAL UE.
+          description: The key management information of the VAL service, VAL User or VAL UE.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProfileDoc'
-                minItems: 0
+                $ref: '#/components/schemas/ValKeyInfo'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -72,26 +69,22 @@ components:
           tokenUrl: '{tokenUrl}'
           scopes: {}
   schemas:
-    ProfileDoc:
+    ValKeyInfo:
       type: object
       properties:
-        profileInformation:
+        userUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        skmsId:
           type: string
-          description: Profile information associated with the valUserId or valUeId.
+          description: String identifying the key management server.
+        valService:
+          type: string
+          description: Unique identifier of a VAL Service.
         valTgtUe:
-          $ref: '#/components/schemas/ValTargetUe'
+          $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+        keyInfo:
+          type: string
+          description: Key management information specific to VAL service, VAL User or VAL UE.
       required:
-        - profileInformation
-        - valTgtUe
-    ValTargetUe:
-      type: object
-      properties:
-        valUserId:
-          type: string
-          description: Unique identifier of a VAL user.
-        valUeId:  
-          type: string
-          description: Unique identifier of a VAL UE.
-      oneOf:
-        - required: [valUserId]
-        - required: [valUeId]
+        - userUri
+        - valService

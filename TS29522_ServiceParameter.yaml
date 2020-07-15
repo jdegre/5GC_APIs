@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-service-parameter
-  version: 1.0.0.alpha-1
+  version: 1.0.0
   description: |
     API for AF service paramter
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.522 V16.3.0; 5G System; Network Exposure Function Northbound APIs.
+  description: 3GPP TS 29.522 V16.4.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -31,7 +31,7 @@ paths:
     get:
       summary: read all of the active subscriptions for the AF
       tags:
-        - ServiceParameter API SCS/AS level GET Operation
+        - Service Parameter Subscriptions
       responses:
         '200':
           description: OK. 
@@ -41,6 +41,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ServiceParameterData'
+                minItems: 0
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -63,7 +64,7 @@ paths:
     post:
       summary: Creates a new subscription resource 
       tags:
-        - ServiceParameter API Subscription level POST Operation
+        - Service Parameter Subscriptions
       requestBody:
         description: Request to create a new subscription resource
         required: true
@@ -124,7 +125,7 @@ paths:
     get:
       summary: read an active subscriptions for the SCS/AS and the subscription Id
       tags:
-        - ServiceParameter API Subscription level GET Operation
+        - Individual Service Parameter Subscription
       responses:
         '200':
           description: OK (Successful get the active subscription)
@@ -154,7 +155,7 @@ paths:
     put:
       summary: Updates/replaces an existing subscription resource
       tags:
-        - TrafficInfluence API subscription level PUT Operation
+        - Individual Service Parameter Subscription
       requestBody:
         description: Parameters to update/replace the existing subscription
         required: true
@@ -195,7 +196,7 @@ paths:
     patch:
       summary: Updates/replaces an existing subscription resource
       tags:
-        - ServiceParameter API subscription level PATCH Operation
+        - Individual Service Parameter Subscription
       requestBody:
         required: true
         content:
@@ -235,7 +236,7 @@ paths:
     delete:
       summary: Deletes an already existing subscription
       tags:
-        - ServiceParameter API Subscription level DELETE Operation
+        - Individual Service Parameter Subscription
       responses:
         '204':
           description: No Content (Successful deletion of the existing subscription)
@@ -286,9 +287,9 @@ components:
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         ueIpv4:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         ueIpv6:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
         ueMac:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
         self:
@@ -307,331 +308,12 @@ components:
         ParamOverUu:
           $ref: '#/components/schemas/ParameterOverUuRm'
     ParameterOverPc5:
-      type: object
-      properties:
-        expiry:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        plmmRatServed:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlmnRatServed'
-          minItems: 1
-        authNotServed:
-          type: boolean
-        radioParamsNotServed:
-          type: array
-          items:
-            $ref: '#/components/schemas/RadioParameterNotServed'
-          minItems: 1
-        serToTx:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceToTx'
-          minItems: 1
-        privacyParams:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrivacyParameter'
-          minItems: 1
-        configParaEutra:
-          $ref: '#/components/schemas/ConfigurationParametersEutra'
-        configParaNr:
-          $ref: '#/components/schemas/ConfigurationParametersNr'
-    ParameterOverUu:
-      type: object
-      properties:
-        expiry:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        serToPduSess:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceToPduSession'
-          minItems: 1
-        serToAppAddr:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceApplicationServerAddress'
-          minItems: 1
-    PlmnRatServed:
-      type: object
-      properties:
-        plmn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
-        rats:
-          type: array
-          items:
-            $ref: '#/components/schemas/V2xRatType'
-      required:
-        - plmn
-        - rats
-    RadioParameterNotServed:
-      type: object
-      properties:
-        radioParams:
-          type: string
-        rat:
-          $ref: '#/components/schemas/V2xRatType'
-        geographicalArea:
-          type: string
-        operManaged:
-          $ref: '#/components/schemas/OperatorManaged'
-      required:
-        - radioParams
-        - geographicalArea
-        - operManaged
-        - rat
-    ServiceToTx:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        txProfile:
-          type: string
-        rat:
-          $ref: '#/components/schemas/V2xRatType'
-      required:
-        - serIds
-        - txProfile
-        - rat
-    PrivacyParameter:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        geographicalArea:
-          type: string
-        timer:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-      required:
-        - serIds
-        - geographicalArea
-        - timer
-    ConfigurationParametersEutra:
-      type: object
-      properties:
-        serToLayer2Ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToLayer2Id'
-          minItems: 1
-        ppppToPdbs:
-          type: array
-          items:
-            $ref: '#/components/schemas/PpppToPdb'
-          minItems: 1
-        serIdToFrequs:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToFrequency'
-          minItems: 1
-        serIdToPpprs:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToPppr'
-          minItems: 1
-    ConfigurationParametersNr:
-      type: object
-      properties:
-        serToBroLayer2Ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToLayer2Id'
-          minItems: 1
-        serToGroLayer2Ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToLayer2Id'
-          minItems: 1
-        serToDefLayer2Ids:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToLayer2Id'
-          minItems: 1
-        serIdToFrequs:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceIdToFrequency'
-          minItems: 1
-        pc5QosMappings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Pc5QosMapping'
-          minItems: 1
-        slrbConfigs:
-          type: array
-          items:
-            $ref: '#/components/schemas/SlrbConfigurations'
-          minItems: 1
-    ServiceIdToLayer2Id:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        desLayer2Id:
-          type: string
-      required:
-        - serIds
-        - desLayer2Id
-    PpppToPdb:
-      type: object
-      properties:
-        pppp:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        pdb:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
-      required:
-        - pppp
-        - pdb
-    ServiceIdToFrequency:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        frequency:
-          type: number
-        geographicalArea:
-          type: string
-      required:
-        - serIds
-        - frequency
-        - geopraphicalArea
-    ServiceIdToPppr:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        pppr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-      required:
-        - serIds
-        - pppr
-    Pc5QosMapping:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        pc5QoSFlowParam:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pc5QosFlowItem'
-      required:
-        - serIds
-        - pc5QosFlowParam
-    SlrbConfigurations:
-      type: object
-      properties:
-        pc5QosPara:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pc5QoSPara'
-        slrb:
-          type: string
-      required:
-        - pc5QosPara
-        - slrb
-    ServiceToPduSession:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        pduSessionType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
-        sscMode:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SscMode'
-        sliceInfo:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-          minItems: 1
-        dnns:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-          minItems: 1
-      required:
-        - serIds
-    ServiceApplicationServerAddress:
-      type: object
-      properties:
-        serIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        fqdn:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
-        Ipv4Addrs:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-          minItems: 1
-        Ipv6Addrs:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-          minItems: 1
-        udpPortNumbers:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-          minItems: 1
-        tcpPortNumbers:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-          minItems: 1
-        plmns:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
-        geopraphicalArea:
-          type: string
-      required:
-        - serIds
-        - plmns
-        - geographicalArea
+      type: string
     ParameterOverPc5Rm:
       type: string
-# Editor's note: Type is FFS. String only used to pass Syntax check.
+      nullable: true
+    ParameterOverUu:
+      type: string
     ParameterOverUuRm:
       type: string
-# Editor's note: Type is FFS. String only used to pass Syntax check.
-    OperatorManaged:
-      anyOf:
-        - type: string
-          enum:
-            - OPERATOR_MANAGED
-            - NON_OPERATOR_MANAGED
-        - type: string
-      description: >
-        Possible values are
-        - OPERATOR_MANAGED: The radio parameters are "operator managed".
-        - NON_OPERATOR_MANAGED: The radio parameters are "non-operator managed".
-    V2xRatType:
-      anyOf:
-        - type: string
-          enum:
-            - PC5_LTE
-            - PC5_NR
-        - type: string
-      description: >
-        Possible values are
-        - PC5_LTE: Indicates the LTE RAT type over PC5 interface.
-        - PC5_NR: Indicates the NR RAT type over NR interface.
+      nullable: true

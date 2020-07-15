@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-nidd
-  version: 1.1.0.alpha-2
+  version: 1.1.0
   description: |
     API for non IP data delivery.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.5.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.6.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -105,7 +105,8 @@ paths:
           '{$request.body#/notificationDestination}':
             post:
               requestBody:
-                description: Notification for NIDD configuration status, MO NIDD, MT NIDD delivery report.
+                description: Notification for NIDD configuration status, MO NIDD, MT NIDD delivery report. 
+                required: true
                 content:
                   application/json:
                     schema:
@@ -114,6 +115,7 @@ paths:
                       - $ref: '#/components/schemas/NiddUplinkDataNotification'
                       - $ref: '#/components/schemas/NiddDownlinkDataDeliveryStatusNotification'
                       - $ref: '#/components/schemas/GmdNiddDownlinkDataDeliveryNotification'
+                      - $ref: '#/components/schemas/ManagePortNotification'
               responses:
                 '204':
                   description: Expected response to a successful callback processing without a body
@@ -457,6 +459,177 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /{scsAsId}/configurations/{configurationId}/rds-ports:
+    parameters:
+      - name: scsAsId
+        description: String identifying the SCS/AS.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: configurationId
+        description: String identifying the individual NIDD configuration resource in the SCEF.
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      responses:
+        '200':
+          description: all ManagePort configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ManagePort'
+                minItems: 0
+                description: individual ManagePort configuration.
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /{scsAsId}/configurations/{configurationId}/rds-ports/{portId}:
+    parameters:
+      - name: scsAsId
+        description: String identifying the SCS/AS.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: configurationId
+        description: String identifying the individual NIDD configuration resource in the SCEF.
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: portId
+        description: The UE port number.
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^(ue([0-9]|(1[0-5]))-ef([0-9]|(1[0-5])))$'
+    get:
+      responses:
+        '200':
+          description: The individual ManagePort configuration is successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagePort'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    put:
+      requestBody:
+        description: Contains information to be applied to the individual ManagePort configuration.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagePort'
+      responses:
+        '201':
+          description: The individual ManagePort configuration is created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagePort'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource'
+              required: true
+              schema:
+                type: string
+        '202':
+          description: The request is accepted and under processing.
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '409':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/409'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          description: The request was not successful.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/RdsDownlinkDataDeliveryFailure'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    delete:
+      responses:
+        '202':
+          description: The request is accepted and under processing.
+        '204':
+          description: The individual ManagePort configuration is deleted.
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '409':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/409'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          description: The request was not successful.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/RdsDownlinkDataDeliveryFailure'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -492,7 +665,7 @@ components:
           items:
             $ref: '#/components/schemas/RdsPort'
           minItems: 1
-          description: Indicates the port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
+          description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptions'
         notificationDestination:
@@ -661,6 +834,48 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
       required:
         - problemDetail
+    ManagePort:
+      type: object
+      properties:
+        self:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        appId:
+          type: string
+          description: Identifies the application.
+        manageEntity:
+          $ref: '#/components/schemas/ManageEntity'
+        skipUeInquiry:
+          type: boolean
+          description: Indicate whether to skip UE inquiry.
+      required:
+        - appId
+    ManagePortNotification:
+      type: object
+      properties:
+        niddConfiguration:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        externalId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
+        msisdn:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
+        managedPorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagePort'
+          minItems: 1
+          description: Indicates the reserved RDS port configuration information.
+      required:
+        - niddConfiguration
+      oneOf:
+        - required: [externalId]
+        - required: [msisdn] 
+    RdsDownlinkDataDeliveryFailure:
+      allOf:
+        - $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            requestedRetransmissionTime:
+              $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
     PdnEstablishmentOptions:
       anyOf:
       - type: string
@@ -699,6 +914,7 @@ components:
           - FAILURE_RDS_DISABLED
           - FAILURE_NEXT_HOP
           - FAILURE_TIMEOUT
+          - FAILURE_TEMPORARILY_NOT_REACHABLE
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -718,7 +934,8 @@ components:
         - FAILURE: Delivery failure but details not provided
         - FAILURE_RDS_DISABLED: RDS was disabled
         - FAILURE_NEXT_HOP: Unsuccessful delivery to the next hop.
-        - FAILURE_TIMEOUT: Unsuccessful delivery due to timeout.
+        - FAILURE_TIMEOUT: Unsuccessful delivery due to timeout. 
+        - FAILURE_TEMPORARILY_NOT_REACHABLE: The SCEF has been informed that the UE is temporarily not reachable without buffering the data.
       readOnly: true
     NiddStatus:
       anyOf:
@@ -740,6 +957,22 @@ components:
         - TERMINATED: The NIDD configuration was terminated.
         - RDS_PORT_UNKNOWN: The RDS port is unknown.
       readOnly: true
+    ManageEntity:
+      anyOf:
+      - type: string
+        enum:
+          - UE
+          - AS
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - UE: Representing the UE.
+        - AS: Representing the Application Server.
+      readOnly: true
     NiddConfigurationPatch:
       type: object
       properties:
@@ -754,6 +987,6 @@ components:
           items:
             $ref: '#/components/schemas/RdsPort'
           minItems: 1
-          description: Indicates the port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
+          description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptionsRm'

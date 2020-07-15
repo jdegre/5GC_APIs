@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-2'
+  version: '1.1.0'
   title: 'NSSF NSSAI Availability'
   description: |
     NSSF NSSAI Availability Service.
@@ -18,7 +18,7 @@ servers:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 externalDocs:
-  description: 3GPP TS 29.531 V16.2.0; 5G System; Network Slice Selection Services; Stage 3
+  description: 3GPP TS 29.531 V16.3.0; 5G System; Network Slice Selection Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.531/
 paths:
   /nssai-availability/{nfId}:
@@ -67,6 +67,8 @@ paths:
               description: Content-Encoding, described in IETF RFC 7231
               schema:
                 type: string
+        '204':
+          description: No Content (No supported slices after Successful update)
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -103,6 +105,16 @@ paths:
           required: true
           schema:
             type: string
+        - name: Content-Encoding
+          in: header
+          description: Content-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
+        - name: Accept-Encoding
+          in: header
+          description: Accept-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
       requestBody:
         description: JSON Patch instructions to update at the NSSF, the S-NSSAIs supported per TA
         required: true
@@ -118,6 +130,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorizedNssaiAvailabilityInfo'
+          headers:
+            Accept-Encoding:
+              description: Accept-Encoding, described in IETF RFC 7694
+              schema:
+                type: string
+            Content-Encoding:
+              description: Content-Encoding, described in IETF RFC 7231
+              schema:
+                type: string
+        '204':
+          description: No Content (No supported slices after Successful update)
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -184,6 +207,12 @@ paths:
       tags:
         - Subscriptions (Collection)
       operationId: NSSAIAvailabilityPost
+      parameters:
+        - name: Content-Encoding
+          in: header
+          description: Content-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
       requestBody:
         description: Subscription for notification about updates to NSSAI availability information
         required: true
@@ -195,6 +224,12 @@ paths:
         nssaiAvailabilityNotification:
           '{request.body#/nfNssaiAvailabilityUri}':
             post:
+              parameters:
+                - name: Content-Encoding
+                  in: header
+                  description: Content-Encoding, described in IETF RFC 7231
+                  schema:
+                    type: string
               requestBody:  # contents of the callback message
                 required: true
                 content:
@@ -204,6 +239,11 @@ paths:
               responses:
                 '204':
                   description: No Content (successful notification)
+                  headers:
+                    Accept-Encoding:
+                      description: Accept-Encoding, described in IETF RFC 7694
+                      schema:
+                        type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '411':
@@ -233,6 +273,10 @@ paths:
             Location:
               description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nnssf-nssaiavailability/v1/nssai-availability/subscriptions/{subscriptionId}'
               required: true
+              schema:
+                type: string
+            Content-Encoding:
+              description: Content-Encoding, described in IETF RFC 7231
               schema:
                 type: string
         '400':
@@ -366,7 +410,7 @@ components:
         supportedSnssaiList:
           type: array
           items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
           minItems: 1
         taiList:
           type: array
@@ -390,7 +434,7 @@ components:
         supportedSnssaiList:
           type: array
           items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
           minItems: 1
         restrictedSnssaiList:
           type: array
@@ -419,13 +463,16 @@ components:
         sNssaiList:
           type: array
           items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
           minItems: 1
         homePlmnIdList:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
           minItems: 1
+        roamingRestriction:
+          type: boolean
+          default: false
   
     AuthorizedNssaiAvailabilityInfo:
       type: object

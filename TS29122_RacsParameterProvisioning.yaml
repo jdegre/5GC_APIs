@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-racs-parameter-provisioning
-  version: 1.0.0.alpha-1
+  version: 1.0.0
   description: |
     API for provisioning UE radio capability parameters.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.4.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V16.6.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -282,9 +282,9 @@ components:
         racsConfigs:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/RacsConfigurationRm'
+            $ref: '#/components/schemas/RacsConfiguration'
           minProperties: 1
-          description: Identifies the configuration related to manufactuer specific UE radio capability. Each element uniquely identifies an RACS configuration for an RACS ID and is identified in the map via the RACS ID as key. The response shall include successfully provisioned RACS data.
+          description: Identifies the configuration related to manufacturer specific UE radio capability. Each element uniquely identifies an RACS configuration for an RACS ID and is identified in the map via the RACS ID as key. The response shall include successfully provisioned RACS data.
         racsReports:
           type: object
           additionalProperties:
@@ -308,19 +308,30 @@ components:
       required:
         - racsIds
         - failureCode
-    RacsConfigurationRm:
+    RacsConfiguration:
       type: object
       properties:
         racsId:
           type: string
           description: The UE radio capability ID provided by the SCS/AS to identify the UE radio capability data. See 3GPP TS 23.003 for the encoding.
-        racsParam:
+        racsParamEps:
           type: string
-          description: The UE radio capability data, depending on the device type (4G or 5G capable), its encoding shall comply with the UE-CapabilityRAT-ContainerList as defined in subclause 6.3.6 of 3GPP TS 36.331 or UE-CapabilityRAT-ContainerList as defined in subclause 6.3.3 of 3GPP TS 38.331.
+          description: The UE radio capability data in EPS.
+        racsParam5Gs:
+          type: string
+          description: The UE radio capability data in 5GS.
+        imeiTacs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
+          minItems: 1
+          description: Related UE model's IMEI-TAC values.
+      anyOf:
+        - required: [racsParamEps]
+        - required: [racsParam5Gs]
       required:
         - racsId
-        - racsParam
-      nullable: true
+        - imeiTacs
     RacsProvisioningDataPatch:
       type: object
       properties:
@@ -330,6 +341,24 @@ components:
             $ref: '#/components/schemas/RacsConfigurationRm'
           minProperties: 1
           description: Identifies the configuration related to manufactuer specific UE radio capability. Each element uniquely identifies an RACS configuration for an RACS ID and is identified in the map via the RACS ID as key.
+    RacsConfigurationRm:
+      type: object
+      properties:
+        racsParamEps:
+          type: string
+          description: The UE radio capability data in EPS.
+          nullable: true
+        racsParam5Gs:
+          type: string
+          description: The UE radio capability data in 5GS.
+          nullable: true
+        imeiTacs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TypeAllocationCode'
+          minItems: 1
+          description: Related UE model's IMEI-TAC values.
+      nullable: true
     RacsFailureCode:
       anyOf:
       - type: string
@@ -346,6 +375,6 @@ components:
       description: >
         Possible values are
         - MALFUNCTION: This value indicates that something functions wrongly in RACS provisioning or the RACS provisioning does not function at all.
-        - RESOURCE_LIMITATION: The received RACS identifier(s) are already provisioned.
-        - RACS_ID_DUPLICATED: This value indicates there is resource limitation for RACS data storage.
+        - RESOURCE_LIMITATION: This value indicates there is resource limitation for RACS data storage.
+        - RACS_ID_DUPLICATED: The received RACS identifier(s) are already provisioned.
         - OTHER_REASON: Other reason unspecified.

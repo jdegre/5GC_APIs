@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-4'
+  version: '1.1.0'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.3.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.4.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -172,11 +172,11 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
-        '204': 
+        '204':
           description: Successful response
-        '403': 
+        '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
-        '404': 
+        '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         default:
           description: Unexpected error
@@ -185,8 +185,8 @@ components:
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
-      flows: 
-        clientCredentials: 
+      flows:
+        clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nudm-ee: Access to the nudm-ee API
@@ -224,13 +224,15 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/MonitoringConfiguration'
-          minProperties: 1  
+          minProperties: 1
         reportingOptions:
           $ref: '#/components/schemas/ReportingOptions'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         subscriptionId:
           type: string
+        contextInfo:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ContextInfo'
 
 
     MonitoringConfiguration:
@@ -248,6 +250,22 @@ components:
           $ref: '#/components/schemas/AssociationType'
         datalinkReportCfg:
           $ref: '#/components/schemas/DatalinkReportingConfiguration'
+        lossConnectivityCfg:
+          $ref: '#/components/schemas/LossConnectivityCfg'
+        maximumLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        maximumResponseTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        suggestedPacketNumDl:
+          type: integer
+          minimum: 1
+
+
+    LossConnectivityCfg:
+      type: object
+      properties:
+        maxDetectionTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
     LocationReportingConfiguration:
       type: object
@@ -313,7 +331,8 @@ components:
       properties:
         smsfAccessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
-
+        maxAvailabilityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
     ChangeOfSupiPeiAssociationReport:
       type: object
       required:

@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: 3gpp-nidd-configuration-trigger
+  title: 3gpp-mo-lcs-notify
   version: 1.0.0
   description: |
-    API for NIDD Configuration Trigger.
+    API for UE updated location information notification.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
@@ -13,7 +13,7 @@ security:
   - {}
   - oAuth2ClientCredentials: []
 servers:
-  - url: '{apiRoot}'
+  - url: '{apiRoot}/3gpp-mo-lcs-notify/v1'
     variables:
       apiRoot:
         default: https://example.com
@@ -21,19 +21,22 @@ servers:
 paths:
   /:
     post:
+      summary: UE location information update notification
+      tags:
+        - AF level UE location update notification operation
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NiddConfigurationTrigger'
+              $ref: '#/components/schemas/LocUpdateData'
+        required: true
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NiddConfigurationTriggerReply'
+                $ref: '#/components/schemas/LocUpdateDataReply'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -56,7 +59,6 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -65,26 +67,26 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
-  schemas: 
-    NiddConfigurationTrigger:
+  schemas:
+    LocUpdateData:
       type: object
       properties:
-        afId:
-          type: string
-          description: Identifies the trigger receiving entity.
-        nefId:
-          type: string
-          description: Identifies the trigger sending entity.
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        locInfo:
+          $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/LocationInfo'
+        lcsQosClass:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LcsQosClass'
+        svcId:
+          $ref: 'TS29515_Ngmlc_Location.yaml#/components/schemas/ServiceIdentity'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
-        - afId
-        - nefId
         - gpsi
+        - lcsQosClass
+        - locInfo
         - suppFeat
-    NiddConfigurationTriggerReply:
+    LocUpdateDataReply:
       type: object
       properties:
         suppFeat:

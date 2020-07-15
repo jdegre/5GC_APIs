@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0.alpha-4
+  version: 1.1.0
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.508 V16.3.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V16.4.0; 5G System; Session Management Event Exposure Service.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 servers:
   - url: '{apiRoot}/nsmf_event-exposure/v1'
@@ -34,7 +34,7 @@ paths:
               $ref: '#/components/schemas/NsmfEventExposure'
       responses:
         '201':
-          description: Success
+          description: Created.
           headers:
             Location:
               description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-event-exposure/v1/subscriptions/{subId}'
@@ -79,9 +79,15 @@ paths:
                       $ref: '#/components/schemas/NsmfEventExposureNotification'
               responses:
                 '204':
-                  description: No Content, Notification was succesfull
+                  description: No Content, Notification was successful.
                 '307':
-                  description: temporary redirect
+                  description: Temporary Redirect
+                  headers:
+                    Location:
+                      description: 'The URI pointing to the endpoint of another NF service consumer to which the notification should be sent.'
+                      required: true
+                      schema:
+                        type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -197,13 +203,13 @@ paths:
             type: string
       responses:
         '200':
-          description: OK. Resource was succesfully modified and representation is returned
+          description: OK. Resource was successfully modified and representation is returned
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NsmfEventExposure'
         '204':
-          description: No Content. Resource was succesfully modified
+          description: No Content. Resource was successfully modified
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -240,7 +246,7 @@ paths:
             type: string
       responses:
         '204':
-          description: No Content. Resource was succesfully deleted
+          description: No Content. Resource was successfully deleted
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -277,11 +283,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         anyUeInd:
           type: boolean
-          description: Any UE indication. This IE shall be present if the event subscription is applicable to any UE. Default value "FALSE" is used, if not present.
+          description: Any UE indication. This IE shall be present if the event subscription is applicable to any UE. Default value "false" is used, if not present.
         groupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         pduSeId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         subId:
           $ref: '#/components/schemas/SubId'
         notifId:
@@ -293,14 +303,20 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-          description: Alternate or backup IPv4 Addess(es) where to send Notifications.
+          description: Alternate or backup IPv4 address(es) where to send Notifications.
           minItems: 1
         altNotifIpv6Addrs:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-          description: Alternate or backup IPv6 Addess(es) where to send Notifications.
+          description: Alternate or backup IPv6 address(es) where to send Notifications.
           minItems: 1
+        altNotifFqdns:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          minItems: 1
+          description: Alternate or backup FQDN(s) where to send Notifications.
         eventSubs:
           type: array
           items:
@@ -480,7 +496,7 @@ components:
     SubId:
       type: string
       format: SubId
-      description: Identifies an Individual SMF Notification Subscription. To enable that the value is used as part of a URI, the string shall only contain characters allowed according to the "lower-with-hyphen" naming convention defined in 3GPP TS 29.501 [2]. In an OpenAPI [10] schema, the format shall be designated as "SubId".
+      description: Identifies an Individual SMF Notification Subscription. To enable that the value is used as part of a URI, the string shall only contain characters allowed according to the "lower-with-hyphen" naming convention defined in 3GPP TS 29.501. In an OpenAPI schema, the format shall be designated as "SubId".
     AckOfNotify:
       type: object
       properties:

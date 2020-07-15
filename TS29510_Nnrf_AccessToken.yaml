@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0.alpha-3'
+  version: '1.1.0'
   title: 'NRF OAuth2'
   description: |
     NRF OAuth2 Authorization.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V16.3.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V16.4.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 paths:
@@ -126,11 +126,28 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
         scope:
           type: string
-          pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+          pattern: '^([a-zA-Z0-9_:-]+)( [a-zA-Z0-9_:-]+)*$'
         targetNfInstanceId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         requesterPlmn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        requesterPlmnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 2
+        requesterSnssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        requesterFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        requesterSnpnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+          minItems: 1
         targetPlmn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         targetSnssaiList:
@@ -145,6 +162,8 @@ components:
           minItems: 1
         targetNfSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        targetNfServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
     AccessTokenRsp:
       description: Contains information related to the access token response
       type: object
@@ -163,7 +182,7 @@ components:
           type: integer
         scope:
           type: string
-          pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+          pattern: '^([a-zA-Z0-9_:-]+)( [a-zA-Z0-9_:-]+)*$'
     AccessTokenClaims:
       description: The claims data structure for the access token
       type: object
@@ -187,7 +206,7 @@ components:
               minItems: 1
         scope:
           type: string
-          pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+          pattern: '^([a-zA-Z0-9_:-]+)( [a-zA-Z0-9_:-]+)*$'
         exp:
           type: integer
         consumerPlmnId:
