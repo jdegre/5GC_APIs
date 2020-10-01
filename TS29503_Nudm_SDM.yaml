@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.1.0'
+  version: '2.2.0.alpha-1'
   title: 'Nudm_SDM'
   description: |
     Nudm Subscriber Data Management Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.0.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -223,6 +223,16 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: adjacentPlmns
+          in: query
+          description: list of PLMNs adjacent to the UE's serving PLMN
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+            minItems: 1
+          style: form
+          explode: false
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -1828,6 +1838,37 @@ components:
         iabOperationAllowed:
           type: boolean
           default: false
+        adjacentPlmnRestrictions:
+          description: A map (list of key-value pairs where PlmnId serves as key) of PlmnRestriction
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PlmnRestriction'
+
+    PlmnRestriction:
+      type: object
+      properties:
+        ratRestrictions:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        forbiddenAreas:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Area'
+        serviceAreaRestriction:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ServiceAreaRestriction'
+        coreNetworkTypeRestrictions:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/CoreNetworkType'
+        primaryRatRestrictions:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        secondaryRatRestrictions:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
 
     CagData:
       type: object
@@ -1893,6 +1934,15 @@ components:
         iwkEpsInd:
           $ref: '#/components/schemas/IwkEpsInd'
         dnnBarred:
+          type: boolean
+        invokeNefInd:
+          type: boolean
+        smfList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          minItems: 1
+        sameSmfInd:
           type: boolean
 
     Nssai:
@@ -1975,6 +2025,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         plmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        singleNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
 
     PgwInfo:
       type: object
@@ -2063,8 +2115,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UpSecurity'
         pduSessionContinuityInd:
           $ref: '#/components/schemas/PduSessionContinuityInd'
-        invokeNefSelection:
-          type: boolean
         niddNefId:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NefId'
         niddInfo:
@@ -2086,6 +2136,12 @@ components:
         atsssAllowed:
           type: boolean
           default: false
+        secondaryAuth:
+          type: boolean
+        dnAaaIpAddressAllocation:
+          type: boolean
+        dnAaaAddress:
+          $ref: '#/components/schemas/IpAddress'
 
     NiddInformation:
       type: object
@@ -2340,6 +2396,11 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/VnGroupData'
+          minProperties: 1
+        treatmentInstructions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SharedDataTreatmentInstruction'
           minProperties: 1
 
     TraceDataResponse:
@@ -2619,10 +2680,6 @@ components:
       properties:
         maximumResponseTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
@@ -2633,10 +2690,6 @@ components:
       properties:
         maximumLatency:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
@@ -2918,4 +2971,14 @@ components:
           enum:
           - CONSENT_NOT_GIVEN
           - CONSENT_GIVEN
+        - type: string
+
+    SharedDataTreatmentInstruction:
+      anyOf:
+        - type: string
+          enum:
+          - USE_IF_NO_CLASH
+          - OVERWRITE
+          - MAX
+          - MIN
         - type: string

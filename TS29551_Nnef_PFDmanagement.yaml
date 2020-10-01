@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nnef_PFDmanagement Service API
-  version: 1.1.0
+  version: 1.2.0.alpha-1
   description: |
     Packet Flow Description Management Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 #
 externalDocs:
-  description: 3GPP TS 29.551 v16.4.0, 5G System; Packet Flow Description Management Service
+  description: 3GPP TS 29.551 v17.0.0, 5G System; Packet Flow Description Management Service
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.551/'
 #
 servers:
@@ -179,6 +179,45 @@ paths:
                 '503':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                   
+        NotificationPush:
+          '{request.body#/notifyUri}/notifypush':
+            post:
+              summary: Notification Push.
+              tags:
+                - NotificationPush data
+              operationId: Nnef_PFDmanagement_Notify
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/NotificationPush'
+                      minItems: 1
+              responses:
+                '204':
+                  description: Notificaiton PUSH is accepted.
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
             
       responses:
         '201':
@@ -385,6 +424,19 @@ components:
           minItems: 1
       required:
         - applicationId
+
+    NotificationPush:
+      type: object
+      properties:
+        appIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          minItems: 1
+        allowedDelay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - appIds
 
     PfdChangeReport:
       type: object
