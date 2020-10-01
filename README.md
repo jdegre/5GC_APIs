@@ -9,7 +9,7 @@ All rights reserved.
 ```
 API version: **September 2020**<br/>
 Release status: **Frozen** <sup>&#x1F512;</sup><br/>
-Other releases: [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/master)<br/>
+Other releases: [Rel-17 (Open)](https://github.com/jdegre/5GC_APIs/tree/master), [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
 <br/><br/>
 
