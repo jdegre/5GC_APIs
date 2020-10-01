@@ -8,8 +8,8 @@ The files in this repository have been created by 3GPP, and the master source ca
 All rights reserved.
 ```
 API version: **September 2020**<br/>
-Release status: **Open** <sup>&#x1F512;</sup><br/>
-Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
+Release status: **Open** <sup>&#x2705;</sup><br/>
+Other releases: [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
 <br/><br/>
 
