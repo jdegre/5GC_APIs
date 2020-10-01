@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.5.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -36,8 +36,10 @@ paths:
           in: path
           description: Identifier of the UE
           required: true
-          schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+          schema: 
+            anyOf:
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+              - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
         - name: supported-features
           in: query
           description: Features required to be supported by the target NF
@@ -70,14 +72,14 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
-  /5g-vn-groups/{external-group-id}:
+  /5g-vn-groups/{extGroupId}:
     put:
       summary: create a 5G VN Group
       operationId: Create 5G VN Group
       tags:
         - 5G VN Group Creation
       parameters:
-        - name: external-group-id
+        - name: extGroupId
           in: path
           description: External Identifier of the Group
           required: true
@@ -110,7 +112,7 @@ paths:
       tags:
         - 5G VN Group Deletion
       parameters:
-        - name: external-group-id
+        - name: extGroupId
           in: path
           description: External Identifier of the Group
           required: true
@@ -137,7 +139,7 @@ paths:
       tags:
         - 5G VN Group Modification
       parameters:
-        - name: external-group-id
+        - name: extGroupId
           in: path
           description: External Identifier of the group
           required: true
@@ -302,7 +304,6 @@ components:
           minItems: 1
         secondaryAuth:
           type: boolean
-          default: false
         dnAaaAddress:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpAddress'
 

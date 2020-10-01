@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V16.4.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V16.5.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -128,6 +128,16 @@ paths:
         - name: plmn-specific-snssai-list
           in: query
           description: PLMN specific Slice info of the target NF
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/PlmnSnssai'
+                minItems: 1
+        - name: requester-plmn-specific-snssai-list
+          in: query
+          description: PLMN-specific slice info of the NF issuing the Discovery request
           content:
             application/json:
               schema:
@@ -484,6 +494,16 @@ paths:
           description: Notification Type
           schema:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NotificationType'
+        - name: n1-msg-class
+          in: query
+          description: N1 Message Class
+          schema:
+            $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N1MessageClass'
+        - name: n2-info-class
+          in: query
+          description: N2 Information Class
+          schema:
+            $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N2InformationClass'
         - name: serving-scope
           in: query
           description: areas that can be served by the target NF
@@ -497,6 +517,21 @@ paths:
         - name: imsi
           in: query
           description: IMSI of the requester UE to search for an appropriate NF (e.g. HSS)
+          schema:
+            type: string
+        - name: ims-private-identity
+          in: query
+          description: IMPI of the requester UE to search for a target HSS
+          schema:
+            type: string
+        - name: ims-public-identity
+          in: query
+          description: IMS Public Identity of the requester UE to search for a target HSS
+          schema:
+            type: string
+        - name: msisdn
+          in: query
+          description: MSISDN of the requester UE to search for a target HSS
           schema:
             type: string
         - name: preferred-api-versions
@@ -559,11 +594,6 @@ paths:
           description: NF Set ID served by the SCP
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
-        - name: served-nf-type
-          in: query
-          description: NF type of NFs served by the SCP
-          schema:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
         - name: remote-plmn-id
           in: query
           description: Id of the PLMN reachable through the SCP

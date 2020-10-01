@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V16.4.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V16.5.0; 5G System; Session Management Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -261,11 +261,11 @@ paths:
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+          $ref: '#/components/responses/413'
         '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+          $ref: '#/components/responses/415'
         '429':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+          $ref: '#/components/responses/429'
 
         '500':
           description: unsuccessful creation of an SM context - internal server error
@@ -615,11 +615,11 @@ paths:
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+          $ref: '#/components/responses/413'
         '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+          $ref: '#/components/responses/415'
         '429':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+          $ref: '#/components/responses/429'
         '500':
           description: unsuccessful update of an SM context - Internal server error
           content:
@@ -797,25 +797,25 @@ paths:
         '204':
           description: successful sending of MO data
         '400':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+          $ref: '#/components/responses/400'
         '401':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+          $ref: '#/components/responses/401'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          $ref: '#/components/responses/403'
         '404':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+          $ref: '#/components/responses/404'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+          $ref: '#/components/responses/413'
         '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+          $ref: '#/components/responses/415'
         '429':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+          $ref: '#/components/responses/429'
         '500':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+          $ref: '#/components/responses/500'
         '503':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+          $ref: '#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -1641,17 +1641,31 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         hSmfUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        hSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         smfUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        smfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         additionalHsmfUri:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
           minItems: 1
+        additionalHsmfId:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          minItems: 1
         additionalSmfUri:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        additionalSmfId:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
           minItems: 1
         oldPduSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
@@ -1722,6 +1736,8 @@ components:
           $ref: '#/components/schemas/N2SmInfoType'
         smContextRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        smContextSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         upCnxState:
           $ref: '#/components/schemas/UpCnxState'
         smallDataRateStatus:
@@ -2274,6 +2290,9 @@ components:
         smallDataRateControlEnabled:
           type: boolean
           default: false
+        ueIpv6InterfaceId:
+          type: string
+          pattern: '^[A-Fa-f0-9]{16}$'
       required:
         - pduSessionType
         - sscMode
@@ -2668,6 +2687,8 @@ components:
           type: integer
           minimum: 1
           maximum: 8
+        nullQoSProfileIndex:
+          type: boolean
       required:
         - qfi
 
@@ -2780,6 +2801,8 @@ components:
           type: integer
           minimum: 1
           maximum: 8
+        nullQoSProfileIndex:
+          type: boolean
       required:
         - qfi
         - notificationCause
@@ -2905,7 +2928,7 @@ components:
       type: object
       properties:
         error:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: '#/components/schemas/ExtProblemDetails'
         n1SmMsg:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         n2SmInfo:
@@ -2921,7 +2944,7 @@ components:
       type: object
       properties:
         error:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: '#/components/schemas/ExtProblemDetails'
         n1SmMsg:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         n2SmInfo:
@@ -3332,6 +3355,17 @@ components:
       required:
         - index
 
+    ExtProblemDetails:
+      allOf:
+      - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      - $ref: '#/components/schemas/ProblemDetailsAddInfo'
+
+    ProblemDetailsAddInfo:
+      type: object
+      properties:
+        remoteError:
+          type: boolean
+
 
 #
 # SIMPLE DATA TYPES
@@ -3513,7 +3547,9 @@ components:
           - REL_DUE_TO_SLICE_NOT_AUTHORIZED
           - PDU_SESSION_HAND_OVER_FAILURE
           - DDN_FAILURE_STATUS
-          - REL_DUE_TO_CP_ONLY_NOT_APPLICABLE      - type: string
+          - REL_DUE_TO_CP_ONLY_NOT_APPLICABLE
+          - NOT_SUPPORTED_WITH_ISMF
+      - type: string
         description: >
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
@@ -3544,6 +3580,7 @@ components:
         - PDU_SESSION_HAND_OVER_FAILURE
         - DDN_FAILURE_STATUS
         - REL_DUE_TO_CP_ONLY_NOT_APPLICABLE
+        - NOT_SUPPORTED_WITH_ISMF
 
     ResourceStatus:
       anyOf:
@@ -3809,6 +3846,7 @@ components:
           - UL
           - DL
           - BOTH
+          - NONE
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -3819,6 +3857,7 @@ components:
           - UL
           - DL
           - BOTH
+          - NONE
 
 #
 # HTTP request bodies
@@ -4060,3 +4099,58 @@ components:
                 Content-Id:
                   schema:
                     type: string
+
+    '400':
+      description: Bad request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '401':
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '403':
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '404':
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '413':
+      description: Payload Too Large
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '415':
+      description: Unsupported Media Type
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '429':
+      description: Too Many Requests
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '500':
+      description: Internal Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'
+    '503':
+      description: Service Unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ExtProblemDetails'

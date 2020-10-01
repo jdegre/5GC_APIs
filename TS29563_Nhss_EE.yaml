@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'Nhss_EE'
   description: |
     HSS Event Exposure
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.563 HSS Services for Interworking With UDM, version 16.1.0
+  description: 3GPP TS 29.563 HSS Services for Interworking With UDM, version 16.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.563/'
 
 servers:
@@ -53,7 +53,7 @@ paths:
                 $ref: '#/components/schemas/CreatedEeSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-ee/v1/{ueIdentity}/ee-subscriptions/{subscriptionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nhss-ee/v1/{ueId}/ee-subscriptions/{subscriptionId}'
               required: true
               schema:
                 type: string
@@ -187,10 +187,6 @@ components:
 
 # COMPLEX TYPES:
 
-    Imsi:
-      type: string
-      pattern: '^(imsi-[0-9]{5,15})$'
-
     EeSubscription:
       type: object
       required:
@@ -208,6 +204,8 @@ components:
           minProperties: 1
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        reportingOptions:
+          $ref: '#/components/schemas/ReportingOptions'
 
     CreatedEeSubscription:
       type: object
@@ -228,9 +226,15 @@ components:
         - eventType
       properties:
         eventType:
-          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EventType'
-        immediateReport:
+          $ref: '#/components/schemas/EventType'
+        immediateFlag:
           type: boolean
+        locationReportingConfiguration:
+          $ref: '#/components/schemas/LocationReportingConfiguration'
+        lossConnectivityConfiguration:
+          $ref: '#/components/schemas/LossConnectivityConfiguration'
+        reachabilityForDataConfiguration:
+          $ref: '#/components/schemas/ReachabilityForDataConfiguration'
 
     MonitoringReport:
       type: object
@@ -242,18 +246,100 @@ components:
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         eventType:
-          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EventType'
+          $ref: '#/components/schemas/EventType'
         timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         report:
           $ref: '#/components/schemas/Report'
 
+    ReportingOptions:
+      type: object
+      properties:
+        maxNumOfReports:
+          $ref: '#/components/schemas/MaxNumOfReports'
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        reportPeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+
     Report:
-      type: object  # TBD
+      type: object
+      properties:
+        reachabilityForSmsReport:
+          $ref: '#/components/schemas/ReachabilityForSmsReport'
+
+    ReachabilityForSmsReport:
+      type: object
+      required:
+        - reachabilitySmsStatus
+      properties:
+        reachabilitySmsStatus:
+          type: boolean
+        maxAvailabilityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    LossConnectivityConfiguration:
+      type: object
+      properties:
+        maxDetectionTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+
+    LocationReportingConfiguration:
+      type: object
+      required:
+        - currentLocation
+      properties:
+        currentLocation:
+          type: boolean
+        accuracy:
+          $ref: '#/components/schemas/LocationAccuracy'
+    ReachabilityForDataConfiguration:
+      type: object
+      anyOf:
+        - required: [ maximumLatency ]
+        - required: [ maximumResponseTime ]
+        - required: [ suggestedPacketNumDl ]
+      properties:
+        maximumLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        maximumResponseTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        suggestedPacketNumDl:
+          type: integer
+          minimum: 1
 
 # SIMPLE TYPES:
 
     ReferenceId:
       type: integer
 
+    Imsi:
+      type: string
+      pattern: '^(imsi-[0-9]{5,15})$'
+
+    MaxNumOfReports:
+      type: integer
+      minimum: 1
+
 # ENUMS:
+
+    EventType:
+      anyOf:
+        - type: string
+          enum:
+          - LOSS_OF_CONNECTIVITY
+          - UE_REACHABILITY_FOR_DATA
+          - UE_REACHABILITY_FOR_SMS
+          - LOCATION_REPORTING
+          - COMMUNICATION_FAILURE
+          - AVAILABILITY_AFTER_DDN_FAILURE
+          - PDN_CONNECTIVITY_STATUS
+        - type: string
+
+    LocationAccuracy:
+      anyOf:
+        - type: string
+          enum:
+          - CELL_LEVEL
+          - TA_LEVEL
+        - type: string
