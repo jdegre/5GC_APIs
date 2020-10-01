@@ -1,4 +1,4 @@
-# OpenAPI Specification Files for 3GPP 5G Core Network (Release 16)
+# OpenAPI Specification Files for 3GPP 5G Core Network (Release 17)
 
 [![Build Status](https://travis-ci.org/jdegre/5GC_APIs.svg?branch=master)](https://travis-ci.org/jdegre/5GC_APIs)
 
@@ -7,8 +7,8 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **June 2020**<br/>
-Release status: **Frozen** <sup>&#x1F512;</sup><br/>
+API version: **September 2020**<br/>
+Release status: **Open** <sup>&#x1F512;</sup><br/>
 Other releases: [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
 <br/><br/>
