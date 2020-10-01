@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: Ngmlc_Location
   description: |
     Ngmlc_Location Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.515 V16.1.0; 5G System; Gateway Mobile Location Services; Stage 3
+  description: 3GPP TS 29.515 V16.2.0; 5G System; Gateway Mobile Location Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.515/'
 
 servers:
@@ -70,6 +70,42 @@ paths:
       callbacks:
         EventNotify:
           '{$request.body#/hgmlcCallBackUri}':
+            post:
+              requestBody:
+                description: UE Event Notification
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventNotifyData'
+              responses:
+                '204':
+                  description: Expected response to a valid notification
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                '504':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        EventNotifyNef:
+          '{$request.body#/eventNotificationUri}':
             post:
               requestBody:
                 description: UE Event Notification
@@ -182,6 +218,82 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/504'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /loc-update-subs:
+    post:
+      summary: subscribe to notifications of UE location information
+      operationId: LocationUpdateSubcribe
+      tags:
+        - UE location information Subscription creation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocUpdateSubs'
+        required: true
+      responses:
+        '204':
+          description: Expected response to successful UE location information subscription
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        LocationUpdateNotify:
+          '{$request.body#/notifUri}':
+            post:
+              requestBody:
+                description: Location Update Notification
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/LocUpdateNotification'
+              responses:
+                '204':
+                  description: Expected response to a valid notification
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                '504':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
 components:
   securitySchemes:
@@ -192,44 +304,6 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             ngmlc-loc: Access to the Ngmlc_Location API
-
-  callbacks:
-    LocationUpdateNotify:
-      '{locationUpdateCallbackUri}': # The {locationUpdateCallbackUri} is configured in GMLC or discovered via NRF
-        post:
-          requestBody:
-            description: Location Update Notification
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/LocUpdateNotification'
-          responses:
-            '204':
-              description: Expected response to a valid notification
-            '400':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-            '401':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/401'
-            '403':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/403'
-            '404':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-            '411':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-            '413':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-            '415':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/415'
-            '429':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/429'
-            '500':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-            '503':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-            '504':
-              $ref: 'TS29571_CommonData.yaml#/components/responses/504'
-            default:
-              $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
   schemas:
 #
@@ -271,6 +345,8 @@ components:
         ldrReference:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LdrReference'
         hgmlcCallBackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        eventNotificationUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         externalClientIdentification:
           $ref: '#/components/schemas/ExternalClientIdentification'
@@ -323,7 +399,12 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
         ldrReference:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LdrReference'
-
+        altitude:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
+        servingLMFIdentification:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
+        locationPrivacyVerResult:
+          $ref: 'TS29518_Namf_Location.yaml#/components/schemas/LocationPrivacyVerResult'
     CancelLocData:
       type: object
       required:
@@ -413,6 +494,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfId'
         terminationCause:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/TerminationCause'
+        velocityEstimate:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
+        altitude:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
+        targetNode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
 
     UePrivacyRequirements:
       type: object
@@ -451,6 +538,22 @@ components:
           type: string
         serviceIdentity:
           $ref: '#/components/schemas/ServiceIdentity'
+
+    LocUpdateSubs:
+      type: object
+      required:
+        - nfInstanceId
+        - notifURI
+      properties:
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        notifURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+
 
 #
 # SIMPLE TYPES
@@ -503,4 +606,5 @@ components:
             - MAXIMUM_INTERVAL_EXPIRATION_EVENT
             - LOCATION_CANCELLATION_EVENT
             - ACTIVATION_OF_DEFERRED_LOCATION
+            - UE_MOBILITY_FOR_DEFERRED_LOCATION
         - type: string

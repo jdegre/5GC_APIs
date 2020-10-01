@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'N32 Handshake API'
   description: |
    N32-c Handshake Service.
@@ -14,7 +14,7 @@ servers:
         default: https://example.com
         description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 externalDocs:
-  description: 3GPP TS 29.573 V16.3.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  description: 3GPP TS 29.573 V16.4.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
 
 paths:
@@ -76,6 +76,8 @@ paths:
                 $ref: '#/components/schemas/SecParamExchRspData'
         '400': 
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '409': 
+          $ref: 'TS29571_CommonData.yaml#/components/responses/409'
         '411': 
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413': 
@@ -272,6 +274,9 @@ components:
           items:
             $ref: '#/components/schemas/SecurityCapability'
           minItems: 1
+        3GppSbiTargetApiRootSupported:
+          type: boolean
+          default: false
 
     SecNegotiateRspData:
       type: object
@@ -283,6 +288,9 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
         selectedSecCapability:
           $ref: '#/components/schemas/SecurityCapability'
+        3GppSbiTargetApiRootSupported:
+          type: boolean
+          default: false
   
     SecParamExchReqData:
       type: object
@@ -415,6 +423,10 @@ components:
             - MODIFICATIONS_INSTRUCTIONS_FAILED
             - DECIPHERING_FAILED
             - MESSAGE_RECONSTRUCTION_FAILED
+            - CONTEXT_NOT_FOUND
+            - INTEGRITY_KEY_EXPIRED
+            - ENCRYPTION_KEY_EXPIRED
+            - POLICY_MISMATCH
         - type: string
     FailureReason:
       anyOf:

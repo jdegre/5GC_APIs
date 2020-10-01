@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0
+  version: 1.1.1
   title: Namf_Communication
   description: |
     AMF Communication Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-comm
 externalDocs:
-  description: 3GPP TS 29.518 V16.4.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.5.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-comm/v1'
@@ -1656,6 +1656,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
         guami:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+        notifySourceNgRan:
+          type: boolean
+          default: false
       required:
         - n2NotifySubscriptionId
     N2InfoContainer:
@@ -1871,6 +1874,8 @@ components:
         udmGroupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         ausfGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        pcfGroupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         routingIndicator:
           type: string
@@ -2103,6 +2108,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         nasSecurityMode:
           $ref: '#/components/schemas/NasSecurityMode'
+        epsNasSecurityMode:
+          $ref: '#/components/schemas/EpsNasSecurityMode'
         nasDownlinkCount:
           $ref: '#/components/schemas/NasCount'
         nasUplinkCount:
@@ -2120,6 +2127,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NssaiMapping'
+          minItems: 1
+        allowedHomeNssai:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 1
         nsInstanceList:
           type: array
@@ -2541,6 +2553,18 @@ components:
           maxItems: 16
       required:
         - jobType
+
+    EpsNasSecurityMode:
+      type: object
+      properties:
+        integrityAlgorithm:
+          $ref: '#/components/schemas/EpsNasIntegrityAlgorithm'
+        cipheringAlgorithm:
+          $ref: '#/components/schemas/EpsNasCipheringAlgorithm'
+      required:
+        - integrityAlgorithm
+        - cipheringAlgorithm
+
 #
 # SIMPLE DATA TYPES
 #
@@ -2714,6 +2738,7 @@ components:
           - RIM_INFO_TRANSFER
           - SECONDARY_RAT_USAGE
           - PC5_QOS_PARA
+          - EARLY_STATUS_TRANS_CONTAINER
       - type: string
     N2InfoNotifyReason:
       anyOf:
@@ -2735,4 +2760,24 @@ components:
           - NF_INSTANCE_BINDING
           - NF_SET_BINDING
           - NF_SERVICE_SET_BINDING
+      - type: string
+
+    EpsNasCipheringAlgorithm:
+      anyOf:
+      - type: string
+        enum:
+          - EEA0
+          - EEA1
+          - EEA2
+          - EEA3
+      - type: string
+
+    EpsNasIntegrityAlgorithm:
+      anyOf:
+      - type: string
+        enum:
+          - EIA0
+          - EIA1
+          - EIA2
+          - EIA3
       - type: string

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'NSSF NSSAI Availability'
   description: |
     NSSF NSSAI Availability Service.
@@ -18,7 +18,7 @@ servers:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 externalDocs:
-  description: 3GPP TS 29.531 V16.3.0; 5G System; Network Slice Selection Services; Stage 3
+  description: 3GPP TS 29.531 V16.4.0; 5G System; Network Slice Selection Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.531/
 paths:
   /nssai-availability/{nfId}:
@@ -336,6 +336,66 @@ paths:
       
         default:
           description: Unexpected error
+    
+    patch:
+      summary: updates an already existing NSSAI availability notification subscription
+      tags:
+        - Subscription ID (Document)
+      operationId: NSSAIAvailabilitySubModifyPatch
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription for notification
+          required: true
+          schema:
+            type: string
+        - name: Content-Encoding
+          in: header
+          description: Content-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
+      requestBody:
+        description: JSON Patch instructions to update at the NSSF, the NSSAI availability notification subscription
+        required: true
+        content:
+          application/json-patch+json::
+            schema:
+              $ref: '#/components/schemas/PatchDocument'
+          
+      responses:
+        '200':
+          description: OK (Successful update of NSSAI availability notification subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NssfEventSubscriptionCreatedData'
+          headers:
+            Content-Encoding:
+              description: Content-Encoding, described in IETF RFC 7231
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
 
   /nssai-availability:
     options:
@@ -500,7 +560,6 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
-          minItems: 1
         event:
           $ref: '#/components/schemas/NssfEventType'
         expiry:
@@ -508,6 +567,13 @@ components:
         amfSetId:
           type: string
           pattern: '^[0-9]{3}-[0-9]{2-3}-[A-Fa-f0-9]{2}-[0-3][A-Fa-f0-9]{2}$'
+        taiRangeList:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TaiRange'
+          minItems: 1
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
   
     NssfEventSubscriptionCreatedData:
       type: object
@@ -523,6 +589,8 @@ components:
           items:
             $ref: '#/components/schemas/AuthorizedNssaiAvailabilityData'
           minItems: 1
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
   
     NssfEventNotification:
       type: object
@@ -536,7 +604,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuthorizedNssaiAvailabilityData'
-          minItems: 1
     NssfEventType:
       anyOf:
         - type: string
