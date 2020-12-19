@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.0.1'
+  version: '1.0.2'
   title: Ngmlc_Location
   description: |
     Ngmlc_Location Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.515 V16.2.0; 5G System; Gateway Mobile Location Services; Stage 3
+  description: 3GPP TS 29.515 V16.3.0; 5G System; Gateway Mobile Location Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.515/'
 
 servers:
@@ -76,7 +76,7 @@ paths:
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/EventNotifyData'
+                      $ref: '#/components/schemas/EventNotifyDataExt'
               responses:
                 '204':
                   description: Expected response to a valid notification
@@ -318,6 +318,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        extGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
+        intGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         externalClientType:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/ExternalClientType'
         locationQoS:
@@ -405,6 +409,8 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
         locationPrivacyVerResult:
           $ref: 'TS29518_Namf_Location.yaml#/components/schemas/LocationPrivacyVerResult'
+        successType:
+          $ref: '#/components/schemas/SuccessType'
     CancelLocData:
       type: object
       required:
@@ -415,6 +421,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        extGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
+        intGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         hgmlcCallBackUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         ldrReference:
@@ -500,6 +510,10 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/Altitude'
         targetNode:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        accuracyFulfilmentIndicator:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/AccuracyFulfilmentIndicator'
+        failureCause:
+          $ref: '#/components/schemas/FailureCause'
 
     UePrivacyRequirements:
       type: object
@@ -554,6 +568,20 @@ components:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
 
+    EventNotifyDataExt:
+      allOf:
+      - $ref: '#/components/schemas/EventNotifyData'
+      - $ref: '#/components/schemas/EventNotifyDataAdditionalInfo'
+
+    EventNotifyDataAdditionalInfo:
+      type: object
+      properties:
+        addEventDataList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventNotifyData'
+          minItems: 1
+
 
 #
 # SIMPLE TYPES
@@ -607,4 +635,22 @@ components:
             - LOCATION_CANCELLATION_EVENT
             - ACTIVATION_OF_DEFERRED_LOCATION
             - UE_MOBILITY_FOR_DEFERRED_LOCATION
+            - 5GC_MT_LR
+        - type: string
+    FailureCause:
+      anyOf:
+        - type: string
+          enum:
+            - POSITIONING_DENIED
+            - UNSUPPORTED_BY_UE
+            - NOT_REGISTED_UE
+            - UNSPECIFIED
+        - type: string
+
+    SuccessType:
+      anyOf:
+        - type: string
+          enum:
+            - SUCCESS_COMPLETELY
+            - SUCCESS_PARTIALLY
         - type: string

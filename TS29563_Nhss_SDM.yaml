@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.0'
+  version: '1.0.1'
   title: 'Nhss_SDM'
   description: |
     HSS Subscriber Data Management.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.563 HSS Services for Interworking With UDM, version 16.1.0
+  description: 3GPP TS 29.563 HSS Services for Interworking With UDM, version 16.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.563/'
 
 servers:
@@ -231,7 +231,33 @@ components:
 
     SubscriptionData:
       type: object
-      # FFS
+      required:
+        - nfInstanceId
+        - callbackReference
+        - monitoredResourceUris
+      properties:
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        callbackReference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        monitoredResourceUris:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        expires:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        immediateReport:
+          type: boolean
+          default: false
+        report:
+          $ref: '#/components/schemas/SubscriptionDataSets'
+
+    SubscriptionDataSets:
+      type: object
+      properties:
+        ueContextInPgwData:
+          $ref: '#/components/schemas/UeContextInPgwData'
 
 # SIMPLE TYPES:
 

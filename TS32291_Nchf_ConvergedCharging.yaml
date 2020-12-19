@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.0.0
+  version: 3.0.1
   description: |
-    ConvergedCharging Service    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    ConvergedCharging Service    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V16.5.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V16.6.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -199,6 +199,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         tenantIdentifier:
           type: string
+        chargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
         mnSConsumerIdentifier:
           type: string
         nfConsumerIdentification:
@@ -329,6 +331,8 @@ components:
           minItems: 0
         uPFID:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        multihomedPDUAddress:
+          $ref: '#/components/schemas/PDUAddress'
       required:
         - ratingGroup
     InvocationResult:
@@ -353,6 +357,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
         maxNumberOfccc:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        tariffTimeChange:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
       required:
         - triggerType
         - triggerCategory
@@ -574,6 +581,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         mAPDUSessionInformation:
           $ref: '#/components/schemas/MAPDUSessionInformation'
+        enhancedDiagnostics:
+          $ref: '#/components/schemas/EnhancedDiagnostics5G'
       required:
         - pduSessionID
         - dnnId
@@ -630,16 +639,12 @@ components:
         maximumPacketLossRate:
           type: string
         serviceExperienceStatisticsData:
-          # Interim fix, to be corrected at next meeting
-          # $ref: 'TS29520_CommonData.yaml#/components/schemas/ServiceExperienceInfo'
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/ServiceExperienceInfo'
         theNumberOfPDUSessions:
           type: integer
         theNumberOfRegisteredSubscribers:
           type: integer
         loadLevel:
-          # Interim fix, to be corrected at next meeting
-          # $ref: 'TS29520_CommonData.yaml#/components/schemas/NsiLoadLevelInfo'
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NsiLoadLevelInfo'
     NSPAChargingInformation:
       type: object
@@ -647,7 +652,7 @@ components:
         singleNSSAI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
-        - sNSSAI
+        - singleNSSAI
     NetworkSlicingInfo:
       type: object
       properties:
@@ -778,6 +783,8 @@ components:
           minItems: 0
         userEquipmentInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
+        roamerInOut:
+          $ref: '#/components/schemas/RoamerInOut'
         userLocationinfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         uetimeZone:
@@ -796,6 +803,7 @@ components:
           type: string
         sMStatus:
           type: string
+          pattern: '^[0-7]?[0-9a-fA-F]$'
         sMDischargeTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         numberofMessagesSent:
@@ -1144,6 +1152,14 @@ components:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/MaPduIndication'
         aTSSSCapability:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AtsssCapability'
+    EnhancedDiagnostics5G:
+      $ref: '#/components/schemas/RanNasCauseList'
+    RanNasCauseList:
+      type: array
+      items:
+        $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RanNasRelCause'
+
+    # Temporary fix to correct wrong indentation of "NotificationType"
     NotificationType:
       anyOf:
         - type: string
@@ -1157,7 +1173,9 @@ components:
           enum:
             - AMF
             - SMF
-            - SMSF
+            - SMS
+            - PGW_C_SMF
+            - NEFF
             - SGW
             - I_SMF
             - ePDG
@@ -1303,6 +1321,7 @@ components:
             - SUBMISSION
             - DELIVERY_REPORT
             - SM_SERVICE_REQUEST
+            - DELIVERY
         - type: string
     SMPriority:
       anyOf:

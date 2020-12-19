@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.1.0'
+  version: '2.1.1'
   title: 'NSSF NS Selection'
   description: |
     NSSF Network Slice Selection Service.
@@ -18,7 +18,7 @@ servers:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 externalDocs:
-  description: 3GPP TS 29.531 V16.3.0; 5G System; Network Slice Selection Services; Stage 3
+  description: 3GPP TS 29.531 V16.5.0; 5G System; Network Slice Selection Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.531/
 paths:
   /network-slice-information:
@@ -80,7 +80,7 @@ paths:
           description: Features required to be supported by the NFs in the target slice instance
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-            
+
       responses:
         '200':
           description: OK (Successful Network Slice Selection)
@@ -88,6 +88,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorizedNetworkSliceInfo'
+        '307':
+          description: temporary redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same NSSF or NSSF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same NSSF or NSSF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -162,7 +194,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         targetAmfServiceSet:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
-    
+
     SubscribedSnssai:
       type: object
       required:
@@ -172,8 +204,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         defaultIndication:
           type: boolean
-    
-  
+
+
     AllowedSnssai:
       type: object
       required:
@@ -188,7 +220,7 @@ components:
           minItems: 1
         mappedHomeSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-  
+
     AllowedNssai:
       type: object
       required:
@@ -202,7 +234,7 @@ components:
           minItems: 1
         accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
-  
+
     NsiInformation:
       type: object
       required:
@@ -216,7 +248,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         nrfAccessTokenUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-  
+
     MappingOfSnssai:
       type: object
       required:
@@ -227,8 +259,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         homeSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-  
-  
+
+
     SliceInfoForRegistration:
       type: object
       properties:
@@ -260,7 +292,7 @@ components:
           minItems: 1
         requestMapping:
           type: boolean
-  
+
     SliceInfoForPDUSession:
       type: object
       required:
@@ -273,7 +305,7 @@ components:
           $ref: '#/components/schemas/RoamingIndication'
         homeSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-  
+
     SliceInfoForUEConfigurationUpdate:
       type: object
       properties:
@@ -298,7 +330,7 @@ components:
           items:
             $ref: '#/components/schemas/MappingOfSnssai'
           minItems: 1
-  
+
     ConfiguredSnssai:
       type: object
       required:
@@ -308,8 +340,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         mappedHomeSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-  
-  
+
+
     RoamingIndication:
       anyOf:
         - type: string

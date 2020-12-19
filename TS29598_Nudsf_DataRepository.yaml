@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nudsf_DataRepository
-  version: 1.0.0
+  version: 1.0.1
   description: |
     Nudsf Data Repository Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.598 UDSF Services, V16.1.0.
+  description: 3GPP TS 29.598 UDSF Services, V16.3.0.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.598/'
 
 servers:
@@ -25,7 +25,7 @@ security:
 
 paths:
 
-  '/{realmId}/{storageId}/records':
+  /{realmId}/{storageId}/records:
     summary: Access to all Records of a Storage
     description: >-
       root of all Records of a Storage
@@ -52,12 +52,12 @@ paths:
             example: Storage01
         - name: limit-range
           in: query
-          description: The number of record references to fetch per page
+          description: The most number of record references to fetch
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         - name: page-number
           in: query
-          description: The record references page number to fetch
+          description: The beginning record references page number to fetch from
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         - name: filter
@@ -69,7 +69,7 @@ paths:
                 $ref: '#/components/schemas/SearchExpression'
         - name: count-indicator
           in: query
-          description: Indicates that no more than the number of matching records shall be returned
+          description: Indicates whether the number of records that matched the criteria shall be returned.
           schema:
             type: boolean
             default: false
@@ -107,7 +107,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}':
+  /{realmId}/{storageId}/records/{recordId}:
     summary: Access to a specific Record, identified by its RecordId
     description: >-
       Access to a specific Record
@@ -377,7 +377,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}/meta':
+  /{realmId}/{storageId}/records/{recordId}/meta:
     summary: Access to the meta of a specific Record, identified by its RecordId
     description: >-
       Access to the meta of a specific Record
@@ -501,6 +501,7 @@ paths:
               type: array
               items:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
         required: true
       responses:
         '200':
@@ -510,9 +511,7 @@ paths:
             application/json:
               example:
               schema:
-                type: array
-                items:
-                  $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
           headers:
             Cache-Control:
               $ref: '#/components/headers/Cache-Control'
@@ -549,7 +548,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}/blocks':
+  /{realmId}/{storageId}/records/{recordId}/blocks:
     summary: Access to the Blocks of a specific Record, identified by its RecordId
     description: >-
       Access to the Blocks of a specific Record
@@ -636,7 +635,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}/blocks/{blockId}':
+  /{realmId}/{storageId}/records/{recordId}/blocks/{blockId}:
     summary: Access to a Block of a specific Record, identified by its BlockId
     description: >-
       Access to a specific Block of a specific Record
@@ -900,7 +899,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/subs-to-notify':
+  /{realmId}/{storageId}/subs-to-notify:
     summary: The notification subscription collection resource
     description: >-
       Access to the subscription resource
@@ -927,12 +926,12 @@ paths:
           example: Storage01
       - name: limit-range
         in: query
-        description: The number of NotificationSubscriptions to fetch per page
+        description: The maximum number of NotificationSubscriptions to fetch
         schema:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       - name: page-number
         in: query
-        description: The NotificationSubscription page number to fetch
+        description: The beginning NotificationSubscription page number to fetch from
         schema:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       - name: supported-features
@@ -966,7 +965,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/subs-to-notify/{subscriptionId}':
+  /{realmId}/{storageId}/subs-to-notify/{subscriptionId}:
     summary: The notification subscription resource
     description: >-
       Access to the subscription resource
@@ -1177,6 +1176,7 @@ paths:
               type: array
               items:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
         required: true
       responses:
         '200':
@@ -1186,9 +1186,7 @@ paths:
             application/json:
               example:
               schema:
-                type: array
-                items:
-                  $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
           headers:
             Cache-Control:
               $ref: '#/components/headers/Cache-Control'
@@ -1373,6 +1371,7 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1411,6 +1410,7 @@ components:
           description: list of opaque Block's in this Record
           items:
             $ref: '#/components/schemas/Block'
+          minItems: 1
       required:
         - meta
       example: >-
@@ -1426,9 +1426,6 @@ components:
       properties:
         clientId:
           $ref: '#/components/schemas/ClientId'
-        subscriptionId:
-          # unique identifier of the NotificationSubscription
-          type: string
         callbackReference:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         expiry:
@@ -1458,6 +1455,7 @@ components:
           items:
             $ref: '#/components/schemas/Block'
       required:
+        - descriptor
         - meta
       example: >-
         {"descriptor": { "recordRef" : "...", "operationType" : "DELETED"}, "meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-ID": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
@@ -1470,6 +1468,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         operationType:
           $ref: '#/components/schemas/RecordOperation'
+        subscriptionId:
+          # unique identifier of the NotificationSubscription
+          type: string
+      required:
+        - recordRef
+        - operationType
       example: >-
         { "record" : "...", "operationType" : "DELETED"}
 
@@ -1501,19 +1505,23 @@ components:
 
     RecordOperation:
       description: Indicate operation made on a record
-      type: string
-      enum:
-         - CREATED
-         - UPDATED
-         - DELETED
+      anyOf:
+      - type: string
+        enum:
+          - CREATED
+          - UPDATED
+          - DELETED
+      - type: string
 
     ConditionOperator:
       description: TBD
-      type: string
-      enum:
-         - AND
-         - OR
-         - NOT
+      anyOf:
+      - type: string
+        enum:
+          - AND
+          - OR
+          - NOT
+      - type: string
 
     ComparisonOperator:
       description: TBD
@@ -1532,7 +1540,6 @@ components:
             - LT
             # Less Than or Equal
             - LTE
-          default: EQ
         - type: string
 
     SearchExpression:
@@ -1572,6 +1579,7 @@ components:
         value:
           type: string
       required:
+        - op
         - tag
         - value
       example:
