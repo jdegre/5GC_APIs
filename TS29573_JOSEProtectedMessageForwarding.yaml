@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'JOSE Protected Message Forwarding API'
   description: |
     N32-f Message Forwarding Service.
@@ -14,16 +14,27 @@ servers:
         default: https://example.com
         description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 externalDocs:
-  description: 3GPP TS 29.573 V16.3.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  description: 3GPP TS 29.573 V16.5.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
 
 paths:
   /n32f-process:
     post:
-      summary:  N32-f Message Forwarding 
+      summary:  N32-f Message Forwarding
       tags:
         - N32-f Forward
       operationId: PostN32fProcess
+      parameters:
+        - name: Content-Encoding
+          in: header
+          description: Content-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
+        - name: Accept-Encoding
+          in: header
+          description: Accept-Encoding, described in IETF RFC 7231
+          schema:
+            type: string
       requestBody:
         description: Custom operation N32-f Message Forwarding
         required: true
@@ -38,6 +49,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/N32fReformattedRspMsg'
+          headers:
+            Accept-Encoding:
+              description: Accept-Encoding, described in IETF RFC 7694
+              schema:
+                type: string
+            Content-Encoding:
+              description: Content-Encoding, described in IETF RFC 7231
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -56,6 +76,41 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
+
+    options:
+      summary: Discover communication options supported by next hop (IPX or SEPP)
+      operationId: N32fProcessOptions
+      tags:
+        - N32-f Forward
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Accept-Encoding:
+              description: Accept-Encoding, described in IETF RFC 7694
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   schemas:
     FlatJweJson:
@@ -79,7 +134,7 @@ components:
           type: string
         tag:
           type: string
-  
+
     FlatJwsJson:
       type: object
       required:
@@ -94,7 +149,7 @@ components:
           type: object
         signature:
           type: string
-          
+
     N32fReformattedReqMsg:
       type: object
       required:

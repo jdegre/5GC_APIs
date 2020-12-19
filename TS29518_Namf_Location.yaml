@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.1
+  version: 1.1.2
   title: Namf_Location
   description: |
     AMF Location Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-loc
 externalDocs:
-  description: 3GPP TS 29.518 V16.5.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.6.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-loc/v1'
@@ -49,6 +49,38 @@ paths:
                 $ref: '#/components/schemas/ProvidePosInfo'
         '204':
            description: Successful accept of location request with no information returned.
+        '307':
+          description: temporary redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -82,6 +114,38 @@ paths:
               responses:
                 '204':
                   description: Expected response to a successful callback processing
+                '307':
+                  description: temporary redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      description: 'An alternative URI of the NF service consumer to which the notification should be sent'
+                      required: true
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+                      schema:
+                        type: string
+                '308':
+                  description: permanent redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      description: 'An alternative URI of the NF service consumer to which the notification should be sent'
+                      required: true
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+                      schema:
+                        type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '403':
@@ -125,6 +189,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProvideLocInfo'
+        '307':
+          description: temporary redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -169,6 +265,38 @@ paths:
       responses:
         '204':
           description: Expected response to a successful cancellation
+        '307':
+          description: temporary redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -413,7 +541,6 @@ components:
         enum:
           - CURRENT_LOCATION
           - CURRENT_OR_LAST_KNOWN_LOCATION
-          - INITIAL_LOCATION
           - NOTIFICATION_VERIFICATION_ONLY
           - DEFERRED_LOCATION
       - type: string

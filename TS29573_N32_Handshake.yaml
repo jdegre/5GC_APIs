@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.1'
+  version: '1.1.2'
   title: 'N32 Handshake API'
   description: |
    N32-c Handshake Service.
@@ -14,13 +14,13 @@ servers:
         default: https://example.com
         description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 externalDocs:
-  description: 3GPP TS 29.573 V16.4.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  description: 3GPP TS 29.573 V16.5.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
 
 paths:
   /exchange-capability:
     post:
-      summary:  Security Capability Negotiation 
+      summary:  Security Capability Negotiation
       tags:
         - Security Capability Negotiation
       operationId: PostExchangeCapability
@@ -38,19 +38,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SecNegotiateRspData'
-        '400': 
+        '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-        '411': 
+        '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413': 
+        '413':
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415': 
+        '415':
           $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
-        '500': 
+        '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503': 
+        '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
@@ -74,21 +74,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SecParamExchRspData'
-        '400': 
+        '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-        '409': 
+        '409':
           $ref: 'TS29571_CommonData.yaml#/components/responses/409'
-        '411': 
+        '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413': 
+        '413':
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415': 
+        '415':
           $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
-        '500': 
+        '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503': 
+        '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
@@ -112,19 +112,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/N32fContextInfo'
-        '400': 
+        '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-        '411': 
+        '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413': 
+        '413':
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415': 
+        '415':
           $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
-        '500': 
+        '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503': 
+        '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
@@ -144,19 +144,19 @@ paths:
       responses:
         '204':
           description: successful error reporting
-        '400': 
+        '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-        '411': 
+        '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413': 
+        '413':
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415': 
+        '415':
           $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
-        '500': 
+        '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503': 
+        '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
@@ -186,8 +186,8 @@ components:
             - OPTIONS
             - CONNECT
             - TRACE
-        - type: string    
-    
+        - type: string
+
     IeType:
       anyOf:
         - type: string
@@ -200,7 +200,7 @@ components:
             - OTHER
             - NONSENSITIVE
         - type: string
-    
+
     IeLocation:
       anyOf:
         - type: string
@@ -210,7 +210,7 @@ components:
             - BODY
             - MULTIPART_BINARY
         - type: string
-    
+
     IeInfo:
       type: object
       required:
@@ -227,7 +227,12 @@ components:
           type: string
         isModifiable:
           type: boolean
-  
+        isModifiableByIpx:
+          type: object
+          additionalProperties:
+            type: boolean
+          minProperties: 1
+
     ApiIeMapping:
       type: object
       required:
@@ -244,7 +249,7 @@ components:
           items:
             $ref: '#/components/schemas/IeInfo'
           minItems: 1
-  
+
     ProtectionPolicy:
       type: object
       required:
@@ -277,6 +282,11 @@ components:
         3GppSbiTargetApiRootSupported:
           type: boolean
           default: false
+        plmnIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
 
     SecNegotiateRspData:
       type: object
@@ -291,7 +301,12 @@ components:
         3GppSbiTargetApiRootSupported:
           type: boolean
           default: false
-  
+        plmnIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
+
     SecParamExchReqData:
       type: object
       required:
@@ -302,7 +317,7 @@ components:
           pattern: '^[A-Fa-f0-9]{16}$'
         jweCipherSuiteList:
           type: array
-          items: 
+          items:
             type: string
           minItems: 1
         jwsCipherSuiteList:
@@ -319,7 +334,7 @@ components:
           minItems: 1
         sender:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
-          
+
     SecParamExchRspData:
       type: object
       required:
@@ -341,7 +356,7 @@ components:
           minItems: 1
         sender:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
-    
+
     N32fContextInfo:
       type: object
       required:
@@ -406,12 +421,12 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
         rawPublicKeyList:
           type: array
-          items: 
+          items:
             type: string
           minItems: 1
         certificateList:
           type: array
-          items: 
+          items:
             type: string
           minItems: 1
     N32fErrorType:

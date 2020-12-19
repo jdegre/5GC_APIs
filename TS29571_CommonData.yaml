@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.1'
+  version: '1.2.2'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.5.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.6.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -1743,7 +1743,7 @@ components:
     TwapId:
       type: object
       required:
-        - ssid
+        - ssId
       properties:
         ssId:
           type: string
@@ -2092,6 +2092,14 @@ components:
 #
 # SIMPLE DATA TYPES
 #
+    PhysCellId:
+      type: integer
+      minimum: 0
+      maximum: 1007
+    ArfcnValueNR:
+      type: integer
+      minimum: 0
+      maximum: 3279165
 #
 #
 # Enumerations
@@ -2141,6 +2149,12 @@ components:
             - M4_UL
             - M5_DL
             - M5_UL
+            - M6_DL
+            - M6_UL
+            - M7_DL
+            - M7_UL
+            - M8
+            - M9
         - type: string
     MeasurementNrForMdt:
       anyOf:
@@ -2175,7 +2189,7 @@ components:
             - PERIODICAL
             - EVENT_A2
             - EVENT_A2_PERIODIC
-            - EVENT_A2_PERIODIC
+            - ALL_RRM_EVENT_TRIGGERS
         - type: string
     ReportIntervalMdt:
       anyOf:
@@ -2270,6 +2284,67 @@ components:
             - 10240
             - 60000
         - type: string
+
+    ReportIntervalNrMdt:
+      anyOf:
+        - type: string
+          enum:
+            - 120
+            - 240
+            - 480
+            - 640
+            - 1024
+            - 2048
+            - 5120
+            - 10240
+            - 20480
+            - 40960
+            - 60000
+            - 360000
+            - 720000
+            - 1800000
+            - 3600000
+        - type: string
+
+    LoggingIntervalNrMdt:
+      anyOf:
+        - type: string
+          enum:
+            - 128
+            - 256
+            - 512
+            - 1024
+            - 2048
+            - 3072
+            - 4096
+            - 6144
+            - 320
+            - 640
+            - infinity
+        - type: string
+
+    CollectionPeriodRmmNrMdt:
+      anyOf:
+        - type: string
+          enum:
+            - 1024
+            - 2048
+            - 5120
+            - 10240
+            - 60000
+        - type: string
+
+    LoggingDurationNrMdt:
+      anyOf:
+        - type: string
+          enum:
+            - 600
+            - 1200
+            - 2400
+            - 3600
+            - 5400
+            - 7200
+        - type: string
 #
 # STRUCTURED DATA TYPES
 #
@@ -2332,16 +2407,26 @@ components:
           minItems: 1
         reportInterval:
           $ref: '#/components/schemas/ReportIntervalMdt'
+        reportIntervalNr:
+          $ref: '#/components/schemas/ReportIntervalNrMdt'
         reportAmount:
           $ref: '#/components/schemas/ReportAmountMdt'
         eventThresholdRsrp:
           type: integer
           minimum: 0
           maximum: 97
+        eventThresholdRsrpNr:
+          type: integer
+          minimum: 0
+          maximum: 127
         eventThresholdRsrq:
           type: integer
           minimum: 0
           maximum: 34
+        eventThresholdRsrqNr:
+          type: integer
+          minimum: 0
+          maximum: 127
         eventList:
           type: array
           items:
@@ -2349,12 +2434,18 @@ components:
           minItems: 1
         loggingInterval:
           $ref: '#/components/schemas/LoggingIntervalMdt'
+        loggingIntervalNr:
+          $ref: '#/components/schemas/LoggingIntervalNrMdt'
         loggingDuration:
           $ref: '#/components/schemas/LoggingDurationMdt'
+        loggingDurationNr:
+          $ref: '#/components/schemas/LoggingDurationNrMdt'
         positioningMethod:
           $ref: '#/components/schemas/PositioningMethodMdt'
         collectionPeriodRmmLte:
           $ref: '#/components/schemas/CollectionPeriodRmmLteMdt'
+        collectionPeriodRmmNr:
+          $ref: '#/components/schemas/CollectionPeriodRmmNrMdt'
         measurementPeriodLte:
           $ref: '#/components/schemas/MeasurementPeriodLteMdt'
         mdtAllowedPlmnIdList:
@@ -2367,6 +2458,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MbsfnArea'
+          minItems: 1
+          maxItems: 8
+        interFreqTargetList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterFreqTargetInfo'
           minItems: 1
           maxItems: 8
     AreaScope:
@@ -2412,6 +2509,20 @@ components:
           type: integer
           minimum: 0
           maximum: 262143
+
+    InterFreqTargetInfo:
+      required:
+        - dlCarrierFreq
+      type: object
+      properties:
+        dlCarrierFreq:
+          $ref: '#/components/schemas/ArfcnValueNR'
+        cellIdList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhysCellId'
+          minItems: 1
+          maxItems: 32
 
 
 # Data Types related to 5G ODB as defined in clause 5.7
