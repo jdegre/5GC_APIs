@@ -1,13 +1,13 @@
 # OpenAPI Specification Files for 3GPP 5G Core Network (Release 17)
 
-[![Build Status](https://travis-ci.org/jdegre/5GC_APIs.svg?branch=master)](https://travis-ci.org/jdegre/5GC_APIs)
+[![Build Status](https://travis-ci.com/jdegre/5GC_APIs.svg?branch=master)](https://travis-ci.com/jdegre/5GC_APIs)
 
 The files in this repository have been created by 3GPP, and the master source can be found in the [3GPP site](http://www.3gpp.org/DynaReport/29-series.htm), as part of the official 3GPP Technical Specifications.
 ```
 © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **September 2020**<br/>
+API version: **December 2020**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -112,7 +112,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [IMS UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUECM.yaml)
 
 ## SOR-AF (Steering of Roaming Application Function)
-* [Secured Packet](https://jdegre.github.io/loader.html?yaml=TS29550_Nsoraf_SOR.yaml)
+* [Steering of Roaming](https://jdegre.github.io/loader.html?yaml=TS29550_Nsoraf_SOR.yaml)
 
 ## SP-AF (Over-The-Air Function)
 * [Secured Packet](https://jdegre.github.io/loader.html?yaml=TS29544_Nspaf_SecuredPacket.yaml)
@@ -166,6 +166,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Service Parameter](https://jdegre.github.io/loader.html?yaml=TS29522_ServiceParameter.yaml)
 * [ACS Parameter Provision](https://jdegre.github.io/loader.html?yaml=TS29522_ACSParameterProvision.yaml)
 * [MO LCS Notify](https://jdegre.github.io/loader.html?yaml=TS29522_MoLcsNotify.yaml)
+* [AKMA](https://jdegre.github.io/loader.html?yaml=TS29522_AKMA.yaml)
 
 ## VAE (V2X Application Enabler)
 * [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_MessageDelivery.yaml)
