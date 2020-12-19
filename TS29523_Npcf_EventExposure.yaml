@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0
+  version: 1.2.0-alpha.1
   title: Npcf_EventExposure
   description: |
     PCF Event Exposure Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.523 V16.2.0; 5G System; Policy Control Event Exposure Service; Stage 3.
+  description: 3GPP TS 29.523 V17.1.0; 5G System; Policy Control Event Exposure Service; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.523/
 
 servers:
@@ -84,6 +84,38 @@ paths:
               responses:
                 '204':
                   description: No Content, Notification was succesfull
+                '307':
+                  description: Temporary Redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      required: true
+                      description: 'A URI pointing to the endpoint of an alternative NF consumer (service) instance towards which the notification should be redirected.'
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: 'Identifier of the target NF (service) instance ID towards which the notification request is redirected'
+                      schema:
+                        type: string
+                '308':
+                  description: Permanent Redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      required: true
+                      description: ' A URI pointing to the endpoint of an alternative NF consumer (service) instance towards which the notification should be redirected.'
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: 'Identifier of the target NF (service) instance ID towards which the notification request is redirected'
+                      schema:
+                        type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -126,6 +158,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PcEventExposureSubsc'
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -171,6 +235,38 @@ paths:
                 $ref: '#/components/schemas/PcEventExposureSubsc'
         '204':
           description: No Content. Resource was succesfully modified
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -208,6 +304,38 @@ paths:
       responses:
         '204':
           description: No Content. Resource was succesfully deleted
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -274,6 +402,11 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        snssaiDnns:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnssaiDnnCombination'
           minItems: 1
         filterServices:
           type: array
@@ -417,6 +550,16 @@ components:
         - anyOf:
           - required: [ueIpv4]
           - required: [ueIpv6]
+    SnssaiDnnCombination:
+      type: object
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnns:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1
 
 # Simple data types and Enumerations
 

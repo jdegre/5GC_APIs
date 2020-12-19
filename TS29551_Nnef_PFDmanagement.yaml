@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nnef_PFDmanagement Service API
-  version: 1.2.0.alpha-1
+  version: 1.2.0-alpha.2
   description: |
     Packet Flow Description Management Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 #
 externalDocs:
-  description: 3GPP TS 29.551 v17.0.0, 5G System; Packet Flow Description Management Service
+  description: 3GPP TS 29.551 v17.1.0, 5G System; Packet Flow Description Management Service
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.551/'
 #
 servers:
@@ -71,7 +71,60 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-  
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /applications/partial-pull:
+    post:
+      summary: retrieve the PFD(s) by partial update
+      operationId: Nnef_PFDmanagement_AppFetchPartialUpdate
+      tags:
+        - PFD of applications by partial update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              # Temporary fix to correct wrong indentation of "items"
+              items:
+                $ref: '#/components/schemas/ApplicationForPfdRequest'
+              minItems: 1
+      responses:
+        '200':
+          description: OK. Changed PFD(s) is returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PfdDataForApp'
+                minItems: 1
+        '204':
+          description: The PFD(s) is not changed
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /applications/{appId}:
     get:
       summary: Retrieve the PFD for an application.
@@ -115,11 +168,13 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-  
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /subscriptions:
     post:
       summary: Subscribe the notification of PFD changes.
-      tags: 
+      tags:
         - PFD subscriptions
       operationId: Nnef_PFDmanagement_CreateSubscr
       requestBody:
@@ -178,14 +233,16 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/500'
                 '503':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-                  
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
         NotificationPush:
           '{request.body#/notifyUri}/notifypush':
             post:
               summary: Notification Push.
               tags:
                 - NotificationPush data
-              operationId: Nnef_PFDmanagement_Notify
+              operationId: Nnef_PFDmanagement_PushNotify
               requestBody:
                 required: true
                 content:
@@ -218,7 +275,9 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/500'
                 '503':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-            
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
       responses:
         '201':
           description: The creation of a PfdSubscription resource is confirmed and a representation of that resource is returned.
@@ -252,7 +311,9 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-      
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /subscriptions/{subscriptionId}:
     put:
       summary: Updates/replaces an existing subscription resource
@@ -332,6 +393,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
 components:
   securitySchemes:
@@ -373,7 +436,6 @@ components:
         dnProtocol:
           $ref: 'TS29122_PfdManagement.yaml#/components/schemas/DomainNameProtocol'
 
-
     PfdDataForApp:
       type: object
       properties:
@@ -386,10 +448,11 @@ components:
           minItems: 1
         cachingTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        pfdTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - applicationId
-        - pfds
-    
+
     PfdSubscription:
       type: object
       properties:
@@ -405,7 +468,7 @@ components:
       required:
         - notifyUri
         - supportedFeatures
-        
+
     PfdChangeNotification:
       type: object
       properties:
@@ -435,6 +498,8 @@ components:
           minItems: 1
         allowedDelay:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        pfdOp:
+          $ref: '#/components/schemas/PfdOperation'
       required:
         - appIds
 
@@ -451,3 +516,22 @@ components:
       required:
         - pfdError
         - applicationId
+
+    PfdOperation:
+      anyOf:
+      - type: string
+        enum:
+          - RETRIEVE
+          - REMOVE
+      - type: string
+
+    ApplicationForPfdRequest:
+      type: object
+      properties:
+        applicationId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        pfdTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - applicationId
+        - pfdTimestamp

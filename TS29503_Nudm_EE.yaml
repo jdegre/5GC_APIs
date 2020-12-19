@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.2.0-alpha.1'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.1.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -210,6 +210,8 @@ components:
             items:
               $ref: '#/components/schemas/MonitoringReport'
             minItems: 1
+        epcStatusInd:
+          type: boolean
 
     EeSubscription:
       type: object
@@ -233,6 +235,16 @@ components:
           type: string
         contextInfo:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ContextInfo'
+        epcAppliedInd:
+          type: boolean
+          default: false
+        scefDiamHost:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        scefDiamRealm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        notifyCorrelationId:
+          type: string
+
 
 
     MonitoringConfiguration:
@@ -259,7 +271,14 @@ components:
         suggestedPacketNumDl:
           type: integer
           minimum: 1
-
+        pduSessionStatusCfg:
+          $ref: '#/components/schemas/PduSessionStatusCfg'
+        reachabilityForSmsCfg:
+          $ref: '#/components/schemas/ReachabilityForSmsConfiguration'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        afId:
+          type: string
 
     LossConnectivityCfg:
       type: object
@@ -399,6 +418,11 @@ components:
       required:
         - newCmInfoList
 
+    PduSessionStatusCfg:
+      type: object
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
 
 # SIMPLE TYPES:
 
@@ -410,6 +434,14 @@ components:
 
 
 # ENUMS:
+
+    ReachabilityForSmsConfiguration:
+      anyOf:
+        - type: string
+          enum:
+          - REACHABILITY_FOR_SMS_OVER_NAS
+          - REACHABILITY_FOR_SMS_OVER_IP
+        - type: string
 
     EventType:
       anyOf:

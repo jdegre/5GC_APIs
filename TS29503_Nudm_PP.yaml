@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.1'
+  version: '1.2.0-alpha.1'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.5.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.1.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -177,6 +177,37 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           description: Unexpected error
+    get:
+      summary: get 5G VN Group
+      operationId: Get 5G VN Group
+      tags:
+        - 5G VN Group Modification
+      parameters:
+        - name: extGroupId
+          in: path
+          description: External Identifier of the group
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/5GVnGroupConfiguration'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
 
 
 components:
@@ -241,11 +272,13 @@ components:
         subsRegTimer:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
       nullable: true
 
     PpActiveTime:
@@ -258,11 +291,13 @@ components:
         activeTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
       nullable: true
 
     5GVnGroupConfiguration:
@@ -278,9 +313,11 @@ components:
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         internalGroupIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
 
     5GVnGroupData:
       type: object
@@ -314,7 +351,7 @@ components:
         - referenceId
       properties:
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         stationaryIndication:
@@ -340,6 +377,8 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/BatteryIndicationRm'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
 
     LocationArea:
       type: object
@@ -395,7 +434,7 @@ components:
         - referenceId
       properties:
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         plmnEcInfos:
@@ -403,6 +442,8 @@ components:
           items:
             $ref: '#/components/schemas/PlmnEcInfo'
           minItems: 1
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
 
     PlmnEcInfo:
       type: object
@@ -425,11 +466,13 @@ components:
         - referenceId
       properties:
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
       nullable: true
 
     PpMaximumResponseTime:
@@ -442,11 +485,13 @@ components:
         maximumResponseTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
       nullable: true
 
     PpMaximumLatency:
@@ -459,23 +504,26 @@ components:
         maximumLatency:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
       nullable: true
 
     LcsPrivacy:
       type: object
       properties:
         afInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          type: string
         referenceId:
           $ref: '#/components/schemas/ReferenceId'
         lpi:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/Lpi'
-
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
 
 # SIMPLE TYPES:
 

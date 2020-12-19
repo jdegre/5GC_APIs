@@ -7,10 +7,62 @@ info:
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V17.0.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V17.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
+  /policy-data/ues/{ueId}:
+    parameters:
+     - name: ueId
+       in: path
+       required: true
+       schema:
+         $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+    get:
+      summary: Retrieve the policy data for a subscriber
+      operationId: ReadPolicyData
+      tags:
+        - PolicyDataForIndividualUe (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Upon success, a response body containing policy data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDataForIndividualUe'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /policy-data/ues/{ueId}/am-data:
     parameters:
      - name: ueId
@@ -721,6 +773,48 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modifies an BDT data resource associated with an BDT reference Id
+      operationId: UpdateIndividualBdtData
+      tags:
+        - IndividualBdtData (Document)
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/BdtDataPatch'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BdtData'
+        '204':
+          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
       summary: Deletes an BDT data resource associated with an BDT reference Id
       operationId: DeleteIndividualBdtData
@@ -1158,6 +1252,22 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 components:
   schemas:
+    PolicyDataForIndividualUe:
+      description: Contains policy data for a given subscriber.
+      type: object
+      properties:
+        uePolicyDataSet:
+          $ref: '#/components/schemas/UePolicySet'
+        smPolicyDataSet:
+          $ref: '#/components/schemas/SmPolicyData'
+        amPolicyDataSet:
+          $ref: '#/components/schemas/AmPolicyData'
+        umData:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UsageMonData'
+        operatorSpecificDataSet:
+          $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
     AmPolicyData:
       description: Contains the AM policy data for a given subscriber.
       type: object
@@ -1459,6 +1569,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         trafficDes:
           $ref: 'TS29122_ResourceManagementOfBdt.yaml#/components/schemas/TrafficDescriptor'
+        bdtpStatus:
+          $ref: '#/components/schemas/BdtPolicyStatus'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1536,7 +1648,7 @@ components:
             $ref: '#/components/schemas/NotificationItem'
           minItems: 1
     PlmnRouteSelectionDescriptor:
-      description: Contains the route selection descriptors (combinations of SNSSAI, DNNs, PDU session types, and SSC modes) allowed by subscription to the UE for a serving PLMN
+      description: Contains the route selection descriptors (combinations of SNSSAI, DNNs, PDU session types, SSC modes and ATSSS information) allowed by subscription to the UE for a serving PLMN
       type: object
       properties:
         servingPlmn:
@@ -1549,7 +1661,7 @@ components:
       required:
         - servingPlmn
     SnssaiRouteSelectionDescriptor:
-      description: Contains the route selector parameters (DNNs, PDU session types and SSC modes) per SNSSAI
+      description: Contains the route selector parameters (DNNs, PDU session types, SSC modes and ATSSS information) per SNSSAI
       type: object
       properties:
         snssai:
@@ -1562,7 +1674,7 @@ components:
       required:
         - snssai
     DnnRouteSelectionDescriptor:
-      description: Contains the route selector parameters (PDU session types and SSC modes) per DNN
+      description: Contains the route selector parameters (PDU session types, SSC modes and ATSSS information) per DNN
       type: object
       properties:
         dnn:
@@ -1577,6 +1689,10 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
           minItems: 1
+        atsssInfo:
+          description: Indicates whether MA PDU session establishment is allowed for this DNN. When set to value true MA PDU session establishment is allowed for this DNN.
+          type: boolean
+          default: false
       required:
         - dnn
     SmPolicyDataPatch:
@@ -1664,6 +1780,16 @@ components:
         - item
         - value
 #
+#
+    BdtDataPatch:
+      description: Contains the modified background data transfer data.
+      type: object
+      properties:
+        transPolicy:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/TransferPolicy'
+        bdtpStatus:
+          $ref: '#/components/schemas/BdtPolicyStatus'
+#
 
     IpIndex:
       type: integer
@@ -1692,3 +1818,12 @@ components:
     ItemPath:
       description: Identifies a fragment (subset of resource data) of a given resource.
       type: string
+#
+    BdtPolicyStatus:
+      description: Indicates the validation status of a negotiated BDT policy.
+      anyOf:
+      - type: string
+        enum:
+          - INVALID
+      - type: string
+#

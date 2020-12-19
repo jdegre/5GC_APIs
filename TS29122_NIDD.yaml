@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-nidd
-  version: 1.1.0
+  version: 1.2.0-alpha.1
   description: |
     API for non IP data delivery.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.6.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.0.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -659,26 +659,26 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
         reliableDataService:
           type: boolean
-          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
+          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
         rdsPorts:
           type: array
           items:
             $ref: '#/components/schemas/RdsPort'
           minItems: 1
-          description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
+          description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptions'
         notificationDestination:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         requestTestNotification:
           type: boolean
-          description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in subclause 5.2.5.3. Set to false or omitted otherwise.
+          description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in subclause 5.2.5.3. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         maximumPacketSize:
           type: integer
           minimum: 1
-          description: The Maximum Packet Size is the maximum NIDD packet size that was transferred to the UE by the SCEF in the PCO, see subclause 4.5.14.1 of 3GPP TS 23.682. If no maximum packet size was provided to the UE by the SCEF, the SCEF sends a default configured max packet size to SCS/AS. Unit  bit.
+          description: The Maximum Packet Size is the maximum NIDD packet size that was transferred to the UE by the SCEF in the PCO, see subclause 4.5.14.1 of 3GPP TS 23.682. If no maximum packet size was provided to the UE by the SCEF, the SCEF sends a default configured max packet size to SCS/AS. Unit  bit.
           readOnly: true
         niddDownlinkDataTransfers:
           type: array
@@ -709,7 +709,7 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Bytes'
         reliableDataService:
           type: boolean
-          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
+          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
         rdsPort:
           $ref: '#/components/schemas/RdsPort'
         maximumLatency:
@@ -847,6 +847,14 @@ components:
         skipUeInquiry:
           type: boolean
           description: Indicate whether to skip UE inquiry.
+        supportedFormats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SerializationFormat'
+          minItems: 1
+          description: Indicates the serialization format(s) that are supported by the SCS/AS on the associated RDS port.
+        configuredFormat:
+          $ref: '#/components/schemas/SerializationFormat'
       required:
         - appId
     ManagePortNotification:
@@ -876,6 +884,12 @@ components:
           properties:
             requestedRetransmissionTime:
               $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+            supportedUeFormats:
+              type: array
+              items:
+                $ref: '#/components/schemas/SerializationFormat'
+              minItems: 1
+              description: Indicates the serialization format(s) that are supported by the UE on the associated RDS port.
     PdnEstablishmentOptions:
       anyOf:
       - type: string
@@ -973,6 +987,23 @@ components:
         - UE: Representing the UE.
         - AS: Representing the Application Server.
       readOnly: true
+    SerializationFormat:
+      anyOf:
+      - type: string
+        enum:
+          - CBOR
+          - JSON
+          - XML
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - CBOR: The CBOR Serialzition format 
+        - JSON: The JSON Serialzition format
+        - XML: The XML Serialzition format
     NiddConfigurationPatch:
       type: object
       properties:
@@ -980,13 +1011,13 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTimeRm'
         reliableDataService:
           type: boolean
-          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
+          description: The reliable data service (as defined in subclause 4.5.15.3 of 3GPP TS 23.682) to indicate if a reliable data service acknowledgment is enabled or not.
           nullable: true
         rdsPorts:
           type: array
           items:
             $ref: '#/components/schemas/RdsPort'
           minItems: 1
-          description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
+          description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptionsRm'

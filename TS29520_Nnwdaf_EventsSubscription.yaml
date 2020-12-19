@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0.alpha-1
+  version: 1.2.0-alpha.2
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.520 V17.0.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V17.1.0; 5G System; Network Data Analytics Services.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 security:
   - {}
@@ -228,6 +228,11 @@ components:
           items:
             $ref: '#/components/schemas/EventNotification'
           minItems: 1
+        failEventReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailureEventInfo'
+          minItems: 1
       required:
         - eventSubscriptions
     EventSubscription:
@@ -364,6 +369,8 @@ components:
       properties:
         event:
           $ref: '#/components/schemas/NwdafEvent'
+        start:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         timeStampGen:
@@ -424,6 +431,11 @@ components:
           $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/SvcExperience'
         svcExprcVariance:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        supis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         appId:
@@ -840,6 +852,16 @@ components:
       required:
         - networkArea
         - nwPerfType
+    FailureEventInfo:
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/NwdafEvent'
+        failureCode:
+          $ref: '#/components/schemas/NwdafFailureCode'
+      required:
+        - event
+        - failureCode
     NotificationMethod:
       anyOf:
       - type: string
@@ -1042,3 +1064,16 @@ components:
           - ASCENDING: Threshold is crossed in ascending direction.
           - DESCENDING: Threshold is crossed in descending direction.
           - CROSSED: Threshold is crossed either in ascending or descending direction.
+    NwdafFailureCode:
+      anyOf:
+      - type: string
+        enum:
+          - UNAVAILABLE_DATA
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - UNAVAILABLE_DATA: Indicates the requested statistics information for the event is rejected since necessary data to perform the service is unavailable.

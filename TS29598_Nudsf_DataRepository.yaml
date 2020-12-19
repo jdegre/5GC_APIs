@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nudsf_DataRepository
-  version: 1.0.0
+  version: 1.1.0-alpha.1
   description: |
     Nudsf Data Repository Service.
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.598 UDSF Services, V16.1.0.
+  description: 3GPP TS 29.598 UDSF Services, V17.0.0.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.598/'
 
 servers:
@@ -25,7 +25,7 @@ security:
 
 paths:
 
-  '/{realmId}/{storageId}/records':
+  /{realmId}/{storageId}/records:
     summary: Access to all Records of a Storage
     description: >-
       root of all Records of a Storage
@@ -52,12 +52,12 @@ paths:
             example: Storage01
         - name: limit-range
           in: query
-          description: The number of record references to fetch per page
+          description: The most number of record references to fetch
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         - name: page-number
           in: query
-          description: The record references page number to fetch
+          description: The beginning record references page number to fetch from
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         - name: filter
@@ -69,7 +69,7 @@ paths:
                 $ref: '#/components/schemas/SearchExpression'
         - name: count-indicator
           in: query
-          description: Indicates that no more than the number of matching records shall be returned
+          description: Indicates whether the number of records that matched the criteria shall be returned.
           schema:
             type: boolean
             default: false
@@ -107,7 +107,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}':
+  /{realmId}/{storageId}/records/{recordId}:
     summary: Access to a specific Record, identified by its RecordId
     description: >-
       Access to a specific Record
@@ -377,7 +377,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}/meta':
+  /{realmId}/{storageId}/records/{recordId}/meta:
     summary: Access to the meta of a specific Record, identified by its RecordId
     description: >-
       Access to the meta of a specific Record
@@ -501,6 +501,7 @@ paths:
               type: array
               items:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
         required: true
       responses:
         '200':
@@ -510,9 +511,7 @@ paths:
             application/json:
               example:
               schema:
-                type: array
-                items:
-                  $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
           headers:
             Cache-Control:
               $ref: '#/components/headers/Cache-Control'
@@ -549,7 +548,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}/blocks':
+  /{realmId}/{storageId}/records/{recordId}/blocks:
     summary: Access to the Blocks of a specific Record, identified by its RecordId
     description: >-
       Access to the Blocks of a specific Record
@@ -636,7 +635,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/records/{recordId}/blocks/{blockId}':
+  /{realmId}/{storageId}/records/{recordId}/blocks/{blockId}:
     summary: Access to a Block of a specific Record, identified by its BlockId
     description: >-
       Access to a specific Block of a specific Record
@@ -900,7 +899,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/subs-to-notify':
+  /{realmId}/{storageId}/subs-to-notify:
     summary: The notification subscription collection resource
     description: >-
       Access to the subscription resource
@@ -927,12 +926,12 @@ paths:
           example: Storage01
       - name: limit-range
         in: query
-        description: The number of NotificationSubscriptions to fetch per page
+        description: The maximum number of NotificationSubscriptions to fetch
         schema:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       - name: page-number
         in: query
-        description: The NotificationSubscription page number to fetch
+        description: The beginning NotificationSubscription page number to fetch from
         schema:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       - name: supported-features
@@ -966,7 +965,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  '/{realmId}/{storageId}/subs-to-notify/{subscriptionId}':
+  /{realmId}/{storageId}/subs-to-notify/{subscriptionId}:
     summary: The notification subscription resource
     description: >-
       Access to the subscription resource
@@ -1177,6 +1176,7 @@ paths:
               type: array
               items:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
         required: true
       responses:
         '200':
@@ -1186,9 +1186,7 @@ paths:
             application/json:
               example:
               schema:
-                type: array
-                items:
-                  $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
           headers:
             Cache-Control:
               $ref: '#/components/headers/Cache-Control'
@@ -1352,6 +1350,268 @@ paths:
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /{realmId}/{storageId}/meta-schemas/{schemaId}:
+    summary: Access to a specific Meta Schema, identified by its SchemaId
+    description: >-
+      Access to a specific Meta Schema
+    get:
+      summary: Meta Schema access
+      description: retrieve one specific Meta Schema
+      operationId: GetMetaSchema
+      tags:
+      - MetaSchema CRUD
+      parameters:
+        - name: realmId
+          in: path
+          description: Identifier of the Realm
+          required: true
+          schema:
+            type: string
+            example: Realm01
+        - name: storageId
+          in: path
+          description: Identifier of the Storage
+          required: true
+          schema:
+            type: string
+            example: Storage01
+        - name: schemaId
+          in: path
+          description: Identifier of the Meta Schema
+          required: true
+          schema:
+            $ref: '#/components/schemas/SchemaId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200' : #result ok
+          $ref: '#/components/responses/RecordBody'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Create/Modify Meta Schema
+      description: Create or Modify a Meta Schema with a user provided SchemaId
+      operationId: CreateOrModifyMetaSchema
+      tags:
+        - MetaSchema CRUD
+      parameters:
+        - name: realmId
+          in: path
+          description: Identifier(name) of the Realm
+          required: true
+          schema:
+            type: string
+            example: Realm01
+        - name: storageId
+          in: path
+          description: Identifier of the Storage
+          required: true
+          schema:
+            type: string
+            example: Storage01
+        - name: schemaId
+          in: path
+          description: Identifier of the Meta Schema
+          required: true
+          schema:
+            $ref: '#/components/schemas/SchemaId'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: get-previous
+          in: query
+          description: Retrieve the Meta Schema before update
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetaSchema'
+        required: true
+      responses:
+        '200':
+          description: Update with return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetaSchema'
+        '201':
+          description: >-
+            Create case. The resource has been successfully created, location header indicates
+            the URI of the created Record.
+            $ref: '#/components/responses/RecordBody'
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+        '204': # Update without return
+          description: >-
+            Update case. The resource has been successfully updated and no
+            additional content is included in the response message.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/Cache-Control'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
+        '412':
+          description: Return Meta Schema value if get-previous=true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetaSchema'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete a Meta Schema with an user provided SchemaId
+      operationId: DeleteMetaSchema
+      tags:
+        - MetaSchema CRUD
+      parameters:
+        - name: realmId
+          in: path
+          description: Identifier(name) of the Realm
+          required: true
+          schema:
+            type: string
+            example: Realm01
+        - name: storageId
+          in: path
+          description: Identifier of the Storage
+          required: true
+          schema:
+            type: string
+            example: Storage01
+        - name: schemaId
+          in: path
+          description: Identifier of the Meta Schema
+          required: true
+          schema:
+            $ref: '#/components/schemas/SchemaId'
+        - name: If-Match
+          in: header
+          description: Record validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: get-previous
+          in: query
+          description: Retrieve the Meta Schema before delete
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetaSchema'
+        '204':
+          description: Successful case.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+        '304':
+          $ref: '#/components/responses/304'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
+        '412':
+          description: Return value if get-previous=true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetaSchema'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -1373,6 +1633,7 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1397,6 +1658,8 @@ components:
           example:  '{"ueId" : [ "455345", "455346" ], "recordId" : [ "1000106" ] }'
       example: >-
         { "tags" : {"ueId" : [ "455345", "455346" ], "recordId" : [ "1000106" ] }}
+        schemaId:
+          $ref: '#/components/schemas/SchemaId'
 
     Record:
       description: Definition of a Record
@@ -1411,6 +1674,7 @@ components:
           description: list of opaque Block's in this Record
           items:
             $ref: '#/components/schemas/Block'
+          minItems: 1
       required:
         - meta
       example: >-
@@ -1426,9 +1690,6 @@ components:
       properties:
         clientId:
           $ref: '#/components/schemas/ClientId'
-        subscriptionId:
-          # unique identifier of the NotificationSubscription
-          type: string
         callbackReference:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         expiry:
@@ -1458,6 +1719,7 @@ components:
           items:
             $ref: '#/components/schemas/Block'
       required:
+        - descriptor
         - meta
       example: >-
         {"descriptor": { "recordRef" : "...", "operationType" : "DELETED"}, "meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-ID": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
@@ -1470,6 +1732,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         operationType:
           $ref: '#/components/schemas/RecordOperation'
+        subscriptionId:
+          # unique identifier of the NotificationSubscription
+          type: string
+      required:
+        - recordRef
+        - operationType
       example: >-
         { "record" : "...", "operationType" : "DELETED"}
 
@@ -1501,19 +1769,23 @@ components:
 
     RecordOperation:
       description: Indicate operation made on a record
-      type: string
-      enum:
-         - CREATED
-         - UPDATED
-         - DELETED
+      anyOf:
+      - type: string
+        enum:
+          - CREATED
+          - UPDATED
+          - DELETED
+      - type: string
 
     ConditionOperator:
       description: TBD
-      type: string
-      enum:
-         - AND
-         - OR
-         - NOT
+      anyOf:
+      - type: string
+        enum:
+          - AND
+          - OR
+          - NOT
+      - type: string
 
     ComparisonOperator:
       description: TBD
@@ -1532,7 +1804,6 @@ components:
             - LT
             # Less Than or Equal
             - LTE
-          default: EQ
         - type: string
 
     SearchExpression:
@@ -1555,6 +1826,8 @@ components:
           items:
             $ref: '#/components/schemas/SearchExpression'
           minItems: 1
+        schemaId:
+          $ref: '#/components/schemas/SchemaId'
       required:
         - cond
         - units
@@ -1572,11 +1845,56 @@ components:
         value:
           type: string
       required:
+        - op
         - tag
         - value
       example:
         { "op": "EQ", "tag" : "supi", "value" : "imsi-999559807001001" }
 
+    MetaSchema:
+      description: Defines the Meta Schema
+      type: object
+      required:
+        - schemaId
+        - metaTags
+      properties:
+        schemaId:
+          $ref: '#/components/schemas/SchemaId'
+        metaTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagType'
+
+    TagType:
+      description: Defines the Tag Type
+      type: object
+      required:
+        - tagName
+        - keyType
+      properties:
+        tagName:
+          type: string
+        keyType:
+          $ref: '#/components/schemas/KeyType'
+        sort:
+          type: boolean
+          default: false
+        presence:
+          type: boolean
+
+    SchemaId:
+      type: string
+
+    KeyType:
+      anyOf:
+        - type: string
+          enum:
+          - UNIQUE_KEY
+          - SEARCH_KEY
+          - COUNT_KEY
+          - SEARCH_AND_COUNT_KEY
+          - OTHER_TAG
+        - type: string
 
   headers:
     Cache-Control:
