@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/node:lts
+    steps:
+      - checkout
+      - run: npm install swagger-cli
+      - run:
+          command: |
+            for i in ./*.yaml ;  do
+              npx swagger-cli validate "$i"
+              [ $? -eq 0 ] || exit 1
+            done
