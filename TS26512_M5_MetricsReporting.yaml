@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: M5_MetricsReporting
+  version: 1.0.0
+  description: |
+    5GMS AF M5 Metrics Reporting API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M5_ConsumptionReporting
+    description: '5G Media Streaming: Media Session Handling (M5) APIs: Metrics Reporting'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m5/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /metrics-reporting/{provisioningSessionId}/{metricsReportingConfigurationId}:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+      - name: metricsReportingConfigurationId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of a Metrics Configuration in the specified Provisioning Session.'
+    post:
+      operationId: submitMetricsReport
+      summary: 'Submit a Metrics Report'
+      requestBody:
+        description: 'A Metrics Report'
+        required: true
+        content:
+          application/3gpdash-qoe-report+xml:
+            schema:
+              type: string
+              format: xml
+          application/*:
+            schema:
+              type: string
+      responses:
+        '204':
+          description: 'Metrics Report Accepted'
+        '400':
+          description: 'Bad Request'
+        '415':
+          description: 'Unsupported Media Type'

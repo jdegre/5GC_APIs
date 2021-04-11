@@ -1,0 +1,179 @@
+openapi: 3.0.0
+info:
+  title: 5GMS Common Data Types
+  version: 1.0.0
+  description: |
+    5GMS Common Data Types
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: 5GMS Common Data Types
+    description: '5G Media Streaming: Common Data Types'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+paths: {}
+components:
+  schemas:
+    #################################
+    # Clause 6.4.2: Simple data types
+    #################################
+    ResourceId:
+      type: string
+      description: String chosen by the 5GMS AF to serve as an identifier in a resource URI.
+    Percentage:
+      type: number
+      minimum: 0.0
+      maximum: 100.0
+    #DurationSec is defined in TS29571_CommonData
+    #DateTime is defined in TS29571_CommonData
+    #Uri is defined in TS29571_CommonData
+    Url:
+      type: string
+      format: uri
+      description: Uniform Resource Locator, comforming with the URI Generic Syntax specified in IETF RFC 3986.
+ 
+    #####################################
+    # Clause 6.4.3: Structured data types
+    #####################################
+    IpPacketFilterSet:
+      type: object
+      required:
+        - direction
+      properties:
+        srcIp:
+          type: string
+        dstIp:
+          type: string
+        protocol:
+          type: integer
+        srcPort:
+          type: integer
+        dstPort:
+          type: integer
+        toSTc:
+          type: string
+        flowLabel:
+          type: integer
+        spi:
+          type: integer
+        direction:
+          type: string
+
+    ServiceDataFlowDescription:
+      type: object
+      properties:
+        flowDescription:
+          $ref: '#/components/schemas/IpPacketFilterSet'
+        domainName:
+          type: string
+
+    M5QoSSpecification:
+      type: object
+      required:
+        - marBwDlBitRate
+        - marBwUlBitRate
+        - mirBwDlBitRate
+        - mirBwUlBitRate
+      properties:
+        marBwDlBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        marBwUlBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        minDesBwDlBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        minDesBwUlBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mirBwDlBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mirBwUlBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        desLatency:
+          type: integer
+          minimum: 0
+        desLoss:
+          type: integer
+          minimum: 0
+
+    M1QoSSpecification:
+      type: object
+      properties:
+        qosReference:
+          type: string
+        maxBtrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxBtrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxAuthBtrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxAuthBtrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        defPacketLossRateDl:
+          type: integer
+          minimum: 0
+        defPacketLossRateUl:
+          type: integer
+          minimum: 0
+
+    ChargingSpecification:
+      type: object
+      properties:
+        sponId:
+          type: string
+        sponStatus:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/SponsoringStatus'
+        gpsi:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+
+    TypedLocation:
+      type: object
+      required:
+        - locationIdentifierType
+        - location
+      properties:
+        locationIdentifierType:
+          $ref: '#/components/schemas/CellIdentifierType'
+        location:
+          type: string
+
+    OperationSuccessResponse:
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          type: boolean
+        reason:
+          type: string
+
+    CellIdentifierType:
+      anyOf:
+        - type: string
+          enum: [CGI, ECGI, NCGI]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    SdfMethod:
+      anyOf:
+        - type: string
+          enum: [5_TUPLE, 2_TUPLE, TYPE_OF_SERVICE_MARKING, FLOW_LABEL, DOMAIN_NAME]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    ProvisioningSessionType:
+      anyOf:
+        - type: string
+          enum: [DOWNLINK, UPLINK]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.

@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: M5_DynamicPolicies
+  version: 1.0.0
+  description: |
+    5GMS AF M5 Dynamic Policy API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M5_DynamicPolicies
+    description: '5G Media Streaming: Media Session Handling (M5) APIs: Dynamic Policies'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m5/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /dynamic-policies:
+    post:
+      operationId: createDynamicPolicy
+      summary: 'Create (and optionally upload) a new Dynamic Policy resource'
+      requestBody:
+        description: 'An optional JSON representation of a Dynamic Policy resource'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicPolicy'
+      responses:
+        '201':
+          description: 'Created Dynamic Policy Resource'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicPolicy'
+          headers:
+            Location:
+              description: 'The URL of the newly created Dynamic Policy resource'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+ 
+  /dynamic-policies/{dynamicPolicyId}:
+    parameters:
+      - name: dynamicPolicyId
+        description: 'The resource identifier of a Dynamic Policy resource'
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+    get:
+      operationId: retrieveDynamicPolicy
+      summary: 'Retrieve an existing Dynamic Policy resource'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicPolicy'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+    put:
+      operationId: updateDynamicPolicy
+      summary: 'Update an existing Dynamic Policy resource'
+      requestBody:
+        description: 'A replacement JSON representation of a Dynamic Policy resource'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicPolicy'
+      responses:
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+    patch:
+      operationId: patchDynamicPolicy
+      summary: 'Patch an existing Dynamic Policy resource'
+      requestBody:
+        description: 'A JSON patch to a Dynamic Policy resource'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/DynamicPolicy'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/DynamicPolicy'
+      responses:
+        '200':
+          description: 'Patched Dynamic Policy'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicPolicy'
+        '204':
+          description: 'Patched Dynamic Policy'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+    delete:
+      operationId: destroyDynamicPolicy
+      summary: 'Destroy an existing Dynamic Policy resource'
+      responses:
+        '204':
+          description: 'Destroyed Dynamic Policy'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+components:
+  schemas:
+    DynamicPolicy:
+      type: object
+      required:
+        - dynamicPolicyId
+        - policyTemplateId
+        - serviceDataFlowDescription
+        - provisioningSessionId
+      properties:
+        dynamicPolicyId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        policyTemplateId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        serviceDataFlowDescriptions:
+          type: array
+          items: 
+            $ref: 'TS26512_CommonData.yaml#/components/schemas/ServiceDataFlowDescription'
+        provisioningSessionId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        qosSpecification:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/M5QoSSpecification'
+        enforcementMethod:
+          type: string
+        enforcementBitRate:
+          type: integer

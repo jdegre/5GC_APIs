@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
-  version: 1.1.2
+  version: 1.2.0-alpha.1
   title: Namf_EventExposure
   description: |
     AMF Event Exposure Service
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 security:
   - {}
   - oAuth2ClientCredentials:
       - namf-evts
 externalDocs:
-  description: 3GPP TS 29.518 V16.6.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.1.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-evts/v1'
@@ -143,6 +143,12 @@ paths:
                         type: string
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
                 '411':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/411'
                 '413':
@@ -445,8 +451,17 @@ components:
           default: false
         reachabilityFilter:
           $ref: '#/components/schemas/ReachabilityFilter'
+        udmDetectInd:
+          type: boolean
+          default: false
         maxReports:
           type: integer
+        presenceInfoList:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+          minProperties: 1
+          description: A map(list of key-value pairs) where praId serves as key.
       required:
         - type
     AmfEventNotification:
@@ -631,9 +646,11 @@ components:
               - replace
           path:
             type: string
-            pattern: '\/eventList\/[0-]$|\/eventList\/[1-9][0-9]*$'
+            pattern: '^(\/eventList\/0|\/eventList\/[1-9][0-9]*){1}(\/presenceInfoList\/0|\/presenceInfoList\/[1-9][0-9]*)?$'
           value:
             $ref: '#/components/schemas/AmfEvent'
+          presenceInfo:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
         required:
           - op
           - path

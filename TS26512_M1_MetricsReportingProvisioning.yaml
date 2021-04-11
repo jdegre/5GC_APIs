@@ -1,0 +1,145 @@
+openapi: 3.0.0
+info:
+  title: M1_MetricsReportingProvisioning
+  version: 1.0.0
+  description: |
+    5GMS AF M1 Metrics Reporting Provisioning API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M1_MetricsReportingProvisioning
+    description: '5G Media Streaming: Provisioning (M1) APIs: Metrics Reporting Provisioning'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m1/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /provisioning-sessions/{provisioningSessionId}/metrics-reporting-configurations:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+    post:
+      operationId: activateMetricsReporting
+      summary: 'Activate the Metrics reporting procedure for the specified Provisioning Session by providing the Metrics Reporting Configuration'
+      requestBody:
+        description: 'A JSON representation of a Metrics Reporting Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricsReportingConfiguration'
+      responses:
+        '201':
+          description: 'Metrics Reporting Configuration Created'
+          headers:
+            Location:
+              description: 'URL of the newly created Metrics Reporting Configuration (same as request URL).'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+  /provisioning-sessions/{provisioningSessionId}/metrics-reporting-configurations/{metricsReportingConfigurationId}:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+      - name: metricsReportingConfigurationId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of a Metrics Reporting Configuration.'
+    get:
+      operationId: retrieveMetricsReportingConfiguration
+      summary: 'Retrieve the specified Metrics Reporting Configuration of the specified Provisioning Session'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsReportingConfiguration'
+    put:
+      operationId: updateMetricsReportingConfiguration
+      summary: 'Update the specified Metrics Reporting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Metrics Reporting Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricsReportingConfiguration'
+      responses:
+        '204':
+          description: 'Updated Metrics Reporting Configuration'
+        '404':
+          description: 'Not Found'
+    patch:
+      operationId: patchMetricsReportingConfiguration
+      summary: 'Patch the specified Metrics Reporting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Metrics Reporting Configuration'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/MetricsReportingConfiguration'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/MetricsReportingConfiguration'
+      responses:
+        '200':
+          description: 'Patched Metrics Reporting Configuration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsReportingConfiguration'
+        '404':
+          description: 'Not Found'
+    delete:
+      operationId: destroyMetricsReportingConfiguration
+      summary: 'Destroy the specified Metrics Reporting Configuration of the specified Provisioning Session'
+      responses:
+        '204':
+          description: 'Destroyed Metrics Reporting Configuration'
+        '404':
+          description: 'Not Found'    
+components:
+  schemas:
+    MetricsReportingConfiguration:
+      type: object
+      required:
+        - metricsReportingConfigurationId
+        - scheme
+      properties:
+        metricsReportingConfigurationId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        scheme:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        dataNetworkName:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        reportingInterval:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        samplePercentage:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Percentage'
+        urlFilters:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        metrics:
+          type: array
+          items:
+            type: string
+          minItems: 1

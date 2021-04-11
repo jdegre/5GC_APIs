@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.1.2
+  version: 1.2.0-alpha.1
   description: |
     PCF Policy Authorization Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V16.7.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V17.0.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -451,7 +451,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: '#/components/schemas/AppSessionContextUpdateData'
+              $ref: '#/components/schemas/AppSessionContextUpdateDataPatch'
       responses:
         '200':
           description: successful modification of the resource and a representation of that resource is returned
@@ -528,7 +528,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
         eventNotification:
-          '{$request.body#/evSubsc/notifUri}/notify':
+          '{$request.body#/ascReqData/evSubsc/notifUri}/notify':
             post:
               requestBody:
                 description: Notification of an event occurrence in the PCF.
@@ -964,6 +964,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MediaComponent'
           minProperties: 1
+          description: Contains media component information. The key of the map is the medCompN attribute.
         ipDomain:
           type: string
         mpsId:
@@ -1022,8 +1023,14 @@ components:
           minItems: 1
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    AppSessionContextUpdateDataPatch:
+      description: Identifies the modifications to an Individual Application Session Context and/or the modifications to the sub-resource Events Subscription.
+      type: object
+      properties:
+        ascReqData:
+          $ref: '#/components/schemas/AppSessionContextUpdateData'
     AppSessionContextUpdateData:
-      description: Identifies the modifications to an Individual Application Session Context and may include the modifications to the sub-resource Events Subscription.
+      description: Identifies the modifications to the "ascReqData" property of an Individual Application Session Context which may include the modifications to the sub-resource Events Subscription.
       type: object
       properties:
         afAppId:
@@ -1047,6 +1054,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MediaComponentRm'
           minProperties: 1
+          description: Contains media component information. The key of the map is the medCompN attribute.
         mpsId:
           description: indication of MPS service request
           type: string
@@ -1144,6 +1152,8 @@ components:
           $ref: '#/components/schemas/AfRoutingRequirement'
         qosReference:
           type: string
+        disUeNotif:
+          type: boolean
         altSerReqs:
           type: array
           items:
@@ -1184,6 +1194,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MediaSubComponent'
           minProperties: 1
+          description: Contains the requested bitrate and filters for the set of service data flows identified by their common flow identifier. The key of the map is the fNum attribute.
         medType:
           $ref: '#/components/schemas/MediaType'
         minDesBwDl:
@@ -1235,6 +1246,8 @@ components:
             type: string
           minItems: 1
           nullable: true
+        disUeNotif:
+          type: boolean
         contVer:
           $ref: '#/components/schemas/ContentVersion'
         codecs:
@@ -1271,6 +1284,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MediaSubComponentRm'
           minProperties: 1
+          description: Contains the requested bitrate and filters for the set of service data flows identified by their common flow identifier. The key of the map is the fNum attribute.
         medType:
           $ref: '#/components/schemas/MediaType'
         minDesBwDl:
@@ -1525,6 +1539,7 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
+          description: Defines the presence information provisioned by the AF. The praId attribute within the PresenceInfo data type is the key of the map.
     SpatialValidityRm:
       description: this data type is defined in the same way as the SpatialValidity data type, but with the OpenAPI nullable property set to true
       type: object
@@ -1536,6 +1551,7 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
+          description: Defines the presence information provisioned by the AF. The praId attribute within the PresenceInfo data type is the key of the map.
       nullable: true
     AfRoutingRequirementRm:
       description: this data type is defined in the same way as the AfRoutingRequirement data type, but with the OpenAPI nullable property set to true and the spVal and tempVals attributes defined as removable.
@@ -1666,6 +1682,7 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/MediaComponent'
+          description: Indicates the maximum bandwidth that shall be authorized by the PCF for each media component of the map. The key of the map is the media component number.
           minProperties: 1
         marBwUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
@@ -1889,10 +1906,12 @@ components:
       type: string
       nullable: true
     TscPriorityLevel:
+      description: Represents the priority level of TSC Flows.
       type: integer
       minimum: 1
       maximum: 8
     TscPriorityLevelRm:
+      description: This data type is defined in the same way as the TscPriorityLevel data type, but with the OpenAPI nullable property set to true.
       type: integer
       minimum: 1
       maximum: 8
@@ -1901,6 +1920,7 @@ components:
 # ENUMERATIONS DATA TYPES
 #
     MediaType:
+      description: Indicates the media type of a media component.
       anyOf:
         - type: string
           enum:
@@ -1915,6 +1935,7 @@ components:
         - type: string
 #
     ReservPriority:
+      description: Indicates the reservation priority.
       anyOf:
         - type: string
           enum:
@@ -1937,6 +1958,7 @@ components:
         - type: string
 #        
     ServAuthInfo:
+      description: Indicates the result of the Policy Authorization service request from the AF.
       anyOf:
       - type: string
         enum:
@@ -1946,6 +1968,7 @@ components:
       - type: string
 #      
     SponsoringStatus:
+      description: Indicates whether sponsored data connectivity is enabled or disabled/not enabled.
       anyOf:
       - type: string
         enum:
@@ -1954,6 +1977,7 @@ components:
       - type: string
 #        
     AfEvent:
+      description: Represents an event to notify to the AF.
       anyOf:
       - type: string
         enum:
@@ -1974,6 +1998,7 @@ components:
       - type: string
 #        
     AfNotifMethod:
+      description: Represents the notification methods that can be subscribed for an event.
       anyOf:
       - type: string
         enum:
@@ -1984,6 +2009,7 @@ components:
       - type: string
 #        
     QosNotifType:
+      description: Indicates the notification type for QoS Notification Control.
       anyOf:
       - type: string
         enum:
@@ -1992,6 +2018,7 @@ components:
       - type: string
 #        
     TerminationCause:
+      description: Indicates the cause behind requesting the deletion of the Individual Application Session Context resource.
       anyOf:
       - type: string
         enum:
@@ -2001,6 +2028,7 @@ components:
       - type: string
 #        
     MediaComponentResourcesStatus:
+      description: Indicates whether the media component is active or inactive.
       anyOf:
       - type: string
         enum:
@@ -2010,6 +2038,7 @@ components:
 #
 #
     FlowUsage:
+      description: Describes the flow usage of the flows described by a media subcomponent.
       anyOf:
       - type: string
         enum:
@@ -2020,6 +2049,7 @@ components:
 
 
     FlowStatus:
+      description: Describes whether the IP flow(s) are enabled or disabled.
       anyOf:
       - type: string
         enum:
@@ -2031,6 +2061,7 @@ components:
       - type: string
 #        
     RequiredAccessInfo:
+      description: Indicates the access network information required for an AF session.
       anyOf:
       - type: string
         enum:
@@ -2039,6 +2070,7 @@ components:
       - type: string
 #        
     SipForkingIndication:
+      description: Indicates whether several SIP dialogues are related to an "Individual Application Session Context" resource.
       anyOf:
         - type: string
           enum:
@@ -2047,6 +2079,7 @@ components:
         - type: string
 #
     AfRequestedData:
+      description: Represents the information that the AF requested to be exposed.
       anyOf:
         - type: string
           enum:
@@ -2054,6 +2087,7 @@ components:
         - type: string
 #        
     ServiceInfoStatus:
+      description: Represents the preliminary or final service information status.
       anyOf:
         - type: string
           enum:
@@ -2062,6 +2096,7 @@ components:
         - type: string
 #        
     PreemptionControlInformation:
+      description: Represents Pre-emption control information.
       anyOf:
         - type: string
           enum:
@@ -2071,6 +2106,7 @@ components:
         - type: string
 #        
     PrioritySharingIndicator:
+      description: Represents the Priority sharing indicator.
       anyOf:
         - type: string
           enum:
@@ -2079,6 +2115,7 @@ components:
         - type: string
 #        
     PreemptionControlInformationRm:
+      description: This data type is defined in the same way as the PreemptionControlInformation data type, but with the OpenAPI nullable property set to true.
       anyOf:
         - $ref: '#/components/schemas/PreemptionControlInformation'
         - $ref: 'TS29571_CommonData.yaml#/components/schemas/NullValue'

@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.1'
+  version: '1.2.0-alpha.2'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.0.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V17.1.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -519,6 +519,7 @@ paths:
           description: IMSI of the requester UE to search for an appropriate NF (e.g. HSS)
           schema:
             type: string
+            pattern: '^[0-9]{5,15}$'
         - name: ims-private-identity
           in: query
           description: IMPI of the requester UE to search for a target HSS
@@ -566,7 +567,7 @@ paths:
             type: boolean
         - name: scp-domain-list
           in: query
-          description: SCP domains the target SCP belongs to
+          description: SCP domains the target SCP or SEPP belongs to
           schema:
             type: array
             items:
@@ -596,7 +597,7 @@ paths:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
         - name: remote-plmn-id
           in: query
-          description: Id of the PLMN reachable through the SCP
+          description: Id of the PLMN reachable through the SCP or SEPP
           content:
             application/json:
               schema:
@@ -651,11 +652,28 @@ paths:
                       $ref:  'TS29510_Nnrf_NFManagement.yaml#/components/schemas/VendorSpecificFeature'
                   minProperties: 1
                 minProperties: 1
+        - name: preferred-vendor-specific-nf-features
+          in: query
+          description: Preferred vendor specific features of the network function to be discovered
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    $ref:  'TS29510_Nnrf_NFManagement.yaml#/components/schemas/VendorSpecificFeature'
+                minProperties: 1
         - name: required-pfcp-features
           in: query
           description: PFCP features required to be supported by the target UPF
           schema:
             type: string
+        - name: home-pub-key-id
+          in: query
+          description: Indicates the Home Network Public Key ID which shall be able to be served by the NF instance
+          schema:
+            type: integer
       responses:
         '200':
           description: Expected response to a valid request
@@ -828,6 +846,13 @@ paths:
       tags:
         - SCP Domain Routing Information (Document)
       parameters:
+        - name: local
+          in: query
+          description: Indication of local SCP Domain Routing Information
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: Accept-Encoding
           in: header
           description: Accept-Encoding, described in IETF RFC 7231
@@ -1351,6 +1376,24 @@ components:
           minItems: 1
         scpInfo:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/ScpInfo'
+        seppInfo:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/SeppInfo'
+        vendorId:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/VendorId'
+        supportedVendorSpecificFeatures:
+          description: the key of the map is the IANA-assigned SMI Network Management Private Enterprise Codes
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/VendorSpecificFeature'
+          minProperties: 1
+        aanfInfoList:
+          type: object
+          description: A map(list of key-value pairs) where a valid JSON string serves as key
+          additionalProperties:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/AanfInfo'
+          minProperties: 1
 
     NFService:
       description: Information of a given NF Service Instance; it is part of the NFProfile of an NF Instance discovered by the NRF
@@ -1405,8 +1448,6 @@ components:
           maximum: 65535
         recoveryTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        chfServiceInfo:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/ChfServiceInfo'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         nfServiceSetIdList:
@@ -1524,6 +1565,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         reqInstanceId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        localInd:
+          type: boolean
+          default: false
 
     ScpDomainRoutingInfoNotification:
       description: SCP Domain Routing Information Notification
@@ -1533,3 +1577,6 @@ components:
       properties:
         routingInfo:
           $ref: '#/components/schemas/ScpDomainRoutingInformation'
+        localInd:
+          type: boolean
+          default: false

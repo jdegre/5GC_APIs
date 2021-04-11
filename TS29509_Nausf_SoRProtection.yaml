@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.1
+  version: 1.2.0-alpha.2
   title: Nausf_SoRProtection Service
   description: |
     AUSF SoR Protection Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.509 V17.0.0; 5G System; Authentication Server Services
+  description: 3GPP TS 29.509 V17.1.0; 5G System; Authentication Server Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
 
 servers:
@@ -44,6 +44,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SorSecurityInfo'
+        '307':
+          description: temporary redirect
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AUSF or AUSF (service) set '
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of target AUSF (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AUSF or AUSF (service) set '
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of target AUSF (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '503':
           description: Service Unavailable
           content:
@@ -73,6 +97,8 @@ components:
           $ref: '#/components/schemas/SorHeader'
         sorTransparentInfo:
           $ref: '#/components/schemas/SorTransparentInfo'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - ackInd
     SorSecurityInfo:

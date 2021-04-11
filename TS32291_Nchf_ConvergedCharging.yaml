@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.0.1
+  version: 3.0.2
   description: |
     ConvergedCharging Service    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V16.6.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V16.7.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -355,6 +355,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         volumeLimit64:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
+        eventLimit:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         maxNumberOfccc:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         tariffTimeChange:
@@ -930,6 +932,10 @@ components:
     NEFChargingInformation:
       type: object
       properties:
+        externalIndividualIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        externalGroupIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
         groupIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         aPIDirection:
@@ -955,6 +961,8 @@ components:
           $ref: '#/components/schemas/UserInformation'
         userLocationinfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        pSCellInformation:
+          $ref: '#/components/schemas/PSCellInformation'
         uetimeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         rATType:
@@ -990,8 +998,36 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 0
+        nSSAIMapList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NSSAIMap'
+          minItems: 0
+        amfUeNgapId:
+          type: integer
+        ranUeNgapId:
+          type: integer
+        ranNodeId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
       required:
         - registrationMessagetype
+    PSCellInformation:
+      type: object
+      properties:
+        nrcgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        ecgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+    NSSAIMap:
+      type: object
+      properties:
+        servingSnssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        homeSnssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+      required:
+        - servingSnssai
+        - homeSnssai
     N2ConnectionChargingInformation:
       type: object
       properties:
@@ -1001,6 +1037,8 @@ components:
           $ref: '#/components/schemas/UserInformation'
         userLocationinfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        pSCellInformation:
+          $ref: '#/components/schemas/PSCellInformation'
         uetimeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         rATType:
@@ -1050,6 +1088,8 @@ components:
           $ref: '#/components/schemas/UserInformation'
         userLocationinfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        pSCellInformation:
+          $ref: '#/components/schemas/PSCellInformation'
         uetimeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
         rATType:
@@ -1158,8 +1198,6 @@ components:
       type: array
       items:
         $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RanNasRelCause'
-
-    # Temporary fix to correct wrong indentation of "NotificationType"
     NotificationType:
       anyOf:
         - type: string
@@ -1175,11 +1213,13 @@ components:
             - SMF
             - SMS
             - PGW_C_SMF
-            - NEFF
+            - NEFF # Included for backwards compatibility, shall not be used
             - SGW
             - I_SMF
             - ePDG
             - CEF
+            - NEF
+            - MnS_Producer
         - type: string
     ChargingCharacteristicsSelectionMode:
       anyOf:

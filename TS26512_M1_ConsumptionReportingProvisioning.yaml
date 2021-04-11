@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: M1_ConsumptionReportingProvisioning
+  version: 1.0.0
+  description: |
+    5GMS AF M1 Consumption Reporting Provisioning API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M1_ConsumptionReportingProvisioning
+    description: '5G Media Streaming: Provisioning (M1) APIs: Consumption Reporting Provisioning'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m1/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /provisioning-sessions/{provisioningSessionId}/consumption-reporting-configuration:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+    post:
+      operationId: activateConsumptionReporting
+      summary: 'Activate the consumption reporting procedure for the specified Provisioning Session by providing the Consumption Reporting Configuration'
+      requestBody:
+        description: 'A JSON representation of a Consumption Reporting Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumptionReportingConfiguration'
+      responses:
+        '201':
+          description: 'Consumption Reporting Configuration Created'
+          headers:
+            Location:
+              description: 'URL of the newly created Consumption Reporting Configuration (same as request URL).'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+    get:
+      operationId: retrieveConsumptionReportingConfiguration
+      summary: 'Retrieve the Consumption Reporting Configuration of the specified Provisioning Session'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumptionReportingConfiguration'
+    put:
+      operationId: updateConsumptionReportingConfiguration
+      summary: 'Update the Consumption Reporting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Consumption Reporting Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumptionReportingConfiguration'
+      responses:
+        '204':
+          description: 'Updated Consumption Reporting Configuration'
+        '404':
+          description: 'Not Found'
+    patch:
+      operationId: patchConsumptionReportingConfiguration
+      summary: 'Patch the Consumption Reporting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Consumption Reporting Configuration'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/ConsumptionReportingConfiguration'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/ConsumptionReportingConfiguration'
+      responses:
+        '200':
+          description: 'Patched Consumption Reporting Configuration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumptionReportingConfiguration'
+        '404':
+          description: 'Not Found'
+    delete:
+      operationId: destroyConsumptionReportingConfiguration
+      summary: 'Destroy the current Consumption Reporting Configuration of the specified Provisioning Session'
+      responses:
+        '204':
+          description: 'Destroyed Consumption Reporting Configuration'
+        '404':
+          description: 'Not Found'    
+components:
+  schemas:
+    ConsumptionReportingConfiguration:
+      type: object
+      properties:
+        reportingInterval:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        samplePercentage:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Percentage'
+        locationReporting:
+          type: boolean

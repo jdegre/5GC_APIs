@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.2
+  version: 1.2.0-alpha.3
   title: Npcf_UEPolicyControl
   description: |
     UE Policy Control Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.525 V17.1.0; 5G System; UE Policy Control Service.
+  description: 3GPP TS 29.525 V17.2.0; 5G System; UE Policy Control Service.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.525/'
 servers:
   - url: '{apiRoot}/npcf-ue-policy-control/v1'
@@ -88,10 +88,34 @@ paths:
                   description: No Content, Notification was successful
                 '307':
                   description: temporary redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
                   headers:
                     Location:
                       description: 'A URI pointing to the endpoint of another NF service consumer to which the notification should be sent.'
                       required: true
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: 'Identifier of the target NF (service) instance towards which the notification request is redirected'
+                      schema:
+                        type: string
+                '308':
+                  description: Permanent Redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      required: true
+                      description: 'A URI pointing to the endpoint of an alternative AMF (service) instance towards which the notification should be redirected.'
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: 'Identifier of the target NF (service) instance towards which the notification request is redirected'
                       schema:
                         type: string
                 '400':
@@ -130,10 +154,34 @@ paths:
                   description: No Content, Notification was successful
                 '307':
                   description: temporary redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
                   headers:
                     Location:
                       description: 'A URI pointing to the endpoint of another NF service consumer to which the notification should be sent.'
                       required: true
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: 'Identifier of the target NF (service) instance towards which the notification request is redirected'
+                      schema:
+                        type: string
+                '308':
+                  description: Permanent Redirect
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  headers:
+                    Location:
+                      required: true
+                      description: 'A URI pointing to the endpoint of an alternative AMF (service) instance towards which the notification should be redirected.'
+                      schema:
+                        type: string
+                    3gpp-Sbi-Target-Nf-Id:
+                      description: 'Identifier of the target NF (service) instance towards which the notification request is redirected'
                       schema:
                         type: string
                 '400':
@@ -178,6 +226,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicyAssociation'
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -211,6 +291,38 @@ paths:
       responses:
         '204':
           description: No Content. Resource was successfully deleted
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -253,6 +365,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicyUpdate'
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative PCF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -286,6 +430,7 @@ components:
             npcf-ue-policy-control: Access to the Npcf_UEPolicyControl API
   schemas:
     PolicyAssociation:
+      description: Contains the description of a policy association that is returned by the PCF when a policy Association is created, updated, or read.
       type: object
       properties:
         request:
@@ -305,11 +450,13 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
+          description: Contains the presence reporting area(s) for which reporting was requested. The praId attribute within the PresenceInfo data type is the key of the map.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - suppFeat
     PolicyAssociationRequest:
+      description: Represents information that the NF service consumer provides when requesting the creation of a policy association.
       type: object
       properties:
         notificationUri:
@@ -372,6 +519,7 @@ components:
         - suppFeat
         - supi
     PolicyAssociationUpdateRequest:
+      description: Represents Information that the NF service consumer provides when requesting the update of a policy association.
       type: object
       properties:
         notificationUri:
@@ -404,7 +552,7 @@ components:
           type: object
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
-          description: Map of PRA status information.
+          description: Contains the UE presence status for tracking area for which changes of the UE presence occurred. The praId attribute within the PresenceInfo data type is the key of the map.
           minProperties: 1
         userLoc:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
@@ -428,6 +576,7 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
     PolicyUpdate:
+      description: Represents updated policies that the PCF provides in a notification or in the reply to an Update Request.
       type: object
       properties:
         resourceUri:
@@ -447,12 +596,13 @@ components:
           type: object
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
-          description: Map of PRA information.
+          description: Contains the presence reporting area(s) for which reporting was requested. The praId attribute within the PresenceInfo data type is the key of the map.
           minProperties: 1
           nullable: true
       required:
         - resourceUri
     TerminationNotification:
+      description: Represents a request to terminate a policy association that the PCF provides in a notification.
       type: object
       properties:
         resourceUri:
@@ -463,6 +613,7 @@ components:
         - resourceUri
         - cause
     UePolicyTransferFailureNotification:
+      description: Represents information on the failure of a UE policy transfer to the UE because the UE is not reachable.
       type: object
       properties:
         cause:
@@ -476,6 +627,7 @@ components:
         - cause
         - ptis
     UeRequestedValueRep:
+      description: Contains the current applicable values corresponding to the policy control request triggers.
       type: object
       properties:
         userLoc:
@@ -485,7 +637,7 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
-          description: Map of PRA status information.
+          description: Contains the UE presence statuses for tracking areas. The praId attribute within the PresenceInfo data type is the key of the map.
         plmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         connectState:
@@ -552,4 +704,4 @@ components:
         Possible values are
         - LTE_PC5: This value is used to indicate that UE supports PC5 LTE RAT for V2X communication over PC5 reference point.
         - NR_PC5: This value is used to indicate that UE supports PC5 NR RAT for V2X communication over PC5 reference point.
-        - LTE_NR_PC5: This value is used to indicate that UE supports both PC5 LTE and NR RAT for V2X communication over PC5 reference point..
+        - LTE_NR_PC5: This value is used to indicate that UE supports both PC5 LTE and NR RAT for V2X communication over PC5 reference point.

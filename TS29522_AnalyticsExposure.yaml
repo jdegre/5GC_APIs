@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-analyticsexposure
-  version: 1.0.2
+  version: 1.0.3
   description: |
     API for Analytics Exposure.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.522 V16.6.0; 5G System; Network Exposure Function Northbound APIs.
+  description: 3GPP TS 29.522 V16.7.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -47,6 +47,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/AnalyticsExposureSubsc'
                 minItems: 0
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -97,6 +101,10 @@ paths:
               responses:
                 '204':
                   description: No Content (successful notification)
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
@@ -188,6 +196,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnalyticsExposureSubsc'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -240,6 +252,10 @@ paths:
                 $ref: '#/components/schemas/AnalyticsExposureSubsc'
         '204':
           description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -283,6 +299,10 @@ paths:
       responses:
         '204':
           description: No Content (Successful deletion of the existing subscription)
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -327,6 +347,10 @@ paths:
                 $ref: '#/components/schemas/AnalyticsData'
         '204':
           description: No Content (The requested Analytics data does not exist)
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -377,6 +401,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AnalyticsEventNotif'
+          minItems: 1
+        failEventReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsFailureEventInfo'
           minItems: 1
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
@@ -706,6 +735,16 @@ components:
         - locArea
         - startTs
         - endTs
+    AnalyticsFailureEventInfo:
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/AnalyticsEvent'
+        failureCode:
+          $ref: '#/components/schemas/AnalyticsFailureCode'
+      required:
+        - event
+        - failureCode
     AnalyticsEvent:
       anyOf:
       - type: string
@@ -729,3 +768,20 @@ components:
         - CONGESTION: The AF requests to be notified about analytics information of user data congestion information. 
         - NETWORK_PERFORMANCE: The AF requests to be notified about analytics information of network performance. 
         - QOS_SUSTAINABILITY: The AF requests to be notified about analytics information of QoS sustainability.
+    AnalyticsFailureCode:
+      anyOf:
+      - type: string
+        enum:
+          - UNAVAILABLE_DATA
+          - BOTH_STAT_PRED_NOT_ALLOWED
+          - OTHER
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - UNAVAILABLE_DATA: The event is rejected since necessary data to perform the service is unavailable.
+          - BOTH_STAT_PRED_NOT_ALLOWED: The event is rejected since the start time is in the past and the end time is in the future, which means the NF service consumer requested both statistics and prediction for the analytics.
+          - OTHER: The event is rejected due to other reasons.

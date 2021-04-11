@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.1
+  version: 1.2.0-alpha.2
   title: Namf_Communication
   description: |
     AMF Communication Service
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 security:
   - {}
   - oAuth2ClientCredentials:
       - namf-comm
 externalDocs:
-  description: 3GPP TS 29.518 V17.0.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.1.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-comm/v1'
@@ -276,6 +276,8 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '403':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
                 '411':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/411'
                 '413':
@@ -492,12 +494,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeContextCreateError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeContextCreateError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -674,12 +682,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssignEbiError'
+            application/problem+json: # error originated by an SCP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssignEbiError'
+            application/problem+json: # error originated by an SCP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '409':
           description: Conflict
           content:
@@ -700,6 +714,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssignEbiError'
+            application/problem+json: # error originated by an SCP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -897,6 +914,9 @@ paths:
               properties: # Request parts
                 jsonData:
                   $ref: '#/components/schemas/UeContextRelocateData'
+                binaryDataForwardRelocationRequest:
+                  type: string
+                  format: binary
                 binaryDataN2Information:
                   type: string
                   format: binary
@@ -951,6 +971,12 @@ paths:
             encoding:
               jsonData:
                 contentType:  application/json
+              binaryDataForwardRelocationRequest:
+                contentType:  application/vnd.3gpp.gtpc
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
               binaryDataN2Information:
                 contentType:  application/vnd.3gpp.ngap
                 headers:
@@ -1067,18 +1093,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UeContextRelocatedData'
+
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UeContextRelocateError'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UeContextRelocateError'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
@@ -1088,11 +1107,97 @@ paths:
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
-          description: Internal Server Error
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+  /ue-contexts/{ueContextId}/cancel-relocate:
+    post:
+      summary: Namf_Communication CancelRelocateUEContext service Operation
+      tags:
+        - Individual ueContext (Document)
+      operationId: CancelRelocateUEContext
+      parameters:
+        - name: ueContextId
+          in: path
+          description: UE Context Identifier
+          required: true
+          schema:
+            type: string
+            pattern: '^(5g-guti-[0-9]{5,6}[0-9a-fA-F]{14}|imsi-[0-9]{5,15}|nai-.+|gli-.+|gci-.+|imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$'
+      requestBody:
+        content:
+          multipart/related:  # message with binary body part(s)
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/UeContextCancelRelocateData'
+                binaryDataGtpcMessage:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataGtpcMessage:
+                contentType:  application/vnd.3gpp.gtpc
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+        required: true
+      responses:
+        '204':
+          description: UE Context successfully released
+        '307':
+          description: temporary redirect
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/UeContextCreateError'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -1234,6 +1339,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/N1N2MessageTransferError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
       callbacks:
@@ -1689,12 +1797,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/N2InformationTransferError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/N2InformationTransferError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '404':
           description: Not Found
           content:
@@ -1715,12 +1829,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/N2InformationTransferError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         '503':
           description: Service Unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/N2InformationTransferError'
+            application/problem+json: # error originated by an SCP or SEPP
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           description: Unexpected error
   /non-ue-n2-messages/subscriptions:
@@ -1929,6 +2049,8 @@ paths:
                 type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -2743,6 +2865,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         routingIndicator:
           type: string
+        hNwPubKeyId:
+          type: integer
         groupList:
           type: array
           items:
@@ -2810,7 +2934,7 @@ components:
         eventSubscriptionList:
           type: array
           items:
-            $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventSubscription'
+            $ref: '#/components/schemas/ExtAmfEventSubscription'
           minItems: 1
         mmContextList:
           type: array
@@ -2883,6 +3007,8 @@ components:
         sNssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         homePlmnSnssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        iwkSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         subjectToHo:
           type: boolean
@@ -3012,6 +3138,8 @@ components:
           minItems: 1
         expectedUEbehavior:
           $ref: '#/components/schemas/ExpectedUeBehavior'
+        ueDifferentiationInfo:
+          $ref: '#/components/schemas/UeDifferentiationInfo'
         plmnAssiUeRadioCapId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnAssiUeRadioCapId'
         manAssiUeRadioCapId:
@@ -3079,6 +3207,8 @@ components:
         sNssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        selectedDnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
@@ -3246,6 +3376,8 @@ components:
           $ref: '#/components/schemas/NgRanTargetId'
         sourceToTargetData:
           $ref: '#/components/schemas/N2InfoContent'
+        forwardRelocationRequest:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         pduSessionList:
           type: array
           items:
@@ -3257,30 +3389,25 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NgApCause'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        mmeControlFteid:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
-        mmeGtpSourcePort:
-          type: integer
-          minimum: 0
-          maximum: 65535
-        mmeGtpSequenceNumber:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
       required:
         - ueContext
         - targetId
         - sourceToTargetData
+        - forwardRelocationRequest
     UeContextRelocatedData:
       type: object
       properties:
         ueContext:
           $ref: '#/components/schemas/UeContext'
-    UeContextRelocateError:
+    UeContextCancelRelocateData:
       type: object
       properties:
-        error:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        relocationCancelRequest:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
       required:
-        - error
+        - relocationCancelRequest
     NgRanTargetId:
       type: object
       properties:
@@ -3441,6 +3568,8 @@ components:
           minItems: 1
         reportInterval:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ReportIntervalMdt'
+        reportIntervalNr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ReportIntervalNrMdt'
         reportAmount:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ReportAmountMdt'
         eventThresholdRsrp:
@@ -3451,20 +3580,40 @@ components:
           type: integer
           minimum: 0
           maximum: 34
+        eventThresholdRsrpNr:
+          type: integer
+          minimum: 0
+          maximum: 127
+        eventThresholdRsrqNr:
+          type: integer
+          minimum: 0
+          maximum: 127
         collectionPeriodRmmLte:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/CollectionPeriodRmmLteMdt'
+        collectionPeriodRmmNr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/CollectionPeriodRmmNrMdt'
         measurementPeriodLte:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MeasurementPeriodLteMdt'
         areaScope:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaScope'
         positioningMethod:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PositioningMethodMdt'
+        addPositioningMethodList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PositioningMethodMdt'
+          minItems: 1
         mdtAllowedPlmnIdList:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
           minItems: 1
           maxItems: 16
+        sensorMeasurementList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SensorMeasurement'
+          minItems: 1
       required:
         - jobType
 
@@ -3489,6 +3638,40 @@ components:
           type: boolean
       required:
         - ecModeBRestricted
+
+    ExtAmfEventSubscription:
+      allOf:
+      - $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventSubscription'
+      - $ref: '#/components/schemas/AmfEventSubscriptionAddInfo'
+
+    AmfEventSubscriptionAddInfo:
+      type: object
+      properties:
+        bindingInfo:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 2
+
+    UeDifferentiationInfo:
+      type: object
+      properties:
+        periodicComInd:
+          $ref: '#/components/schemas/PeriodicCommunicationIndicator'
+        periodicTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        scheduledComTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ScheduledCommunicationTime'
+        stationaryInd:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/StationaryIndication'
+        trafficProfile:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TrafficProfile'
+        batteryInd:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BatteryIndication'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
 
 #
 # SIMPLE DATA TYPES
@@ -3706,4 +3889,12 @@ components:
           - EIA1
           - EIA2
           - EIA3
+      - type: string
+
+    PeriodicCommunicationIndicator:
+      anyOf:
+      - type: string
+        enum:
+          - PIORIODICALLY
+          - ON_DEMAND
       - type: string

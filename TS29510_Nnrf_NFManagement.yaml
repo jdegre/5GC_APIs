@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.1'
+  version: '1.2.0-alpha.2'
   title: 'NRF NFManagement Service'
   description: |
     NRF NFManagement Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.0.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V17.1.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -45,20 +45,31 @@ paths:
           schema:
             type: integer
             minimum: 1
+        - name: page-number
+          in: query
+          description: Page number where the response shall start
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: page-size
+          in: query
+          description: Maximum number of items in each returned page
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: Expected response to a valid request
           content:
             application/3gppHal+json:
               schema:
-                type: object
-                properties:
-                  _links:
-                    type: object
-                    description: 'List of the URI of NF instances. It has two members whose names are item and self. The item one contains an array of URIs.'
-                    additionalProperties:
-                      $ref: 'TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
-                minProperties: 1
+                $ref: '#/components/schemas/UriList'
+          headers:
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
+              schema:
+                type: string
         '307':
           description: Temporary Redirect
           content:
@@ -198,6 +209,11 @@ paths:
       responses:
         '200':
           description: Expected response to a valid request
+          headers:
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -296,6 +312,10 @@ paths:
               description: Content-Encoding, described in IETF RFC 7231
               schema:
                 type: string
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
+              schema:
+                type: string
         '201':
           description: Expected response to a valid request
           content:
@@ -314,6 +334,10 @@ paths:
                 type: string
             Content-Encoding:
               description: Content-Encoding, described in IETF RFC 7231
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
               schema:
                 type: string
         '307':
@@ -386,6 +410,11 @@ paths:
           description: Accept-Encoding, described in IETF RFC 7231
           schema:
             type: string
+        - name: If-Match
+          in: header
+          description: Validator for conditional requests, as described in IETF RFC 7232, 3.2
+          schema:
+            type: string
       requestBody:
         content:
           application/json-patch+json:
@@ -405,6 +434,10 @@ paths:
           headers:
             Accept-Encoding:
               description: Accept-Encoding, described in IETF RFC 7694
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
               schema:
                 type: string
             Content-Encoding:
@@ -448,8 +481,12 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '409':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/409'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '412':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/412'
         '413':
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
@@ -1118,6 +1155,24 @@ components:
           minItems: 1
         scpInfo:
           $ref: '#/components/schemas/ScpInfo'
+        seppInfo:
+          $ref: '#/components/schemas/SeppInfo'
+        vendorId:
+          $ref: '#/components/schemas/VendorId'
+        supportedVendorSpecificFeatures:
+          description: the key of the map is the IANA-assigned SMI Network Management Private Enterprise Codes
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/VendorSpecificFeature'
+          minProperties: 1
+        aanfInfoList:
+          type: object
+          description: A map(list of key-value pairs) where a valid JSON string serves as key
+          additionalProperties:
+            $ref: '#/components/schemas/AanfInfo'
+          minProperties: 1
 
     NFService:
       description: Information of a given NF Service Instance; it is part of the NFProfile of an NF Instance
@@ -1213,8 +1268,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         recoveryTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-        chfServiceInfo:
-          $ref: '#/components/schemas/ChfServiceInfo'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         nfServiceSetIdList:
@@ -1283,6 +1336,8 @@ components:
             - NSSAAF
             - ICSCF
             - SCSCF
+            - DRA
+            - AANF
         - type: string
 
     Fqdn:
@@ -1389,6 +1444,8 @@ components:
           readOnly: true
           allOf:
             - $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        hnrfUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
     NfInstanceIdCond:
       description: Subscription to a given NF Instance Id
@@ -1611,6 +1668,11 @@ components:
           items:
             $ref: '#/components/schemas/InternalGroupIdRange'
           minItems: 1
+        suciInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuciInfo'
+          minItems: 1
 
     AusfInfo:
       description: Information of an AUSF NF Instance
@@ -1628,6 +1690,11 @@ components:
           items:
             type: string
             pattern: '^[0-9]{1,4}$'
+          minItems: 1
+        suciInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuciInfo'
           minItems: 1
 
     AmfInfo:
@@ -1770,6 +1837,11 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
           minItems: 1
         wAgfInfo:
           $ref: '#/components/schemas/WAgfInfo'
@@ -1961,10 +2033,16 @@ components:
           items:
             $ref: '#/components/schemas/Ipv6PrefixRange'
           minItems: 1
+        rxDiamHost:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        rxDiamRealm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
 
     ChfInfo:
       description: Information of a CHF NF Instance
       type: object
+      not:
+        required: [ primaryChfInstance, secondaryChfInstance ]
       properties:
         supiRangeList:
           type: array
@@ -1983,6 +2061,10 @@ components:
           minItems: 1
         groupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        primaryChfInstance:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        secondaryChfInstance:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
 
     Ipv4AddressRange:
       description: Range of IPv4 addresses
@@ -2042,11 +2124,18 @@ components:
       properties:
         nfServiceSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        nfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
 
     UpfCond:
       description: Subscription to a set of NF Instances (UPFs), able to serve a certain service area (i.e. SMF serving area or TAI list)
       type: object
+      required:
+        - conditionType
       properties:
+        conditionType:
+          type: string
+          enum: [ UPF_COND ]
         smfServingArea:
           type: array
           items:
@@ -2059,23 +2148,70 @@ components:
           minItems: 1
 
     NwdafCond:
-      description: Subscription to a set of NF Instances (NWDAFs), identified by Analytics ID(s).
+      description: Subscription to a set of NF Instances (NWDAFs), identified by Analytics ID(s), S-NSSAI(s) or NWDAF Serving Area information, i.e. list of TAIs for which the NWDAF can provide analytics.
       type: object
+      required:
+        - conditionType
       properties:
+        conditionType:
+          type: string
+          enum: [ NWDAF_COND ]
         analyticsIds:
           type: array
           items:
             type: string
           minItems: 1
+        snssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
 
     NefCond:
-      description: Subscription to a set of NF Instances (NEFs), identified by Event ID(s) provided by AF.
+      description: Subscription to a set of NF Instances (NEFs), identified by Event ID(s) provided by AF, S-NSSAI(s), AF Instance ID, Application Identifier, External Identifier, External Group Identifier, or domain name.
       type: object
+      required:
+        - conditionType
       properties:
+        conditionType:
+          type: string
+          enum: [ NEF_COND ]
         eventIds:
           type: array
           items:
             $ref: 'TS29520_Nnwdaf_AnalyticsInfo.yaml#/components/schemas/EventId'
+          minItems: 1
+        snssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        pfdData:
+          $ref: '#/components/schemas/PfdData'
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        externalGroupIdentifiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        servedFqdnList:
+          type: array
+          items:
+            type: string
           minItems: 1
 
     NotificationType:
@@ -2276,6 +2412,7 @@ components:
             - nspaf-secured-packet
             - nudsf-dr
             - nnssaaf-nssaa
+            - naanf-akma
         - type: string
 
     N2InterfaceAmfInfo:
@@ -2333,17 +2470,6 @@ components:
           type: string
           pattern: '^([A-Fa-f0-9]{4}|[A-Fa-f0-9]{6})$'
         pattern:
-          type: string
-
-    ChfServiceInfo:
-      description: Information of primary and secondary CHF services
-      type: object
-      not:
-        required: [ primaryChfServiceInstance, secondaryChfServiceInstance ]
-      properties:
-        primaryChfServiceInstance:
-          type: string
-        secondaryChfServiceInstance:
           type: string
 
     PlmnRange:
@@ -2539,6 +2665,20 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/ScpInfo'
           minProperties: 1
+        servedSeppInfoList:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SeppInfo'
+          minProperties: 1
+        servedAanfInfoList:
+          type: object
+          description: A map(list of key-value pairs) where NF Instance Id serves as key
+          additionalProperties:
+            type: object
+            description: A map(list of key-value pairs) where a valid JSON string serves as key
+            additionalProperties:
+              $ref: '#/components/schemas/AanfInfo'
+            minProperties: 1
 
     PlmnSnssai:
       description: List of network slices (S-NSSAIs) for a given PLMN ID
@@ -2708,6 +2848,16 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
           minItems: 1
+        servedIpv4AddressRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4AddressRange'
+          minItems: 1
+        servedIpv6PrefixRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6PrefixRange'
+          minItems: 1
 
     NfInfo:
       description: Information of a generic NF Instance
@@ -2874,6 +3024,8 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
           minItems: 1
+        ipReachability:
+          $ref: '#/components/schemas/IpReachability'
 
     ScpDomainInfo:
       description: SCP Domain specific information
@@ -2897,7 +3049,7 @@ components:
           minProperties: 1
 
     ScpDomainCond:
-      description: Subscription to a set of NF or SCP instances belonging to certain SCP domains
+      description: Subscription to a set of NF or SCP or SEPP instances belonging to certain SCP domains
       type: object
       properties:
         scpDomains:
@@ -2921,3 +3073,69 @@ components:
             - NF_ADDED
             - NF_REMOVED
         - type: string
+
+    SuciInfo:
+      description: SUCI information containing Routing Indicator and Home Network Public Key ID
+      type: object
+      properties:
+        routingInds:
+          type: array
+          items:
+            type: string
+            pattern: '^[0-9]{1,4}$'
+          minItems: 1
+        hNwPubKeyIds:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+
+    SeppInfo:
+      description: Information of a SEPP Instance
+      type: object
+      properties:
+        seppPorts:
+          description: Port numbers for HTTP and HTTPS. The key of the map shall be "http" or "https"
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+            maximum: 65535
+          minProperties: 1
+        remotePlmnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
+
+    IpReachability:
+      description: Indicates the type(s) of IP addresses reachable via an SCP
+      anyOf:
+        - type: string
+          enum:
+            - IPV4
+            - IPV6
+            - IPV4V6
+        - type: string
+
+    UriList:
+      type: object
+      properties:
+        _links:
+          type: object
+          description: List of the URI of NF instances. It has two members whose names are item and self. The item attribute contains an array of URIs.'
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
+          minProperties: 1
+        totalItemCount:
+          type: integer
+
+    AanfInfo:
+      type: object
+      properties:
+        routingIndicators:
+          type: array
+          items:
+            type: string
+            pattern: '^[0-9]{1,4}$'
+          minItems: 1

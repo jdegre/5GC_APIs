@@ -1,0 +1,252 @@
+openapi: 3.0.0
+info:
+  title: M1_ContentHostingProvisioning
+  version: 1.0.0
+  description: |
+    5GMS AF M1 Content Hosting Provisioning API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M1_ContentHostingProvisioning
+    description: '5G Media Streaming: Provisioning (M1) APIs: Content Hosting Provisioning'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m1/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /provisioning-sessions/{provisioningSessionId}/content-hosting-configuration:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+    post:
+      operationId: createContentHostingConfiguration
+      summary: 'Create (and optionally upload) the Content Hosting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Content Hosting Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentHostingConfiguration'
+      responses:
+        '201':
+          description: 'Content Hosting Configuration Created'
+          headers:
+            Location:
+              description: 'URL of the newly created Content Hosting Configuration (same as request URL).'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+    get:
+      operationId: retrieveContentHostingConfiguration
+      summary: 'Retrieve the Content Hosting Configuration of the specified Provisioning Session'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentHostingConfiguration'
+        '404':
+          description: 'Not Found'
+    put:
+      operationId: updateContentHostingConfiguration
+      summary: 'Update the Content Hosting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Content Hosting Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentHostingConfiguration'
+      responses:
+        '204':
+          description: 'Updated Content Hosting Configuration'
+        '404':
+          description: 'Not Found'
+    patch:
+      operationId: patchContentHostingConfiguration
+      summary: 'Patch the Content Hosting Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Content Hosting Configuration'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/ContentHostingConfiguration'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/ContentHostingConfiguration'
+      responses:
+        '200':
+          description: 'Patched Content Hosting Configuration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentHostingConfiguration'
+        '404':
+          description: 'Not Found'
+    delete:
+      operationId: destroyContentHostingConfiguration
+      summary: 'Destroy the current Content Hosting Configuration of the specified Provisioning Session'
+      responses:
+        '204':
+          description: 'Destroyed Content Hosting Configuration'
+        '404':
+          description: 'Not Found'
+          
+  /provisioning-sessions/{provisioningSessionId}/content-hosting-configuration/purge:
+    parameters:
+        - name: provisioningSessionId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+          description: A unique identifier of the Provisioning
+    post:
+      operationId: purgeContentHostingCache
+      summary: 'Purge the content of the cache for the Content Hosting Configuration of the specified Provisioning Session'
+      requestBody:
+        description: 'The regular expression pattern for resources to purge from the cache'
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                pattern: 
+                  description: 'Keyword'
+                  type: string
+                value:
+                  description: 'The regular expression'
+                  type: string
+      responses:
+        '200':
+          description: 'Content Purged'
+components:
+  schemas:
+    IngestConfiguration:
+      type: object
+      properties:
+        path:
+          type: string
+        pull:
+          type: boolean
+        protocol:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        entryPoint:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+    PathRewriteRule:
+      type: object
+      required:
+        - requestPattern
+        - mappedPath
+      properties:
+        requestPattern:
+          type: string
+        mappedPath:
+          type: string
+    CachingConfiguration:
+      type: object
+      properties:
+        urlPatternFilter:
+          type: string
+        CachingDirectives:
+          type: object
+          required:
+            - urlPatternFilter
+            - noCache
+          properties:
+            statusCodeFilters:
+              type: array
+              items:
+                type: integer
+            noCache:
+              type: boolean
+            maxAge:
+              type: integer
+              format: int32
+    DistributionConfiguration:
+      type: object
+      required:
+        - canonicalDomainName
+        - domainNameAlias
+      properties:
+        contentPreparationTemplateId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        canonicalDomainName:
+          type: string
+        domainNameAlias:
+          type: string
+        pathRewriteRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathRewriteRule'
+        cachingConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CachingConfiguration'
+        GeoFencing:
+          type: object
+          required:
+            - locatorType
+            - locators
+          properties:
+            locatorType:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+            locators:
+              type: array
+              items: 
+                type: string
+                description: 'Format of individual locators depends on the locatorType.'
+              minItems: 1
+        UrlSignature:
+          type: object
+          required:
+            - urlPattern
+            - tokenName
+            - passphraseName
+            - passphrase
+            - tokenExpiryName
+            - useIPAddress
+          properties:
+            urlPattern:
+              type: string
+            tokenName:
+              type: string
+            passphraseName:
+              type: string
+            passphrase:
+              type: string
+            tokenExpiryName:
+              type: string
+            useIPAddress:
+              type: boolean
+            ipAddressName:
+              type: string
+        certificateId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+    # Schema for the resource itself
+    ContentHostingConfiguration:
+      type: object
+      required:
+        - name
+        - ingestConfiguration
+        - distributionConfigurations
+      properties:
+        name:
+          type: string
+        ingestConfiguration:
+          $ref: '#/components/schemas/IngestConfiguration'
+        distributionConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistributionConfiguration'

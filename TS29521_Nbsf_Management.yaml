@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0
+  version: 1.2.0-alpha.1
   title: Nbsf_Management
   description: |
     Binding Support Management Service API.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.521 V16.4.0; 5G System; Binding Support Management Service.
+  description: 3GPP TS 29.521 V17.0.0; 5G System; Binding Support Management Service.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.521/'
 servers:
   - url: '{apiRoot}/nbsf-management/v1'
@@ -177,6 +177,38 @@ paths:
       responses:
         '204':
           description: No Content. The Individual PCF session binding information resource is deleted.
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative BSF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative BSF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -219,6 +251,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PcfBinding'
+        '307':
+          description: Temporary Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative BSF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: Permanent Redirect
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative BSF (service) instance.'
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of the target NF (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -252,6 +316,7 @@ components:
             nbsf-management: Access to the Nbsf_Management API
   schemas:
     PcfBinding:
+      description: Identifies an Individual PCF binding.
       type: object
       properties:
         supi:
@@ -327,20 +392,8 @@ components:
       required:
         - dnn
         - snssai
-      oneOf:
-        - anyOf:
-          - required: [ipv4Addr]
-          - required: [ipv6Prefix] 
-          - required: [addIpv6Prefixes]
-        - anyOf:
-          - required: [macAddr48] 
-          - required: [addMacAddrs]
-      anyOf:
-        - anyOf:
-          - required: [pcfFqdn]
-          - required: [pcfIpEndPoints]
-        - required: [pcfDiamHost, pcfDiamRealm]
     PcfBindingPatch:
+      description: Identifies an Individual PCF binding used in an HTTP Patch method.
       type: object
       properties:
         ipv4Addr:
@@ -381,6 +434,7 @@ components:
         pcfDiamRealm:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
     ParameterCombination:
+      description: Represents the combination used by the BSF to check whether there is an existing PCF binding information.
       type: object
       properties:
         supi:
@@ -390,10 +444,12 @@ components:
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
     ExtProblemDetails:
+      description: Contains the FQDN or IP endpoints of the existing PCF and the cause value if there is an existing PCF binding information for the indicated combination.
       allOf:
         - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         - $ref: '#/components/schemas/BindingResp'
     BindingResp:
+      description: Contains the binding information.
       type: object
       properties:
         pcfSmFqdn:

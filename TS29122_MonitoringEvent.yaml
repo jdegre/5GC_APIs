@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.1.2
+  version: 1.2.0-alpha.1
   description: | 
     API for Monitoring Event.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V16.8.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.1.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -42,6 +42,10 @@ paths:
                   $ref: '#/components/schemas/MonitoringEventSubscription'
                 minItems: 0
                 description: Monitoring event subscriptions
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -92,6 +96,10 @@ paths:
               responses:
                 '204':
                   description: No Content (successful notification)
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
@@ -181,6 +189,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MonitoringEventSubscription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -231,6 +243,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MonitoringEventSubscription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -284,6 +300,10 @@ paths:
                   $ref: '#/components/schemas/MonitoringEventReport'
                 minItems: 1
                 description: The subscription was terminated successfully, the monitoring event report(s) shall be included if received.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -367,7 +387,7 @@ components:
           description: If "monitoringType" is "UE_REACHABILITY", this parameter may be included to identify the number of packets that the serving gateway shall buffer in case that the UE is not reachable.
         idleStatusIndication:
           type: boolean
-          description: If "monitoringType" is set to "UE_REACHABILITY" or "AVAILABILITY_AFTER_DDN_FAILURE", this parameter may be included to indicate the notification of when a UE, for which PSM is enabled, transitions into idle mode. -	"true"  indicate enabling of notification -	"false"  indicate no need to notify Default  "false".
+          description: If "monitoringType" is set to "UE_REACHABILITY" or "AVAILABILITY_AFTER_DDN_FAILURE", this parameter may be included to indicate the notification of when a UE, for which PSM is enabled, transitions into idle mode. "true"  indicates enabling of notification; "false"  indicate no need to notify. Default value is "false".
         locationType:
           $ref: '#/components/schemas/LocationType'
         accuracy:
@@ -405,7 +425,7 @@ components:
           $ref: '#/components/schemas/AssociationType'
         plmnIndication:
           type: boolean
-          description: If "monitoringType" is "ROAMING_STATUS", this parameter may be included to indicate the notification of UE's Serving PLMN ID. -	"true"  The value shall be used to indicate enabling of notification; -	"false"  The value shall be used to indicate disabling of notification.  Default  "false".
+          description: If "monitoringType" is "ROAMING_STATUS", this parameter may be included to indicate the notification of UE's Serving PLMN ID. 	"true" indicates enabling of notification; "false" indicates disabling of notification. Default value is "false".
         locationArea:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea'
         locationArea5G:
@@ -468,6 +488,8 @@ components:
           $ref: '#/components/schemas/IdleStatusInfo'
         locationInfo:
           $ref: '#/components/schemas/LocationInfo'
+        locFailureCause:
+          $ref: '#/components/schemas/LocationFailureCause'
         lossOfConnectReason:
           type: integer
           description: If "monitoringType" is "LOSS_OF_CONNECTIVITY", this parameter shall be included if available to identify the reason why loss of connectivity is reported. Refer to 3GPP TS 29.336 [11] Subclause 8.4.58.
@@ -817,3 +839,19 @@ components:
         Possible values are
         - EXPOSURE_FUNCTION: SCEF is used for the PDN connection towards the SCS/AS.
         - PDN_GATEWAY: PDN gateway is used for the PDN connection towards the SCS/AS.
+    LocationFailureCause:
+      anyOf:
+        - type: string
+          enum:
+            - POSITIONING_DENIED
+            - UNSUPPORTED_BY_UE
+            - NOT_REGISTED_UE
+            - UNSPECIFIED
+        - type: string
+      description: >
+          This string Indicates the location positioning failure cause.
+          Possible values are
+          - POSITIONING_DENIED: Positioning is denied.
+          - UNSUPPORTED_BY_UE: Positioning is not supported by UE.
+          - NOT_REGISTED_UE: UE is not registered.
+          - UNSPECIFIED: Unspecified.

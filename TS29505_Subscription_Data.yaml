@@ -5,11 +5,11 @@ info:
   description: |
     Unified Data Repository Service (subscription data).
     The API version is defined in 3GPP TS 29.504.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.505 V17.1.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
+  description: 3GPP TS 29.505 V17.2.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
@@ -124,6 +124,7 @@ paths:
           application/json:
             schema:
               $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/AuthEvent'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -231,6 +232,7 @@ paths:
           application/json:
             schema:
               $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/AuthEvent'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -349,6 +351,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SorData'
+        required: true
       responses:
         '204':
           description: Expected response to a valid request
@@ -419,6 +422,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpuData'
+        required: true
       responses:
         '204':
           description: Expected response to a valid request
@@ -489,6 +493,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NssaiAckData'
+        required: true
       responses:
         '204':
           description: Expected response to a valid request
@@ -559,6 +564,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CagAckData'
+        required: true
       responses:
         '204':
           description: Expected response to a valid request
@@ -957,6 +963,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Amf3GppAccessRegistration'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -1101,6 +1108,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AmfNon3GppAccessRegistration'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -1292,6 +1300,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SmfRegistration'
+        required: true
       responses:
         '201':
           description: Upon success, a response body containing a representation of the created Individual SmfRegistration resource shall be returned
@@ -1397,6 +1406,7 @@ paths:
             application/json:
               schema:
                 type: object
+                description: A map(list of key-value pairs) where operator specific data element name serves as key
                 additionalProperties:
                   $ref: '#/components/schemas/OperatorSpecificDataContainer'
           headers:
@@ -1493,6 +1503,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SmsfRegistration'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -1508,6 +1519,12 @@ paths:
               required: true
               schema:
                 type: string
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -1612,6 +1629,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SmsfRegistration'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -1627,6 +1645,12 @@ paths:
               required: true
               schema:
                 type: string
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsfRegistration'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -1731,6 +1755,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/IpSmGwRegistration'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -1876,6 +1901,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/MessageWaitingData'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -2338,6 +2364,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EeSubscription'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -2627,6 +2654,158 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /subscription-data/{ueId}/context-data/ee-subscriptions/{subsId}/smf-subscriptions:
+    put:
+      summary: Create SMF Subscription Info
+      operationId: Create SMF Subscriptions
+      tags:
+        - SMF Event Subscription Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmfSubscriptionInfo'
+        required: true
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    delete:
+      summary: Delete SMF Subscription Info
+      operationId: RemoveSmfSubscriptionsInfo
+      tags:
+        - SMF Event Subscription Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    patch:
+      summary: Modify SMF Subscription Info
+      operationId: ModifySmfSubscriptionInfo
+      tags:
+        - SMF Event Subscription Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    get:
+      summary: Retrieve SMF Subscription Info
+      operationId: GetSmfSubscriptionInfo
+      tags:
+        - SMF Event Subscription Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: subsId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmfSubscriptionInfo'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /subscription-data/group-data/{ueGroupId}/ee-subscriptions:
     get:
       summary: Retrieves the ee subscriptions of a group of UEs or any UE
@@ -2734,6 +2913,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EeSubscription'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -3016,6 +3196,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SdmSubscription'
+        required: true
       responses:
         '204':
           description: Upon success, an empty response body shall be returned
@@ -4318,6 +4499,8 @@ components:
         vectorGenerationInHss:
           type: boolean
           default: false
+        hssGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         n5gcAuthMethod:
           $ref: '#/components/schemas/AuthMethod'
         rgAuthenticationInd:
@@ -4325,6 +4508,10 @@ components:
           default: false
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        akmaAllowed:
+          type: boolean
+          default: false
+
     SequenceNumber:
       type: object
       properties:
@@ -4338,6 +4525,7 @@ components:
           additionalProperties:
             type: integer
             minimum: 0
+            description: A map(list of key-value pairs) where type of node serves as key
         indLength:
           type: integer
           minimum: 0
@@ -4622,6 +4810,24 @@ components:
             $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EventType'
         supportedFeatures:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        allowedMtcProvider:
+          description: A map (list of key-value pairs where EventType serves as key) of MTC provider lists. In addition to defined EventTypes, the key value "ALL" may be used to identify a map entry which contains a list of MtcProviders that are allowed monitoring all Event Types.
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/MtcProvider'
+            minItems: 1
+          minProperties: 1
+        iwkEpcRestricted:
+          type: boolean
+          default: false
+        imsi:
+          type: string
+          pattern: '^[0-9]{5,15}$'
+        hssGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+
     AmfSubscriptionInfo:
       type: object
       required:
@@ -4634,6 +4840,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         subsChangeNotifyCorrelationId:
           type: string
+        contextInfo:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ContextInfo'
+
     ContextDatasetNames:
       type: array
       items:
@@ -4707,3 +4916,35 @@ components:
           $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/E164Number'
         smscDiameterAddress:
           $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/NetworkNodeDiameterAddress'
+
+    SmfSubscriptionInfo:
+      description: Information related to active subscriptions at the SMF(s)
+      type: object
+      required:
+        - smfSubscriptionList
+      properties:
+        smfSubscriptionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SmfSubscriptionItem'
+          minItems: 1
+
+    SmfSubscriptionItem:
+      description: Contains info about a single SMF event subscription
+      type: object
+      required:
+        - smfInstanceId
+        - subscriptionId
+      properties:
+        smfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        subscriptionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+
+    MtcProvider:
+      type: object
+      properties:
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        afId:
+          type: string

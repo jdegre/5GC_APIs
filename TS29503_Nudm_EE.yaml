@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.1'
+  version: '1.2.0-alpha.2'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.1.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -98,6 +98,29 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   description: Unexpected error
+        monitoringRevocationNotification:
+          '{request.body#/secondCallbackRef}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EeMonitoringRevoked'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
+
 
   /{ueIdentity}/ee-subscriptions/{subscriptionId}:
     delete:
@@ -244,6 +267,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
         notifyCorrelationId:
           type: string
+        secondCallbackRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
 
 
@@ -279,6 +304,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
         afId:
           type: string
+        reachabilityForDataCfg: 
+          $ref: '#/components/schemas/ReachabilityForDataConfiguration'
 
     LossConnectivityCfg:
       type: object
@@ -335,6 +362,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        reachabilityReport:
+          $ref: '#/components/schemas/ReachabilityReport'
 
     Report:
       oneOf:
@@ -424,6 +453,52 @@ components:
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
 
+    ReachabilityReport:
+      type: object
+      properties:
+        amfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        accessTypeList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
+        reachability:
+            $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/UeReachability'
+        maxAvailabilityTime:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    ReachabilityForDataConfiguration:
+      type: object
+      required:
+        - reportCfg
+      properties:
+        reportCfg:
+          $ref: '#/components/schemas/ReachabilityForDataReportConfig'
+
+    EeMonitoringRevoked:
+      type: object
+      required:
+        - revokedMonitoringEventList
+      properties:
+        revokedMonitoringEventList:
+          description: A map (list of key-value pairs where ReferenceId serves as key) of MonitoringEvents
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MonitoringEvent'
+          minProperties: 1
+
+    MonitoringEvent:
+      type: object
+      required:
+        - eventType
+      properties:
+        eventType:
+          $ref: '#/components/schemas/EventType'
+        revokedCause:
+          $ref: '#/components/schemas/RevokedCause'
+
+
 # SIMPLE TYPES:
 
     ReferenceId:
@@ -495,4 +570,19 @@ components:
           enum:
           - PERIODIC
           - ON_EVENT_DETECTION
+        - type: string
+
+    ReachabilityForDataReportConfig:
+      anyOf:
+        - type: string
+          enum:
+          - DIRECT_REPORT
+          - INDIRECT_REPORT
+        - type: string
+
+    RevokedCause:
+      anyOf:
+        - type: string
+          enum:
+          - NOT_ALLOWED
         - type: string

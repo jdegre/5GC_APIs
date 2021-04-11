@@ -4,10 +4,10 @@ info:
   title: Unified Data Repository Service API file for policy data
   description: |
     The API version is defined in 3GPP TS 29.504
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V17.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V17.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -37,6 +37,17 @@ paths:
           required: false
           schema:
              $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: data-subset-names
+          in: query
+          style: form
+          explode: false
+          description: List of policy data subset names
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PolicyDataSubset'
+            minItems: 2
       responses:
         '200':
           description: Upon success, a response body containing policy data shall be returned.
@@ -1266,8 +1277,14 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/UsageMonData'
+          minProperties: 1
+          description: Contains UM policies. The value of the limit identifier is used as the key of the map.
         operatorSpecificDataSet:
-          $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+          type: object
+          additionalProperties:
+            $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+          minProperties: 1
+          description: Contains Operator Specific Data resource data. The key of the map is operator specific data element name and the value is the operator specific data of the UE.
     AmPolicyData:
       description: Contains the AM policy data for a given subscriber.
       type: object
@@ -1277,6 +1294,7 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
+          description: Contains Presence reporting area information. The praId attribute within the PresenceInfo data type is the key of the map.
         subscCats:
           type: array
           items:
@@ -1291,6 +1309,7 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
+          description: Contains Presence reporting area information. The praId attribute within the PresenceInfo data type is the key of the map.
         subscCats:
           type: array
           items:
@@ -1301,6 +1320,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/UePolicySection'
           minProperties: 1
+          description: Contains the UE Policy Sections. The UE Policy Section Identifier is used as the key of the map.
         upsis:
           type: array
           items:
@@ -1311,6 +1331,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/PlmnRouteSelectionDescriptor'
           minProperties: 1
+          description: Contains allowed route selection descriptors per serving PLMN for a UE. The serving PLMN identifier is the key of the map.
         andspInd:
           type: boolean
         pei:
@@ -1331,6 +1352,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/UePolicySection'
           minProperties: 1
+          description: Contains the UE Policy Sections. The UE Policy Section Identifier is used as the key of the map.
         upsis:
           type: array
           items:
@@ -1365,16 +1387,19 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/SmPolicySnssaiData'
           minProperties: 1
+          description: Contains Session Management Policy data per S-NSSAI for all the SNSSAIs of the subscriber. The key of the map is the S-NSSAI.
         umDataLimits:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/UsageMonDataLimit'
           minProperties: 1
+          description: Contains a list of usage monitoring profiles associated with the subscriber. The limit identifier is used as the key of the map.
         umData:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/UsageMonData'
           minProperties: 1
+          description: Contains the remaining allowed usage data associated with the subscriber. The limit identifier is used as the key of the map.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1390,6 +1415,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/SmPolicyDnnData'
           minProperties: 1
+          description: Session Management Policy data per DNN for all the DNNs of the indicated S-NSSAI. The key of the map is the DNN.
       required:
         - snssai
     SmPolicyDnnData:
@@ -1431,6 +1457,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/LimitIdToMonitoringKey'
           minProperties: 1
+          description: A reference to the UsageMonitoringDataLimit or UsageMonitoringData instances for this DNN and SNSSAI that may also include the related monitoring key(s). The key of the map is the limit identifier.
         mpsPriority:
           type: boolean
         mcsPriority:
@@ -1446,11 +1473,13 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
+          description: Contains Presence reporting area information. The praId attribute within the PresenceInfo data type is the key of the map.
         bdtRefIds:
           type: object
           additionalProperties:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceIdRm'
           minProperties: 1
+          description: Identifies transfer policies of background data transfer. Any string value can be used as a key of the map.
           nullable: true
         locRoutNotAllowed:
           type: boolean
@@ -1467,6 +1496,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/UsageMonDataScope' 
           minProperties: 1
+          description: Identifies the SNSSAI and DNN combinations to which the usage monitoring data limit applies. The S-NSSAI is the key of the map.
         umLevel:
           $ref: '#/components/schemas/UsageMonLevel'
         startDate:
@@ -1490,6 +1520,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/UsageMonDataScope' 
           minProperties: 1
+          description: Identifies the SNSSAI and DNN combinations for remain allowed usage data for a subscriber. The S-NSSAI is the key of the map.
         umLevel:
           $ref: '#/components/schemas/UsageMonLevel' 
         allowedUsage:
@@ -1625,6 +1656,7 @@ components:
           additionalProperties:
             $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
           minProperties: 1
+          description: Operator Specific Data resource data, if changed and notification was requested. The key of the map is operator specific data element name and the value is the operator specific data of the UE.
         ueId:
          $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
         sponsorId:
@@ -1704,12 +1736,14 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/UsageMonData'
           minProperties: 1
+          description: Contains the remaining allowed usage data associated with the subscriber. The value of the limit identifier is used as the key of the map.
           nullable: true
         smPolicySnssaiData:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SmPolicySnssaiDataPatch'
           minProperties: 1
+          description: Modifiable Session Management Policy data per S-NSSAI for all the SNSSAIs of the subscriber. The key of the map is the S-NSSAI.
     SmPolicySnssaiDataPatch:
       description: Contains the SM policy data for a given subscriber and S-NSSAI.
       type: object
@@ -1721,6 +1755,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/SmPolicyDnnDataPatch'
           minProperties: 1
+          description: Modifiable Session Management Policy data per DNN for all the DNNs of the indicated S-NSSAI. The key of the map is the DNN.
       required:
         - snssai
     SmPolicyDnnDataPatch:
@@ -1734,6 +1769,7 @@ components:
           additionalProperties:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceIdRm'
           minProperties: 1
+          description: Contains updated transfer policies of background data transfer. Any string value can be used as a key of the map.
           nullable: true
       required:
         - dnn
@@ -1780,7 +1816,6 @@ components:
         - item
         - value
 #
-#
     BdtDataPatch:
       description: Contains the modified background data transfer data.
       type: object
@@ -1789,14 +1824,24 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/TransferPolicy'
         bdtpStatus:
           $ref: '#/components/schemas/BdtPolicyStatus'
-#
+
+# SIMPLE TYPES:
 
     IpIndex:
+      description: Represents information that identifies which IP pool or external server is used to allocate the IP address.
       type: integer
     OsId:
+      description: Represents the Operating System of the served UE.
       type: string
       format: uuid
+    ItemPath:
+      description: Identifies a fragment (subset of resource data) of a given resource.
+      type: string
+
+# ENUMS:
+
     UsageMonLevel:
+      description: Represents the usage monitoring level.
       anyOf:
       - type: string
         enum:
@@ -1804,6 +1849,7 @@ components:
           - SERVICE_LEVEL
       - type: string
     Periodicity:
+      description: Represents the time period.
       anyOf:
       - type: string
         enum:
@@ -1813,17 +1859,22 @@ components:
           - DAILY
           - HOURLY
       - type: string
-#
-
-    ItemPath:
-      description: Identifies a fragment (subset of resource data) of a given resource.
-      type: string
-#
     BdtPolicyStatus:
       description: Indicates the validation status of a negotiated BDT policy.
       anyOf:
       - type: string
         enum:
           - INVALID
+          - VALID
       - type: string
+    PolicyDataSubset:
+      anyOf:
+        - type: string
+          enum:
+          - AM_POLICY_DATA
+          - SM_POLICY_DATA
+          - UE_POLICY_DATA
+          - UM_DATA
+          - OPERATOR_SPECIFIC_DATA
+        - type: string
 #

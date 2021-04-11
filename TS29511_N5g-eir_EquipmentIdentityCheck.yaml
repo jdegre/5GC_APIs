@@ -1,16 +1,16 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.2.0-alpha.1'
   title: '5G-EIR Equipment Identity Check'
 
   description: |
     5G-EIR Equipment Identity Check Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.511 V16.2.0; 5G System; Equipment Identity Register Services; Stage 3
+  description: 3GPP TS 29.511 V17.0.0; 5G System; Equipment Identity Register Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.511/'
 
 
@@ -52,6 +52,11 @@ paths:
           required: false
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: supported-features
+          in: query
+          description: supported features of the NF consumer
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: Expected response to a valid request
@@ -59,6 +64,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EirResponseData'
+        '307':
+          description: temporary redirect
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same 5G-EIR or 5G-EIR (service) set '
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of target 5G-EIR (service) instance towards which the request is redirected'
+              schema:
+                type: string
+        '308':
+          description: permanent redirect
+          headers:
+            Location:
+              description: 'An alternative URI of the resource located on an alternative service instance within the same 5G-EIR or 5G-EIR (service) set '
+              required: true
+              schema:
+                type: string
+            3gpp-Sbi-Target-Nf-Id:
+              description: 'Identifier of target 5G-EIR (service) instance towards which the request is redirected'
+              schema:
+                type: string
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -100,6 +129,6 @@ components:
     EquipmentStatus:
       type: string
       enum:
-        - WHITELISTED
-        - BLACKLISTED
-        - GREYLISTED
+        - WHITELISTED  # PERMITTED
+        - BLACKLISTED  # PROHIBITED
+        - GREYLISTED   # TRACKING
