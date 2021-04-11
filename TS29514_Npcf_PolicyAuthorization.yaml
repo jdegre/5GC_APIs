@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.0.4
+  version: 1.0.5
   description: |
     PCF Policy Authorization Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V15.7.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V15.9.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -215,7 +215,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: '#/components/schemas/AppSessionContextUpdateData'
+              $ref: '#/components/schemas/AppSessionContextUpdateDataPatch'
       responses:
         '200':
           description: successful modification of the resource and a representation of that resource is returned
@@ -260,7 +260,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
       callbacks:
         eventNotification:
-          '{$request.body#/evSubsc/notifUri}/notify':
+          '{$request.body#/ascReqData/evSubsc/notifUri}/notify':
             post:
               requestBody:
                 description: Notification of an event occurrence in the PCF.
@@ -559,8 +559,14 @@ components:
           $ref: '#/components/schemas/ServAuthInfo'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    AppSessionContextUpdateDataPatch:
+      description: Identifies the modifications to an Individual Application Session Context and/or the modifications to the sub-resource Events Subscription.
+      type: object
+      properties:
+        ascReqData:
+          $ref: '#/components/schemas/AppSessionContextUpdateData'
     AppSessionContextUpdateData:
-      description: Identifies the modifications to an Individual Application Session Context and may include the modifications to the sub-resource Events Subscription.
+      description: Identifies the modifications to the "ascReqData" property of an Individual Application Session Context which may include the modifications to the sub-resource Events Subscription.
       type: object
       properties:
         afAppId:
