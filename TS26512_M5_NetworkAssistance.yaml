@@ -1,0 +1,195 @@
+openapi: 3.0.0
+info:
+  title: M5_NetworkAssistance
+  version: 1.0.0
+  description: |
+    5GMS AF M5 Network Assistance API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M5_NetworkAssistance
+    description: '5G Media Streaming: Media Session Handling (M5) APIs: Network Assistance'
+externalDocs:
+  description: 3GPP TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols.
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m5/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in subclause 4.4.1 of 3GPP TS 29.501.
+paths:
+  /network-assistance/:
+    post:
+      operationId: createNetworkAssistanceSession
+      summary: 'Create a new Network Assistance Session.'
+      responses:
+        '201':
+          description: 'Created Network Assistance Session'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkAssistanceSession'
+          headers:
+            Location:
+              description: 'The URL of the nely created Network Assistance Session resource'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+
+  /network-assistance/{naSessionId}:
+    parameters:
+      - name: naSessionId
+        description: 'The resource identifier of an existing Network Assistance Session resource'
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+    get:
+      operationId: retrieveNetworkAssistanceSession
+      summary: 'Retrieve an existing Network Assistance Session resource'
+      responses:
+        '200':
+          description: 'A JSON representation of a Network Assistance Session resource'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/NetworkAssistanceSession'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+    put:
+      operationId: updateNetworkAssistanceSession
+      summary: 'Update an existing Network Assistance Session resource'
+      requestBody:
+        description: 'A replacement JSON representation of a Network Assistance Session resource'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkAssistanceSession'
+      responses:
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not found'
+    patch:
+      operationId: patchNetworkAssistanceSession
+      summary: 'Patch an existing Network Assistance Session resource'
+      requestBody:
+        description: 'A JSON patch to a Network Assistance Session resource'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/NetworkAssistanceSession'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/NetworkAssistanceSession'
+      responses:
+        '200':
+          description: 'Patched Network Assistance Session'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/NetworkAssistanceSession'
+        '204':
+          description: 'Patched Network Assistance Session'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+    delete:
+      operationId: destroyNetworkAssistanceSession
+      summary: 'Destroy an existing Network Assistance Session resource'
+      responses:
+        '204':
+          description: 'Destroyed Network Assistance Session'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+
+  /network-assistance/{naSessionId}/recommendation:
+    get:
+      operationId: requestBitRateRecommendation
+      summary: 'Obtain a bit rate recommendation for the next recommendation window'
+      parameters:
+        - name: naSessionId
+          description: 'The resource identifier of an existing Network Assistance Session resource'
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                  $ref: 'TS26512_CommonData.yaml#/components/schemas/M5QoSSpecification'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+  /network-assistance/{naSessionId}/boostRequest:
+    post:
+      operationId: requestDeliveryBoost
+      summary: 'Request a delivery boost'
+      parameters:
+        - name: naSessionId
+          description: 'The resource identifier of an existing Network Assistance Session resource'
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Delivery Boost Request Processed'
+          content:
+            application/json:
+              schema:
+                  $ref: 'TS26512_CommonData.yaml#/components/schemas/OperationSuccessResponse'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: 'Not Found'
+components:
+  schemas:
+    NetworkAssistanceSession:
+      type: object
+      required: 
+        - naSessionId
+      properties:
+        naSessionId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        serviceDataFlowDescription:
+          type: array
+          items: 
+            $ref: 'TS26512_CommonData.yaml#/components/schemas/ServiceDataFlowDescription'
+          minItems: 1
+        policyTemplateId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        requestedQoS:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/M5QoSSpecification'
+        recommendedQoS:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/M5QoSSpecification'
+        notficationURL:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'

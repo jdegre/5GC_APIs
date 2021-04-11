@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: M5_ServiceAccessInformation
+  version: 1.0.0
+  description: |
+    5GMS AF M5 Service Access Information API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M5_ServiceAccessInformation
+    description: '5G Media Streaming: Media Session Handling (M5) APIs: Service Access Information'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m5/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /service-access-information/{provisioningSessionId}:
+    parameters:
+      - name: provisioningSessionId
+        description: 'The resource identifier of an existing Provisioning Session.'
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+    get:
+      operationId: retrieveServiceAccessInformation
+      summary: 'Retrieve the Service Access Information resource'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ServiceAccessInformationResource'
+        '404':
+          description: 'Not Found'
+components:
+  schemas:
+    ServerAddresses:
+      type: array
+      items:
+        $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+      minItems: 1
+    ServiceAccessInformationResource:
+      type: object
+      required:
+      - provisioningSessionId
+      - provisioningSessionType
+      properties:
+        provisioningSessionId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        provisioningSessionType:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ProvisioningSessionType'
+        StreamingAccess:
+          type: object
+          properties:
+            mediaPlayerEntry:
+              $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+        ClientConsumptionReportingConfiguration:
+          type: object
+          required:
+            - serverAddresses
+            - locationReporting
+            - samplePercentage
+          properties:
+            reportingInterval:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+            serverAddresses:
+              $ref: '#/components/schemas/ServerAddresses'
+            locationReporting:
+              type: boolean
+            samplePercentage:
+              $ref: 'TS26512_CommonData.yaml#/components/schemas/Percentage'
+        DynamicPolicyInvocationConfiguration:
+          type: object
+          required:
+            - serverAddresses
+            - validPolicyTemplateIds
+            - sdfMethods
+          properties: 
+            serverAddresses:
+              $ref: '#/components/schemas/ServerAddresses'
+            validPolicyTemplateIds:
+              type: array
+              items: 
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+              minItems: 0
+            sdfMethods:
+              type: array
+              items:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/SdfMethod'
+              minItems: 0
+            externalReferences:
+              type: array
+              items:
+                type: string
+              minItems: 1
+        ClientMetricsReportingConfiguration:
+          type: array
+          items:
+            type: object
+            required:
+            - serverAddresses
+            - samplePercentage
+            - urlFilters
+            - metrics
+            properties:
+              serverAddresses:
+                $ref: '#/components/schemas/ServerAddresses'
+              dataNetworkName:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+              reportingInterval:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+              samplePercentage:              
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Percentage'
+              urlFilters:
+                type: array
+                items:
+                  type: string
+                minItems: 0
+              metrics:
+                type: array
+                items:
+                  type: string
+        NetworkAssistanceConfiguration:
+          type: object
+          required: 
+            - serverAddress
+          properties:
+            serverAddress:
+              $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'

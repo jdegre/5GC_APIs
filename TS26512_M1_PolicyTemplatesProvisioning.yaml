@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: M1_PolicyTemplatesProvisioning
+  version: 1.0.0
+  description: |
+    5GMS AF M1 Policy Templates Provisioning API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M1_PolicyTemplatesProvisioning
+    description: '5G Media Streaming: Provisioning (M1) APIs: Policy Templates Provisioning'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m1/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /provisioning-sessions/{provisioningSessionId}/policy-templates:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+    post:
+      operationId: createPolicyTemplate
+      summary: 'Create (and optionally upload) a new Policy Template'
+      requestBody:
+        description: 'A JSON representation of a Policy Template'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyTemplate'
+      responses:
+        '201':
+          description: 'Policy Template Created'
+          headers:
+            Location:
+              description: 'URL of the newly created Policy Template resource.'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+ 
+  /provisioning-sessions/{provisioningSessionId}/policy-templates/{policyTemplateId}:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'A unique identifier of the Provisioning Session.'
+      - name: policyTemplateId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'A resource identifier of a Policy Template.'
+    get:
+      operationId: retrievePolicyTemplate
+      summary: 'Retrieve a representation of an existing Policy Template in the specified Provisioning Session'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyTemplate'
+        '404':
+          description: 'Not Found'
+    put:
+      operationId: updatePolicyTemplate
+      summary: 'Update a Policy Template for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Policy Template'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyTemplate'
+      responses:
+        '204':
+          description: 'Updated Policy Template'
+        '404':
+          description: 'Not Found'
+    patch:
+      operationId: patchPolicyTemplate
+      summary: 'Patch the Policy Template for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Policy Template'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/PolicyTemplate'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/PolicyTemplate'
+      responses:
+        '200':
+          description: 'Patched Content Hosting Configuration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyTemplate'
+        '404':
+          description: 'Not Found'
+    delete: 
+      operationId: destroyPolicyTemplate
+      responses:
+        '204':
+          description: 'Destroyed Policy Template'
+        '404':
+          description: 'Not Found'
+components:
+  schemas:
+    PolicyTemplate:
+      type: object
+      required:
+        - policyTemplateId
+        - state
+        - apiEndPoint
+        - apiType
+        - externalReference
+        - ApplicationSessionContext
+      properties:
+        policyTemplateId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        state:
+          anyOf:
+          - type: string
+            enum: [PENDING, INVALID, READY, SUSPENDED]
+          - type: string
+            description: >
+              This string provides forward-compatibility with future
+              extensions to the enumeration but is not used to encode
+              content defined in the present version of this API.
+        apiEndPoint:
+          type: string
+        apiType:
+          anyOf:
+          - type: string
+            enum: [N5, N33]
+          - type: string
+            description: >
+              This string provides forward-compatibility with future
+              extensions to the enumeration but is not used to encode
+              content defined in the present version of this API.
+        externalReference:
+          type: string
+        qoSSpecification:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/M1QoSSpecification'
+        ApplicationSessionContext:
+          type: object
+          properties:
+            afAppId:
+              $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AfAppId'
+            sliceInfo:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+            dnn:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+            aspId:
+              $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AspId'
+        chargingSpecification:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ChargingSpecification'

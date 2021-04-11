@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: M5_ConsumptionReporting
+  version: 1.0.0
+  description: |
+    5GMS AF M5 Consumption Reporting API
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M5_ConsumptionReporting
+    description: '5G Media Streaming: Media Session Handling (M5) APIs: Consumption Reporting'
+externalDocs:
+  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m5/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /consumption-reporting/{aspId}:
+    parameters:
+      - name: aspId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AspId'
+        description: 'See 3GPP TS 26.512 clause 11.3.2.'
+    post:
+      operationId: submitConsumptionReport
+      summary: 'Submit a Consumption Report'
+      requestBody:
+        description: 'A Consumption Report'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumptionReport'
+      responses:
+        '204':
+          description: 'Consumption Report Accepted'
+        '400':
+          description: 'Bad Request'
+        '415':
+          description: 'Unsupported Media Type'
+components:
+  schemas:
+    ConsumptionReport:
+      type: object
+      required:
+        - mediaPlayerEntry
+        - reportingClientId
+        - consumptionReportingUnits
+      properties:
+        mediaPlayerEntry:
+          type: string
+        reportingClientId:
+          type: string
+        consumptionReportingUnits:
+          type: array
+          items: 
+            $ref: '#/components/schemas/ConsumptionReportingUnit'
+    ConsumptionReportingUnit:
+      type: object
+      required:
+        - mediaConsumed
+        - startTime
+        - duration
+      properties:
+        mediaConsumed:
+          type: string
+        startTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        duration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        locations:
+          type: array
+          items:
+            $ref: 'TS26512_CommonData.yaml#/components/schemas/TypedLocation'
+          minItems: 1

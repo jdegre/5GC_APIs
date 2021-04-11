@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.2'
+  version: '1.1.3'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V16.6.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V16.7.0; 5G System; Session Management Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -205,6 +205,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -238,6 +241,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -313,6 +319,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -346,6 +355,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -380,6 +392,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -623,6 +638,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -656,6 +674,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -730,6 +751,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -763,6 +787,9 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
+            application/problem+json: 
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
               schema:
                 type: object
@@ -2564,6 +2591,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         oldSmContextRef:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        altAnchorSmfUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        altAnchorSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
       required:
         - statusInfo
 
@@ -2813,6 +2844,8 @@ components:
           $ref: 'TS29519_Policy_Data.yaml#/components/schemas/IpIndex'
         dnAaaAddress:
           $ref: '#/components/schemas/IpAddress'
+        redundantPduSessionInfo:
+          $ref: '#/components/schemas/RedundantPduSessionInformation'
       required:
         - pduSessionType
         - sscMode
@@ -2996,6 +3029,22 @@ components:
         ipv6MultiHomingInd:
           type: boolean
           default: false
+        qosFlowsSetupList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowSetupItem'
+          minItems: 1
+        sessionAmbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ambr'
+        epsPdnCnxInfo:
+          $ref: '#/components/schemas/EpsPdnCnxInfo'
+        epsBearerInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/EpsBearerInfo'
+          minItems: 1
+        pti:
+          $ref: '#/components/schemas/ProcedureTransactionId'
 
     ReleaseData:
       type: object
@@ -3559,6 +3608,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        selectedDnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         sNssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         hplmnSnssai:
@@ -3634,7 +3685,7 @@ components:
           default: false
         psaTunnelInfo:
           $ref: '#/components/schemas/TunnelInfo'
-        homeProvidedChargingId:
+        chargingId:
           type: string
         chargingInfo:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/ChargingInformation'
@@ -3647,6 +3698,8 @@ components:
           $ref: 'TS29519_Policy_Data.yaml#/components/schemas/IpIndex'
         dnAaaAddress:
           $ref: '#/components/schemas/IpAddress'
+        redundantPduSessionInfo:
+          $ref: '#/components/schemas/RedundantPduSessionInformation'
       required:
         - pduSessionId
         - dnn
@@ -3924,6 +3977,14 @@ components:
         ipv6Prefix:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
 
+    RedundantPduSessionInformation:
+      description: Redundant PDU Session Information
+      type: object
+      properties:
+        rsn:
+          $ref: '#/components/schemas/Rsn'
+      required:
+        - rsn
 
 #
 # SIMPLE DATA TYPES
@@ -4148,6 +4209,7 @@ components:
           - UNCHANGED
           - TRANSFERRED
           - UPDATED
+          - ALT_ANCHOR_SMF
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4157,7 +4219,9 @@ components:
         Possible values are
         - RELEASED
         - UNCHANGED
+        - TRANSFERRED
         - UPDATED
+        - ALT_ANCHOR_SMF
 
     DnnSelectionMode:
       anyOf:
@@ -4417,6 +4481,23 @@ components:
           - BOTH
           - NONE
 
+    Rsn:
+      anyOf:
+      - type: string
+        enum:
+          - V1
+          - V2
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Redundancy Sequence Number. Possible values are
+          - V1
+          - V2
+
+
 #
 # HTTP request bodies
 #
@@ -4553,6 +4634,9 @@ components:
         application/json: # message without binary body part
           schema:
             $ref: '#/components/schemas/PduSessionCreateError'
+        application/problem+json: 
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         multipart/related:  # message with binary body part(s)
           schema:
             type: object
@@ -4578,6 +4662,9 @@ components:
         application/json: # message without binary body part
           schema:
             $ref: '#/components/schemas/HsmfUpdateError'
+        application/problem+json: 
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         multipart/related:  # message with binary body part(s)
           schema:
             type: object
@@ -4603,6 +4690,9 @@ components:
         application/json: # message without binary body part
           schema:
             $ref: '#/components/schemas/VsmfUpdateError'
+        application/problem+json: 
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         multipart/related:  # message with binary body part(s)
           schema:
             type: object
