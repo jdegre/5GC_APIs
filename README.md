@@ -4,10 +4,10 @@
 
 The files in this repository have been created by 3GPP, and the master source can be found in the [3GPP site](http://www.3gpp.org/DynaReport/29-series.htm), as part of the official 3GPP Technical Specifications.
 ```
-© 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+© 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **December 2020**<br/>
+API version: **March 2021**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -63,6 +63,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## UDSF (Unstructured Data Storage Function)
 * [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29598_Nudsf_DataRepository.yaml)
+* [Timer](https://jdegre.github.io/loader.html?yaml=TS29598_Nudsf_Timer.yaml)
 
 ## AUSF (Authentication Server Function)
 * [UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29509_Nausf_UEAuthentication.yaml)
@@ -140,6 +141,9 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 ## GMLC (Gateway Mobile Location Center)
 * [Location](https://jdegre.github.io/loader.html?yaml=TS29515_Ngmlc_Location.yaml)
 
+## AAnF (AKMA Anchor Function)
+* [AKMA Anchor Service](https://jdegre.github.io/loader.html?yaml=TS29535_Naanf_AKMA.yaml)
+
 # Northbound APIs
 
 ## Common API Framework (CAPIF)
@@ -201,3 +205,25 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [MSISDN-less Mobile-Originated SMS](https://jdegre.github.io/loader.html?yaml=TS29122_MsisdnLessMoSms.yaml)
 * [RACS (Radio Capability Signaling) Parameter Provisioning](https://jdegre.github.io/loader.html?yaml=TS29122_RacsParameterProvisioning.yaml)
 * [Common Data](https://jdegre.github.io/loader.html?yaml=TS29122_CommonData.yaml)
+
+# 5G Media Streaming (5GMS) TS 26.512
+Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
+
+* [Common Data Types](https://jdegre.github.io/loader.html?yaml=TS26512_CommonData.yaml)
+
+## Provisioning (M1)
+* [Provisioning Sessions](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ProvisioningSessions.yaml)
+* [Server Certificates Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ServerCertificatesProvisioning.yaml)
+* [Content Preparation Templates Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ContentPreparationTemplatesProvisioning.yaml)
+* [Content Protocols Discovery](https://jdegre.github.io/loader.html?yaml=S26512_M1_ContentProtocolsDiscovery.yaml)
+* [Content Hosting Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ContentHostingProvisioning.yaml)
+* [Consumption Reporting Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ConsumptionReportingProvisioning.yaml)
+* [Metrics Reporting Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_MetricsReportingProvisioning.yaml)
+* [Policy Templates Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_PolicyTemplatesProvisioning.yaml)
+
+## Media Session Handling (M5)
+* [Service Access Information](https://jdegre.github.io/loader.html?yaml=TS26512_M5_ServiceAccessInformation.yaml)
+* [Consumption Reporting](https://jdegre.github.io/loader.html?yaml=TS26512_M5_ConsumptionReporting.yaml)
+* [Metrics Reporting](https://jdegre.github.io/loader.html?yaml=TS26512_M5_MetricsReporting.yaml)
+* [Dynamic Policies](https://jdegre.github.io/loader.html?yaml=TS26512_M5_DynamicPolicies.yaml)
+* [Network Assistance](https://jdegre.github.io/loader.html?yaml=TS26512_M5_NetworkAssistance.yaml)
