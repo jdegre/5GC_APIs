@@ -215,7 +215,7 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 * [Provisioning Sessions](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ProvisioningSessions.yaml)
 * [Server Certificates Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ServerCertificatesProvisioning.yaml)
 * [Content Preparation Templates Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ContentPreparationTemplatesProvisioning.yaml)
-* [Content Protocols Discovery](https://jdegre.github.io/loader.html?yaml=S26512_M1_ContentProtocolsDiscovery.yaml)
+* [Content Protocols Discovery](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ContentProtocolsDiscovery.yaml)
 * [Content Hosting Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ContentHostingProvisioning.yaml)
 * [Consumption Reporting Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_ConsumptionReportingProvisioning.yaml)
 * [Metrics Reporting Provisioning](https://jdegre.github.io/loader.html?yaml=TS26512_M1_MetricsReportingProvisioning.yaml)
