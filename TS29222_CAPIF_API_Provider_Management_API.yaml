@@ -3,11 +3,11 @@ info:
   title: CAPIF_API_Provider_Management_API
   description: |
     API for API provider domain functions management.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.0.0"
+  version: "1.1.0-alpha.1"
 externalDocs:
-  description: 3GPP TS 29.222 V16.3.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V17.1.0 Common API Framework for 3GPP Northbound APIs
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/api-provider-management/v1'
@@ -28,7 +28,7 @@ paths:
               $ref: '#/components/schemas/APIProviderEnrolmentDetails'
       responses:
         '201':
-          description: API provider domain registered successfully 
+          description: API provider domain registered successfully
           content:
             application/json:
               schema:
@@ -68,13 +68,17 @@ paths:
       parameters:
         - name: registrationId
           in: path
-          description: String identifying an registered API provider domain resource
+          description: String identifying an registered API provider domain resource.
           required: true
           schema:
             type: string
       responses:
         '204':
           description: The API provider domain matching registrationId is deleted.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -96,12 +100,12 @@ paths:
       parameters:
         - name: registrationId
           in: path
-          description: String identifying an registered API provider domain resource
+          description: String identifying an registered API provider domain resource.
           required: true
           schema:
             type: string
       requestBody:
-        description: representation of the API provider domain registration details to be updated in CAPIF core function
+        description: Representation of the API provider domain registration details to be updated in CAPIF core function.
         required: true
         content:
           application/json:
@@ -109,11 +113,15 @@ paths:
               $ref: '#/components/schemas/APIProviderEnrolmentDetails'
       responses:
         '200':
-          description: API provider domain registration details updated successfully 
+          description: API provider domain registration details updated successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIProviderEnrolmentDetails'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -140,6 +148,7 @@ components:
   schemas:
     APIProviderEnrolmentDetails:
       type: object
+      description: Represents an API provider domain's enrolment details.
       properties:
         apiProvDomId:
           type: string
@@ -156,7 +165,7 @@ components:
           description: A list of individual API provider domain functions details. When included by the API management function in the HTTP request message, it lists the API provider domain functions that the API management function intends to register/update in registration or update registration procedure. When included by the CAPIF core function in the HTTP response message, it lists the API domain functions details that are registered or updated successfully.
         apiProvDomInfo:
           type: string
-          description: Generic information related to the API provider domain such as details of the API provider applications. 
+          description: Generic information related to the API provider domain such as details of the API provider applications.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         failReason:
@@ -166,6 +175,7 @@ components:
         - regSec
     APIProviderFunctionDetails:
       type: object
+      description: Represents API provider domain function's details.
       properties:
         apiProvFuncId:
           type: string
@@ -176,12 +186,13 @@ components:
           $ref: '#/components/schemas/ApiProviderFuncRole'
         apiProvFuncInfo:
           type: string
-          description: Generic information related to the API provider domain function such as details of the API provider applications. 
+          description: Generic information related to the API provider domain function such as details of the API provider applications.
       required:
         - regInfo
         - apiProvFuncRole
     RegistrationInformation:
       type: object
+      description: Represents registration information of an individual API provider domain function.
       properties:
         apiProvPubKey:
           type: string
@@ -200,7 +211,7 @@ components:
           - AMF
       - type: string
         description: >
-          This string provides forward-compatiblity with future extensions to the enumeration but is not used to encode content defined in the present version of this API. 
+          This string provides forward-compatiblity with future extensions to the enumeration but is not used to encode content defined in the present version of this API.
       description: >
         Possible values are
         - AEF: API provider function is API Exposing Function.

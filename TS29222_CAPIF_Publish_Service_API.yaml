@@ -3,11 +3,11 @@ info:
   title: CAPIF_Publish_Service_API
   description: |
     API for publishing service APIs.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.1.0"
+  version: "1.2.0-alpha.1"
 externalDocs:
-  description: 3GPP TS 29.222 V16.3.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V17.1.0 Common API Framework for 3GPP Northbound APIs
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/published-apis/v1'
@@ -84,6 +84,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceAPIDescription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -126,6 +130,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceAPIDescription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -170,6 +178,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceAPIDescription'
+        '204':
+          description: No Content
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -208,6 +222,10 @@ paths:
       responses:
         '204':
           description: The individual published service API matching the serviceAPiId is deleted.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -239,10 +257,11 @@ components:
 # Data Type for representations
     ServiceAPIDescription:
       type: object
+      description: Represents the description of a service API as published by the APF.
       properties:
         apiName:
           type: string
-          description: API name, it is set as {apiName} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501. 
+          description: API name, it is set as {apiName} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501.
         apiId:
           type: string
           description: API identifier assigned by the CAPIF core function to the published service API. Shall not be present in the HTTP POST request from the API publishing function to the CAPIF core function. Shall be present in the HTTP POST response from the CAPIF core function to the API publishing function and in the HTTP GET response from the CAPIF core function to the API invoker (discovery API).
@@ -272,6 +291,7 @@ components:
         - apiName
     InterfaceDescription:
       type: object
+      description: Represents the description of an API's interface.
       properties:
         ipv4Addr:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
@@ -290,7 +310,8 @@ components:
         - required: [ipv6Addr]
     AefProfile:
       type: object
-      properties: 
+      description: Represents the AEF profile data.
+      properties:
         aefId:
           type: string
           description: Identifier of the API exposing function
@@ -327,6 +348,7 @@ components:
         - required: [interfaceDescriptions]
     Resource:
       type: object
+      description: Represents the API resource data.
       properties:
         resourceName:
           type: string
@@ -335,10 +357,10 @@ components:
           $ref: '#/components/schemas/CommunicationType'
         uri:
           type: string
-          description: Relative URI of the API resource, it is set as {apiSpecificResourceUriPart} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: Relative URI of the API resource, it is set as {apiSpecificResourceUriPart} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501.
         custOpName:
           type: string
-          description: it is set as {custOpName} part of the URI structure for a custom operation associated with a resource as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: it is set as {custOpName} part of the URI structure for a custom operation associated with a resource as defined in subclause 4.4 of 3GPP TS 29.501.
         operations:
           type: array
           items:
@@ -354,12 +376,13 @@ components:
         - uri
     CustomOperation:
       type: object
+      description: Represents the description of a custom operation.
       properties:
         commType:
           $ref: '#/components/schemas/CommunicationType'
         custOpName:
           type: string
-          description: it is set as {custOpName} part of the URI structure for a custom operation without resource association as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: it is set as {custOpName} part of the URI structure for a custom operation without resource association as defined in subclause 4.4 of 3GPP TS 29.501.
         operations:
           type: array
           items:
@@ -374,12 +397,13 @@ components:
         - custOpName
     Version:
       type: object
+      description: Represents the API version information.
       properties:
         apiVersion:
           type: string
           description: API major version in URI (e.g. v1)
         expiry:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
         resources:
           type: array
           items:
@@ -396,6 +420,7 @@ components:
         - apiVersion
     ShareableInformation:
       type: object
+      description: Indicates whether the service API and/or the service API category can be shared to the list of CAPIF provider domains.
       properties:
         isShareable:
           type: boolean
@@ -410,6 +435,7 @@ components:
         - isShareable
     PublishedApiPath:
       type: object
+      description: Represents the published API path within the same CAPIF provider domain.
       properties:
         ccfIds:
           type: array

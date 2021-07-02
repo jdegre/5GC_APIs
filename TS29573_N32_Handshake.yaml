@@ -1,11 +1,11 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.2'
+  version: '1.2.0-alpha.1'
   title: 'N32 Handshake API'
   description: |
    N32-c Handshake Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 servers:
   - url: '{apiRoot}/n32c-handshake/v1'
@@ -14,7 +14,7 @@ servers:
         default: https://example.com
         description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 externalDocs:
-  description: 3GPP TS 29.573 V16.5.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  description: 3GPP TS 29.573 V17.1.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
 
 paths:
@@ -163,6 +163,7 @@ paths:
 components:
   schemas:
     SecurityCapability:
+      description: Enumeration of security capabilities
       anyOf:
         - type: string
           enum:
@@ -170,10 +171,12 @@ components:
             - PRINS
         - type: string
     ApiSignature:
+      description: API URI of the service operation
       oneOf:
         - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         - $ref: '#/components/schemas/CallbackName'
     HttpMethod:
+      description: Enumeration of HTTP methods
       anyOf:
         - type: string
           enum:
@@ -189,6 +192,7 @@ components:
         - type: string
 
     IeType:
+      description: Enumeration of types of IEs (i.e kind of IE) to specify the protection policy
       anyOf:
         - type: string
           enum:
@@ -202,6 +206,7 @@ components:
         - type: string
 
     IeLocation:
+      description: Location of the IE in a HTTP message
       anyOf:
         - type: string
           enum:
@@ -212,6 +217,7 @@ components:
         - type: string
 
     IeInfo:
+      description: Protection and modification policy for the IE
       type: object
       required:
         - ieLoc
@@ -234,6 +240,7 @@ components:
           minProperties: 1
 
     ApiIeMapping:
+      description: API URI to IE mapping on which the protection policy needs to be applied
       type: object
       required:
         - apiSignature
@@ -251,6 +258,7 @@ components:
           minItems: 1
 
     ProtectionPolicy:
+      description: The protection policy to be negotiated between the SEPPs
       type: object
       required:
         - apiIeMappingList
@@ -267,6 +275,7 @@ components:
           minItems: 1
 
     SecNegotiateReqData:
+      description: Defines the security capabilities of a SEPP sent to a receiving SEPP
       type: object
       required:
         - sender
@@ -289,6 +298,7 @@ components:
           minItems: 1
 
     SecNegotiateRspData:
+      description: Defines the selected security capabilities by a SEPP
       type: object
       required:
         - sender
@@ -308,6 +318,7 @@ components:
           minItems: 1
 
     SecParamExchReqData:
+      description: Request data structure for parameter exchange
       type: object
       required:
         - n32fContextId
@@ -336,6 +347,7 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
 
     SecParamExchRspData:
+      description: Response data structure for parameter exchange
       type: object
       required:
         - n32fContextId
@@ -358,6 +370,7 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
 
     N32fContextInfo:
+      description: N32-f context information
       type: object
       required:
         - n32fContextId
@@ -366,6 +379,7 @@ components:
           type: string
           pattern: '^[A-Fa-f0-9]{16}$'
     CallbackName:
+      description: Callback Name
       type: object
       required:
         - callbackType
@@ -373,6 +387,7 @@ components:
         callbackType:
           type: string
     N32fErrorInfo:
+      description: N32-f error information
       type: object
       required:
         - n32fMessageId
@@ -393,6 +408,7 @@ components:
             $ref: '#/components/schemas/N32fErrorDetail'
           minItems: 1
     FailedModificationInfo:
+      description: Information on N32-f modifications block that failed to process
       type: object
       required:
         - ipxId
@@ -403,6 +419,7 @@ components:
         n32fErrorType:
           $ref: '#/components/schemas/N32fErrorType'
     N32fErrorDetail:
+      description: Details about the N32f error
       type: object
       required:
         - attribute
@@ -413,6 +430,7 @@ components:
         msgReconstructFailReason:
           $ref: '#/components/schemas/FailureReason'
     IpxProviderSecInfo:
+      description: Defines the security information list of an IPX
       type: object
       required:
         - ipxProviderId
@@ -430,6 +448,7 @@ components:
             type: string
           minItems: 1
     N32fErrorType:
+      description: Type of error while processing N32-f message
       anyOf:
         - type: string
           enum:
@@ -444,6 +463,7 @@ components:
             - POLICY_MISMATCH
         - type: string
     FailureReason:
+      description: Reason for failure to reconstruct a HTTP/2 message from N32-f message
       anyOf:
         - type: string
           enum:

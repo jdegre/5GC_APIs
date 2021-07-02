@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.3'
+  version: '1.2.0-alpha.1'
   title: 'LMF Location'
   description: |
     LMF Location Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.572 V16.6.0; 5G System; Location Management Services; Stage 3
+  description: 3GPP TS 29.572 V17.1.0; 5G System; Location Management Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
 
 servers:
@@ -65,29 +65,9 @@ paths:
         '204':
           description: Expected response for MO-LR requesting location assistance data.
         '307':
-          description: temporary redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same LMF or LMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target LMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same LMF or LMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target LMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -126,29 +106,9 @@ paths:
                 '204':
                   description: Expected response to a valid notification
                 '307':
-                  description: temporary redirect
-                  headers:
-                    Location:
-                      required: true
-                      description: 'A URI pointing to the endpoint of another NF service consumer to which the notification should be sent'
-                      schema:
-                        type: string
-                    3gpp-Sbi-Target-Nf-Id:
-                      description: 'Identifier of target NF (service) instance towards which the notification is redirected'
-                      schema:
-                        type: string
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
                 '308':
-                  description: permanent redirect
-                  headers:
-                    Location:
-                      required: true
-                      description: 'A URI pointing to the endpoint of another NF service consumer to which the notification should be sent'
-                      schema:
-                        type: string
-                    3gpp-Sbi-Target-Nf-Id:
-                      description: 'Identifier of target NF (service) instance towards which the notification is redirected'
-                      schema:
-                        type: string
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -189,29 +149,9 @@ paths:
         '204':
           description: Expected response to a successful cancellation
         '307':
-          description: temporary redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same LMF or LMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target LMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same LMF or LMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target LMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -252,29 +192,9 @@ paths:
         '204':
           description: Expected response to successful location context transfer
         '307':
-          description: temporary redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same LMF or LMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target LMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same LMF or LMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target LMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -314,6 +234,7 @@ components:
 # COMPLEX TYPES
 #
     InputData:
+      description: Information within Determine Location Request.
       type: object
       not:
         required: [ ecgi, ncgi ]
@@ -373,12 +294,15 @@ components:
           $ref: '#/components/schemas/UeConnectivityState'
         ueLocationServiceInd:
           $ref: '#/components/schemas/UeLocationServiceInd'
+        moAssistanceDataTypes:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/LcsBroadcastAssistanceTypesData'
         lppMessage:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     LocationData:
+      description: Information within Determine Location Response.
       type: object
       required:
         - locationEstimate
@@ -393,6 +317,8 @@ components:
           $ref: '#/components/schemas/VelocityEstimate'
         civicAddress:
           $ref: '#/components/schemas/CivicAddress'
+        localLocationEstimate:
+          $ref: '#/components/schemas/LocalArea'
         positioningDataList:
           type: array
           items:
@@ -413,7 +339,9 @@ components:
           $ref: '#/components/schemas/BarometricPressure'
         servingLMFIdentification:
           $ref: '#/components/schemas/LMFIdentification'
+
     GeographicArea:
+      description: Geographic area specified by different shape.
       anyOf:
         - $ref: '#/components/schemas/Point'
         - $ref: '#/components/schemas/PointUncertaintyCircle'
@@ -422,7 +350,9 @@ components:
         - $ref: '#/components/schemas/PointAltitude'
         - $ref: '#/components/schemas/PointAltitudeUncertainty'
         - $ref: '#/components/schemas/EllipsoidArc'
+
     GADShape:
+      description: Common base type for GAD shapes.
       type: object
       required:
         - shape
@@ -439,7 +369,11 @@ components:
           POINT_ALTITUDE: '#/components/schemas/PointAltitude'
           POINT_ALTITUDE_UNCERTAINTY: '#/components/schemas/PointAltitudeUncertainty'
           ELLIPSOID_ARC: '#/components/schemas/EllipsoidArc'
+          LOCAL_2D_POINT_UNCERTAINTY_ELLIPSE: '#/components/schemas/Local2dPointUncertaintyEllipse'
+          LOCAL_3D_POINT_UNCERTAINTY_ELLIPSOID: '#/components/schemas/Local3dPointUncertaintyEllipsoid'
+
     Point:
+      description: Ellipsoid Point.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -448,7 +382,9 @@ components:
           properties:
             point:
               $ref: '#/components/schemas/GeographicalCoordinates'
+
     PointUncertaintyCircle:
+      description: Ellipsoid point with uncertainty circle.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -460,7 +396,9 @@ components:
               $ref: '#/components/schemas/GeographicalCoordinates'
             uncertainty:
               $ref: '#/components/schemas/Uncertainty'
+
     PointUncertaintyEllipse:
+      description: Ellipsoid point with uncertainty ellipse.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -475,7 +413,9 @@ components:
               $ref: '#/components/schemas/UncertaintyEllipse'
             confidence:
               $ref: '#/components/schemas/Confidence'
+
     Polygon:
+      description: Polygon.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -484,7 +424,9 @@ components:
           properties:
             pointList:
               $ref: '#/components/schemas/PointList'
+
     PointAltitude:
+      description: Ellipsoid point with altitude.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -496,7 +438,9 @@ components:
               $ref: '#/components/schemas/GeographicalCoordinates'
             altitude:
               $ref: '#/components/schemas/Altitude'
+
     PointAltitudeUncertainty:
+      description: Ellipsoid point with altitude and uncertainty ellipsoid.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -517,7 +461,9 @@ components:
               $ref: '#/components/schemas/Uncertainty'
             confidence:
               $ref: '#/components/schemas/Confidence'
+
     EllipsoidArc:
+      description: Ellipsoid Arc.
       allOf:
         - $ref: '#/components/schemas/GADShape'
         - type: object
@@ -541,7 +487,80 @@ components:
               $ref: '#/components/schemas/Angle'
             confidence:
               $ref: '#/components/schemas/Confidence'
+
+    LocalOrigin:
+      description: Indicates a Local origin in a reference system
+      type: object
+      properties:
+        coordinateId:
+          type: string
+        point:
+          $ref: '#/components/schemas/GeographicalCoordinates'
+
+    RelativeCartesianLocation:
+      description: Relative Cartesian Location
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        y:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        z:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+
+
+    LocalArea:
+      description: Local area specified by different shape
+      oneOf:
+        - $ref: '#/components/schemas/Local2dPointUncertaintyEllipse'
+        - $ref: '#/components/schemas/Local3dPointUncertaintyEllipsoid'
+
+
+    Local2dPointUncertaintyEllipse:
+      description: Local 2D point with uncertainty ellipse
+      allOf:
+        - $ref: '#/components/schemas/GADShape'
+        - type: object
+          required:
+            - localOrigin
+            - point
+            - uncertaintyEllipse
+            - confidence
+          properties:
+            localOrigin:
+              $ref: '#/components/schemas/LocalOrigin'
+            point:
+              $ref: '#/components/schemas/RelativeCartesianLocation'
+            uncertaintyEllipse:
+              $ref: '#/components/schemas/UncertaintyEllipse'
+            confidence:
+              $ref: '#/components/schemas/Confidence'
+
+    Local3dPointUncertaintyEllipsoid:
+      description: Local 3D point with uncertainty ellipsoid
+      allOf:
+        - $ref: '#/components/schemas/GADShape'
+        - type: object
+          required:
+            - localOrigin
+            - point
+            - uncertaintyEllipsoid
+            - confidence
+          properties:
+            localOrigin:
+              $ref: '#/components/schemas/LocalOrigin'
+            point:
+              $ref: '#/components/schemas/RelativeCartesianLocation'
+            uncertaintyEllipsoid:
+              $ref: '#/components/schemas/UncertaintyEllipsoid'
+            confidence:
+              $ref: '#/components/schemas/Confidence'
+
     GeographicalCoordinates:
+      description: Geographical coordinates.
       type: object
       required:
         - lon
@@ -557,7 +576,9 @@ components:
           format: double
           minimum: -90
           maximum: 90
+
     UncertaintyEllipse:
+      description: Ellipse with uncertainty.
       type: object
       required:
         - semiMajor
@@ -570,13 +591,35 @@ components:
           $ref: '#/components/schemas/Uncertainty'
         orientationMajor:
           $ref: '#/components/schemas/Orientation'
+
+    UncertaintyEllipsoid:
+      description: Ellipsoid with uncertainty
+      type: object
+      required:
+        - semiMajor
+        - semiMinor
+        - vertical
+        - orientationMajor
+      properties:
+        semiMajor:
+          $ref: '#/components/schemas/Uncertainty'
+        semiMinor:
+          $ref: '#/components/schemas/Uncertainty'
+        vertical:
+          $ref: '#/components/schemas/Uncertainty'
+        orientationMajor:
+          $ref: '#/components/schemas/Orientation'
+
     PointList:
+      description: List of points.
       type: array
       items:
         $ref: '#/components/schemas/GeographicalCoordinates'
       minItems: 3
       maxItems: 15
+
     LocationQoS:
+      description: QoS of Location request.
       type: object
       properties:
         hAccuracy:
@@ -589,7 +632,9 @@ components:
           $ref: '#/components/schemas/ResponseTime'
         lcsQosClass:
           $ref: '#/components/schemas/LcsQosClass'
+
     PositioningMethodAndUsage:
+      description: Indicates the usage of a positioning method.
       type: object
       required:
         - method
@@ -606,7 +651,9 @@ components:
           type: integer
           minimum: 16
           maximum: 31
+
     GnssPositioningMethodAndUsage:
+      description: Indicates the usage of a Global Navigation Satellite System (GNSS) positioning method.
       type: object
       required:
         - mode
@@ -619,7 +666,9 @@ components:
           $ref: '#/components/schemas/GnssId'
         usage:
           $ref: '#/components/schemas/Usage'
+
     CivicAddress:
+      description: Indicates a Civic address.
       type: object
       properties:
         country:
@@ -692,12 +741,15 @@ components:
           type: string
 
     VelocityEstimate:
+      description: Velocity estimate.
       oneOf:
         - $ref: '#/components/schemas/HorizontalVelocity'
         - $ref: '#/components/schemas/HorizontalWithVerticalVelocity'
         - $ref: '#/components/schemas/HorizontalVelocityWithUncertainty'
         - $ref: '#/components/schemas/HorizontalWithVerticalVelocityAndUncertainty'
+
     HorizontalVelocity:
+      description: Horizontal velocity.
       type: object
       required:
         - hSpeed
@@ -707,7 +759,9 @@ components:
           $ref: '#/components/schemas/HorizontalSpeed'
         bearing:
           $ref: '#/components/schemas/Angle'
+
     HorizontalWithVerticalVelocity:
+      description: Horizontal and vertical velocity.
       type: object
       required:
         - hSpeed
@@ -723,7 +777,9 @@ components:
           $ref: '#/components/schemas/VerticalSpeed'
         vDirection:
           $ref: '#/components/schemas/VerticalDirection'
+
     HorizontalVelocityWithUncertainty:
+      description: Horizontal velocity with speed uncertainty.
       type: object
       required:
         - hSpeed
@@ -736,7 +792,9 @@ components:
           $ref: '#/components/schemas/Angle'
         hUncertainty:
           $ref: '#/components/schemas/SpeedUncertainty'
+
     HorizontalWithVerticalVelocityAndUncertainty:
+      description: Horizontal and vertical velocity with speed uncertainty.
       type: object
       required:
         - hSpeed
@@ -758,7 +816,9 @@ components:
           $ref: '#/components/schemas/SpeedUncertainty'
         vUncertainty:
           $ref: '#/components/schemas/SpeedUncertainty'
+
     UeLcsCapability:
+      description: Indicates the LCS capability supported by the UE..
       type: object
       properties:
         lppSupport:
@@ -767,7 +827,9 @@ components:
         ciotOptimisation:
           type: boolean
           default: false
+
     PeriodicEventInfo:
+      description: Indicates the information of periodic event reporting.
       type: object
       required:
         - reportingAmount
@@ -777,7 +839,9 @@ components:
           $ref: '#/components/schemas/ReportingAmount'
         reportingInterval:
           $ref: '#/components/schemas/ReportingInterval'
+
     AreaEventInfo:
+      description: Indicates the information of area based event reporting.
       type: object
       required:
         - areaDefinition
@@ -801,7 +865,9 @@ components:
         reportingLocationReq:
           type: boolean
           default: true
+
     ReportingArea:
+      description: Indicates an area for event reporting.
       type: object
       required:
         - areaType
@@ -814,7 +880,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
         ncgi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+
     MotionEventInfo:
+      description: Indicates the information of motion based event reporting.
       type: object
       required:
         - linearDistance
@@ -834,12 +902,16 @@ components:
         reportingLocationReq:
           type: boolean
           default: true
+
     ReportingAccessTypes:
+      description: Indicates access types of event reporting.
       type: array
       items:
         $ref: '#/components/schemas/ReportingAccessType'
       minItems: 1
+
     CancelLocData:
+      description: Information within Cancel Location Request.
       type: object
       required:
         - hgmlcCallBackURI
@@ -851,7 +923,9 @@ components:
           $ref: '#/components/schemas/LdrReference'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
     LocContextData:
+      description: Information within Transfer Location Context Request.
       type: object
       required:
         - amfId
@@ -902,7 +976,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
     EventReportMessage:
+      description: Indicates an event report message.
       type: object
       required:
         - eventClass
@@ -912,14 +988,18 @@ components:
           $ref: '#/components/schemas/EventClass'
         eventContent:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+
     EventReportingStatus:
+      description: Indicates the status of event reporting.
       type: object
       properties:
         eventReportCounter:
           $ref: '#/components/schemas/EventReportCounter'
         eventReportDuration:
           $ref: '#/components/schemas/EventReportDuration'
+
     UELocationInfo:
+      description: Indicates location information of a UE.
       type: object
       properties:
         locationEstimate:
@@ -932,6 +1012,7 @@ components:
           $ref: '#/components/schemas/AgeOfLocationEstimate'
 
     EventNotifyData:
+      description: Information within Event Notify Request.
       type: object
       required:
         - reportedEventType
@@ -953,6 +1034,8 @@ components:
           $ref: '#/components/schemas/AgeOfLocationEstimate'
         civicAddress:
           $ref: '#/components/schemas/CivicAddress'
+        localLocationEstimate:
+          $ref: '#/components/schemas/LocalArea'
         positioningDataList:
           type: array
           items:
@@ -975,6 +1058,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     UeConnectivityState:
+      description: Indicates the connectivity state of a UE.
       type: object
       required:
         - accessType
@@ -988,105 +1072,154 @@ components:
 # SIMPLE TYPES
 #
     Altitude:
+      description: Indicates value of altitude.
       type: number
       format: double
       minimum: -32767
       maximum: 32767
+
     Angle:
+      description: Indicates value of angle.
       type: integer
       minimum: 0
       maximum: 360
+
     Uncertainty:
+      description: Indicates value of uncertainty.
       type: number
       format: float
       minimum: 0
+
     Orientation:
+      description: Indicates value of orientation angle.
       type: integer
       minimum: 0
       maximum: 180
+
     Confidence:
+      description: Indicates value of confidence.
       type: integer
       minimum: 0
       maximum: 100
+
     Accuracy:
+      description: Indicates value of accuracy.
       type: number
       format: float
       minimum: 0
+
     InnerRadius:
+      description: Indicates value of the inner radius.
       type: integer
       format: int32
       minimum: 0
       maximum: 327675
+
     CorrelationID:
+      description: LCS Correlation ID.
       type: string
       minLength: 1
       maxLength: 255
+
     AgeOfLocationEstimate:
+      description: Indicates value of the age of the location estimate.
       type: integer
       minimum: 0
       maximum: 32767
+
     HorizontalSpeed:
+      description: Indicates value of horizontal speed.
       type: number
       format: float
       minimum: 0
       maximum: 2047
+
     VerticalSpeed:
+      description: Indicates value of vertical speed.
       type: number
       format: float
       minimum: 0
       maximum: 255
+
     SpeedUncertainty:
+      description: Indicates value of speed uncertainty.
       type: number
       format: float
       minimum: 0
       maximum: 255
+
     BarometricPressure:
+      description: Specifies the measured uncompensated atmospheric pressure.
       type: integer
       minimum: 30000
       maximum: 115000
+
     LcsServiceType:
+      description: LCS service type.
       type: integer
       minimum: 0
       maximum: 127
+
     LdrReference:
+      description: LDR Reference.
       type: string
       minLength: 2
       maxLength: 510
+
     ReportingAmount:
+      description: Number of required periodic event reports.
       type: integer
       minimum: 1
       maximum: 8639999
+
     ReportingInterval:
+      description: Event reporting periodic interval.
       type: integer
       minimum: 1
       maximum: 8639999
+
     MinimumInterval:
+      description: Minimum interval between event reports.
       type: integer
       minimum: 1
       maximum: 32767
+
     MaximumInterval:
+      description: Maximum interval between event reports.
       type: integer
       minimum: 1
       maximum: 86400
+
     SamplingInterval:
+      description: Maximum time interval between consecutive evaluations by a UE of a trigger event.
       type: integer
       minimum: 1
       maximum: 3600
+
     ReportingDuration:
+      description: Maximum duration of event reporting.
       type: integer
       minimum: 1
       maximum: 8640000
+
     LinearDistance:
+      description: Minimum straight line distance moved by a UE to trigger a motion event report.
       type: integer
       minimum: 1
       maximum: 10000
+
     LMFIdentification:
+      description: LMF identification.
       type: string
+
     EventReportCounter:
+      description: Number of event reports received from the target UE.
       type: integer
       minimum: 1
       maximum: 8640000
+
     EventReportDuration:
+      description: Duration of event reporting.
       type: integer
       minimum: 1
       maximum: 8640000
@@ -1094,6 +1227,7 @@ components:
 # ENUMS
 #
     ExternalClientType:
+      description: Indicates types of External Clients.
       anyOf:
         - type: string
           enum:
@@ -1106,7 +1240,9 @@ components:
             - PLMN_OPERATOR_ANONYMOUS_STATISTICS
             - PLMN_OPERATOR_TARGET_MS_SERVICE_SUPPORT
         - type: string
+
     SupportedGADShapes:
+      description: Indicates supported GAD shapes.
       anyOf:
         - type: string
           enum:
@@ -1117,8 +1253,12 @@ components:
             - POINT_ALTITUDE
             - POINT_ALTITUDE_UNCERTAINTY
             - ELLIPSOID_ARC
+            - LOCAL_2D_POINT_UNCERTAINTY_ELLIPSE
+            - LOCAL_3D_POINT_UNCERTAINTY_ELLIPSOID
         - type: string
+
     ResponseTime:
+      description: Indicates acceptable delay of location request.
       anyOf:
         - type: string
           enum:
@@ -1126,7 +1266,9 @@ components:
             - DELAY_TOLERANT
             - NO_DELAY
         - type: string
+
     PositioningMethod:
+      description: Indicates supported positioning methods.
       anyOf:
         - type: string
           enum:
@@ -1146,7 +1288,9 @@ components:
             - UL_AOA
             - NETWORK_SPECIFIC
         - type: string
+
     PositioningMode:
+      description: Indicates supported modes used for positioning method.
       anyOf:
         - type: string
           enum:
@@ -1154,7 +1298,9 @@ components:
             - UE_ASSISTED
             - CONVENTIONAL
         - type: string
+
     GnssId:
+      description: Global Navigation Satellite System (GNSS) ID.
       anyOf:
         - type: string
           enum:
@@ -1167,7 +1313,9 @@ components:
             - BDS
             - NAVIC
         - type: string
+
     Usage:
+      description: Indicates usage made of the location measurement.
       anyOf:
         - type: string
           enum:
@@ -1177,33 +1325,43 @@ components:
             - SUCCESS_RESULTS_USED_TO_GENERATE_LOCATION
             - SUCCESS_METHOD_NOT_DETERMINED
         - type: string
+
     LcsPriority:
+      description: Indicates priority of the LCS client.
       anyOf:
         - type: string
           enum:
             - HIGHEST_PRIORITY
             - NORMAL_PRIORITY
         - type: string
+
     VelocityRequested:
+      description: Indicates velocity requirement.
       anyOf:
         - type: string
           enum:
             - VELOCITY_IS_NOT_REQUESTED
             - VELOCITY_IS_REQUESTED
         - type: string
+
     AccuracyFulfilmentIndicator:
+      description: Indicates fulfilment of requested accuracy.
       anyOf:
         - type: string
           enum:
             - REQUESTED_ACCURACY_FULFILLED
             - REQUESTED_ACCURACY_NOT_FULFILLED
         - type: string
+
     VerticalDirection:
+      description: Indicates direction of vertical speed.
       type: string
       enum:
         - UPWARD
         - DOWNWARD
+
     LdrType:
+      description: Indicates LDR types.
       anyOf:
         - type: string
           enum:
@@ -1214,7 +1372,9 @@ components:
             - BEING_INSIDE_AREA
             - MOTION
         - type: string
+
     ReportingAreaType:
+      description: Indicates type of event reporting area.
       anyOf:
         - type: string
           enum:
@@ -1223,14 +1383,18 @@ components:
             - 5GS_TRACKING_AREA_IDENTITY
             - NR_CELL_GLOBAL_IDENTITY
         - type: string
+
     OccurrenceInfo:
+      description: Specifies occurrence of event reporting.
       anyOf:
         - type: string
           enum:
             - ONE_TIME_EVENT
             - MULTIPLE_TIME_EVENT
         - type: string
+
     ReportingAccessType:
+      description: Specifies access types of event reporting.
       anyOf:
         - type: string
           enum:
@@ -1238,13 +1402,17 @@ components:
             - EUTRA_CONNECTED_TO_5GC
             - NON_3GPP_CONNECTED_TO_5GC
         - type: string
+
     EventClass:
+      description: Specifies event classes.
       anyOf:
         - type: string
           enum:
             - SUPPLEMENTARY_SERVICES
         - type: string
+
     ReportedEventType:
+      description: Specifies type of event reporting.
       anyOf:
         - type: string
           enum:
@@ -1256,7 +1424,9 @@ components:
             - MAXIMUM_INTERVAL_EXPIRATION_EVENT
             - LOCATION_CANCELLATION_EVENT
         - type: string
+
     TerminationCause:
+      description: Specifies causes of event reporting termination.
       anyOf:
         - type: string
           enum:
@@ -1264,7 +1434,9 @@ components:
             - TERMINATION_BY_NETWORK
             - NORMAL_TERMINATION
         - type: string
+
     LcsQosClass:
+      description: Specifies LCS QoS class.
       anyOf:
         - type: string
           enum:
@@ -1273,6 +1445,7 @@ components:
         - type: string
 
     UeLocationServiceInd:
+      description: Specifies location service types requested by UE.
       anyOf:
         - type: string
           enum:

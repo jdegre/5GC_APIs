@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.2
+  version: 1.2.0-alpha.1
   title: AUSF API
   description: |
     AUSF UE Authentication Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.509 V16.7.0; 5G System; 3GPP TS Authentication Server services.
+  description: 3GPP TS 29.509 V17.2.0; 5G System; 3GPP TS Authentication Server services.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
 
 servers:
@@ -442,6 +442,7 @@ components:
             nausf-auth: Access to Nausf_UEAuthentication API
   schemas:
     AuthenticationInfo:
+      description: Contains the UE id (i.e. SUCI or SUPI) and the Serving Network Name.
       type: object
       properties:
         supiOrSuci:
@@ -473,6 +474,7 @@ components:
         - supiOrSuci
         - servingNetworkName
     UEAuthenticationCtx:
+      description: Contains the information related to the resource generated to handle the UE authentication. It contains at least the UE id, Serving Network, the Authentication Method and related EAP information or related 5G-AKA information.
       type: object
       properties:
         authType:
@@ -494,6 +496,7 @@ components:
         - _links
 
     Av5gAka:
+      description: Contains Authentication Vector for method 5G AKA.
       type: object
       required:
         - rand
@@ -507,6 +510,7 @@ components:
         autn:
           $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/Autn'
     ConfirmationData:
+      description: Contains the result of the authentication.
       type: object
       required:
         - resStar
@@ -528,6 +532,7 @@ components:
       required:
         - authResult
     EapSession:
+      description: Contains information related to the EAP session.
       type: object
       properties:
         eapPayload:
@@ -548,6 +553,7 @@ components:
       required:
         - eapPayload
     DeregistrationInfo:
+      description: Contains the UE id (i.e. SUPI).
       type: object
       properties:
         supi:
@@ -557,6 +563,7 @@ components:
       required:
         - supi
     RgAuthenticationInfo:
+      description: Contains the UE id (i.e. SUCI) and the authenticated indication.
       type: object
       properties:
         suci:
@@ -570,6 +577,7 @@ components:
         - suci
         - authenticatedInd
     RgAuthCtx:
+      description: Contains the UE id (i.e. SUPI) and the authentication indication.
       type: object
       properties:
         authResult:
@@ -583,6 +591,7 @@ components:
         - authResult
 
     AuthResult:
+      description: Indicates the result of the authentication.
       type: string
       enum:
         - AUTHENTICATION_SUCCESS
@@ -594,19 +603,24 @@ components:
       description: contains an EAP packet
       nullable: true
     Kseaf:
+      description: Contains the Kseaf.
       type: string
       pattern: '[A-Fa-f0-9]{64}'
     ResStar:
+      description: Contains the RES*.
       type: string
       pattern: '[A-Fa-f0-9]{32}'
       nullable: true
     HxresStar:
+      description: Contains the HXRES*.
       type: string
       pattern: "[A-Fa-f0-9]{32}"
     Suci:
+      description: Contains the SUCI.
       type: string
       pattern: '^(suci-(0-[0-9]{3}-[0-9]{2,3}|[1-7]-.+)-[0-9]{1,4}-(0-0-.+|[a-fA-F1-9]-([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-[a-fA-F0-9]+)|.+)$'
     AuthType:
+      description: Indicates the authentication method used.
       anyOf:
         - type: string
           enum:

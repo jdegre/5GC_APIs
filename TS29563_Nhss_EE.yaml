@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.2'
+  version: '1.1.0-alpha.1'
   title: 'Nhss_EE'
   description: |
     HSS Event Exposure
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.563 HSS Services for Interworking With UDM, version 16.3.0
+  description: 3GPP TS 29.563 HSS Services for Interworking With UDM, version 17.1.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.563/'
 
 servers:
@@ -57,6 +57,10 @@ paths:
               required: true
               schema:
                 type: string
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -87,6 +91,10 @@ paths:
               responses:
                 '204':
                   description: Successful Notification response
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '404':
@@ -120,6 +128,10 @@ paths:
       responses:
         '204':
           description: Successful response
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '404':
@@ -166,6 +178,10 @@ paths:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
           description: Successful response
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
@@ -188,6 +204,7 @@ components:
 # COMPLEX TYPES:
 
     EeSubscription:
+      description: It represents the request body of the subscription request sent to HSS, containing data related to the subscription to be created, such as the SCEF, Monitoring Configurations and reporting options
       type: object
       required:
         - callbackReference
@@ -195,6 +212,8 @@ components:
         callbackReference:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         scefId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        scefDiamRealm:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
         monitoringConfigurations:
           description: A map (list of key-value pairs where ReferenceId serves as key) of MonitoringConfigurations
@@ -206,8 +225,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         reportingOptions:
           $ref: '#/components/schemas/ReportingOptions'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        externalIdentifier:
+          type: string
 
     CreatedEeSubscription:
+      description: It represents the response body of the subscription request, containing data of the created subscription in the HSS
       type: object
       required:
         - eeSubscription
@@ -221,6 +245,7 @@ components:
           minItems: 1
 
     MonitoringConfiguration:
+      description: Contains data for each Monitoring Configuration (such as event type, etc.) and the configuration data needed depending on each event type
       type: object
       required:
         - eventType
@@ -239,6 +264,7 @@ components:
           $ref: '#/components/schemas/PduSessionStatusCfg'
 
     MonitoringReport:
+      description: Contains data for each Monitoring Event Report sent by the HSS
       type: object
       required:
         - referenceId
@@ -255,6 +281,7 @@ components:
           $ref: '#/components/schemas/Report'
 
     ReportingOptions:
+      description: Contains the different reporting options associated to a given subscription created in HSS
       type: object
       properties:
         maxNumOfReports:
@@ -265,12 +292,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
     Report:
+      description: Contains data for a given Monitoring Event Report
       type: object
       properties:
         reachabilityForSmsReport:
           $ref: '#/components/schemas/ReachabilityForSmsReport'
 
     ReachabilityForSmsReport:
+      description: Contains data for a Monitoring Event Report, specific to the 'Reachability For SMS' event type
       type: object
       required:
         - reachabilitySmsStatus
@@ -281,12 +310,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     LossConnectivityConfiguration:
+      description: Contains data needed for a Monitoring Configuration, specific to the 'Loss of Connectivity' event type
       type: object
       properties:
         maxDetectionTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
     LocationReportingConfiguration:
+      description: Contains data needed for a Monitoring Configuration, specific to the 'Location Reporting' event type
       type: object
       required:
         - currentLocation
@@ -297,6 +328,7 @@ components:
           $ref: '#/components/schemas/LocationAccuracy'
 
     ReachabilityForDataConfiguration:
+      description: Contains data needed for a Monitoring Configuration, specific to the 'Reachability for Data' event type
       type: object
       anyOf:
         - required: [ maximumLatency ]
@@ -312,6 +344,7 @@ components:
           minimum: 1
 
     PduSessionStatusCfg:
+      description: Contains data needed for a Monitoring Configuration, specific to the 'PDN Connectivity Status' event type
       type: object
       properties:
         apn:
@@ -320,19 +353,23 @@ components:
 # SIMPLE TYPES:
 
     ReferenceId:
+      description: The ID to refer to a given Monitoring Event (and its corresponding Monitoring Configuration and Monitoring Event Report)
       type: integer
 
     Imsi:
+      description: IMSI of the UE
       type: string
       pattern: '^(imsi-[0-9]{5,15})$'
 
     MaxNumOfReports:
+      description: Maximum number of events to be reported for events in a given subscription
       type: integer
       minimum: 1
 
 # ENUMS:
 
     EventType:
+      description: Type of Monitoring Event
       anyOf:
         - type: string
           enum:
@@ -346,9 +383,11 @@ components:
         - type: string
 
     LocationAccuracy:
+      description: Location accuracy used in the 'Location Reporting' event type
       anyOf:
         - type: string
           enum:
           - CELL_LEVEL
+          - RAN_NODE_LEVEL
           - TA_LEVEL
         - type: string

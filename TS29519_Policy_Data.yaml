@@ -7,7 +7,7 @@ info:
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V17.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V17.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -1098,7 +1098,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
     patch:
-      summary: Modify the operator specific policy data of an UE
+      summary: Modify the operator specific policy data of a UE
       operationId: UpdateOperatorSpecificData
       tags:
         - OperatorSpecificData (Document)
@@ -1156,7 +1156,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
-      summary: Modify the operator specific policy data of an UE
+      summary: Create or modify the operator specific policy data of a UE
       operationId: ReplaceOperatorSpecificData
       tags:
         - OperatorSpecificData (Document)
@@ -1191,6 +1191,20 @@ paths:
                 type: object
                 additionalProperties:
                   $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+        '201':
+          description: Successful case. When the feature OSDResource_Create_Delete is supported and the resource has been successfully created, a response body containing a representation of the created OperatorSpecificData resource shall be returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: 'TS29505_Subscription_Data.yaml#/components/schemas/OperatorSpecificDataContainer'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource'
+              required: true
+              schema:
+                type: string
         '204':
           description: The resource has been successfully updated.
         '400':
@@ -1207,6 +1221,43 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
           $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: When the feature OSDResource_Create_Delete is supported, delete OperatorSpecificData resource
+      operationId: DeleteOperatorSpecificData
+      tags:
+        - OperatorSpecificData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+      parameters:
+       - name: ueId
+         in: path
+         required: true
+         schema:
+           $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      responses:
+        '204':
+          description: Successful case. The resource has been successfully deleted.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':

@@ -1,11 +1,11 @@
 openapi: 3.0.0
 
 info:
-  version: '2.1.1'
+  version: '2.2.0-alpha.1'
   title: 'NSSF NS Selection'
   description: |
     NSSF Network Slice Selection Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 security:
   - {}
@@ -18,7 +18,7 @@ servers:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 externalDocs:
-  description: 3GPP TS 29.531 V16.5.0; 5G System; Network Slice Selection Services; Stage 3
+  description: 3GPP TS 29.531 V17.1.0; 5G System; Network Slice Selection Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.531/
 paths:
   /network-slice-information:
@@ -89,37 +89,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthorizedNetworkSliceInfo'
         '307':
-          description: temporary redirect
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same NSSF or NSSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same NSSF or NSSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -152,6 +124,7 @@ components:
             nnssf-nsselection: Access to the Nnssf_NSSelection API
   schemas:
     AuthorizedNetworkSliceInfo:
+      description: Contains the authorized network slice information
       type: object
       properties:
         allowedNssaiList:
@@ -196,6 +169,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
 
     SubscribedSnssai:
+      description: Contains the subscribed S-NSSAI
       type: object
       required:
         - subscribedSnssai
@@ -207,6 +181,7 @@ components:
 
 
     AllowedSnssai:
+      description: Contains the authorized S-NSSAI and optional mapped home S-NSSAI and network slice instance information
       type: object
       required:
         - allowedSnssai
@@ -222,6 +197,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
 
     AllowedNssai:
+      description: Contains an array of allowed S-NSSAI that constitute the allowed NSSAI information for the authorized network slice information
       type: object
       required:
         - allowedSnssaiList
@@ -236,6 +212,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
 
     NsiInformation:
+      description: Contains the API URIs of NRF services to be used to discover NFs/services, subscribe to NF status changes and/or request access tokens within the selected Network Slice instance and optional the Identifier of the selected Network Slice instance
       type: object
       required:
         - nrfId
@@ -250,6 +227,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
     MappingOfSnssai:
+      description: Contains the mapping of S-NSSAI in the serving network and the value of the home network
       type: object
       required:
         - servingSnssai
@@ -262,6 +240,7 @@ components:
 
 
     SliceInfoForRegistration:
+      description: Contains the slice information requested during a Registration procedure
       type: object
       properties:
         subscribedNssai:
@@ -294,6 +273,7 @@ components:
           type: boolean
 
     SliceInfoForPDUSession:
+      description: Contains the slice information requested during PDU Session establishment procedure
       type: object
       required:
         - sNssai
@@ -307,6 +287,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
 
     SliceInfoForUEConfigurationUpdate:
+      description: Contains the slice information requested during UE configuration update procedure
       type: object
       properties:
         subscribedNssai:
@@ -332,6 +313,7 @@ components:
           minItems: 1
 
     ConfiguredSnssai:
+      description: Contains the configured S-NSSAI(s) authorized by the NSSF in the serving PLMN and optional mapped home S-NSSAI
       type: object
       required:
         - configuredSnssai
@@ -343,6 +325,7 @@ components:
 
 
     RoamingIndication:
+      description: Contains the indication on roaming
       anyOf:
         - type: string
           enum:
@@ -351,4 +334,5 @@ components:
             - HOME_ROUTED_ROAMING
         - type: string
     NsiId:
+      description: Contains the Identifier of the selected Network Slice instance
       type: string

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-chargeable-party
-  version: 1.2.0-alpha.2
+  version: 1.2.0-alpha.3
   description: |
     API for Chargeable Party management.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V17.1.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.2.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -237,6 +237,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargeableParty'
+        '204':
+          description: No Content
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -320,12 +322,17 @@ components:
           scopes: {}
   schemas: 
     ChargeableParty:
+      description: Represents the configuration of a chargeable party.
       type: object
       properties:
         self:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         notificationDestination:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         requestTestNotification:
@@ -333,6 +340,9 @@ components:
           description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in subclause 5.2.5.3. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+        exterAppId:
+          type: string
+          description: Identifies the external Application Identifier.
         ipv4Addr:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
         ipDomain:
@@ -369,6 +379,7 @@ components:
         - sponsorInformation
         - sponsoringEnabled
     ChargeablePartyPatch:
+      description: Represents a modification request of a chargeable party resource.
       type: object
       properties:
         flowInfo:
@@ -376,7 +387,10 @@ components:
           items:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
           minItems: 1
-          description: Describes the application flows.
+          description: Describes the IP flows.
+        exterAppId:
+          type: string
+          description: Identifies the external Application Identifier.
         ethFlowInfo:
           type: array
           items:
@@ -390,3 +404,5 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/BdtReferenceId'
         usageThreshold:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
+        notificationDestination:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'

@@ -3,11 +3,11 @@ info:
   title: CAPIF_Security_API
   description: |
     API for CAPIF security management.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.0.3"
+  version: "1.2.0-alpha.1"
 externalDocs:
-  description: 3GPP TS 29.222 V15.7.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V17.1.0 Common API Framework for 3GPP Northbound APIs
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/capif-security/v1'
@@ -43,6 +43,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceSecurity'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -82,7 +86,7 @@ paths:
         notificationDestination:
           '{request.body#/notificationDestination}':
             post:
-              requestBody: 
+              requestBody:
                 required: true
                 content:
                   application/json:
@@ -91,6 +95,10 @@ paths:
               responses:
                 '204':
                   description: No Content (successful notification)
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
@@ -148,7 +156,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-    delete: 
+    delete:
       parameters:
         - name: apiInvokerId
           in: path
@@ -159,6 +167,10 @@ paths:
       responses:
         '204':
           description: No Content (Successful deletion of the existing subscription)
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -198,6 +210,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceSecurity'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -240,6 +256,10 @@ paths:
       responses:
         '204':
           description: Successful revoked.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -285,6 +305,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessTokenRsp'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           description: Error in the Access Token Request
           content:
@@ -296,6 +320,7 @@ components:
   schemas:
     ServiceSecurity:
       type: object
+      description: Represents the details of the security method for each service API interface. When included by the API invoker, it indicates the preferred method of security. When included by the CAPIF core function, it indicates the security method to be used for the service API interface.
       properties:
         securityInfo:
           type: array
@@ -316,6 +341,7 @@ components:
         - notificationDestination
     SecurityInformation:
       type: object
+      description: Represents the interface details and the security method.
       properties:
         interfaceDetails:
           $ref: 'TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/InterfaceDescription'
@@ -343,10 +369,11 @@ components:
         - required: [aefId]
     SecurityNotification:
       type: object
+      description: Represents revoked authorization notification details.
       properties:
         apiInvokerId:
           type: string
-          description: String identifying the API invoker assigned by the CAPIF core function 
+          description: String identifying the API invoker assigned by the CAPIF core function.
         aefId:
           type: string
           description: String identifying the AEF.
@@ -364,6 +391,7 @@ components:
         - cause
     AccessTokenReq:
       format: x-www-form-urlencoded
+      description: Represents the access token request information.
       properties:
         grant_type:
           type: string
@@ -380,6 +408,7 @@ components:
         - client_id
     AccessTokenRsp:
       type: object
+      description: Represents the access token response information.
       properties:
         access_token:
           type: string
@@ -398,6 +427,7 @@ components:
         - expires_in
     AccessTokenClaims:
       type: object
+      description: Represents the claims data structure for the access token.
       properties:
         iss:
           type: string
@@ -411,6 +441,7 @@ components:
         - exp
     AccessTokenErr:
       type: object
+      description: Represents an error in the access token request.
       properties:
         error:
           type: string

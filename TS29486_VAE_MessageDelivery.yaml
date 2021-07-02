@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   title: VAE_MessageDelivery
   description: |
     API for VAE Message Delivery Service
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.486 V17.0.0 V2X Application Enabler (VAE) Services
+  description: 3GPP TS 29.486 V17.1.0 V2X Application Enabler (VAE) Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
 security:
   - {}
@@ -76,6 +76,44 @@ paths:
                   application/json:
                     schema:
                       $ref: '#/components/schemas/UplinkMessageDeliveryData'
+              responses:
+                '204':
+                  description: No Content, Notification was successful
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        receptReportOfDownlinkMesageDelivery:
+          '{$request.body#/notifUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/Result'
               responses:
                 '204':
                   description: No Content, Notification was successful
@@ -238,7 +276,7 @@ paths:
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /subscriptions/{subscriptionId}/message-deliveries/{dlDeliveryId}:
     get:
       summary: VAE Message delivery resource Read service Operation
@@ -327,7 +365,7 @@ paths:
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -392,6 +430,14 @@ components:
         - resourceUri
         - ueId
         - payload
+    Result:
+      description: Contains the result of downlink message delivery.
+      anyOf:
+      - type: string
+        enum:
+          - SUCCESS
+          - FAIL
+      - type: string
     AppServerId:
       description: Represents the V2X application specific server identifier.
       type: string

@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
-  version: 1.1.1
+  version: 1.2.0-alpha.1
   title: Namf_MT
   description: |
     AMF Mobile Terminated Service
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 security:
   - {}
   - oAuth2ClientCredentials:
       - namf-mt
 externalDocs:
-  description: 3GPP TS 29.518 V16.6.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.2.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-mt/v1'
@@ -59,43 +59,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/UeContextInfo'
         '307':
-          description: Temporary Redirect
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-          headers:
-            Location:
-              description: 'The URI of the resource located on the target NF Service Consumer (e.g. AMF) to which the request is redirected'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '409':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/409'
         '414':
           $ref: 'TS29571_CommonData.yaml#/components/responses/414'
         '429':
@@ -133,37 +107,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/EnableUeReachabilityRspData'
         '307':
-          description: Temporary Redirect
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-          headers:
-            Location:
-              description: 'The URI of the resource located on the target NF Service Consumer (e.g. AMF) to which the request is redirected'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same AMF or AMF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -205,6 +151,7 @@ components:
             namf-mt: Access to the Namf_MT API
   schemas:
     EnableUeReachabilityReqData:
+      description: Data within the Enable UE Reachability Request
       type: object
       properties:
         reachability:
@@ -219,6 +166,7 @@ components:
       required:
         - reachability
     EnableUeReachabilityRspData:
+      description: Data within the Enable UE Reachability Response
       type: object
       properties:
         reachability:
@@ -228,6 +176,7 @@ components:
       required:
         - reachability
     UeContextInfo:
+      description: UE Context Information
       type: object
       properties:
         supportVoPS:
@@ -243,15 +192,18 @@ components:
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     ProblemDetailsEnableUeReachability:
+      description: Enable UE Reachability Error Detail
       allOf:
       - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
       - $ref: '#/components/schemas/AdditionInfoEnableUeReachability'
     AdditionInfoEnableUeReachability:
+      description: Additional information to be returned in EnableUeReachability error response
       type: object
       properties:
         maxWaitingTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
     UeContextInfoClass:
+      description: Indicates the UE Context information class
       anyOf:
       - type: string
         enum:

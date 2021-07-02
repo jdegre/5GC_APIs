@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.2'
+  version: '1.2.0-alpha.3'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.2.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -118,6 +118,16 @@ paths:
           required: true
           schema:
             $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+        - name: mtc-provider-info
+          in: query
+          description: MTC Provider Information that originated the service operation
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        - name: af-id
+          in: query
+          description: AF ID that originated the service operation
+          schema:
+            type: string
       responses:
         '204':
           description: Expected response to a valid request
@@ -209,6 +219,128 @@ paths:
         default:
           description: Unexpected error
 
+  /{ueId}/pp-data-store/{afInstanceId}:
+    put:
+      summary: Create a Provisioning Parameter Data Entry
+      operationId: Create PP Data Entry
+      tags:
+        - ParameterProvisioningDataEntry (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema: 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: afInstanceId
+          in: path
+          description: Application Function Instance Identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PpDataEntry'
+        required: true
+      responses:
+        '201':
+          description: Indicating a successful creation of the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PpDataEntry'
+        '204':
+          description: Indicating a successful update of the resource
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    delete:
+      summary: Delete a Provisioning Parameter Data Entry
+      operationId: Delete PP Data Entry
+      tags:
+        - ParameterProvisioningDataEntry (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema: 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: afInstanceId
+          in: path
+          description: Application Function Instance Identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+    get:
+      summary: get Parameter Provisioning Data Entry
+      operationId: Get PP Data Entry
+      tags:
+        - ParameterProvisioningDataEntry (Document)
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema: 
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: afInstanceId
+          in: path
+          description: Application Function Instance Identifier
+          required: true
+          schema:
+            type: string
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PpDataEntry'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
 
 components:
   securitySchemes:
@@ -244,6 +376,8 @@ components:
           $ref: '#/components/schemas/LcsPrivacy'
         sorInfo:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SorInfo'
+        ecsServerAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EcsServerAddr'
       nullable: true
 
     CommunicationCharacteristics:
@@ -344,6 +478,13 @@ components:
           type: boolean
         dnAaaAddress:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpAddress'
+        additionalDnAaaAddresses:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpAddress'
+          minItems: 1
+        dnAaaFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
 
     ExpectedUeBehaviour:
       type: object
@@ -541,6 +682,33 @@ components:
         mtcProviderInformation:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
       nullable: true
+
+    PpDataEntry:
+      type: object
+      properties:
+        communicationCharacteristics:
+          $ref: '#/components/schemas/CommunicationCharacteristicsAF'
+        referenceId:
+          $ref: '#/components/schemas/ReferenceId'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      nullable: true
+
+    CommunicationCharacteristicsAF:
+      type: object
+      properties:
+        ppDlPacketCount:
+          $ref: '#/components/schemas/PpDlPacketCount'
+        maximumResponseTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        maximumLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      nullable: true
+
 
 # SIMPLE TYPES:
 

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.2'
+  version: '1.2.0-alpha.1'
   title: 'JOSE Protected Message Forwarding API'
   description: |
     N32-f Message Forwarding Service.
@@ -14,7 +14,7 @@ servers:
         default: https://example.com
         description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 externalDocs:
-  description: 3GPP TS 29.573 V16.6.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  description: 3GPP TS 29.573 V17.1.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
 
 paths:
@@ -114,6 +114,7 @@ paths:
 components:
   schemas:
     FlatJweJson:
+      description: Contains the integrity protected reformatted block
       type: object
       required:
         - ciphertext
@@ -136,6 +137,7 @@ components:
           type: string
 
     FlatJwsJson:
+      description: Contains the modification from IPXes on path
       type: object
       required:
         - payload
@@ -151,6 +153,7 @@ components:
           type: string
 
     N32fReformattedReqMsg:
+      description: Contains the reformatted HTTP/2 request message
       type: object
       required:
         - reformattedData
@@ -164,6 +167,7 @@ components:
           minItems: 1
 
     N32fReformattedRspMsg:
+      description: Contains the reformatted HTTP/2 response message
       type: object
       required:
         - reformattedData
@@ -177,6 +181,7 @@ components:
           minItems: 1
 
     DataToIntegrityProtectAndCipherBlock:
+      description: HTTP header to be encrypted or the value of a JSON attribute to be encrypted
       type: object
       required:
         - dataToEncrypt
@@ -186,6 +191,7 @@ components:
           items: {}
           minItems: 1
     DataToIntegrityProtectBlock:
+      description: Data to be integrity protected
       type: object
       properties:
         metaData:
@@ -205,6 +211,7 @@ components:
             $ref: '#/components/schemas/HttpPayload'
           minItems: 1
     RequestLine:
+      description: Contains the request line of the HTTP API request being reformatted and forwarded over N32-f
       type: object
       required:
         - method
@@ -226,6 +233,7 @@ components:
         queryFragment:
           type: string
     HttpHeader:
+      description: Contains the encoding of HTTP headers in the API request / response
       type: object
       required:
         - header
@@ -236,6 +244,7 @@ components:
         value:
           $ref: '#/components/schemas/EncodedHttpHeaderValue'
     HttpPayload:
+      description: Contains the encoding of JSON payload in the API request / response
       type: object
       required:
         - iePath
@@ -249,6 +258,7 @@ components:
         value:
           type: object
     MetaData:
+      description: Contains the meta data information needed for replay protection
       type: object
       required:
         - n32fContextId
@@ -263,6 +273,7 @@ components:
         authorizedIpxId:
           type: string
     Modifications:
+      description: Information on inserting of the modifications entry
       type: object
       required:
         - identity
@@ -275,6 +286,7 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
           minItems: 1
     IndexToEncryptedValue:
+      description: Index to the encrypted value
       type: object
       required:
         - encBlockIndex
@@ -282,6 +294,7 @@ components:
         encBlockIndex:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
     EncodedHttpHeaderValue:
+      description: HTTP header value or index to the HTTP header value
       oneOf:
         - type: string
         - $ref: '#/components/schemas/IndexToEncryptedValue'

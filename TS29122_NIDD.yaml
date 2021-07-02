@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-nidd
-  version: 1.2.0-alpha.2
+  version: 1.2.0-alpha.3
   description: |
     API for non IP data delivery.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V17.1.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.2.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -215,7 +215,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/NiddConfiguration'
         '204':
-          description: The Individual NIDD configuration is modified successfully.
+          description: The Individual NIDD configuration is modified successfully and no content is to be sent in the response message body.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -437,6 +437,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NiddDownlinkDataTransfer'
+        '204':
+          description: The NIDD downlink data delivery has been replaced successfully and no content is to be sent in the response message body.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -692,6 +694,7 @@ components:
           scopes: {}
   schemas: 
     NiddConfiguration:
+      description: Represents the configuration for NIDD.
       type: object
       properties:
         self:
@@ -747,6 +750,7 @@ components:
         - required: [msisdn]
         - required: [externalGroupId]
     NiddDownlinkDataTransfer:
+      description: Represents the received NIDD downlink data from the SCS/AS.
       type: object
       properties:
         externalId:
@@ -782,6 +786,7 @@ components:
         - required: [msisdn]
         - required: [externalGroupId]
     NiddUplinkDataNotification:
+      description: Represents NIDD uplink data to be notified to the SCS/AS.
       type: object
       properties:
         niddConfiguration:
@@ -804,6 +809,7 @@ components:
         - required: [externalId]
         - required: [msisdn]
     NiddDownlinkDataDeliveryStatusNotification:
+      description: Represents the delivery status of a specific NIDD downlink data delivery.
       type: object
       properties:
         niddDownlinkDataTransfer:
@@ -816,6 +822,7 @@ components:
         - niddDownlinkDataTransfer
         - deliveryStatus
     NiddConfigurationStatusNotification:
+      description: Represents an NIDD configuration status notification.
       type: object
       properties:
         niddConfiguration:
@@ -838,6 +845,7 @@ components:
         - required: [externalId]
         - required: [msisdn]
     GmdNiddDownlinkDataDeliveryNotification:
+      description: Represents the delivery status of a specific group NIDD downlink data delivery.
       type: object
       properties:
         niddDownlinkDataTransfer:
@@ -852,6 +860,7 @@ components:
         - niddDownlinkDataTransfer
         - gmdResults
     RdsPort:
+      description: Represents the port configuration for Reliable Data Transfer.
       type: object
       properties:
         portUE:
@@ -862,6 +871,7 @@ components:
         - portUE
         - portSCEF
     GmdResult:
+      description: Represents the group message delivery result.
       type: object
       properties:
         externalId:
@@ -878,6 +888,7 @@ components:
         - required: [externalId]
         - required: [msisdn]
     NiddDownlinkDataDeliveryFailure:
+      description: Represents information related to a failure delivery result.
       type: object
       properties:
         problemDetail:
@@ -887,6 +898,7 @@ components:
       required:
         - problemDetail
     ManagePort:
+      description: Represents the configuration of a RDS dynamic port management.
       type: object
       properties:
         self:
@@ -910,6 +922,7 @@ components:
       required:
         - appId
     ManagePortNotification:
+      description: Represents a ManagePort notification of port numbers that are reserved.
       type: object
       properties:
         niddConfiguration:
@@ -930,6 +943,7 @@ components:
         - required: [externalId]
         - required: [msisdn] 
     RdsDownlinkDataDeliveryFailure:
+      description: Represents the failure delivery result for RDS.
       allOf:
         - $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
         - type: object
@@ -960,6 +974,7 @@ components:
         - INDICATE_ERROR: respond with an error cause
         - SEND_TRIGGER: send a device trigger
     PdnEstablishmentOptionsRm:
+      description: Represents the same information as the PdnEstablishmentOptions data type with the difference that it allows also the null value.
       anyOf: 
         - $ref: '#/components/schemas/PdnEstablishmentOptions'
         - $ref: 'TS29571_CommonData.yaml#/components/schemas/NullValue'
@@ -1057,6 +1072,7 @@ components:
         - JSON: The JSON Serialzition format
         - XML: The XML Serialzition format
     NiddConfigurationPatch:
+      description: Represents the parameters to update a NIDD configuration.
       type: object
       properties:
         duration:
@@ -1073,3 +1089,5 @@ components:
           description: Indicates the static port configuration that is used for reliable data transfer between specific applications using RDS (as defined in subclause 5.2.4 and 5.2.5 of 3GPP TS 24.250).
         pdnEstablishmentOption:
           $ref: '#/components/schemas/PdnEstablishmentOptionsRm'
+        notificationDestination:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'

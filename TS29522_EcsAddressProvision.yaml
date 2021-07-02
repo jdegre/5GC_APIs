@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: 3gpp-acs-pp
-  version: 1.1.0-alpha.1
+  title: 3gpp-ecs-address-provision
+  version: 1.0.0-alpha.1
   description: |
-    API for 5G ACS Parameter Provision.
+    API for ECS Address Provisioning.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
@@ -13,17 +13,15 @@ security:
   - {}
   - oAuth2ClientCredentials: []
 servers:
-  - url: '{apiRoot}/3gpp-acs-pp/v1'
+  - url: '{apiRoot}/3gpp-ecs-address-provision/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
 paths:
-  /{afId}/subscriptions:
+  /{afId}/provisionedLpis:
     get:
-      summary: read all of the active subscriptions for the AF
-      tags:
-        - ACS Configuration Subscriptions
+      summary: read all active configurations for a given AF
       parameters:
         - name: afId
           in: path
@@ -33,13 +31,13 @@ paths:
             type: string
       responses:
         '200':
-          description: OK (Successful get all of the active subscriptions for the AF)
+          description: OK (Successful get all of the active resources for the AF)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AcsConfigurationData'
+                  $ref: '#/components/schemas/EcsAddressProvision'
                 minItems: 0
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
@@ -65,9 +63,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Creates a new subscription resource
-      tags:
-        - ACS Configuration Subscriptions
+      summary: Creates a new configuration resource
       parameters:
         - name: afId
           in: path
@@ -76,19 +72,19 @@ paths:
           schema:
             type: string
       requestBody:
-        description: new subscription creation
+        description: new resource creation
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AcsConfigurationData'
+              $ref: '#/components/schemas/EcsAddressProvision'
       responses:
         '201':
           description: Created (Successful creation)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcsConfigurationData'
+                $ref: '#/components/schemas/EcsAddressProvision'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource'
@@ -118,11 +114,9 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-  /{afId}/subscriptions/{subscriptionId}:
+  /{afId}/configurations/{configurationId}:
     get:
-      summary: read an active subscription for the AF and the subscription Id
-      tags:
-        - Individual ACS Configuration Subscription
+      summary: read an active resource for the AF and the configuration Id
       parameters:
         - name: afId
           in: path
@@ -130,19 +124,19 @@ paths:
           required: true
           schema:
             type: string
-        - name: subscriptionId
+        - name: configurationId
           in: path
-          description: Identifier of the subscription resource
+          description: Identifier of the configuration resource
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: OK (Successful get the active subscription)
+          description: OK (Successful get the active resource)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcsConfigurationData'
+                $ref: '#/components/schemas/EcsAddressProvision'
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -167,9 +161,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Updates/replaces an existing subscription resource
-      tags:
-        - Individual ACS Configuration Subscription
+      summary: Updates/replaces an existing resource
       parameters:
         - name: afId
           in: path
@@ -177,28 +169,28 @@ paths:
           required: true
           schema:
             type: string
-        - name: subscriptionId
+        - name: configurationId
           in: path
-          description: Identifier of the subscription resource
+          description: Identifier of the configuration resource
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to update/replace the existing subscription
+        description: Parameters to update/replace the existing resource
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AcsConfigurationData'
+              $ref: '#/components/schemas/EcsAddressProvision'
       responses:
         '200':
-          description: OK (Successful update of the existing subscription)
+          description: OK (Successful update of the existing resource)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcsConfigurationData'
+                $ref: '#/components/schemas/EcsAddressProvision'
         '204':
-          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
+          description: Successful case. The resource has been successfully updated and no additional content is sent in the response message.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -227,9 +219,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing subscription
-      tags:
-        - Individual ACS Configuration Subscription
+      summary: Deletes an already existing configuration resource
       parameters:
         - name: afId
           in: path
@@ -237,15 +227,15 @@ paths:
           required: true
           schema:
             type: string
-        - name: subscriptionId
+        - name: configurationId
           in: path
-          description: Identifier of the subscription resource
+          description: Identifier of the configuration resource
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: No Content (Successful deletion of the existing subscription)
+          description: No Content (Successful deletion of the existing resource)
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -275,22 +265,15 @@ components:
           tokenUrl: '{tokenUrl}'
           scopes: {}
   schemas: 
-    AcsConfigurationData:
-      description: Represents an individual ACS Configuration subscription resource.
+    EcsAddressProvision:
       type: object
       properties:
         self:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
-        exterGroupId:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        acsInfo:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/AcsInfo'
-        mtcProviderId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        ecsServerAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EcsServerAddr'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
-        - acsInfo
+        - ecsServerAddr
         - suppFeat

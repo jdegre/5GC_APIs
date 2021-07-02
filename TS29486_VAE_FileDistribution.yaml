@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   title: VAE_FileDistribution
   description: |
     API for VAE File Distribution Service
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.486 V17.0.0 V2X Application Enabler (VAE) Services
+  description: 3GPP TS 29.486 V17.1.0 V2X Application Enabler (VAE) Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
 security:
   - {}
@@ -65,7 +65,7 @@ paths:
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /file-distributions/{distributionId}:
     get:
       summary: Get an existing individual file distribution resource
@@ -142,7 +142,7 @@ paths:
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
-          description: Unexpected error
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -171,6 +171,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         maxDelay:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        localMbmsInfo:
+          $ref: '#/components/schemas/LocalMbmsInfo'
+        localMbmsActInd:
+          type: boolean
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -210,7 +214,26 @@ components:
         - fileStatus
         - completionTime
         - keepUpdateInterval
-
+    LocalMbmsInfo:
+      description: Contains the local MBMS information.
+      type: object
+      properties:
+        mbmsEnbIpv4MulAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        mbmsEnbIpv6MulAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        mbmsGwIpv4SsmAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        mbmsGwIpv6SsmAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        cteid:
+          type: string
+        bmscIpv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        bmscIpv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        bmscPort:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
     FileStatus:
       description: Represents a file status.
       anyOf:

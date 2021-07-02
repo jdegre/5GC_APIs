@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.1'
+  version: '1.1.0-alpha.1'
   title: 'Nsmf_NIDD'
   description: |
     SMF NIDD Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.542 V16.4.0; 5G System; Session Management Services for Non-IP Data Delivery (NIDD); Stage 3
+  description: 3GPP TS 29.542 V17.1.0; 5G System; Session Management Services for Non-IP Data Delivery (NIDD); Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.542/
 
 servers:
@@ -64,29 +64,9 @@ paths:
         '204':
           description: successful transfering of Delivery
         '307':
-          description: temporary redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMF or SMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target SMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMF or SMF (service) set '
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: 'Identifier of target SMF (service) instance towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -132,6 +112,7 @@ components:
 #
 
     DeliverReqData:
+      description: Representation of the payload of a Deliver Request.
       type: object
       properties:
         mtData:
@@ -140,6 +121,7 @@ components:
         - mtData
 
     DeliverAddInfo:
+      description: Additional information in an error response to a Deliver Request.
       type: object
       properties:
         maxWaitingTime:
@@ -150,6 +132,7 @@ components:
 #
 
     DeliverError:
+      description: Representation of the payload in an error response to a Deliver Request.
       allOf:
       - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
       - $ref: '#/components/schemas/DeliverAddInfo'

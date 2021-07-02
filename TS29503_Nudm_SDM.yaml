@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0-alpha.3'
+  version: '2.2.0-alpha.4'
   title: 'Nudm_SDM'
   description: |
     Nudm Subscriber Data Management Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.2.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -977,6 +977,65 @@ paths:
         default:
           description: Unexpected error
 
+  /{supi}/prose-data:
+    get:
+      summary: retrieve a UE's ProSe Subscription Data
+      operationId: GetProseData
+      tags:
+        - Prose Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProseSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
   /{ueId}/sdm-subscriptions:
     post:
       summary: subscribe to notifications
@@ -1005,7 +1064,7 @@ paths:
                 $ref: '#/components/schemas/SdmSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/<apiVersion>/{supi}/sdm-subscriptions/{subscriptionId}'
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-sdm/<apiVersion>/{ueId}/sdm-subscriptions/{subscriptionId}'
               required: true
               schema:
                 type: string
@@ -1035,37 +1094,9 @@ paths:
                 '204':
                   description: Successful Notification response
                 '307':
-                  description: Temporary Redirect
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                  headers:
-                    Location:
-                      description: 'Contains the new Callback URI of the target NF Service Consumer (e.g. AMF) to which the request is redirected'
-                      required: true
-                      schema:
-                        type: string
-                    3gpp-Sbi-Target-Nf-Id:
-                      description: 'Identifier of target NF (service) instance towards which the notification is redirected'
-                      schema:
-                        type: string
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
                 '308':
-                  description: Permanent Redirect
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                  headers:
-                    Location:
-                      description: 'Contains the new Callback URI of the target NF Service Consumer (e.g. AMF) to which the request is redirected'
-                      required: true
-                      schema:
-                        type: string
-                    3gpp-Sbi-Target-Nf-Id:
-                      description: 'Identifier of target NF (service) instance towards which the notification is redirected'
-                      schema:
-                        type: string
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '404':
@@ -1163,7 +1194,7 @@ paths:
       summary: retrieve a UE's SUPI or GPSI
       operationId: GetSupiOrGpsi
       tags:
-        - GPSI to SUPI Translation
+        - GPSI to SUPI Translation or SUPI to GPSI translation
       parameters:
         - name: ueId
           in: path
@@ -1176,6 +1207,11 @@ paths:
           description: Supported Features
           schema:
              $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: af-id
+          in: query
+          description: AF identifier
+          schema:
+            type: string
         - name: app-port-id
           in: query
           description: Application port identifier
@@ -1183,6 +1219,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppPortId'
+        - name: requested-gpsi-type
+          in: query
+          description: Requested GPSI Type
+          schema:
+            $ref: '#/components/schemas/GpsiType'
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -1482,37 +1523,9 @@ paths:
                 '204':
                   description: Successful Notification response
                 '307':
-                  description: Temporary Redirect
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                  headers:
-                    Location:
-                      description: 'Contains the new Callback URI of the target NF Service Consumer (e.g. AMF) to which the request is redirected'
-                      required: true
-                      schema:
-                        type: string
-                    3gpp-Sbi-Target-Nf-Id:
-                      description: 'Identifier of target NF (service) instance towards which the notification is redirected'
-                      schema:
-                        type: string
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
                 '308':
-                  description: Permanent Redirect
-                  content:
-                    application/problem+json:
-                      schema:
-                        $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-                  headers:
-                    Location:
-                      description: 'Contains the new Callback URI of the target NF Service Consumer (e.g. AMF) to which the request is redirected'
-                      required: true
-                      schema:
-                        type: string
-                    3gpp-Sbi-Target-Nf-Id:
-                      description: 'Identifier of target NF (service) instance towards which the notification is redirected'
-                      schema:
-                        type: string
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '404':
@@ -1738,6 +1751,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         plmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        smsfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+
 
     AccessAndMobilitySubscriptionData:
       type: object
@@ -1756,6 +1772,7 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
         sharedVnGroupDataIds:
+          description: A map(list of key-value pairs) where GroupId serves as key of SharedDataId
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SharedDataId'
@@ -1873,12 +1890,31 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/PlmnRestriction'
+          minProperties: 1
         wirelineForbiddenAreas:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/WirelineArea'
         wirelineServiceAreaRestriction:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/WirelineServiceAreaRestriction'
+        pcfSelectionAssistanceInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PcfSelectionAssistanceInfo'
+          minItems: 1
+        aerialUeSubInfo:
+          $ref: '#/components/schemas/AerialUeSubscriptionInfo'
+
+    PcfSelectionAssistanceInfo:
+      type: object
+      required:
+        - dnn
+        - singleNssai
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        singleNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
 
     PlmnRestriction:
       type: object
@@ -1905,6 +1941,14 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+
+    ProseSubscriptionData:
+      type: object
+      properties:
+        proseServiceAuth:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProseServiceAuth'
+        nrUePc5Ambr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
 
     CagData:
       type: object
@@ -1937,6 +1981,7 @@ components:
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         subscribedSnssaiInfos:
+          description: A map(list of key-value pairs) where singleNssai serves as key of SnssaiInfo
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SnssaiInfo'
@@ -2003,6 +2048,7 @@ components:
         provisioningTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         additionalSnssaiData:
+          description: A map(list of key-value pairs) where singleNssai serves as key of AdditionalSnssaiData
           type: object
           additionalProperties:
             $ref: '#/components/schemas/AdditionalSnssaiData'
@@ -2081,6 +2127,8 @@ components:
         epdgInd:
           type: boolean
           default: false
+        pcfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
 
     SessionManagementSubscriptionData:
       type: object
@@ -2100,6 +2148,7 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
         sharedVnGroupDataIds:
+          description: A map(list of key-value pairs) where GroupId serves as key of SharedDataId
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SharedDataId'
@@ -2113,11 +2162,13 @@ components:
         sharedTraceDataId:
           $ref: '#/components/schemas/SharedDataId'
         expectedUeBehavioursList:
+          description: A map(list of key-value pairs) where Dnn serves as key of ExpectedUeBehaviourData
           type: object
           additionalProperties:
             $ref: '#/components/schemas/ExpectedUeBehaviourData'
           minProperties: 1
         suggestedPacketNumDlList:
+          description: A map(list of key-value pairs) where Dnn serves as key of SuggestedPacketNumDl
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SuggestedPacketNumDl'
@@ -2180,8 +2231,21 @@ components:
           type: boolean
         dnAaaAddress:
           $ref: '#/components/schemas/IpAddress'
+        additionalDnAaaAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+          minItems: 1
+        dnAaaFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
         iptvAccCtrlInfo:
           type: string
+        ipv4Index:
+          $ref: '#/components/schemas/IpIndex'
+        ipv6Index:
+          $ref: '#/components/schemas/IpIndex'
+        ecsServerAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EcsServerAddr'
 
     NiddInformation:
       type: object
@@ -2361,6 +2425,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         sorTransparentContainer:
           $ref: '#/components/schemas/SorTransparentContainer'
+        ueNotReachable:
+          type: boolean
+          default: false
 
     SorInfo:
       type: object
@@ -2427,21 +2494,27 @@ components:
         sharedSmsMngSubsData:
           $ref: '#/components/schemas/SmsManagementSubscriptionData'
         sharedDnnConfigurations:
+          description: A map(list of key-value pairs) where Dnn, or optionally the Wildcard DNN, serves as key of DnnConfiguration
           type: object
           additionalProperties:
             $ref: '#/components/schemas/DnnConfiguration'
+          minProperties: 1
         sharedTraceData:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
         sharedSnssaiInfos:
+          description: A map(list of key-value pairs) where singleNssai serves as key of SnssaiInfo
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SnssaiInfo'
+          minProperties: 1
         sharedVnGroupDatas:
+          description: A map(list of key-value pairs) where GroupId serves as key of VnGroupData
           type: object
           additionalProperties:
             $ref: '#/components/schemas/VnGroupData'
           minProperties: 1
         treatmentInstructions:
+          description: A map(list of key-value pairs) where JSON pointer pointing to an attribute within the SharedData serves as key of SharedDataTreatmentInstruction
           type: object
           additionalProperties:
             $ref: '#/components/schemas/SharedDataTreatmentInstruction'
@@ -2504,6 +2577,8 @@ components:
       properties:
         requiredAuthnAuthz:
           type: boolean
+        subscribedUeSliceMbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceMbrRm'
 
     AppPortId:
       type: object
@@ -2668,6 +2743,9 @@ components:
           items:
             $ref: '#/components/schemas/LcsMoServiceClass'
           minItems: 1
+        moAssistanceDataTypes:
+          $ref: '#/components/schemas/LcsBroadcastAssistanceTypesData'
+
 
     LcsBroadcastAssistanceTypesData:
       type: object
@@ -2744,6 +2822,8 @@ components:
       properties:
         vplmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     EnhancedCoverageRestrictionData:
       type: object
@@ -2832,6 +2912,17 @@ components:
             type: string
           minItems: 1
 
+    AerialUeSubscriptionInfo:
+      description: Contains the Aerial UE Subscription Information, it at least contains the Aerial UE Indication.
+      type: object
+      required:
+        - aerialUeInd
+      properties:
+        aerialUeInd:
+          $ref: '#/components/schemas/AerialUeIndication'
+        3gppUavId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+
 # SIMPLE TYPES:
 
     UeUsageType:
@@ -2892,6 +2983,12 @@ components:
 
     SorTransparentContainer:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
+
+    IpIndex:
+      description: Represents the IP Index to be sent from UDM to the SMF (its value can be either an integer or a string)
+      anyOf:
+        - type: integer
+        - type: string
 
 # ENUMS:
 
@@ -3004,3 +3101,24 @@ components:
           - MAX
           - MIN
         - type: string
+
+    GpsiType:
+      description: Type of GPSI (MSISDN or External-ID)
+      anyOf:
+        - type: string
+          enum:
+          - MSISDN
+          - EXT_ID
+        - type: string
+
+    AerialUeIndication:
+      anyOf:
+        - type: string
+          enum:
+          - AERIAL_UE_ALLOWED
+          - AERIAL_UE_NOT_ALLOWED
+        - type: string
+      description: >
+        Indicates the Aerial service for the UE is allowed or not allowed, possible values are
+        - AERIAL_UE_ALLOWED: Aerial service for the UE is allowed.
+        - AERIAL_UE_NOT_ALLOWED: Aerial service for the UE is not allowed.

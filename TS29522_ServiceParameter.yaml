@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-service-parameter
-  version: 1.0.1
+  version: 1.1.0-alpha.1
   description: |
     API for AF service paramter
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.522 V16.7.0; 5G System; Network Exposure Function Northbound APIs.
+  description: 3GPP TS 29.522 V17.2.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -287,6 +287,7 @@ components:
           scopes: {}
   schemas: 
     ServiceParameterData:
+      description: Represents an individual Service Parameter subscription resource.
       type: object
       properties:
         afServiceId:
@@ -318,24 +319,124 @@ components:
           $ref: '#/components/schemas/ParameterOverPc5'
         paramOverUu:
           $ref: '#/components/schemas/ParameterOverUu'
+        paramForProSeDd:
+          $ref: '#/components/schemas/ParamForProSeDd'
+        paramForProSeDc:
+          $ref: '#/components/schemas/ParamForProSeDc'
+        paramForProSeU2N:
+          $ref: '#/components/schemas/ParamForProSeU2N'
+        paramForProSeUsageRep:
+          $ref: '#/components/schemas/ParamForProSeUsageRep'
+        paramForProSeServPathSel:
+          $ref: '#/components/schemas/ParamForProSeServPathSel'
+        urspInfluence:
+          type: array
+          items:
+            $ref: '#/components/schemas/UrspRuleRequest'
+          minItems: 1
+          description: Contains the service parameter used to influence the URSP.
         mtcProviderId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     ServiceParameterDataPatch:
+      description: Represents the parameters to request the modification of a service parameter subscription resource.
       type: object
       properties:
         paramOverPc5:
           $ref: '#/components/schemas/ParameterOverPc5Rm'
-        ParamOverUu:
+        paramOverUu:
           $ref: '#/components/schemas/ParameterOverUuRm'
+        paramForProSeDd:
+          $ref: '#/components/schemas/ParamForProSeDdRm'
+        paramForProSeDc:
+          $ref: '#/components/schemas/ParamForProSeDcRm'
+        paramForProSeU2N:
+          $ref: '#/components/schemas/ParamForProSeU2NRm'
+        paramForProSeUsageRep:
+          $ref: '#/components/schemas/ParamForProSeUsageRepRm'
+        paramForProSeServPathSel:
+          $ref: '#/components/schemas/ParamForProSeServPathSelRm'
+        urspInfluence:
+          type: array
+          items:
+            $ref: '#/components/schemas/UrspRuleRequest'
+          minItems: 1
+          description: Contains the service parameter used to influence the URSP.
     ParameterOverPc5:
+      description: Represents configuration parameters for V2X communications over PC5 reference point.
       type: string
     ParameterOverPc5Rm:
+      description: Represents the same as the ParameterOverPc5 data type but with the nullable:true property.
       type: string
       nullable: true
     ParameterOverUu:
+      description: Represents configuration parameters for V2X communications over Uu reference point.
       type: string
     ParameterOverUuRm:
+      description: Represents the same as the ParameterOverUu data type but with the nullable:true property.
       type: string
       nullable: true
+    ParamForProSeDd:
+      description: Represents the service parameters for 5G ProSe direct discovery.
+      type: string
+    ParamForProSeDdRm:
+      description: This data type is defined in the same way as the ParamForProSeDd data type, but with the OpenAPI nullable property set to true.
+      type: string
+      nullable: true
+    ParamForProSeDc:
+      description: Represents the service parameters for 5G ProSe direct communications.
+      type: string
+    ParamForProSeDcRm:
+      description: This data type is defined in the same way as the ParamForProSeDc data type, but with the OpenAPI nullable property set to true.
+      type: string
+      nullable: true
+    ParamForProSeU2N:
+      description: Represents the service parameters for 5G ProSe UE-to-network relay.
+      type: string
+    ParamForProSeU2NRm:
+      description: This data type is defined in the same way as the ParamForProSeU2N data type, but with the OpenAPI nullable property set to true.
+      type: string
+      nullable: true
+    ParamForProSeUsageRep:
+      description: Represents the service parameters for 5G ProSe usage reporting configuration and rules.
+      type: string
+    ParamForProSeUsageRepRm:
+      description: This data type is defined in the same way as the ParamForProSeUsageRep data type, but with the OpenAPI nullable property set to true.
+      type: string
+      nullable: true
+    ParamForProSeServPathSel:
+      description: Represents the service parameters for 5G ProSe service path selection.
+      type: string
+    ParamForProSeServPathSelRm:
+      description: This data type is defined in the same way as the ParamForProSeServPathSel data type, but with the OpenAPI nullable property set to true.
+      type: string
+      nullable: true
+    UrspRuleRequest:
+      description: Contains parameters that can be used to influence the URSP.
+      type: object
+      properties:
+        trafficDesc:
+          $ref: 'TS29122_ResourceManagementOfBdt.yaml#/components/schemas/TrafficDescriptor'
+        routeSelParamSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteSelectionParameterSet'
+          minItems: 1
+          description: Sets of parameters that may be used to influence the Route Selection Descriptors of the URSP.
+    RouteSelectionParameterSet:
+      description: Contains parameters that can be used to influence the Route Selection Descriptors of the URSP.
+      type: object
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        precedence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        spatialValidity:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Indicates where the route selection parameters apply. It may correspond to a geographical area, for example using a geographic zone identifier that is known to the AF and is configured by the operator to correspond to a list of Cell Ids or TAIs.
