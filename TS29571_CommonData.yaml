@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.3'
+  version: '1.2.4'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.7.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.8.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -291,8 +291,6 @@ components:
           minItems: 1
         supportedFeatures:
           $ref: '#/components/schemas/SupportedFeatures'
-        targetScp:
-          $ref: '#/components/schemas/Uri'
         accessTokenError:
           $ref: 'TS29510_Nnrf_AccessToken.yaml#/components/schemas/AccessTokenErr'
         accessTokenRequest:
@@ -474,6 +472,13 @@ components:
           type: string
         value:
           type: string
+    RedirectResponse:
+      type: object
+      properties:
+        cause:
+          type: string
+        targetScp:
+          $ref: '#/components/schemas/Uri'
 
 
 
@@ -1057,6 +1062,9 @@ components:
       properties:
         tai:
           $ref: '#/components/schemas/Tai'
+        ignoreTai:
+          type: boolean
+          default: false
         ecgi:
           $ref: '#/components/schemas/Ecgi'
         ignoreEcgi:
@@ -1619,11 +1627,15 @@ components:
           - sai
         - required:
           - rai
+        - required:
+          - lai
       properties:
         locationNumber:
           type: string
         cgi:
           $ref: '#/components/schemas/CellGlobalId'
+        rai:
+          $ref: '#/components/schemas/RoutingAreaId'
         sai:
           $ref: '#/components/schemas/ServiceAreaId'
         lai:
@@ -1655,9 +1667,10 @@ components:
           $ref: '#/components/schemas/PlmnId'
         lac:
           type: string
+          pattern: '^[A-Fa-f0-9]{4}$'
         cellId:
           type: string
-          pattern: '^[A-Fa-f0-9]$'
+          pattern: '^[A-Fa-f0-9]{4}$'
     ServiceAreaId:
       type: object
       required:
@@ -1669,10 +1682,10 @@ components:
           $ref: '#/components/schemas/PlmnId'
         lac:
           type: string
-          pattern: '^[A-Fa-f0-9]$'
+          pattern: '^[A-Fa-f0-9]{4}$'
         sac:
           type: string
-          pattern: '^[A-Fa-f0-9]$'
+          pattern: '^[A-Fa-f0-9]{4}$'
     LocationAreaId:
       type: object
       required:
@@ -1683,7 +1696,7 @@ components:
           $ref: '#/components/schemas/PlmnId'
         lac:
           type: string
-          pattern: '^[A-Fa-f0-9]$'
+          pattern: '^[A-Fa-f0-9]{4}$'
     RoutingAreaId:
       type: object
       required:
@@ -1695,10 +1708,10 @@ components:
           $ref: '#/components/schemas/PlmnId'
         lac:
           type: string
-          pattern: '^[A-Fa-f0-9]$'
+          pattern: '^[A-Fa-f0-9]{4}$'
         rac:
           type: string
-          pattern: '^[A-Fa-f0-9]$'
+          pattern: '^[A-Fa-f0-9]{2}$'
     DddTrafficDescriptor:
       type: object
       properties:
@@ -2677,6 +2690,38 @@ components:
 #
 
   responses:
+    '307':
+      description: Temporary Redirect
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedirectResponse'
+      headers:
+        Location:
+          description: 'The URI pointing to the resource located on the redirect target'
+          required: true
+          schema:
+            type: string
+        3gpp-Sbi-Target-Nf-Id:
+          description: 'Identifier of target NF (service) instance towards which the request is redirected'
+          schema:
+            type: string
+    '308':
+      description: Permanent Redirect
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedirectResponse'
+      headers:
+        Location:
+          description: 'The URI pointing to the resource located on the redirect target'
+          required: true
+          schema:
+            type: string
+        3gpp-Sbi-Target-Nf-Id:
+          description: 'Identifier of target NF (service) instance towards which the request is redirected'
+          schema:
+            type: string
     '400':
       description: Bad request
       content:
