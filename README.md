@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **March 2021**<br/>
+API version: **June 2021**<br/>
 Release status: **Frozen** <sup>&#x1F512;</sup><br/>
 Other releases: [Rel-17 (Open)](https://github.com/jdegre/5GC_APIs/tree/master), [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -44,7 +44,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_EE.yaml)
 * [Parameter Provisioning](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_PP.yaml)
 ## UDR (Unified Data Repository)
-* [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DataRepository.yaml)
+* [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DR.yaml)
   * [Subscription Data](https://jdegre.github.io/loader.html?yaml=TS29505_Subscription_Data.yaml)
   * [Policy Data](https://jdegre.github.io/loader.html?yaml=TS29519_Policy_Data.yaml)
   * [Exposure Data](https://jdegre.github.io/loader.html?yaml=TS29519_Exposure_Data.yaml)
