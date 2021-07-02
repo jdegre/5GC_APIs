@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **March 2021**<br/>
+API version: **June 2021**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -54,7 +54,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [MT](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_MT.yaml)
 
 ## UDR (Unified Data Repository)
-* [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DataRepository.yaml)
+* [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DR.yaml)
   * [Subscription Data](https://jdegre.github.io/loader.html?yaml=TS29505_Subscription_Data.yaml)
   * [Policy Data](https://jdegre.github.io/loader.html?yaml=TS29519_Policy_Data.yaml)
   * [Exposure Data](https://jdegre.github.io/loader.html?yaml=TS29519_Exposure_Data.yaml)
@@ -90,6 +90,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## PCF (Policy Control Function)
 * [Policy Authorization](https://jdegre.github.io/loader.html?yaml=TS29514_Npcf_PolicyAuthorization.yaml)
+* [Access and Mobility (AM) Policy Authorization](https://jdegre.github.io/loader.html?yaml=TS29534_Npcf_AMPolicyAuthorization.yaml)
 * [Access and Mobility (AM) Policy Control](https://jdegre.github.io/loader.html?yaml=TS29507_Npcf_AMPolicyControl.yaml)
 * [Session Management (SM) Policy Control](https://jdegre.github.io/loader.html?yaml=TS29512_Npcf_SMPolicyControl.yaml)
 * [Background Data Transfer (BDT) Policy Control](https://jdegre.github.io/loader.html?yaml=TS29554_Npcf_BDTPolicyControl.yaml)
@@ -144,7 +145,8 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 ## AAnF (AKMA Anchor Function)
 * [AKMA Anchor Service](https://jdegre.github.io/loader.html?yaml=TS29535_Naanf_AKMA.yaml)
 
-# Northbound APIs
+## 5G DDNMF (Inter-5G Direct Discovery Name Management Function)
+* [Discovery](https://jdegre.github.io/loader.html?yaml=TS29555_N5g-ddnmf_Discovery.yaml)
 
 ## Common API Framework (CAPIF)
 * [Discover Service](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Discover_Service_API.yaml)
@@ -159,6 +161,8 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [API Provider Management](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_API_Provider_Management_API.yaml)
 * [Routing Information](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Routing_Info_API.yaml)
 
+# Northbound APIs
+
 ## NEF (Network Exposure Function)
 * [Traffic Influence](https://jdegre.github.io/loader.html?yaml=TS29522_TrafficInfluence.yaml)
 * [NIDD Configuration Trigger](https://jdegre.github.io/loader.html?yaml=TS29522_NIDDConfigurationTrigger.yaml)
@@ -171,6 +175,9 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [ACS Parameter Provision](https://jdegre.github.io/loader.html?yaml=TS29522_ACSParameterProvision.yaml)
 * [MO LCS Notify](https://jdegre.github.io/loader.html?yaml=TS29522_MoLcsNotify.yaml)
 * [AKMA](https://jdegre.github.io/loader.html?yaml=TS29522_AKMA.yaml)
+* [Time Sync Exposure](https://jdegre.github.io/loader.html?yaml=TS29522_TimeSyncExposure.yaml)
+* [ECS Address Provision](https://jdegre.github.io/loader.html?yaml=TS29522_EcsAddressProvision.yaml)
+* [AM Policy Authorization](https://jdegre.github.io/loader.html?yaml=S29522_AmPolicyAuthorization.yaml)
 
 ## VAE (V2X Application Enabler)
 * [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_MessageDelivery.yaml)
@@ -178,6 +185,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Application Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ApplicationRequirement.yaml)
 * [Dynamic Group](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_DynamicGroup.yaml)
 * [Service Continuity](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ServiceContinuity.yaml)
+* [HD Map Dynamic Information](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_HDMapDynamicInfo.yaml)
 
 ## SEAL (Service Enabler Architecture Layer)
 * [Network Resource Adaptation](https://jdegre.github.io/loader.html?yaml=TS29549_SS_NetworkResourceAdaptation.yaml)
