@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.1'
+  version: '1.1.2'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.
-    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 16.6.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 16.9.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -342,6 +342,9 @@ components:
         - $ref: '#/components/schemas/RoamingStatusReport'
         - $ref: '#/components/schemas/CnTypeChangeReport'
         - $ref: '#/components/schemas/CmInfoReport'
+        - $ref: '#/components/schemas/LossConnectivityReport'
+        - $ref: '#/components/schemas/LocationReport'
+        - $ref: '#/components/schemas/PdnConnectivityStatReport'
 
     ReachabilityForSmsReport:
       type: object
@@ -424,6 +427,49 @@ components:
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
 
+    LossConnectivityReport:
+      type: object
+      required:
+        - lossOfConnectReason
+      properties:
+        lossOfConnectReason:
+          $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/LossOfConnectivityReason'
+
+    LocationReport:
+      type: object
+      required:
+        - location
+      properties:
+        location:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+
+    PdnConnectivityStatReport:
+      type: object
+      required:
+        - pdnConnStat
+      properties:
+        pdnConnStat:
+          $ref: '#/components/schemas/PdnConnectivityStatus'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        pduSeId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Prefixes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+          minItems: 1
+        ipv6Addrs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
+        pduSessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+
+
 # SIMPLE TYPES:
 
     ReferenceId:
@@ -495,4 +541,12 @@ components:
           enum:
           - PERIODIC
           - ON_EVENT_DETECTION
+        - type: string
+
+    PdnConnectivityStatus:
+      anyOf:
+        - type: string
+          enum:
+          - ESTABLISHED
+          - RELEASED
         - type: string

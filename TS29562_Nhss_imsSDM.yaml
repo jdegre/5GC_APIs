@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.3'
+  version: '1.0.4'
   title: 'Nhss_imsSDM'
   description: |
     Nhss Subscriber Data Management Service for IMS.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 16.5.0
+  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 16.6.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.562/'
 
 servers:
@@ -560,17 +560,17 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ImsUeId'
-        - name: servingNode
+        - name: serving-node
           in: query
           description: Indicates that only the stored NF id/address of the serving node(s) is required
           schema:
             $ref: '#/components/schemas/ServingNode'
-        - name: localTime
+        - name: local-time
           in: query
           description: Indicates that only the Local Time Zone information of the location in the visited network where the UE is attached is requested
           schema:
             $ref: '#/components/schemas/LocalTime'
-        - name: currentLocation
+        - name: current-location
           in: query
           description: Indicates whether an active location retrieval has to be initiated by the requested node
           schema:
@@ -794,7 +794,7 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ImsUeId'
-        - name: privateId
+        - name: private-id
           in: query
           description: Private identity
           schema:
@@ -1768,11 +1768,16 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ImsUeId'
-        - name: requestedNodes
+        - name: requested-nodes
           in: query
           description: Indicates the serving node(s) for which the request is applicable.
+          style: form
+          explode: false
           schema:
-            $ref: '#/components/schemas/RequestedNodes'
+            type: array
+            items:
+              $ref: '#/components/schemas/RequestedNode'
+            minItems: 1    
         - name: private-identity
           in: query
           description: IMS Private Identity
@@ -2672,14 +2677,6 @@ components:
         scscfName:
           type: string
 
-    RequestedNodes:
-      type: array
-      minItems: 1
-      uniqueItems: true
-      properties:
-        requestedNode:
-          $ref: '#/components/schemas/RequestedNode'
-
     PsLocation:
       type: object
       oneOf:
@@ -2751,7 +2748,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         amfLocation:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NrLocation'
-        SmsfAddress:
+        smsfAddress:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         timeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
