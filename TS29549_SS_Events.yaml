@@ -5,9 +5,9 @@ info:
     API for SEAL Events management.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.1.0-alpha.2"
+  version: "1.1.0-alpha.3"
 externalDocs:
-  description: 3GPP TS 29.549 V17.1.0 Service Enabler Architecture Layer for Verticals (SEAL); Application Programming Interface (API) specification; Stage 3.
+  description: 3GPP TS 29.549 V17.2.0 Service Enabler Architecture Layer for Verticals (SEAL); Application Programming Interface (API) specification; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 security:
   - {}
@@ -239,6 +239,12 @@ components:
             $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ProfileDoc'
           minItems: 1
           description: Updated profile information associated with VAL Users or VAL UEs.
+        msgFltrs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageFilter'
+          minItems: 1
+          description: The message filter information for various member VAL User or UEs of the VAL group.
       required:
         - eventId
     VALGroupFilter:
@@ -280,6 +286,34 @@ components:
       required:
         - locInfo
         - valTgtUe
+    MessageFilter:
+      description: Represents the message filters applicable to a VAL User ID or VAL UE ID.
+      type: object
+      properties:
+        reqUe:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+        tgtUe:
+          type: array
+          items:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+          minItems: 1
+          description: List of VAL User or UE IDs whose message to be sent.
+        maxMsgs:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        scheds:
+          type: array
+          items:
+            $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+          minItems: 1
+          description: Time frame associated with total number of messages.
+        msgTypes:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: List of message types to be sent to VAL UE.
+      required:
+        - reqUe
     SEALEvent:
       anyOf:
       - type: string

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.1'
+  version: '1.2.0-alpha.2'
   title: 'LMF Location'
   description: |
     LMF Location Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.572 V17.1.0; 5G System; Location Management Services; Stage 3
+  description: 3GPP TS 29.572 V17.2.0; 5G System; Location Management Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
 
 servers:
@@ -300,6 +300,20 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        uePositioningCapList:
+          description: Indicates the positioning capabilities supported by the UE.
+          type: array
+          items:
+            $ref: '#/components/schemas/UePositioningCapabilities'
+          minItems: 1
+        tnapId:
+          description: This IE shall contain the TNAP Identifier
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TnapId'
+        twapId:
+          description: This IE shall contain the TWAP Identifier
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TwapId'
+        ueCountryDetInd:
+          type: boolean
 
     LocationData:
       description: Information within Determine Location Response.
@@ -339,6 +353,18 @@ components:
           $ref: '#/components/schemas/BarometricPressure'
         servingLMFIdentification:
           $ref: '#/components/schemas/LMFIdentification'
+        uePositioningCapList:
+          description: Indicates the positioning capabilities supported by the UE.
+          type: array
+          items:
+            $ref: '#/components/schemas/UePositioningCapabilities'
+          minItems: 1
+        ueAreaInd:
+          $ref: '#/components/schemas/UeAreaIndication'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        achievedQos:
+          $ref: '#/components/schemas/MinorLocationQoS'
 
     GeographicArea:
       description: Geographic area specified by different shape.
@@ -518,6 +544,22 @@ components:
         - $ref: '#/components/schemas/Local2dPointUncertaintyEllipse'
         - $ref: '#/components/schemas/Local3dPointUncertaintyEllipsoid'
 
+    UeAreaIndication:
+      description: Indicates area (country or international area) where UE is located 
+      type: object
+      oneOf:
+        - required:
+          - country
+        - required:
+          - internationalAreaInd
+      properties:
+        country:
+          description: Indicates country where UE is located 
+          type: string
+        internationalAreaInd:
+          description: Indicates international area indication if UE is located in international area 
+          type: boolean
+          default: false
 
     Local2dPointUncertaintyEllipse:
       description: Local 2D point with uncertainty ellipse
@@ -630,6 +672,12 @@ components:
           type: boolean
         responseTime:
           $ref: '#/components/schemas/ResponseTime'
+        minorLocQoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinorLocationQoS'
+          minItems: 1
+          maxItems: 2
         lcsQosClass:
           $ref: '#/components/schemas/LcsQosClass'
 
@@ -976,6 +1024,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        uePositioningCapList:
+          description: Indicates the positioning capabilities supported by the UE.
+          type: array
+          items:
+            $ref: '#/components/schemas/UePositioningCapabilities'
+          minItems: 1
 
     EventReportMessage:
       description: Indicates an event report message.
@@ -1054,6 +1108,8 @@ components:
           $ref: '#/components/schemas/VelocityEstimate'
         altitude:
           $ref: '#/components/schemas/Altitude'
+        achievedQos:
+          $ref: '#/components/schemas/MinorLocationQoS'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
@@ -1067,6 +1123,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         connectivitystate:
           $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/CmState'
+
+    MinorLocationQoS:
+      description: Contain Minor Location QoS.
+      type: object
+      properties:
+        hAccuracy:
+          $ref: '#/components/schemas/Accuracy'
+        vAccuracy:
+          $ref: '#/components/schemas/Accuracy'
+
 #
 #
 # SIMPLE TYPES
@@ -1223,6 +1289,13 @@ components:
       type: integer
       minimum: 1
       maximum: 8640000
+
+    UePositioningCapabilities:
+      description: Positioning capabilities supported by the UE.
+      type: string
+      minLength: 1
+      maxLength: 255
+
 #
 # ENUMS
 #
@@ -1442,6 +1515,7 @@ components:
           enum:
             - BEST_EFFORT
             - ASSURED
+            - MULTIPLE_QOS
         - type: string
 
     UeLocationServiceInd:

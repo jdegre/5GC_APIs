@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.2'
+  version: '1.3.0-alpha.3'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 17.2.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 17.3.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -271,6 +271,7 @@ components:
       type: string
       description: String with format partial-time or full-time as defined in clause 5.6 of IETF RFC 3339. Examples, 20:15:00, 20:15:00-08:00 (for 8 hours behind UTC).
     EmptyObject:
+      description: Empty JSON object { }, it is defined with the keyword additionalProperties false
       type: object
       additionalProperties: false
 #
@@ -337,19 +338,16 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/Uri'
-          description: A URI reference according to IETF RFC 3986 that identifies the problem type.
         title:
           type: string
-          description: A short, human-readable summary of the problem type.
         status:
           type: integer
-          description: The HTTP status code for this occurrence of the problem.
         detail:
           type: string
           description: A human-readable explanation specific to this occurrence of the problem.
         instance:
           $ref: '#/components/schemas/Uri'
-          description: A URI reference that identifies the specific occurrence of the problem.
+
         cause:
           type: string
           description: A machine-readable application error cause specific to this occurrence of the problem. This IE should be present and provide application-related error information, if available.
@@ -358,19 +356,14 @@ components:
           items:
             $ref: '#/components/schemas/InvalidParam'
           minItems: 1
-          description: Description of invalid parameters, for a request rejected due to invalid parameters.
         supportedFeatures:
           $ref: '#/components/schemas/SupportedFeatures'
-          description: Features supported by the NF Service Producer.
         accessTokenError:
           $ref: 'TS29510_Nnrf_AccessToken.yaml#/components/schemas/AccessTokenErr'
-          description: It contain the Access Token Error payload received from the NRF.
         accessTokenRequest:
           $ref: 'TS29510_Nnrf_AccessToken.yaml#/components/schemas/AccessTokenReq'
-          description: It contain the Access Token Request that was sent by the SCP.
         nrfId:
           type: string
-          description: It contain the Identity (i.e. FQDN) of the NRF that rejected the access token request.
     Link:
       type: object
       properties:
@@ -388,7 +381,6 @@ components:
       type: object
       properties:
         op:
-          $ref: '#/components/schemas/PatchOperation'
           description: indicates the patch operation as defined in IETF RFC 6902 to be performed on the resource.
         path:
           type: string
@@ -400,15 +392,14 @@ components:
       required:
         - op
         - path
+      description: it contains information on data to be changed.
     LinksValueSchema:
       oneOf:
         - type: array
           items:
             $ref: '#/components/schemas/Link'
-          description: Array of links
           minItems: 1
         - $ref: '#/components/schemas/Link'
-          description: contains a link
       description: A list of mutually exclusive alternatives of 1 or more links
     SelfLink:
       type: object
@@ -429,12 +420,12 @@ components:
           description: A human-readable reason, e.g. "must be a positive integer". In cases involving failed operations in a PATCH request, the reason string should identify the operation that failed using the operation's array index to assist in correlation of the invalid parameter with the failed operation, e.g." Replacement value invalid for attribute (failed operation index= 4)"
       required:
         - param
+      description: It contains an invalid parameter and a related description.
     ChangeItem:
       type: object
       properties:
         op:
           $ref: '#/components/schemas/ChangeType'
-          description: Indicates the operation to be performed on the resource
         path:
           type: string
           description: contains a JSON pointer value (as defined in IETF RFC 6901) that references a target location within the resource on which the change has been applied.
@@ -446,6 +437,7 @@ components:
       required:
         - op
         - path
+      description: It contains data which need to be changed.
     NotifyItem:
       type: object
       required:
@@ -454,13 +446,11 @@ components:
       properties:
         resourceId:
           $ref: '#/components/schemas/Uri'
-          description: Contains the URI of the resource which has been changed.
         changes:
           type: array
           items:
             $ref: '#/components/schemas/ChangeItem'
           minItems: 1
-          description: Contains the changes which have been applied on the resource identified by the resourceId attribute.
       description: Indicates changes on a resource.
     ComplexQuery:
       oneOf:
@@ -512,6 +502,7 @@ components:
           minItems: 1
       description: During the processing of dnfUnits attribute, all the members in the array shall be interpreted as logically concatenated with logical "OR".
     Atom:
+      description: contains a search parameter and its positive or negative content.
       type: object
       required:
         - attr
@@ -549,6 +540,7 @@ components:
           description: A human-readable reason providing details on the reported modification failure. The reason string should identify the operation that failed using the operation's array index to assist in correlation of the invalid parameter with the failed operation, e.g. "Replacement value invalid for attribute (failed operation index= 4)".
       description: indicates performed modivications.
     HalTemplate:
+      description: Hypertext Application Language (HAL) template contains the extended 3GPP hypermedia format.
       type: object
       required:
         - method
@@ -558,7 +550,6 @@ components:
           description: A human-readable string that can be used to identify this template
         method:
           $ref: '#/components/schemas/HttpMethod'
-          description: The HTTP method that should be applied for the corresponding link. If the value is not understood, the value shall be treated as an HTTP GET
         contentType:
           type: string
           description: The media type that should be used for the corresponding request. If the attribute is missing, or contains an unrecognized value, the client should act as if the contentType is set to "application/json".
@@ -569,6 +560,7 @@ components:
           minItems: 1
           description: The properties that should be included in the body of the corresponding request. If the contentType attribute is set to "application/json", then this attribute describes the attributes of the JSON object of the body.
     Property:
+      description: If the contentType attribute is set to "application/json", then this attribute describes the attributes of the JSON object of the body.
       type: object
       required:
         - name
@@ -586,6 +578,7 @@ components:
           type: string
           description: The property value. When present, it shall be a valid JSON string.
     RedirectResponse:
+      description: The response shall include a Location header field containing a different URI (pointing to a different URI of an other service instance), or the same URI if a request is redirected to the same target resource via a different SCP.
       type: object
       properties:
         cause:
@@ -719,10 +712,8 @@ components:
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnIdNid'
-          description: PLMN Identity and Network Identity
         amfId:
           $ref: '#/components/schemas/AmfId'
-          description: AMF Identity
       required:
         - plmnId
         - amfId
@@ -818,6 +809,7 @@ components:
       description: This represents the 5GMM cause code values as specified in 3GPP TS 24.501.
     AmfName:
       type: string
+      description: FQDN (Fully Qualified Domain Name) of the AMF as defined in clause 28.3.2.5 of 3GPP TS 23.003
     AreaCode:
       type: string
       description: Values are operator specific.
@@ -889,6 +881,15 @@ components:
     Gci:
       type: string
       description: Global Cable Identifier uniquely identifying the connection between the 5G-CRG or FN-CRG to the 5GS. See clause 28.15.4 of 3GPP TS 23.003. This shall be encoded as a string per clause 28.15.4 of 3GPP TS 23.003, and compliant with the syntax specified in clause 2.2 of IETF RFC 7542 for the username part of a NAI. The GCI value is specified in CableLabs WR-TR-5WWC-ARCH.
+
+    NsSrg:
+      type: string
+      description: String providing a Network Slice Simultaneous Registration Group. See clause 5.15.12 of 3GPP TS 23.501
+    NsSrgRm:
+      type: string
+      nullable: true
+      description: String providing a Network Slice Simultaneous Registration Group with the OpenAPI "nullable= true" property. See clause 5.15.12 of 3GPP TS 23.501
+
 
 #
 # ENUMERATED DATA TYPES
@@ -1174,6 +1175,7 @@ components:
       anyOf:
         - $ref: '#/components/schemas/DlDataDeliveryStatus'
         - $ref: '#/components/schemas/NullValue'
+      description: This data type is defined in the same way as the " DlDataDeliveryStatus " data type, but with the OpenAPI "nullable= true" property.
     AuthStatus:
       anyOf:
       - type: string
@@ -1230,6 +1232,22 @@ components:
         - DEACTIVATE: The event notification is deactivated and shall be muted. The available event(s) shall be stored.
         - RETRIEVAL: The event notification shall be sent to the NF service consumer(s), after that, is muted again.
 
+    TransportProtocol:
+      anyOf:
+      - type: string
+        enum:
+          - UDP
+          - TCP
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - UDP: User Datagram Protocol.
+        - TCP: Transmission Control Protocol.
+
 
 #
 # STRUCTURED DATA TYPES
@@ -1242,13 +1260,10 @@ components:
       properties:
         5qi:
           $ref: '#/components/schemas/5Qi'
-          description: Default 5G QoS identifier see 3GPP TS 23.501 clause 5.7.2.7
         arp:
           $ref: '#/components/schemas/Arp'
-          description: Default Allocation and Retention Priority see 3GPP TS23.501 clause 5.7.2.7
         priorityLevel:
           $ref: '#/components/schemas/5QiPriorityLevel'
-          description: Defines the 5QI Priority Level When present, it contains the 5QI Priority Level value that overrides the standardized or pre-configured value as described in 3GPP TS 23.501
       description: Provides the subsribed 5QI and the ARP, it may contain the priority level.
 
     Snssai:
@@ -1277,10 +1292,8 @@ components:
       properties:
         mcc:
           $ref: '#/components/schemas/Mcc'
-          description: Mobile Country Code
         mnc:
           $ref: '#/components/schemas/Mnc'
-          description: Mobile Network Code
       description: When PlmnId needs to be converted to string (e.g. when used in maps as key), the string shall be composed of three digits "mcc" followed by "-" and two or three digits "mnc".
       required:
         - mcc
@@ -1291,17 +1304,15 @@ components:
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "PlmnId" data type, but with the OpenAPI "nullable= true" property.
     Tai:
+      description: Contains the tracking area identity as described in 3GPP 23.003
       type: object
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnId'
-          description: PLMN Identity
         tac:
           $ref: '#/components/schemas/Tac'
-          description: Tracking Area Code
         nid:
           $ref: '#/components/schemas/Nid'
-          description: Network Identifier, shall be present in case of SNPN, PlmnId together with Nid indicates the identity of the SNPN to which the TA belongs to.
       required:
         - plmnId
         - tac
@@ -1311,6 +1322,7 @@ components:
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "Tai" data type, but with the OpenAPI "nullable= true" property.
     Ecgi:
+      description: Contains the ECGI (E-UTRAN Cell Global Identity), as described in 3GPP 23.003
       type: object
       properties:
         plmnId:
@@ -1331,6 +1343,7 @@ components:
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "Ecgi" data type, but with the OpenAPI "nullable= true" property.
     Ncgi:
+      description: Contains the NCGI (NR Cell Global Identity), as described in 3GPP 23.003
       type: object
       properties:
         plmnId:
@@ -1355,13 +1368,10 @@ components:
       properties:
         eutraLocation:
           $ref: '#/components/schemas/EutraLocation'
-          description: E-UTRA user location
         nrLocation:
           $ref: '#/components/schemas/NrLocation'
-          description: NR user location
         n3gaLocation:
           $ref: '#/components/schemas/N3gaLocation'
-          description: Non-3GPP access user location
         utraLocation:
           $ref: '#/components/schemas/UtraLocation'
         geraLocation:
@@ -1369,17 +1379,16 @@ components:
       description: At least one of eutraLocation, nrLocation and n3gaLocation shall be present. Several of them may be present
 
     EutraLocation:
+      description: Contains the E-UTRA user location.
       type: object
       properties:
         tai:
           $ref: '#/components/schemas/Tai'
-          description: Tracking Area Identity
         ignoreTai:
           type: boolean
           default: false
         ecgi:
           $ref: '#/components/schemas/Ecgi'
-          description: E-UTRA Cell Identity
         ignoreEcgi:
           type: boolean
           default: false
@@ -1410,10 +1419,9 @@ components:
           description: Refers to Calling Geodetic Location. See ITU-T Recommendation Q.763 (1999) [24] clause 3.88.2. Only the description of an ellipsoid point with uncertainty circle is allowed to be used.
         globalNgenbId:
           $ref: '#/components/schemas/GlobalRanNodeId'
-          description: It indicates the global identity of the ng-eNodeB in which the UE is currently located. See  3GPP TS 38.413 clause 9.3.1.8.
+       
         globalENbId:
           $ref: '#/components/schemas/GlobalRanNodeId'
-          description: It indicates the global identity of the eNodeB in which the UE is currently located. See 3GPP TS 36.413 clause 9.2.1.37. Either the "globalNgenbId" attribute or the "globalENbId" attribute shall be included in the "EutraLocation" data type.
       required:
         - tai
         - ecgi
@@ -1423,14 +1431,13 @@ components:
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "EutraLocation" data type, but with the OpenAPI "nullable= true" property.
     NrLocation:
+      description: Contains the NR user location.
       type: object
       properties:
         tai:
           $ref: '#/components/schemas/Tai'
-          description: Tracking Area Identity.
         ncgi:
           $ref: '#/components/schemas/Ncgi'
-          description: NR Cell Identity.
         ageOfLocationInformation:
           type: integer
           minimum: 0
@@ -1442,7 +1449,6 @@ components:
             See 3GPP TS 29.002 clause 17.7.8.
         ueLocationTimestamp:
           $ref: '#/components/schemas/DateTime'
-          description: The value represents the UTC time when the UeLocation information was acquired
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
@@ -1453,7 +1459,6 @@ components:
           description: Refers to Calling Geodetic Location. See ITU-T Recommendation Q.763 (1999) [24] clause 3.88.2. Only the description of an ellipsoid point with uncertainty circle is allowed to be used.
         globalGnbId:
           $ref: '#/components/schemas/GlobalRanNodeId'
-          description: It indicates the global identity of the gNodeB in which the UE is currently located. See 3GPP TS 38.413 clause 9.3.1.6.
       required:
         - tai
         - ncgi
@@ -1463,6 +1468,7 @@ components:
         - $ref: '#/components/schemas/NullValue'
      description: This data type is defined in the same way as the "NrLocation" data type, but with the OpenAPI "nullable= true" property.
     N3gaLocation:
+      description: Contains the Non-3GPP access user location.
       type: object
       properties:
         n3gppTai:
@@ -1481,6 +1487,9 @@ components:
         portNumber:
           $ref: '#/components/schemas/Uinteger'
           description: UDP or TCP source port number. It shall be present if the UE is accessing the 5GC via a trusted or untrusted non-3GPP access and NAT is detected.
+        protocol:
+          $ref: '#/components/schemas/TransportProtocol'
+          description: transport protocol used by the UE to access the core network via a trusted or untrusted non-3GPP access and NAT is detected.
         tnapId:
           $ref: '#/components/schemas/TnapId'
           description: This IE shall contain the TNAP Identifier, see clause 5.6.2 of 3GPP TS 23.501.
@@ -1500,6 +1509,7 @@ components:
           $ref: '#/components/schemas/Gci'
           description: This IE shall contain the Global Cable Identifier. It shall be present for the N5GC device accessing the 5GC via wireline access network. See clause 4.10a of 3GPP TS 23.316.
     UpSecurity:
+      description: Contains Userplain security information.
       type: object
       properties:
         upIntegr:
@@ -1517,6 +1527,7 @@ components:
         - $ref: '#/components/schemas/NullValue'
      description: This data type is defined in the same way as the "UpSecurity" data type, but with the OpenAPI "nullable= true" property.
     NgApCause:
+      description: Represents the NGAP cause.
       type: object
       properties:
         group:
@@ -1536,11 +1547,11 @@ components:
         - group
         - value
     BackupAmfInfo:
+      description: Provides details of the Backup AMF.
       type: object
       properties:
         backupAmf:
           $ref: '#/components/schemas/AmfName'
-          description: This IE shall contain the AMF name of the backup AMF related to the specific GUAMI(s) (see clause 5.21.2.3 of 3GPP TS 23.501 [8]). If no GUAMI is included in BackupAmfinfo, the AMF name of the backup AMF is related to all the GUAMI(s) supported by the AMF.
         guamiList:
           type: array
           items:
@@ -1550,6 +1561,7 @@ components:
       required:
         - backupAmf
     RefToBinaryData:
+      description: This parameter provides information about the referenced binary body data.
       type: object
       properties:
         contentId:
@@ -1567,10 +1579,8 @@ components:
       properties:
         dnai:
           $ref: '#/components/schemas/Dnai'
-          description: Identifies the location of the application
         routeInfo:
           $ref: '#/components/schemas/RouteInformation'
-          description: Includes the traffic routing information.
         routeProfId:
           type: string
           nullable: true
@@ -1599,6 +1609,7 @@ components:
       nullable: true
       description: At least one of the "ipv4Addr" attribute and the "ipv6Addr" attribute shall be included in the "RouteInformation" data type.
     Area:
+      description: Provides area information.
       type: object
       oneOf:
         - required:
@@ -1611,11 +1622,10 @@ components:
           items:
             $ref: '#/components/schemas/Tac'
           minItems: 1
-          description: List of TACs; shall be present if and only if areaCode is absent.
         areaCode:
             $ref: '#/components/schemas/AreaCode'
-            description: Area Code; shall be present if and only if tacs is absent
     ServiceAreaRestriction:
+      description: Provides information about allowed or not allowed areas.
       type: object
       properties:
         restrictionType:
@@ -1783,28 +1793,20 @@ components:
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnId'
-          description: Indicates the identity of the PLMN that the RAN node belongs to.
         n3IwfId:
           $ref: '#/components/schemas/N3IwfId'
-          description: This IE shall be included if the AN node represents a N3IWF. When present, this IE shall contain the identifier of the N3IWF
         gNbId:
           $ref: '#/components/schemas/GNbId'
-          description: This IE shall be included if the RAN Node Id represents a gNB. When present, this IE shall contain the identifier of the gNB.
         ngeNbId:
           $ref: '#/components/schemas/NgeNbId'
-          description: This IE shall be included if the RAN Node Id represents a NG-eNB. When present, this IE shall contain the identifier of an NG-eNB.
         wagfId:
           $ref: '#/components/schemas/WAgfId'
-          description: This IE shall be included if the AN node represents a W-AGF. When present, this IE shall contain the identifier of the W-AGF.
         tngfId:
           $ref: '#/components/schemas/TngfId'
-          description: This IE shall be included if the AN node represents a TNGF. When present, this IE shall contain the identifier of the TNGF.
         nid:
           $ref: '#/components/schemas/Nid'
-          description: Network Identifier shall be present in case of SNPN, PlmnId together with Nid indicates the identity of the SNPN to which the RanNode belongs to.
         eNbId:
           $ref: '#/components/schemas/ENbId'
-          description: This IE shall be included if the RAN Node Id represents an eNB. When present, this IE shall contain the identifier of an eNB.
       oneOf:
         - required: [ n3IwfId ]
         - required: [ gNbId ]
@@ -1816,6 +1818,7 @@ components:
       required:
         - plmnId
     GNbId:
+      description: Provides the G-NB identifier.
       type: object
       properties:
         bitLength:
@@ -1833,6 +1836,7 @@ components:
         - bitLength
         - gNBValue
     AtsssCapability:
+      description: Containes Capability to support procedures related to Access Traffic Steering, Switching, Splitting.
       type: object
       properties:
         atsssLL:
@@ -1857,6 +1861,7 @@ components:
             true: Supported
             false (default): Not Supported
     PlmnIdNid:
+      description: Contains the serving core network operator PLMN ID and, for an SNPN, the NID that together with the PLMN ID identifies the SNPN.
       type: object
       required:
         - mcc
@@ -1864,13 +1869,10 @@ components:
       properties:
         mcc:
           $ref: '#/components/schemas/Mcc'
-          description: Mobile Country Code
         mnc:
           $ref: '#/components/schemas/Mnc'
-          description: Mobile Network Code
         nid:
           $ref: '#/components/schemas/Nid'
-          description: Network Identity; shall be present if PlmnIdNid identifies an SNPN; otherwise shall be absent.
 
     PlmnIdNidRm:
       anyOf:
@@ -1879,6 +1881,7 @@ components:
       description: This data type is defined in the same way as the "PlmnIdNid" data type, but with the OpenAPI "nullable= true" property.
 
     SmallDataRateStatus:
+      description: It indicates theSmall Data Rate Control Status
       type: object
       properties:
         remainPacketsUl:
@@ -1891,7 +1894,6 @@ components:
           description: When present it shall contain the number of packets the AF is allowed to send downlink in the given time unit for the given PDU session (see clause 5.31.14.3 of 3GPP TS 23.501
         validityTime:
           $ref: '#/components/schemas/DateTime'
-          description: When present, it shall indicate the period of time during which the small data rate control status will remain valid (see clause 5.31.14.3 of 3GPP TS 23.501.
         remainExReportsUl:
           type: integer
           minimum: 0
@@ -1901,13 +1903,13 @@ components:
           minimum: 0
           description: When present, it shall indicate number of additional exception reports the AF is allowed to send downlink in the given time unit for the given PDU session (see clause 5.31.14.3 in 3GPP TS 23.501
     HfcNodeId:
+      description: REpresents the HFC Node Identifer received over NGAP.
       type: object
       required:
         - hfcNId
       properties:
         hfcNId:
           $ref: '#/components/schemas/HfcNId'
-          description: HFC Node Id
     HfcNodeIdRm:
      anyOf:
         - $ref: '#/components/schemas/HfcNodeId'
@@ -1921,26 +1923,21 @@ components:
           items:
             $ref: '#/components/schemas/Gli'
           minItems: 1
-          description: List of Global Line Identifiers, for a 5G-BRG accessing the 5GC via wireline access network
         hfcNIds:
           type: array
           items:
             $ref: '#/components/schemas/HfcNId'
           minItems: 1
-          description: List of HFC Node Ids, for a 5G-CRG/FN-CRG is accessing the 5GC via wireline access network.
         areaCodeB:
           $ref: '#/components/schemas/AreaCode'
-          description: Area Code for for 5G-BRG accessing via wireline access network.
         areaCodeC:
           $ref: '#/components/schemas/AreaCode'
-          description: Area Code for 5G-CRG/FN-CRG is accessing via wireline access network.
       description: One and only one of the "globLineIds", "hfcNIds", "areaCodeB" and "areaCodeC" attributes shall be included in a WirelineArea data structure
     WirelineServiceAreaRestriction:
       type: object
       properties:
         restrictionType:
           $ref: '#/components/schemas/RestrictionType'
-          description: string "ALLOWED_AREAS" or "NOT_ALLOWED_AREAS"
         areas:
           type: array
           items:
@@ -1954,6 +1951,7 @@ components:
           The "restrictionType" attribute and the "areas" attribute shall be either both present or absent.
           The empty array of areas is used when service is allowed/restricted nowhere.
     ApnRateStatus:
+      description: Contains the APN rate control status e.g. of the AMF.
       type: object
       properties:
         remainPacketsUl:
@@ -1966,7 +1964,6 @@ components:
           description: When present, it shall contain the number of packets the UE is allowed to send uplink in the given time unit for the given APN (all PDN connections of the UE to this APN see clause 4.7.7.3 in 3GPP TS 23.401.
         validityTime:
           $ref: '#/components/schemas/DateTime'
-          description: When present, it shall indicate the period of time during which the APN rate control status will remain valid.
         remainExReportsUl:
           type: integer
           minimum: 0
@@ -1976,6 +1973,7 @@ components:
           minimum: 0
           description: When present, it shall indicate the number of additional exception reports the AF is allowed to send downlink in the given time unit for the given APN (all PDN connections of the UE to this APN, see clause 4.7.7.3 in 3GPP TS 23.401.
     ScheduledCommunicationTime:
+      description: Identifies time and day of the week when the UE is available for communication.
       type: object
       properties:
         daysOfWeek:
@@ -1987,10 +1985,8 @@ components:
           description: Identifies the day(s) of the week. If absent, it indicates every day of the week.
         timeOfDayStart:
           $ref: '#/components/schemas/TimeOfDay'
-          description: Identifies the start time of the day.
         timeOfDayEnd:
           $ref: '#/components/schemas/TimeOfDay'
-          description: Identifies the end time of the day
     ScheduledCommunicationTimeRm:
       anyOf:
         - $ref: '#/components/schemas/ScheduledCommunicationTime'
@@ -2024,41 +2020,39 @@ components:
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "BatteryIndication" data type, but with the OpenAPI "nullable= true" property.
     AcsInfo:
+      description: The ACS information for the 5G-RG is defined in BBF TR-069 [42] or in BBF TR-369
       type: object
       properties:
         acsUrl:
           $ref: '#/components/schemas/Uri'
-          description: This IE may contain the URL of the ACS, see BBF TR-069 or BBF TR-369.
         acsIpv4Addr:
           $ref: '#/components/schemas/Ipv4Addr'
           description: This IE may contain the IPv4 address of the ACS, see BBF TR-069 or BBF TR-369.
         acsIpv6Addr:
           $ref: '#/components/schemas/Ipv6Addr'
-          description: This IE may contain the IPv6 address of the ACS, see BBF TR-069 or BBF TR-369
     AcsInfoRm:
       anyOf:
         - $ref: '#/components/schemas/AcsInfo'
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "AcsInfo" data type, but with the OpenAPI "nullable= true" property.
     NrV2xAuth:
+      description: Contains NR V2X services authorized information.
       type: object
       properties:
         vehicleUeAuth:
           $ref: '#/components/schemas/UeAuth'
-          description: This IE shall be present if available. When present, it shall indicate whether the UE is authorized as Vehicle UE.
         pedestrianUeAuth:
           $ref: '#/components/schemas/UeAuth'
-          description: This IE shall be present if available. When present, it shall indicate whether the UE is authorized as Pedestrian UE.
     LteV2xAuth:
+      description: Contains LTE V2X services authorized information.
       type: object
       properties:
         vehicleUeAuth:
           $ref: '#/components/schemas/UeAuth'
-          description: This IE shall be present if available. When present, it shall indicate whether the UE is authorized as Vehicle UE.
         pedestrianUeAuth:
           $ref: '#/components/schemas/UeAuth'
-          description: This IE shall be present if available. When present, it shall indicate whether the UE is authorized as Pedestrian UE.
     Pc5QoSPara:
+      description: Contains policy data on the PC5 QoS parameters.
       type: object
       required:
         - pc5QosFlowList
@@ -2067,33 +2061,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Pc5QosFlowItem'
-          description: This IE shall contain the set of PC5 flow(s).
         pc5LinkAmbr:
           $ref: '#/components/schemas/BitRate'
-          description: This IE shall be present if available. When present, it shall represent the PC5 Link Aggregated Bit Rates for all the Non-GBR QoS Flows (see clause 5.4.2.3 of 3GPP TS 23.287.
     Pc5QosFlowItem:
+      description: Contains a PC5 QOS flow.
       type: object
       required:
         - pqi
       properties:
         pqi:
           $ref: '#/components/schemas/5Qi'
-          description: PQI is a special 5QI (see clause 5.4.2.1 of 3GPP TS 23.287.
+
         pc5FlowBitRates:
           $ref: '#/components/schemas/Pc5FlowBitRates'
-          description: When present, it shall represent the PC5 Flow Bit Rates (see clause 5.4.2.2 of 3GPP TS 23.287.
         range:
           $ref: '#/components/schemas/Uinteger'
-          description: When present, it shall represent the Range in the unit of meters (see clause 5.4.2.4 of 3GPP TS 23.287.
     Pc5FlowBitRates:
+      description: it shall represent the PC5 Flow Bit Rates
       type: object
       properties:
         guaFbr:
           $ref: '#/components/schemas/BitRate'
-          description: When present, it shall contain the guaranteed Bit Rate for the PC5 QoS flow.
         maxFbr:
           $ref: '#/components/schemas/BitRate'
-          description: When present, it shall contain the maximum Bit Rate for the PC5 QoS flow.
     UtraLocation:
       type: object
       oneOf:
@@ -2107,16 +2097,12 @@ components:
       properties:
         cgi:
           $ref: '#/components/schemas/CellGlobalId'
-          description: Cell Global Identification. See 3GPP TS 23.003, clause 4.3.1
         sai:
           $ref: '#/components/schemas/ServiceAreaId'
-          description: Service Area Identifier. See 3GPP TS 23.003, clause12.5.
         lai:
           $ref: '#/components/schemas/LocationAreaId'
-          description: Location area identification. See 3GPP TS 23.003, clause 4.1
         rai:
           $ref: '#/components/schemas/RoutingAreaId'
-          description: Routing Area Identification. See 3GPP TS 23.003, clause 4.2.
         ageOfLocationInformation:
           type: integer
           minimum: 0
@@ -2124,7 +2110,6 @@ components:
           description: The value represents the elapsed time in minutes since the last network contact of the mobile station.  Value "0" indicates that the location information was obtained after a successful paging procedure for Active Location Retrieval when the UE is in idle mode or after a successful location reporting procedure the UE is in connected mode.Any other value than "0" indicates that the location information is the last known one.See 3GPP TS 29.002 clause 17.7.8.
         ueLocationTimestamp:
           $ref: '#/components/schemas/DateTime'
-          description: The value represents the UTC time when the UeLocation information was acquired.
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
@@ -2151,15 +2136,12 @@ components:
           description: Location number within the PLMN. See 3GPP TS 23.003, clause 4.5.
         cgi:
           $ref: '#/components/schemas/CellGlobalId'
-          description: Cell Global Identification. See 3GPP TS 23.003, clause 4.3.1.
         rai:
           $ref: '#/components/schemas/RoutingAreaId'
         sai:
           $ref: '#/components/schemas/ServiceAreaId'
-          description: Service Area Identifier. See 3GPP TS 23.003, clause 12.5.
         lai:
           $ref: '#/components/schemas/LocationAreaId'
-          description: Location Area identification. See 3GPP TS 23.003, clause 4.1.
         vlrNumber:
           type: string
           description: VLR number. See 3GPP TS 23.003 clause 5.1.
@@ -2173,7 +2155,6 @@ components:
           description: The value represents the elapsed time in minutes since the last network contact of the mobile station.  Value "0" indicates that the location information was obtained after a successful paging procedure for Active Location Retrieval when the UE is in idle mode or after a successful location reporting procedure the UE is in connected mode.Any other value than "0" indicates that the location information is the last known one.See 3GPP TS 29.002 clause 17.7.8.
         ueLocationTimestamp:
           $ref: '#/components/schemas/DateTime'
-          description: The value represents the UTC time when the UeLocation information was acquired.
         geographicalInformation:
           type: string
           pattern: '^[0-9A-F]{16}$'
@@ -2183,6 +2164,7 @@ components:
           pattern: '^[0-9A-F]{20}$'
           description: Refers to Calling Geodetic Location.See ITU-T Recommendation Q.763 (1999) clause 3.88.2. Only the description of an ellipsoid point with uncertainty circle is allowed to be used.
     CellGlobalId:
+      description: Contains a Cell Global Identification as defined in 3GPP TS 23.003, clause 4.3.1.
       type: object
       required:
         - plmnId
@@ -2191,16 +2173,14 @@ components:
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnId'
-          description: PLMN Identity
         lac:
           type: string
           pattern: '^[A-Fa-f0-9]{4}$'
-          description: Location Area Code
         cellId:
           type: string
           pattern: '^[A-Fa-f0-9]{4}$'
-          description: Cell Identity
     ServiceAreaId:
+      description: Contains a Service Area Identifier as defined in 3GPP TS 23.003, clause 12.5.
       type: object
       required:
         - plmnId
@@ -2209,7 +2189,6 @@ components:
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnId'
-          description: PLMN Identity
         lac:
           type: string
           pattern: '^[A-Fa-f0-9]{4}$'
@@ -2219,6 +2198,7 @@ components:
           pattern: '^[A-Fa-f0-9]{4}$'
           description: Service Area Code.
     LocationAreaId:
+      description: Contains a Location area identification as defined in 3GPP TS 23.003, clause 4.1.
       type: object
       required:
         - plmnId
@@ -2226,12 +2206,13 @@ components:
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnId'
-          description: PLMN Identity
+
         lac:
           type: string
           pattern: '^[A-Fa-f0-9]{4}$'
           description: Location Area Code
     RoutingAreaId:
+      description: Contains a Routing Area Identification as defined in 3GPP TS 23.003, clause 4.2.
       type: object
       required:
         - plmnId
@@ -2240,7 +2221,6 @@ components:
       properties:
         plmnId:
           $ref: '#/components/schemas/PlmnId'
-          description: PLMN Identity
         lac:
           type: string
           pattern: '^[A-Fa-f0-9]{4}$'
@@ -2250,21 +2230,19 @@ components:
           pattern: '^[A-Fa-f0-9]{2}$'
           description: Routing Area Code
     DddTrafficDescriptor:
+      description: Contains a Traffic Descriptor.
       type: object
       properties:
         ipv4Addr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-          description: Ipv4 address of the source of downlink data.
         ipv6Addr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-          description: Ipv6 address of the source of downlink data.
         portNumber:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-          description: Port number of the source of downlink data.
         macAddr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
-          description: Source MAC address.
     MoExpDataCounter:
+      description: Contain the MO Exception Data Counter.
       type: object
       required:
         - counter
@@ -2274,8 +2252,8 @@ components:
           description: Unsigned integer identifying the MO Exception Data Counter, as specified in clause 5.31.14.3 of 3GPP TS 23.501.
         timeStamp:
           $ref: '#/components/schemas/DateTime'
-          description: UTC time indicating the time at which the counter value increased from 0 to 1.
     NssaaStatus:
+      description: contains the Subscribed S-NSSAI subject to NSSAA procedure and the status.
       type: object
       required:
         - snssai
@@ -2283,16 +2261,15 @@ components:
       properties:
         snssai:
           $ref: '#/components/schemas/Snssai'
-          description: Subscribed S-NSSAI.
         status:
           $ref: '#/components/schemas/AuthStatus'
-          description: This flag when present shall indicate the NSSAA status of the related Snssai.
     NssaaStatusRm:
       anyOf:
         - $ref: '#/components/schemas/NssaaStatus'
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "NssaaStatus" data type, but with the OpenAPI "nullable= true" property.
     TnapId:
+      description: Contain the TNAP Identifier see clause5.6.2 of 3GPP TS 23.501.
       type: object
       properties:
         ssId:
@@ -2310,6 +2287,7 @@ components:
         - $ref: '#/components/schemas/NullValue'
       description: This data type is defined in the same way as the "TnapId" data type, but with the OpenAPI "nullable= true" property.
     TwapId:
+      description: Contain the TWAP Identifier as defined in clause 4.2.8.5.3 of 3GPP TS 23.501.
       type: object
       required:
         - ssId
@@ -2357,6 +2335,7 @@ components:
           description: Last value identifying the end of an SD range. This string shall be formatted as specified for the sd attribute of the Snssai data type in clause 5.4.4.2.
 
     ProseServiceAuth:
+      description: Indicates whether the UE is authorized to use ProSe Direct Discovery, ProSe Direct Communication, or both.
       type: object
       properties:
         proseDirectDiscoveryAuth:
@@ -2365,6 +2344,7 @@ components:
           $ref: '#/components/schemas/UeAuth'
 
     EcsServerAddr:
+      description: Contains the Edge Configuration Server Address Configuration Information as defined in clause 5.2.3.6.1 of 3GPP TS 23.502.
       type: object
       properties:
         ecsFqdnList:
@@ -2377,13 +2357,17 @@ components:
           items:
             $ref: '#/components/schemas/IpAddr'
           minItems: 1
+        ecsProviderId:
+          type: string
 
     EcsServerAddrRm:
       anyOf:
         - $ref: '#/components/schemas/EcsServerAddr'
         - $ref: '#/components/schemas/NullValue'
+      description: This data type is defined in the same way as the " EcsServerAddr " data type, but with the OpenAPI "nullable= true" property.
 
     IpAddr:
+      description: Contains an IP adresse.
       type: object
       oneOf:
         - required:
@@ -2425,6 +2409,24 @@ components:
           $ref: '#/components/schemas/SACInfo'
         reachedNumPduSess:
           $ref: '#/components/schemas/SACInfo'
+
+    SpatialValidityCond:
+      description: Contains the Spatial Validity Condition.
+      type: object
+      properties:
+        presenceInfo:
+          $ref: '#/components/schemas/PresenceInfo'
+        trackingAreaList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tai'
+          minItems: 1
+
+    SpatialValidityCondRm:
+      description: Contains the Spatial Validity Condition or the null value.
+      anyOf:
+        - $ref: '#/components/schemas/SpatialValidityCond'
+        - $ref: '#/components/schemas/NullValue'
 
 #
 # Data types describing alternative data types or combinations of data types
@@ -2695,6 +2697,7 @@ components:
       anyOf:
         - $ref: '#/components/schemas/PartitioningCriteria'
         - $ref: '#/components/schemas/NullValue'
+      description: This data type is defined in the same way as the " PartitioningCriteria " data type, but with the OpenAPI "nullable= true" property.
 #
 
 #
@@ -2702,92 +2705,75 @@ components:
 #
 
     Arp:
+      description: Contains Allocation and Retention Priority information.
       type: object
       properties:
         priorityLevel:
           $ref: '#/components/schemas/ArpPriorityLevel'
-          description: Defines the relative importance of a resource request.
         preemptCap:
           $ref: '#/components/schemas/PreemptionCapability'
-          description: Defines whether a service data flow may get resources that were already assigned to another service data flow with a lower priority level.
         preemptVuln:
           $ref: '#/components/schemas/PreemptionVulnerability'
-          description: Defines whether a service data flow may lose the resources assigned to it in order to admit a service data flow with higher priority level.
       required:
         - priorityLevel
         - preemptCap
         - preemptVuln
     Ambr:
+      description: Contains the maximum aggregated uplink and downlink bit rates.
       type: object
       properties:
         uplink:
           $ref: '#/components/schemas/BitRate'
-          description: AMBR for uplink.
         downlink:
           $ref: '#/components/schemas/BitRate'
-          description: AMBR for downlink.
       required:
         - uplink
         - downlink
     Dynamic5Qi:
+      description: Itindicates the QoS Characteristics for a Non-standardised or not pre-configured 5QI for downlink and uplink.
       type: object
       properties:
         resourceType:
           $ref: '#/components/schemas/QosResourceType'
-          description: Defines the 5QI resource type. See clause 5.5.3.6.
         priorityLevel:
           $ref: '#/components/schemas/5QiPriorityLevel'
-          description: Defines the 5QI Priority Level.  See clause 5.5.2
         packetDelayBudget:
           $ref: '#/components/schemas/PacketDelBudget'
-          description: Defines the packet delay budget. See clause 5.5.2.
         packetErrRate:
           $ref: '#/components/schemas/PacketErrRate'
-          description: Defines the packet error rate. See clause 5.5.2.
         averWindow:
           $ref: '#/components/schemas/AverWindow'
-          description: Defines the averaging window. See clause 5.5.2. This IE shall be present only for a GBR QoS flow or a Delay Critical GBR QoS flow.
         maxDataBurstVol:
           $ref: '#/components/schemas/MaxDataBurstVol'
-          description: Defines the maximum data burst volume. See clause 5.5.2. This IE shall be present for a Delay Critical GBR QoS flow.
         extMaxDataBurstVol:
           $ref: '#/components/schemas/ExtMaxDataBurstVol'
-          description: Defines the maximum data burst volume. See clause 5.5.2.
         extPacketDelBudget:
           $ref: '#/components/schemas/ExtPacketDelBudget'
-          description: Defines the packet delay budget. See clause 5.5.2.
         cnPacketDelayBudgetDl:
           $ref: '#/components/schemas/ExtPacketDelBudget'
-          description: Defines the Core Network Packet Delay Budget for downlink. See clause 5.5.2.
         cnPacketDelayBudgetUl:
           $ref: '#/components/schemas/ExtPacketDelBudget'
-          description: Defines the Core Network Packet Delay Budget for uplink. See clause 5.5.2
       required:
         - resourceType
         - priorityLevel
         - packetDelayBudget
         - packetErrRate
     NonDynamic5Qi:
+      description: It indicates the QoS Characteristics for a standardized or pre-configured 5QI for downlink and uplink.
       type: object
       properties:
         priorityLevel:
           $ref: '#/components/schemas/5QiPriorityLevel'
-          description: Defines the 5QI Priority Level. See clause 5.5.2.When present, it contains the 5QI Priority Level value that overrides the standardized or pre-configured value.
         averWindow:
           $ref: '#/components/schemas/AverWindow'
-          description: Defines the averaging window. See clause 5.5.2.This IE may be present for a GBR QoS flow or a Delay Critical GBR QoS flow. When present, it contains the Averaging Window that overrides the standardized or pre-configured value.
         maxDataBurstVol:
           $ref: '#/components/schemas/MaxDataBurstVol'
-          description: Defines the maximum data burst volume. See clause 5.5.2.This IE may be present for a Delay Critical GBR QoS flow. When present, it contains the Maximum Data Burst Volume value that overrides the standardized or pre-configured value.
         extMaxDataBurstVol:
           $ref: '#/components/schemas/ExtMaxDataBurstVol'
-          description: Defines the maximum data burst volume. See clause 5.5.2.This IE may be present for a Delay Critical GBR QoS flow. When present, it contains the Maximum Data Burst Volume value that overrides the standardized or pre-configured value
         cnPacketDelayBudgetDl:
           $ref: '#/components/schemas/ExtPacketDelBudget'
-          description: Defines the Core Network Packet Delay Budget for downlink. See clause 5.5.2.
         cnPacketDelayBudgetUl:
           $ref: '#/components/schemas/ExtPacketDelBudget'
-          description: Defines the Core Network Packet Delay Budget for uplink. See clause 5.5.2.
       minProperties: 0
 
     ArpRm:
@@ -3117,6 +3103,7 @@ components:
 # STRUCTURED DATA TYPES
 #
     TraceData:
+      description: contains Trace control and configuration parameters.
       type: object
       nullable: true
       properties:
@@ -3126,7 +3113,6 @@ components:
           description: Trace Reference (see 3GPP TS 32.422).It shall be encoded as the concatenation of MCC, MNC and Trace ID as follows:<MCC><MNC>-<Trace ID>The Trace ID shall be encoded as a 3 octet string in hexadecimal representation. Each character in the Trace ID string shall take a value of "0" to "9", "a" to "f" or "A" to "F" and shall represent 4 bits. The most significant character representing the 4 most significant bits of the Trace ID shall appear first in the string, and the character representing the 4 least significant bit of the Trace ID shall appear last in the string.
         traceDepth:
           $ref: '#/components/schemas/TraceDepth'
-          description: Trace Depth (see 3GPP TS 32.422).
         neTypeList:
           type: string
           pattern: '^[A-Fa-f0-9]+$'
@@ -3137,10 +3123,8 @@ components:
           description: Triggering events (see 3GPP TS 32.422).It shall be encoded as an octet string in hexadecimal representation. Each character in the string shall take a value of "0" to "9", "a" to "f" or "A" to "F" and shall represent 4 bits. The most significant character representing the 4 most significant bits shall appear first in the string, and the character representing the 4 least significant bit shall appear last in the string.Octets shall be coded according to 3GPP TS 32.422.
         collectionEntityIpv4Addr:
           $ref: '#/components/schemas/Ipv4Addr'
-          description: IPv4 Address of the Trace Collection Entity (see 3GPP TS 32.422). At least one of the collectionEntityIpv4Addr or collectionEntityIpv6Addr attributes shall be present.
         collectionEntityIpv6Addr:
           $ref: '#/components/schemas/Ipv6Addr'
-          description: IPv6 Address of the Trace Collection Entity (see 3GPP TS 32.422).At least one of the collectionEntityIpv4Addr or collectionEntityIpv6Addr attributes shall be present
         interfaceList:
           type: string
           pattern: '^[A-Fa-f0-9]+$'
@@ -3151,51 +3135,42 @@ components:
         - neTypeList
         - eventList
     MdtConfiguration:
+      description: contains contain MDT configuration data.
       type: object
       required:
         - jobType
       properties:
         jobType:
           $ref: '#/components/schemas/JobType'
-          description: This IE shall indicate the Job type for MDT, see 3GPP TS 32.422.
         reportType:
           $ref: '#/components/schemas/ReportTypeMdt'
-          description: This IE shall be present for logged MDT. When present, this IE shall indicate the report type for logged MDT, see 3GPP TS 32.422.
         areaScope:
           $ref: '#/components/schemas/AreaScope'
-          description: When present, this IE shall contain the area in Cells or Tracking Areas where the MDT data collection shall take place, see 3GPP TS 32.422.
         measurementLteList:
           type: array
           items:
             $ref: '#/components/schemas/MeasurementLteForMdt'
-          description: This IE shall be present if the Job type is configured for Immediate MDT or combined Immediate MDT and Trace.When present, this IE shall contain a list of the measurements that shall be collected for LTE.
         measurementNrList:
           type: array
           items:
             $ref: '#/components/schemas/MeasurementNrForMdt'
           minItems: 1
-          description: This IE shall be present if the Job type is configured for Immediate MDT or combined Immediate MDT and Trace.When present, this IE shall contain a list of the measurements that shall be collected for NR.
         sensorMeasurementList:
           type: array
           items:
             $ref: '#/components/schemas/SensorMeasurement'
           minItems: 1
-          description: When present, this IE shall include a list o the sensor measurements to be collected for UE if they are available.
         reportingTriggerList:
           type: array
           items:
             $ref: '#/components/schemas/ReportingTrigger'
           minItems: 1
-          description: This IE shall be present if MeasurementList is configured for UE side measurements (such as M1 measurement in LTE) and the jobType is configured for Immediate MDT or combined Immediate MDT and Trace.When present, this IE shall contain a list of the reporting triggers.For LTE and NR, this IE shall not have the combination of periodical, event based and event based periodic reporting at the same time.
         reportInterval:
           $ref: '#/components/schemas/ReportIntervalMdt'
-          description: This IE shall be present if the reportingTriggerList is configured for Periodic UE side measurements (such as M1 measurement in LTE) and the jobType is configured for Immediate MDT or combined Immediate MDT and Trace.When present, this IE shall indicate the interval between the periodical measurements to be taken when UE is in connected in LTE.
         reportIntervalNr:
           $ref: '#/components/schemas/ReportIntervalNrMdt'
-          description: This IE shall be present if the reportingTriggerList is configured for Periodic UE side measurements (such as M1 measurement in NR) and the jobType is configured for Immediate MDT or combined Immediate MDT and Trace.When present, this IE shall indicate the interval between the periodical measurements to be taken when UE is in connected in NR.
         reportAmount:
           $ref: '#/components/schemas/ReportAmountMdt'
-          description: This IE shall be present if the reportingTriggerList is configured for Periodic UE side measurements (such as M1 measurement in LTE) and the jobType is configured for Immediate MDT or combined Immediate MDT and Trace. When present, this IE shall indicate the number of measurement reports that shall be taken for periodical reporting while UE is in connected
         eventThresholdRsrp:
           type: integer
           minimum: 0
@@ -3221,19 +3196,14 @@ components:
           items:
             $ref: '#/components/schemas/EventForMdt'
           minItems: 1
-          description: This IE shall be present for event triggered measurement in the case of logged MDT.When present, this IE shall contain a list of events triggered measurement in NR.
         loggingInterval:
           $ref: '#/components/schemas/LoggingIntervalMdt'
-          description: This IE shall be present if the job type is configured for Logged MDT or Logged MBSFN MDT in NR.When present, this IE shall contain the periodicity for logging MDT measurement results for periodic downlink pilot strength measurement in NR when UE is in Idle
         loggingIntervalNr:
           $ref: '#/components/schemas/LoggingIntervalNrMdt'
-          description: This IE shall be present if the job type parameter is configured for Logged MDT or Logged MBSFN MDT. When present, this IE shall indicate the validity time of MDT logged configuration for IDLE in LTE
         loggingDuration:
           $ref: '#/components/schemas/LoggingDurationMdt'
-          description: This IE shall be present if the job type parameter is configured for Logged MDT or Logged MBSFN MDT.When present, this IE shall indicate the validity time of MDT logged configuration for IDLE in NR.
         loggingDurationNr:
           $ref: '#/components/schemas/LoggingDurationNrMdt'
-          description: This IE may be present if the job type is set to Immediate MDT or Immediate MDT and Trace.When present, it shall indicate the positioning method that shall be used for the MDT job. For LTE the value "GNSS" may be selected only if the M1 measurement is selected in measurementList.
         positioningMethod:
           $ref: '#/components/schemas/PositioningMethodMdt'
         addPositioningMethodList:
@@ -3241,38 +3211,32 @@ components:
           items:
             $ref: '#/components/schemas/PositioningMethodMdt'
           minItems: 1
-          description: This IE may be present if positioningMethod is present. When present, it shall indicate a list of the additional positioning methods that shall be used for the MDT job.  For LTE, the value "GNSS" may be selected only if the M1 measurement is selected in measurementList.
         collectionPeriodRmmLte:
           $ref: '#/components/schemas/CollectionPeriodRmmLteMdt'
-          description: This IE shall be present if the job type is set to Immediate MDT or Immediate MDT and Trace and any of the "M4" or "M5" is contained in measurementList attribute in NR. When present, it shall contain the collection period that should be used to collect available measurement samples in case of RRM configured measurements. The same collection period should be used for all such measurements that are requested in the same MDT or combined Trace and MDT job.
         collectionPeriodRmmNr:
           $ref: '#/components/schemas/CollectionPeriodRmmNrMdt'
-          description: This IE shall be present if the job type is set to Immediate MDT or Immediate MDT and Trace and any of the "M4" or "M5" is contained in measurementList attribute in NR. When present, it shall contain the collection period that should be used to collect available measurement samples in case of RRM configured measurements. The same collection period should be used for all such measurements that are requested in the same MDT or combined Trace and MDT job.
         measurementPeriodLte:
           $ref: '#/components/schemas/MeasurementPeriodLteMdt'
-          description: This IE shall be present if the job type is set to Immediate MDT or Immediate MDT and Trace and either the value "M4_DL" or "M4_UL" or "M5_DL" or "M5_UL" is contained in measurementList attribute in LTE. When present, it shall contain the collection period that should be used for the Data Volume and Scheduled IP Throughput measurements made by the eNB. The same measurement period should be used for the UL and DL
         mdtAllowedPlmnIdList:
           type: array
           items:
             $ref: '#/components/schemas/PlmnId'
           minItems: 1
           maxItems: 16
-          description: When present, this IE shall contain the PLMNs where measurement collection, status indication and log reporting is allowed. E.g. the UE performs these actions for Logged MDT when the RPLMN is part of this set of PLMNs.
         mbsfnAreaList:
           type: array
           items:
             $ref: '#/components/schemas/MbsfnArea'
           minItems: 1
           maxItems: 8
-          description: When present, this IE shall contain MBSFN Area(s) for MBSFN measurement logging.
         interFreqTargetList:
           type: array
           items:
             $ref: '#/components/schemas/InterFreqTargetInfo'
           minItems: 1
           maxItems: 8
-          description: When present, this IE shall indicate Inter Frequency Target(s) for which the UE is requested to perform measurement logging.
     AreaScope:
+      description: Contain the area based on Cells or Tracking Areas.
       type: object
       properties:
         eutraCellIdList:
@@ -3280,13 +3244,11 @@ components:
           items:
             $ref: '#/components/schemas/EutraCellId'
           minItems: 1
-          description: When present, this IE shall contain a list of the E-UTRAN Cell Identifications where the MDT data collection shall take place.
         nrCellIdList:
           type: array
           items:
             $ref: '#/components/schemas/NrCellId'
           minItems: 1
-          description: When present, this IE shall contain a list of the NR Cell Identities where the MDT data collection shall take place.
         tacList:
           type: array
           items:
@@ -3299,6 +3261,7 @@ components:
           minProperties: 1
           description: A map (list of key-value pairs) where PlmnId converted to a string serves as key
     TacInfo:
+      description: contains tracking area information (tracking area codes).
       type: object
       required:
         - tacList
@@ -3308,8 +3271,8 @@ components:
           items:
             $ref: '#/components/schemas/Tac'
           minItems: 1
-          description: This IE shall contain a list of the tracking area codes.
     MbsfnArea:
+      description: Contains an MBSFN area information.
       type: object
       properties:
         mbsfnAreaId:
@@ -3324,6 +3287,7 @@ components:
           description: When present, this IE shall contain the Carrier Frequency (EARFCN).
 
     InterFreqTargetInfo:
+      description: Indicates the Inter Frequency Target information.
       required:
         - dlCarrierFreq
       type: object
@@ -3375,6 +3339,7 @@ components:
 #
 
     OdbData:
+      description: Contains information regarding operater  determined  barring.
       type: object
       properties:
         roamingOdb:
@@ -3414,39 +3379,34 @@ components:
 # STRUCTURED DATA TYPES
 #
     SecondaryRatUsageReport:
+      description: Secondary RAT Usage Report to report usage data for a secondary RAT for QoS flows.
       type: object
       properties:
         secondaryRatType:
           $ref: '#/components/schemas/RatType'
-          description: Secondary RAT type.
         qosFlowsUsageData:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowUsageReport'
           minItems: 1
-          description: QoS flows usage data.
       required:
         - secondaryRatType
         - qosFlowsUsageData
 
     QosFlowUsageReport:
+      description: Contains QoS flows usage data information.
       type: object
       properties:
         qfi:
           $ref: '#/components/schemas/Qfi'
-          description: QoS Flow Indicator.
         startTimeStamp:
           $ref: '#/components/schemas/DateTime'
-          description: UTC time indicating the start time of the collection period of the included usage data for DL and UL.
         endTimeStamp:
           $ref: '#/components/schemas/DateTime'
-          description: UTC time indicating the end time of the collection period of the included usage data for DL and UL.
         downlinkVolume:
           $ref: '#/components/schemas/Int64'
-          description: Data usage for DL, encoding a number of octets.
         uplinkVolume:
           $ref: '#/components/schemas/Int64'
-          description: Data usage for UL, encoding a number of octets.
       required:
         - qfi
         - startTimeStamp
@@ -3455,46 +3415,116 @@ components:
         - uplinkVolume
 
     SecondaryRatUsageInfo:
+      description: Secondary RAT Usage Information to report usage data for a secondary RAT for QoS flows and/or the whole PDU session.
       type: object
       properties:
         secondaryRatType:
           $ref: '#/components/schemas/RatType'
-          description: Secondary RAT type.
         qosFlowsUsageData:
           type: array
           items:
             $ref: '#/components/schemas/QosFlowUsageReport'
           minItems: 1
-          description: QoS flows usage data.
         pduSessionUsageData:
           type: array
           items:
             $ref: '#/components/schemas/VolumeTimedReport'
           minItems: 1
-          description: PDU session usage data.
       required:
         - secondaryRatType
 
     VolumeTimedReport:
+      description: Contains Usage data information.
       type: object
       properties:
         startTimeStamp:
           $ref: '#/components/schemas/DateTime'
-          description: UTC time indicating the start time of the collection period of the included usage data for DL and UL.
         endTimeStamp:
           $ref: '#/components/schemas/DateTime'
-          description: UTC time indicating the end time of the collection period of the included usage data for DL and UL.
         downlinkVolume:
           $ref: '#/components/schemas/Int64'
-          description: Data usage for DL, encoding a number of octets.
         uplinkVolume:
           $ref: '#/components/schemas/Int64'
-          description: Data usage for UL, encoding a number of octets.
       required:
         - startTimeStamp
         - endTimeStamp
         - downlinkVolume
         - uplinkVolume
+
+
+# Data Types related to MBS as defined in clause 5.9
+#
+
+#
+# SIMPLE DATA TYPES
+#
+#
+
+    AreaSessionId:
+      $ref: '#/components/schemas/Uint16'
+      description: Area Session Identifier used for MBS session with location dependent content
+
+
+#
+# Enumerations
+#
+#
+#
+# STRUCTURED DATA TYPES
+#
+    MbsSessionId:
+      type: object
+      properties:
+        tmgi:
+          $ref: '#/components/schemas/Tmgi'
+          description: TMGI identifying an MBS Session
+        ssm:
+          $ref: '#/components/schemas/Ssm'
+          description: Source specific IP multicast address identifying the MBS session
+        nid:
+          $ref: '#/components/schemas/Nid'
+          description: Network Identity used together with TMGI to identify an MBS session in SNPN
+
+    Tmgi:
+      type: object
+      properties:
+        mbsServiceId:
+          type: string
+          pattern: '^[A-Fa-f0-9]{6}$'
+          description: MBS Service ID
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+          description: PLMN ID
+      required:
+        - mbsServiceId
+        - plmnId
+
+    Ssm:
+      type: object
+      properties:
+        sourceIpAddr:
+          $ref: '#/components/schemas/IpAddr'
+        destIpAddr:
+          $ref: '#/components/schemas/IpAddr'
+      required:
+        - sourceIpAddr
+        - destIpAddr
+
+    MbsServiceArea:
+      type: object
+      properties:
+        ncgiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ncgi'
+          minItems: 1
+          description: List of NR cell Ids 
+        taiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tai'
+          minItems: 1
+          description: List of tracking area Ids
 
 
 #

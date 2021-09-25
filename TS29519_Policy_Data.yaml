@@ -7,7 +7,7 @@ info:
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V17.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V17.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -1312,6 +1312,100 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /policy-data/slice-control-data/{snssai}:
+    parameters:
+     - name: snssai
+       in: path
+       required: true
+       schema:
+         $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai' 
+    get:
+      summary: Retrieves a network Slice specific policy control subscription data resource
+      operationId: ReadSlicePolicyControlData
+      tags:
+        - SlicePolicyControlData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Successful case. The network slice specific policy control subscription data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlicePolicyData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modify a network Slice specific policy control subscription data resource
+      operationId: UpdateSlicePolicyControlData
+      tags:
+        - SlicePolicyControlData (Document)
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/SlicePolicyDataPatch'
+      responses:
+        '200':
+          description: The resource has been successfully updated and a response body containing network slice specific policy control subscription data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlicePolicyData'
+        '204':
+          description: The resource has been successfully updated and no additional content is to be sent in the response message.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   schemas:
     PolicyDataForIndividualUe:
@@ -1467,6 +1561,8 @@ components:
             $ref: '#/components/schemas/SmPolicyDnnData'
           minProperties: 1
           description: Session Management Policy data per DNN for all the DNNs of the indicated S-NSSAI. The key of the map is the DNN.
+        ueSliceMbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceMbr'
       required:
         - snssai
     SmPolicyDnnData:
@@ -1557,7 +1653,7 @@ components:
         usageLimit:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
         resetPeriod:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'          
+          $ref: '#/components/schemas/TimePeriod'
       required:
         - limitId
     UsageMonData:
@@ -1577,7 +1673,7 @@ components:
         allowedUsage:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
         resetTime:
-          $ref: '#/components/schemas/TimePeriod'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -1730,6 +1826,10 @@ components:
           items:
             $ref: '#/components/schemas/NotificationItem'
           minItems: 1
+        slicePolicyData:
+          $ref: '#/components/schemas/SlicePolicyData'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
     PlmnRouteSelectionDescriptor:
       description: Contains the route selection descriptors (combinations of SNSSAI, DNNs, PDU session types, SSC modes and ATSSS information) allowed by subscription to the UE for a serving PLMN
       type: object
@@ -1875,6 +1975,34 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/TransferPolicy'
         bdtpStatus:
           $ref: '#/components/schemas/BdtPolicyStatus'
+#
+    SlicePolicyData:
+      description: Contains the network slice specific policy control subscription information.
+      type: object
+      properties:
+        mbrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        remainMbrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        remainMbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+#
+    SlicePolicyDataPatch:
+      description: Contains the modified network slice specific policy control subscription information.
+      type: object
+      properties:
+        remainMbrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        remainMbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+      oneOf:
+        - required: [remainMbrUl]
+        - required: [remainMbrDl]
 
 # SIMPLE TYPES:
 

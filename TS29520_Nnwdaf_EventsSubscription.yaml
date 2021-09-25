@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.4
+  version: 1.2.0-alpha.5
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.520 V17.3.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V17.4.0; 5G System; Network Data Analytics Services.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 security:
   - {}
@@ -305,6 +305,12 @@ components:
           minItems: 1
         networkArea:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        topAppListUlInd:
+          type: boolean
+          description: Indicates that the list of top applications that contribute the most to the traffic in Uplink direction is requested, if it is included and set to "true". Default value is "false".
+        topAppListDlInd:
+          type: boolean
+          description: Indicates that the list of top applications that contribute the most to the traffic in Downlink direction is requested, if it is included and set to "true". Default value is "false".
         nsiIdInfos:
           type: array
           items:
@@ -395,6 +401,8 @@ components:
           $ref: '#/components/schemas/NwdafFailureCode'
         rvWaitTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        anaMetaInfo:
+          $ref: '#/components/schemas/AnalyticsMetadataInfo'
         nfLoadLevelInfos:
           type: array
           items:
@@ -514,6 +522,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         nsiId:
           $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsiId'
+        networkArea:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        timePeriod:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        numOfUes:
+          $ref: '#/components/schemas/NumberAverage'
+        numOfPduSess:
+          $ref: '#/components/schemas/NumberAverage'
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - loadLevelInformation
         - snssai
@@ -548,6 +566,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         timeAnaNeeded:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        anaMeta:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsMetadata'
+          minItems: 1
+        anaMetaInd:
+          $ref: '#/components/schemas/AnalyticsMetadataIndication'
     TargetUeInformation:
       description: Identifies the target UE information.
       type: object
@@ -671,10 +696,30 @@ components:
           $ref: '#/components/schemas/ThresholdLevel'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        topAppListUl:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopApplication'
+          minItems: 1
+        topAppListDl:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopApplication'
+          minItems: 1
       required:
         - congType
         - timeIntev
         - nsi
+    TopApplication:
+      description: Top application that contributes the most to the traffic.
+      type: object
+      properties:
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        ipTrafficFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
     QosSustainabilityInfo:
       description: Represents the QoS Sustainability information.
       type: object
@@ -912,6 +957,52 @@ components:
       required:
         - event
         - failureCode
+    AnalyticsMetadataIndication:
+      description: Contains analytics metadata information requested to be used during analytics generation.
+      type: object
+      properties:
+        dataWindow:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        dataStatProps:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetStatisticalProperty'
+          minItems: 1
+        strategy:
+          $ref: '#/components/schemas/OutputStrategy'
+        aggrNwdafIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          minItems: 1
+    AnalyticsMetadataInfo:
+      description: Contains analytics metadata information required for analytics aggregation.
+      type: object
+      properties:
+        numSamples:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        dataWindow:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        dataStatProps:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetStatisticalProperty'
+          minItems: 1
+        strategy:
+          $ref: '#/components/schemas/OutputStrategy'
+        accuracy:
+          $ref: '#/components/schemas/Accuracy'
+    NumberAverage:
+      description: Represents average and variance information.
+      type: object
+      properties:
+        number:
+          type: integer
+        variance:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+      required:
+        - number
+        - variance
     NotificationMethod:
       anyOf:
       - type: string
@@ -1132,4 +1223,55 @@ components:
           - UNAVAILABLE_DATA: Indicates the requested statistics information for the event is rejected since necessary data to perform the service is unavailable.
           - BOTH_STAT_PRED_NOT_ALLOWED: Indicates the requested analysis information for the event is rejected since the start time is in the past and the end time is in the future, which means the NF service consumer requested both statistics and prediction for the analytics.
           - UNSATISFIED_REQUESTED_ANALYTICS_TIME: Indicates that the requested event is rejected since the analytics information is not ready when the time indicated by the "timeAnaNeeded" attribute (as provided during the creation or modification of subscription) is reached.
-          - OTHER: Indicates the requested analysis information for the event is rejected due to other reasons.
+          - OTHER: Indicates the requested analysis information for the event is rejected due to other reasons. 
+    AnalyticsMetadata:
+      anyOf:
+      - type: string
+        enum:
+          - NUM_OF_SAMPLES
+          - DATA_WINDOW
+          - DATA_STAT_PROPS
+          - STRATEGY
+          - ACCURACY
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - NUM_OF_SAMPLES: Number of data samples used for the generation of the output analytics.
+          - DATA_WINDOW: Data time window of the data samples.
+          - DATA_STAT_PROPS: Dataset statistical properties of the data used to generate the analytics.
+          - STRATEGY: Output strategy used for the reporting of the analytics.
+          - ACCURACY: Level of accuracy reached for the analytics.
+    DatasetStatisticalProperty:
+      anyOf:
+      - type: string
+        enum:
+          - UNIFORM_DIST_DATA
+          - NO_OUTLIERS
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - UNIFORM_DIST_DATA: Indicates the use of data samples that are uniformly distributed according to the different aspects of the requested analytics.
+          - NO_OUTLIERS: Indicates that the data samples shall disregard data samples that are at the extreme boundaries of the value range.
+    OutputStrategy:
+      anyOf:
+      - type: string
+        enum:
+          - BINARY
+          - GRADIENT
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+          - BINARY: Indicates that the analytics shall only be reported when the requested level of accuracy is reached within a cycle of periodic notification.
+          - GRADIENT: Indicates that the analytics shall be reported according with the periodicity irrespective of whether the requested level of accuracy has been reached or not.

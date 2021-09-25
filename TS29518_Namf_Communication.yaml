@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   title: Namf_Communication
   description: |
     AMF Communication Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-comm
 externalDocs:
-  description: 3GPP TS 29.518 V17.2.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.3.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-comm/v1'
@@ -1045,7 +1045,7 @@ paths:
     post:
       summary: Namf_Communication N1N2 Message Transfer (UE Specific) service Operation
       tags:
-        - n1N2Message collection (Document)
+        - n1N2Message collection (Collection)
       operationId: N1N2MessageTransfer
       parameters:
         - name: ueContextId
@@ -1194,7 +1194,7 @@ paths:
     post:
       summary: Namf_Communication N1N2 Message Subscribe (UE Specific) service Operation
       tags:
-        - N1N2 Subscriptions Collection for Individual UE Contexts (Document)
+        - N1N2 Subscriptions Collection for Individual UE Contexts (Collection)
       operationId: N1N2MessageSubscribe
       parameters:
         - name: ueContextId
@@ -1397,7 +1397,7 @@ paths:
     post:
       summary: Namf_Communication Non UE N2 Message Transfer service Operation
       tags:
-        - Non UE N2Messages collection (Document)
+        - Non UE N2Messages collection (Collection)
       operationId: NonUeN2MessageTransfer
       requestBody:
         content:
@@ -1490,7 +1490,7 @@ paths:
     post:
       summary: Namf_Communication Non UE N2 Info Subscribe service Operation
       tags:
-        - Non UE N2Messages Subscriptions collection (Document)
+        - Non UE N2Messages Subscriptions collection (Collection)
       operationId: NonUeN2InfoSubscribe
       requestBody:
         content:
@@ -1620,7 +1620,7 @@ paths:
     post:
       summary: Namf_Communication AMF Status Change Subscribe service Operation
       tags:
-        - subscriptions collection (Document)
+        - subscriptions collection (Collection)
       operationId: AMFStatusChangeSubscribe
       requestBody:
         content:
@@ -2091,6 +2091,8 @@ components:
           $ref: '#/components/schemas/PwsInformation'
         v2xInfo:
           $ref: '#/components/schemas/V2xInformation'
+        proseInfo:
+          $ref: '#/components/schemas/ProSeInformation'
       required:
         - n2InformationClass
     N1MessageNotification:
@@ -2461,6 +2463,24 @@ components:
           items:
             $ref: '#/components/schemas/AnalyticsSubscription'
           minItems: 1
+        pcfBindingInfo:
+          type: string
+        usedServiceAreaRestriction:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ServiceAreaRestriction'
+        praInAmPolicy:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+          minProperties: 1
+          description: A map(list of key-value pairs) where praId serves as key.
+        updpSubscriptionData:
+          $ref: '#/components/schemas/UpdpSubscriptionData'
+        uePositioningCapList:
+          description: Indicates the positioning capabilities supported by the UE.
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/UePositioningCapabilities'
+          minItems: 1
 
     N2SmInformation:
       description: Represents the session management SMF related N2 information data part
@@ -2525,6 +2545,8 @@ components:
           default: false
         omcId:
           $ref: '#/components/schemas/OmcIdentifier'
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
       required:
         - messageIdentifier
         - serialNumber
@@ -2735,6 +2757,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         nrfAccessTokenUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        smfBindingInfo:
+          type: string
+        vsmfBindingInfo:
+          type: string
+        ismfBindingInfo:
+          type: string
       required:
         - pduSessionId
         - smContextRef
@@ -3064,6 +3092,13 @@ components:
         n2Pc5Pol:
           $ref: '#/components/schemas/N2InfoContent'
 
+    ProSeInformation:
+      description: Represents 5G ProSe related N2 information.
+      type: object
+      properties:
+        n2Pc5ProSePol:
+          $ref: '#/components/schemas/N2InfoContent'
+
     ImmediateMdtConf:
       description: Immediate MDT Configuration
       type: object
@@ -3272,6 +3307,20 @@ components:
         - nwdafEvtSubsServiceUri
         - nwdafEventsSubscription
 
+    UpdpSubscriptionData:
+      description: UE policy delivery related N1 message notification subscription data.
+      type: object
+      properties:
+        updpNotifySubscriptionId:
+          type: string
+        updpNotifyCallbackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - updpNotifySubscriptionId
+        - updpNotifyCallbackUri
+
 #
 # SIMPLE DATA TYPES
 #
@@ -3333,6 +3382,7 @@ components:
           - PWS-RF
           - RAN
           - V2X
+          - PROSE
       - type: string
     N1MessageClass:
       description: Enumeration for N1 Message Class
@@ -3361,6 +3411,8 @@ components:
           - TEMPORARY_REJECT_REGISTRATION_ONGOING
           - TEMPORARY_REJECT_HANDOVER_ONGOING
           - REJECTION_DUE_TO_PAGING_RESTRICTION
+          - AN_NOT_RESPONDING
+          - FAILURE_CAUSE_UNSPECIFIED
       - type: string
     UeContextTransferStatus:
       description: Describes the status of an individual ueContext resource in UE Context Transfer procedures

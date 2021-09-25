@@ -1,0 +1,306 @@
+openapi: 3.0.0
+
+info:
+  title: Nnsacf_NSAC
+  version: 1.0.0-alpha.1
+  description: |
+    Nnsacf_NSAC Service.
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.536 V0.3.0; 5G System; Network Slice Admission Control Services; Stage 3.
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.536/
+
+servers:
+  - url: '{apiRoot}/nnsacf-nsac/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - nnsacf-nsac
+
+paths:
+  /slices/ues:
+    post:
+      summary: Network Slice Admission Control on the Number of UEs
+      operationId: NumOfUEsUpdate
+      tags:
+        - slice collection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UeACRequestData'
+        required: true
+      responses:
+        '200':
+          description: Partial successful ACU operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeACResponseData'
+        '204':
+          description: Successful ACU operation
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          description: Unsucessful ACU operation - Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Unsuccessful ACU operation – Slice Not Subject to NSAC
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Unsuccessful ACU operation – Slice Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+      callbacks:
+        eacNotification:
+          '{request.body#/eacNotificationUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EacNotification'
+              responses:
+                '204':
+                  description: slice re-authentication notification response
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
+
+  /slices/pdus:
+    post:
+      summary: Network Slice Admission Control on the number of PDU Sessions
+      operationId: NumOfPDUsUpdate
+      tags:
+        - slice collection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PduACRequestData'
+        required: true
+      responses:
+        '200':
+          description: Partial successful ACU operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PduACResponseData'
+        '204':
+          description: Successful ACU operation
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          description: Unsucessful ACU operation - Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Unsuccessful ACU operation – Slice Not Subject to NSAC
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Unsuccessful ACU operation – Slice Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+
+components:
+
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nnsacf-nsac: Access to the Nnsacf_NSAC API
+
+  schemas:
+
+    #
+    # STRUCTURED DATA TYPES:
+    #
+
+    UeACRequestData:
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        acuOperationList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcuOperationItem'
+          minItems: 1
+        amfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        anType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        additionalAnType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+      required:
+        - supi
+
+    UeACResponseData:
+      type: object
+      properties:
+        acuFailureList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcuFailureItem'
+          minItems: 1
+
+    AcuOperationItem:
+      type: object
+      properties:
+        updateFlag:
+          $ref: '#/components/schemas/AcuFlag'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+
+    AcuFailureItem:
+      type: object
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        reason:
+          $ref: '#/components/schemas/AcuFailureReason'
+
+    EacNotification:
+      description: A map (list of key-value pairs) where Snssai converted to a string serves as key
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/EACMode'
+      minProperties: 1
+
+    PduACRequestData:
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        acuOperationList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcuOperationItem'
+          minItems: 1
+      required:
+        - supi
+
+    PduACResponseData:
+      type: object
+      properties:
+        acuFailureList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcuFailureItem'
+          minItems: 1
+
+    #
+    # SIMPLE DATA TYPES
+    #
+
+
+    #
+    # ENUMERATIONS
+    #
+
+    EACMode:
+      anyOf:
+      - type: string
+        enum:
+          - ACTIVE
+          - DEACTIVE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        EAC mode. Possible values are
+        - ACTIVE
+        - DEACTIVE
+
+    AcuFlag:
+      anyOf:
+      - type: string
+        enum:
+          - INCREASE
+          - DECREASE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Update Flag of ACU operation. Possible values are
+        - INCREASE
+        - DECREASE
+
+    AcuFailureReason:
+      anyOf:
+      - type: string
+        enum:
+          - SLICE_NOT_FOUND
+          - EXCEED_MAX_UE_NUM
+          - EXCEED_MAX_UE_NUM_3GPP
+          - EXCEED_MAX_UE_NUM_N3GPP
+          - EXCEED_MAX_PDU_NUM
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Failure Reason of ACU operation to an S-NSSAI. Possible values are
+        - SLICE_NOT_FOUND
+        - EXCEED_MAX_UE_NUM
+        - EXCEED_MAX_UE_NUM_3GPP
+        - EXCEED_MAX_UE_NUM_N3GPP
+        - EXCEED_MAX_PDU_NUM

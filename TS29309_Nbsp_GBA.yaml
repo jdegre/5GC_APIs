@@ -1,0 +1,413 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0.0-alpha.1'
+  title: 'GBA BSF Nbsp_GBA Service'
+  description: |
+    GBA BSF Nbsp_GBA Service.
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.309 V0.3.0; 5G System; Bootstrapping Server Function (GBA BSF) Services; Stage 3
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.309/'
+
+servers:
+  - url: '{apiRoot}/nbsp-gba/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials:
+      - nbsp-gba
+
+paths:
+  /bootstrapping-info-retrieval:
+    post:
+      summary: Retrieve Bootstrapping Info from GBA BSF from NAF
+      operationId: BootstrappingInfoRetrieval
+      tags:
+        - Bootstrapping Info Retrieval (Custom Operation)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BootstrappingInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BootstrappingInfoResponse'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /push-info-retrieval:
+    post:
+      summary: Retrieve Push Info from GBA BSF from Push-NAF
+      operationId: PushInfoRetrieval
+      tags:
+        - Push Info Retrieval (Custom Operation)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushInfoResponse'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+components:
+
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nbsp-gba: Access to the Nbsp_GBA API
+
+  schemas:
+
+#
+# COMPLEX TYPES
+#
+
+    BootstrappingInfoRequest:
+      type: object
+      required:
+        - btId
+        - nafId
+      properties:
+        btId:
+          $ref: '#/components/schemas/BtId'
+        nafId:
+          $ref: '#/components/schemas/NafId'
+        gbaUAware:
+          type: boolean
+          default: false
+        gsIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/GsId'
+          minItems: 1
+
+    BootstrappingInfoResponse:
+      type: object
+      required:
+        - meKeyMaterial
+      properties:
+        meKeyMaterial:
+          $ref: '#/components/schemas/MeKeyMaterial'
+        uiccKeyMaterial:
+          $ref: '#/components/schemas/UiccKeyMaterial'
+        keyExpiryTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        bootstrappingInfoCreationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        ussList:
+          type: array
+          items:
+            $ref: '#/components/schemas/UssListItem'
+          minItems: 1
+        gbaType:
+          $ref: '#/components/schemas/GbaType'
+        impi:
+          $ref: '#/components/schemas/Impi'
+
+    PushInfoRequest:
+      type: object
+      required:
+        - ueId
+        - ueIdType
+        - uiccAppLabel
+        - nafId
+        - ptId
+        - uiccOrMe
+        - requestedLifeTime
+      properties:
+        ueId:
+          $ref: '#/components/schemas/UeId'
+        ueIdType:
+          $ref: '#/components/schemas/UeIdType'
+        uiccAppLabel:
+          $ref: '#/components/schemas/UiccAppLabel'
+        nafId:
+          $ref: '#/components/schemas/NafId'
+        ptId:
+          $ref: '#/components/schemas/PtId'
+        uiccOrMe:
+          $ref: '#/components/schemas/UiccOrMe'
+        requestedLifeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        privateIdRequest:
+          type: boolean
+        gbaUAware:
+          type: boolean
+        gsIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/GsId'
+          minItems: 1
+        auts:
+          $ref: '#/components/schemas/Auts'
+        rand:
+          $ref: '#/components/schemas/Rand'
+        securityFeaturesRequest:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecFeature'
+          minItems: 1
+
+    PushInfoResponse:
+      type: object
+      required:
+        - meKeyMaterial
+        - gbaPushInfo
+      properties:
+        meKeyMaterial:
+          $ref: '#/components/schemas/MeKeyMaterial'
+        gbaPushInfo:
+          $ref: '#/components/schemas/GbaPushInfo'
+        uiccKeyMaterial:
+          $ref: '#/components/schemas/UiccKeyMaterial'
+        keyExpiryTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        bootstrappingInfoCreationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        ussList:
+          type: array
+          items:
+            $ref: '#/components/schemas/UssListItem'
+          minItems: 1
+        gbaType:
+          $ref: '#/components/schemas/GbaType'
+        impi:
+          $ref: '#/components/schemas/Impi'
+        securityFeaturesResponse:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecFeature'
+
+    NafId:
+      type: object
+      required:
+        - nafFqdn
+        - uaSecProtId
+      properties:
+        nafFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        uaSecProtId:
+          type: string
+          pattern: '^[A-Fa-f0-9]{10}$'
+
+    UssListItem:
+      type: object
+      required:
+        - uss
+      properties:
+        uss:
+          $ref: '#/components/schemas/Uss'
+
+    Uss:
+      type: object
+      required:
+        - gsId
+        - gsType
+        - ueIds
+      properties:
+        gsId:
+          $ref: '#/components/schemas/GsId'
+        gsType:
+          $ref: '#/components/schemas/GsType'
+        ueIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeIdsItem'
+          minItems: 1
+        nafGroup:
+          $ref: '#/components/schemas/NafGroup'
+        flags:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlagsItem'
+          minItems: 1
+        keyChoice:
+          $ref: '#/components/schemas/KeyChoice'
+
+    UeIdsItem:
+      type: object
+      required:
+        - ueId
+      properties:
+        ueId:
+          $ref: '#/components/schemas/UeId'
+
+    FlagsItem:
+      type: object
+      required:
+        - flag
+      properties:
+        flag:
+          $ref: '#/components/schemas/Flag'
+
+#
+# SIMPLE TYPES
+#
+
+    GsId:
+      $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+
+    GsType:
+      $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+
+    BtId:
+      type: string
+
+    MeKeyMaterial:
+      type: string
+      pattern: '^[A-Fa-f0-9]{64}$'
+
+    UiccKeyMaterial:
+      type: string
+      pattern: '^[A-Fa-f0-9]{64}$'
+
+    UeId:
+      type: string
+
+    Impi:
+      type: string
+
+    Flag:
+      $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+    
+    GbaPushInfo:
+      type: string
+      pattern: '^([A-Fa-f0-9]{2})+$'
+
+    NafGroup:
+      type: string
+
+    PtId:
+      type: string
+
+    UiccAppLabel:
+      type: string
+
+    Auts:
+      type: string
+      pattern: '^[A-Fa-f0-9]{28}$'
+
+    Rand:
+      type: string
+      pattern: '^[A-Fa-f0-9]{32}$'
+
+#
+# ENUMS
+#
+
+    KeyChoice:
+      anyOf:
+        - type: string
+          enum:
+            - ME_BASED_KEY
+            - UICC_BASED_KEY
+            - ME_UICC_BASED_KEYS
+        - type: string
+
+    UiccOrMe:
+      anyOf:
+        - type: string
+          enum:
+            - GBA_ME
+            - GBA_U
+        - type: string
+
+    SecFeature:
+      anyOf:
+        - type: string
+          enum:
+            - GPL_U
+        - type: string
+
+    GbaType:
+      anyOf:
+        - type: string
+          enum:
+            - 3G_GBA
+            - 2G_GBA
+            - GBA_DIGEST
+        - type: string
+
+    UeIdType:
+      anyOf:
+        - type: string
+          enum:
+            - PUBLIC
+            - PRIVATE
+        - type: string

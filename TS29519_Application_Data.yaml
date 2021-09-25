@@ -7,7 +7,7 @@ info:
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.519 V17.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
+  description: 3GPP TS 29.519 V17.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data, Application Data and Structured Data for Exposure.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
 paths:
@@ -854,7 +854,7 @@ paths:
       summary: Create an individual applied BDT Policy Data resource
       operationId: CreateIndividualAppliedBdtPolicyData
       tags:
-        - Individual BDT Policy Data (Document)
+        - Individual Applied BDT Policy Data (Document)
       security:
         - {}
         - oAuth2ClientCredentials:
@@ -1172,7 +1172,7 @@ paths:
       summary: Partial update an individual IPTV configuration resource
       operationId: PartialReplaceIndividualIPTVConfigurationData
       tags:
-        - Individual IPTV Configuration Data 
+        - Individual IPTV Configuration Data (Document)
       security:
         - {}
         - oAuth2ClientCredentials:
@@ -1536,6 +1536,267 @@ paths:
       responses:
         '204':
           description: The Individual Service Parameter Data was deleted successfully.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /application-data/am-influence-data:
+    get:
+      summary: Retrieve AM Influence Data
+      operationId: ReadAmInfluenceData
+      tags:
+        - AM Influence Data (Store)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+      parameters:
+        - name: am-Influence-Ids
+          in: query
+          description: Each element identifies a service.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            minItems: 1
+        - name: dnns
+          in: query
+          description: Each element identifies a DNN.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+            minItems: 1
+        - name: snssais
+          in: query
+          description: Each element identifies a slice.
+          required: false
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+                minItems: 1
+        - name: internal-Group-Ids
+          in: query
+          description: Each element identifies a group of users. 
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+            minItems: 1
+        - name: supis
+          in: query
+          description: Each element identifies the user.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+            minItems: 1
+        - name: supp-feat
+          in: query
+          required: false
+          description: Supported Features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: The AM Influence Data stored in the UDR are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AmInfluData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /application-data/am-influence-data/{amInfluenceId}:
+    put:
+      summary: Create or update an individual AM Influence Data resource
+      operationId: CreateOrReplaceIndividualAmInfluenceData
+      tags:
+        - Individual AM Influence Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmInfluData'
+      parameters:
+        - name: amInfluenceId
+          in: path
+          description: The Identifier of an Individual AM Influence Data to be created or updated. It shall apply the format of Data type string.
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: The creation of an Individual AM Influence Data resource is confirmed and a representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmInfluData'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/application-data/am-influence-data/{amInfluenceId}'
+              required: true
+              schema:
+                type: string
+        '200':
+          description: The update of an Individual AM Influence Data resource is confirmed and a response body containing AM Influence Data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmInfluData'
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modify part of the properties of an individual AM Influence Data resource
+      operationId: UpdateIndividualAmInfluenceData
+      tags:
+        - Individual AM Influence Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AmInfluDataPatch'
+      parameters:
+        - name: amInfluenceId
+          in: path
+          description: The Identifier of an Individual AM Influence Data to be updated. It shall apply the format of Data type string.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The update of an Individual AM Influence Data resource is confirmed and a response body containing AM Influence Data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmInfluData'
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete an individual AM Influence Data resource
+      operationId: DeleteIndividualAmInfluenceData
+      tags:
+        - Individual AM Influence Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+      parameters:
+        - name: amInfluenceId
+          in: path
+          description: The Identifier of an Individual AM Influence Data to be updated. It shall apply the format of Data type string.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The Individual AM Influence Data was deleted successfully.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -2141,6 +2402,116 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         resUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+    AmInfluData:
+      description: Represents the AM Influence Data.
+      type: object
+      properties:
+        appId:
+          type: string
+          description: Identifies an application.
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        ethTrafficFilters:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+          description: Identifies Ethernet packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        interGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        anyUeInd:
+          type: boolean
+          description: Indicates whether the data is applicable for any UE.
+        trafficFilters:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+          description: Identifies IP packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+        startTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        endTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        evSubs:
+          type: array
+          items:
+            type: object
+            # The actual type definition will be included in TS 29.522
+            # $ref: 'TS29522_AMInfluence.yaml#/components/schemas/AmInfluEvent'
+          minItems: 1
+        thruReq:
+          type: boolean
+          description: Indicates whether high throughput is desired for the indicated UE traffic.
+        covReq:
+          type: string
+          description: Indicates the service area coverage requirement.
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        resUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+      allOf:
+        - anyOf:
+          - required: [thruReq]
+          - required: [covReq]
+        - oneOf:
+          - required: [supi]
+          - required: [interGroupId]
+          - required: [anyUeInd]
+    AmInfluDataPatch:
+      description: Represents the AM Influence Data that can be updated.
+      type: object
+      properties:
+        appId:
+          type: string
+          description: Identifies an application.
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        ethTrafficFilters:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+          description: Identifies Ethernet packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        interGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        anyUeInd:
+          type: boolean
+          description: Indicates whether the data is applicable for any UE.
+        trafficFilters:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+          description: Identifies IP packet filters. Either "trafficFilters" or "ethTrafficFilters" shall be included if applicable.
+        startTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        endTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        evSubs:
+          type: array
+          items:
+            type: object
+            # The actual type definition will be included in TS 29.522
+            # $ref: 'TS29522_AMInfluence.yaml#/components/schemas/AmInfluEvent'
+          minItems: 1
+        thruReq:
+          type: boolean
+          description: Indicates whether high throughput is desired for the indicated UE traffic.
+        covReq:
+          type: string
+          description: Indicates the service area coverage requirement.
+      oneOf:
+        - required: [supi]
+        - required: [interGroupId]
+        - required: [anyUeInd]
     ApplicationDataSubs:
       description: Identifies a subscription to application data change notification.
       type: object
@@ -2172,6 +2543,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         serParamData:
           $ref: '#/components/schemas/ServiceParameterData'
+        amInfluData:
+          $ref: '#/components/schemas/AmInfluData'
       required:
         - resUri
     DataFilter:
@@ -2230,6 +2603,7 @@ components:
           - IPTV
           - BDT
           - SVC_PARAM
+          - AM
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2241,3 +2615,4 @@ components:
         - IPTV
         - BDT
         - SVC_PARAM
+        - AM

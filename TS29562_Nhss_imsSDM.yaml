@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.3'
+  version: '1.1.0-alpha.1'
   title: 'Nhss_imsSDM'
   description: |
     Nhss Subscriber Data Management Service for IMS.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 16.5.0
+  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 17.2.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.562/'
 
 servers:
@@ -560,17 +560,17 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ImsUeId'
-        - name: servingNode
+        - name: serving-node
           in: query
           description: Indicates that only the stored NF id/address of the serving node(s) is required
           schema:
             $ref: '#/components/schemas/ServingNode'
-        - name: localTime
+        - name: local-time
           in: query
           description: Indicates that only the Local Time Zone information of the location in the visited network where the UE is attached is requested
           schema:
             $ref: '#/components/schemas/LocalTime'
-        - name: currentLocation
+        - name: current-location
           in: query
           description: Indicates whether an active location retrieval has to be initiated by the requested node
           schema:
@@ -794,7 +794,7 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ImsUeId'
-        - name: privateId
+        - name: private-id
           in: query
           description: Private identity
           schema:
@@ -1713,6 +1713,11 @@ paths:
           description: IMS Private Identity
           schema:
             $ref: '#/components/schemas/PrivateId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       requestBody:
         content:
           application/json-patch+json:
@@ -1728,7 +1733,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UpdatedUeReachabilitySubscription'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
           description: Successful modification
         '307':
@@ -1768,11 +1773,16 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ImsUeId'
-        - name: requestedNodes
+        - name: requested-nodes
           in: query
           description: Indicates the serving node(s) for which the request is applicable.
+          style: form
+          explode: false
           schema:
-            $ref: '#/components/schemas/RequestedNodes'
+            type: array
+            items:
+              $ref: '#/components/schemas/RequestedNode'
+            minItems: 1    
         - name: private-identity
           in: query
           description: IMS Private Identity
@@ -2120,6 +2130,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       requestBody:
         content:
           application/json-patch+json:
@@ -2135,7 +2150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImsSdmSubscription'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
           description: Successful modification
         '307':
@@ -2281,6 +2296,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       requestBody:
         content:
           application/json-patch+json:
@@ -2296,7 +2316,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImsSdmSubscription'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '204':
+          description: Successful modification
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -2356,6 +2378,61 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /{imsUeId}/repository-data:
+    get:
+      summary: Retrieve the repository data associated to an IMPU and service indication list
+      operationId: GetRepositoryDataServIndList
+      tags:
+        - Repository data list
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nhss-ims-sdm
+        - oAuth2ClientCredentials:
+          - nhss-ims-sdm
+          - nhss-ims-sdm:repository-data:read
+      parameters:
+        - name: imsUeId
+          in: path
+          description: IMS Identity
+          required: true
+          schema:
+            $ref: '#/components/schemas/ImsUeId'
+        - name: serviceIndicationList
+          in: query
+          description: Identifiers of a services related data
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ServiceIndication'
+            minItems: 1
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryDataList'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '503':
@@ -2672,14 +2749,6 @@ components:
         scscfName:
           type: string
 
-    RequestedNodes:
-      type: array
-      minItems: 1
-      uniqueItems: true
-      properties:
-        requestedNode:
-          $ref: '#/components/schemas/RequestedNode'
-
     PsLocation:
       type: object
       oneOf:
@@ -2751,7 +2820,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         amfLocation:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NrLocation'
-        SmsfAddress:
+        smsfAddress:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         timeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
@@ -2972,14 +3041,6 @@ components:
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
-    UpdatedUeReachabilitySubscription:
-      type: object
-      required:
-       - expiry
-      properties:
-        expiry:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-
     UeReachabilityNotification:
       type: object
       required:
@@ -3135,6 +3196,18 @@ components:
         $ref: '#/components/schemas/DataSetName'
       minItems: 1
       uniqueItems: true
+
+    RepositoryDataList:
+      description: List of Repository Data for the requested Service Indications
+      type: object
+      required:
+        - repositoryDataMap
+      properties:
+        repositoryDataMap:
+          description: A map (list of key-value pairs where ServiceIndication serves as key) of RepositoryData
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RepositoryData'
 
 # SIMPLE TYPES:
 

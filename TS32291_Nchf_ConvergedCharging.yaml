@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.0.2
+  version: 3.1.0-alpha.1
   description: |
-    ConvergedCharging Service    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    ConvergedCharging Service    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V16.7.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V17.0.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -471,8 +471,18 @@ components:
           $ref: '#/components/schemas/FinalUnitAction'
         restrictionFilterRule:
           $ref: '#/components/schemas/IPFilterRule'
+        restrictionFilterRuleList:
+          type: array
+          items:
+            $ref: '#/components/schemas/IPFilterRule'
+          minItems: 1
         filterId:
           type: string
+        filterIdList:
+          type: array
+          items:
+            type: string
+          minItems: 1
         redirectServer:
           $ref: '#/components/schemas/RedirectServer'
       required:
@@ -587,6 +597,10 @@ components:
           $ref: '#/components/schemas/MAPDUSessionInformation'
         enhancedDiagnostics:
           $ref: '#/components/schemas/EnhancedDiagnostics5G'
+        redundantTransmissionType:
+          $ref: '#/components/schemas/RedundantTransmissionType'
+        pDUSessionPairID:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
       required:
         - pduSessionID
         - dnnId
@@ -1224,6 +1238,7 @@ components:
             - CEF
             - NEF
             - MnS_Producer
+            - SGSN
         - type: string
     ChargingCharacteristicsSelectionMode:
       anyOf:
@@ -1277,6 +1292,9 @@ components:
             - ADDITION_OF_ACCESS
             - REMOVAL_OF_ACCESS
             - START_OF_SDF_ADDITIONAL_ACCESS
+            - REDUNDANT_TRANSMISSION_CHANGE
+            - CGI_SAI_CHANGE
+            - RAI_CHANGE
         - type: string
     FinalUnitAction:
       anyOf:
@@ -1505,4 +1523,13 @@ components:
           enum:
             - OPERATION_SUCCEEDED
             - OPERATION_FAILED
+        - type: string
+    RedundantTransmissionType:
+      anyOf:
+        - type: string
+          enum:            
+            - NON_TRANSMISSION
+            - END_TO_END_USER_PLANE_PATHS
+            - N3/N9 
+            - TRANSPORT_LAYER
         - type: string

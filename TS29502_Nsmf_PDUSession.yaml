@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.2'
+  version: '1.2.0-alpha.3'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V17.1.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V17.2.0; 5G System; Session Management Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -149,7 +149,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -185,7 +185,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -263,7 +263,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -299,7 +299,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -336,7 +336,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextCreateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -526,7 +526,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -562,7 +562,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -639,7 +639,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -675,7 +675,7 @@ paths:
             application/json: # message without binary body part
               schema:
                 $ref: '#/components/schemas/SmContextUpdateError'
-            application/problem+json: 
+            application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
             multipart/related:  # message with binary body part(s)
@@ -1831,7 +1831,7 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TwifInfo'
         ranUnchangedInd:
           type: boolean
-        samePcfSelectionIndication:
+        samePcfSelectionInd:
           type: boolean
           default: false
         targetDnai:
@@ -1845,6 +1845,8 @@ components:
         ivSmfRestoration:
           type: boolean
           default:  false
+        smfBindingInfo:
+          type: string
       required:
         - servingNfId
         - servingNetwork
@@ -2016,6 +2018,14 @@ components:
           minItems: 1
         ddnFailureSubs:
           $ref: '#/components/schemas/DdnFailureSubs'
+        skipN2PduSessionResRelInd:
+          type: boolean
+          default: false
+        secondaryRatUsageDataReportContainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecondaryRatUsageDataReportContainer'
+          minItems: 1
 
     SmContextUpdatedData:
       description: Data within Update SM Context Response
@@ -2305,6 +2315,10 @@ components:
         ivSmfRestoration:
           type: boolean
           default:  false
+        oldSmContextRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        redundantPduSessionInfo:
+          $ref: '#/components/schemas/RedundantPduSessionInformation'
       required:
         - dnn
         - servingNetwork
@@ -2566,6 +2580,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         guami:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+        secondaryRatUsageDataReportContainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecondaryRatUsageDataReportContainer'
+          minItems: 1
       required:
         - requestIndication
 
@@ -3005,6 +3024,8 @@ components:
         dlDataWaitingInd:
           type: boolean
           default: false
+        afCoordinationInfo:
+          $ref: '#/components/schemas/AfCoordinationInfo'
       required:
         - ueEpsPdnConnection
 
@@ -3178,7 +3199,7 @@ components:
       type: object
       properties:
         error:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: '#/components/schemas/ExtProblemDetails'
         pti:
           $ref: '#/components/schemas/ProcedureTransactionId'
         n1smCause:
@@ -3328,6 +3349,8 @@ components:
           minItems: 1
         nspuSupportInd:
           type: boolean
+        smfBindingInfo:
+          type: string
       required:
         - pduSessionId
         - dnn
@@ -3478,7 +3501,7 @@ components:
     TransferMtDataError:
       description: Transfer MT Data Error Response
       allOf:
-      - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      - $ref: '#/components/schemas/ExtProblemDetails'
       - $ref: '#/components/schemas/TransferMtDataAddInfo'
 
     TransferMtDataAddInfo:
@@ -3637,6 +3660,10 @@ components:
       properties:
         rsn:
           $ref: '#/components/schemas/Rsn'
+        pduSessionPairId:
+          type: integer
+          minimum: 0
+          maximum: 255
       required:
         - rsn
 
@@ -3666,6 +3693,37 @@ components:
       required:
         - targetDnai
         - smfSelectionType
+
+    AfCoordinationInfo:
+      description: AF Coordination Information
+      type: object
+      properties:
+        sourceDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        sourceUeIpv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        sourceUeIpv6Prefix:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        notificationInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationInfo'
+          minItems: 1
+
+    NotificationInfo:
+      description: Notification Correlation ID and Notification URI provided by the NF service consumer
+      type: object
+      properties:
+        notifId:
+          type: string
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        upBufferInd:
+          type: boolean
+          default: false
+      required:
+        - notifId
+        - notifUri
 
 #
 # SIMPLE DATA TYPES
@@ -3715,6 +3773,11 @@ components:
     ForwardingBearerContainer:
       description: Forwarding Bearer Container
       type: string
+
+    SecondaryRatUsageDataReportContainer:
+      description: Secondary Rat Usage Data Report Container
+      type: string
+      format: byte
 
 #
 # ENUMERATIONS
@@ -4053,6 +4116,7 @@ components:
         enum:
           - EPS_PDN_CONNECTION
           - SM_CONTEXT
+          - AF_COORDINATION_INFO
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4062,6 +4126,7 @@ components:
         Type of SM Context information. Possible values are
           - EPS_PDN_CONNECTION
           - SM_CONTEXT
+          - AF_COORDINATION_INFO
 
     PsaIndication:
       anyOf:
@@ -4069,6 +4134,8 @@ components:
         enum:
           - PSA_INSERTED
           - PSA_REMOVED
+          - PSA_INSERTED_ONLY
+          - PSA_REMOVED_ONLY
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4078,6 +4145,8 @@ components:
         Indication of whether a PSA is inserted or removed. Possible values are
           - PSA_INSERTED
           - PSA_REMOVED
+          - PSA_INSERTED_ONLY
+          - PSA_REMOVED_ONLY
 
     N4MessageType:
       anyOf:
@@ -4183,6 +4252,7 @@ components:
         enum:
           - V1
           - V2
+          - NONE
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4192,6 +4262,7 @@ components:
         Redundancy Sequence Number. Possible values are
           - V1
           - V2
+          - NONE
 
     SmfSelectionType:
       anyOf:
@@ -4217,13 +4288,13 @@ components:
       description: representation of updates to apply to the PDU session
       required: true
       content:
-        application/+json: # message without binary body part
+        application/json:   # message without binary body part
           schema:
             $ref: '#/components/schemas/VsmfUpdateData'
         multipart/related:  # message with binary body part(s)
           schema:
             type: object
-            properties: # Request parts
+            properties:     # Request parts
               jsonData:
                 $ref: '#/components/schemas/VsmfUpdateData'
               binaryDataN1SmInfoToUe:
@@ -4363,7 +4434,7 @@ components:
         application/json: # message without binary body part
           schema:
             $ref: '#/components/schemas/PduSessionCreateError'
-        application/problem+json: 
+        application/problem+json:
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         multipart/related:  # message with binary body part(s)
@@ -4391,7 +4462,7 @@ components:
         application/json: # message without binary body part
           schema:
             $ref: '#/components/schemas/HsmfUpdateError'
-        application/problem+json: 
+        application/problem+json:
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         multipart/related:  # message with binary body part(s)
@@ -4419,7 +4490,7 @@ components:
         application/json: # message without binary body part
           schema:
             $ref: '#/components/schemas/VsmfUpdateError'
-        application/problem+json: 
+        application/problem+json:
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         multipart/related:  # message with binary body part(s)

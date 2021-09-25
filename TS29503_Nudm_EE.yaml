@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.3'
+  version: '1.2.0-alpha.4'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.3.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.4.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -225,16 +225,42 @@ components:
         - eeSubscription
       properties:
         eeSubscription:
-            $ref: '#/components/schemas/EeSubscription'
+          $ref: '#/components/schemas/EeSubscription'
         numberOfUes:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         eventReports:
-            type: array
-            items:
-              $ref: '#/components/schemas/MonitoringReport'
-            minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/MonitoringReport'
+          minItems: 1
         epcStatusInd:
           type: boolean
+        failedMonitoringConfigs:
+          description: A map (list of key-value pairs where referenceId converted from integer to string serves as key; see clause 6.4.6.3.2) of FailedMonitoringConfiguration
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FailedMonitoringConfiguration'
+          minProperties: 1
+        failedMoniConfigsEPC:
+          description: A map (list of key-value pairs where referenceId converted from integer to string serves as key; see clause 6.4.6.3.2) of FailedMonitoringConfiguration, the key value "ALL" may be used to identify a map entry which contains the failed cause of the EE subscription was not successful in EPC domain.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FailedMonitoringConfiguration'
+          minProperties: 1
+
+
+    FailedMonitoringConfiguration:
+      description: Contains the event type and failed cause of the failed Monitoring Configuration in the EE subscription
+      type: object
+      required:
+        - eventType
+        - failedCause
+      properties:
+        eventType:
+          $ref: '#/components/schemas/EventType'
+        failedCause:
+          $ref: '#/components/schemas/FailedCause'
+
 
     EeSubscription:
       type: object
@@ -269,7 +295,11 @@ components:
           type: string
         secondCallbackRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-
+        excludeGpsiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
 
 
     MonitoringConfiguration:
@@ -373,6 +403,9 @@ components:
         - $ref: '#/components/schemas/RoamingStatusReport'
         - $ref: '#/components/schemas/CnTypeChangeReport'
         - $ref: '#/components/schemas/CmInfoReport'
+        - $ref: '#/components/schemas/LossConnectivityReport'
+        - $ref: '#/components/schemas/LocationReport'
+        - $ref: '#/components/schemas/PdnConnectivityStatReport'
 
     ReachabilityForSmsReport:
       type: object
@@ -402,6 +435,8 @@ components:
             boolean
         newServingPlmn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        accessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
 
     CnTypeChangeReport:
       type: object
@@ -489,6 +524,11 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MonitoringEvent'
           minProperties: 1
+        excludeGpsiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
 
     MonitoringEvent:
       type: object
@@ -499,6 +539,48 @@ components:
           $ref: '#/components/schemas/EventType'
         revokedCause:
           $ref: '#/components/schemas/RevokedCause'
+
+    LossConnectivityReport:
+      type: object
+      required:
+        - lossOfConnectReason
+      properties:
+        lossOfConnectReason:
+          $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/LossOfConnectivityReason'
+
+    LocationReport:
+      type: object
+      required:
+        - location
+      properties:
+        location:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+
+    PdnConnectivityStatReport:
+      type: object
+      required:
+        - pdnConnStat
+      properties:
+        pdnConnStat:
+          $ref: '#/components/schemas/PdnConnectivityStatus'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        pduSeId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Prefixes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+          minItems: 1
+        ipv6Addrs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
+        pduSessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
 
 
 # SIMPLE TYPES:
@@ -536,6 +618,13 @@ components:
           - DL_DATA_DELIVERY_STATUS
           - PDN_CONNECTIVITY_STATUS
           - UE_CONNECTION_MANAGEMENT_STATE
+          - ACCESS_TYPE_REPORT
+          - REGISTRATION_STATE_REPORT
+          - CONNECTIVITY_STATE_REPORT
+          - TYPE_ALLOCATION_CODE_REPORT
+          - FREQUENT_MOBILITY_REGISTRATION_REPORT
+          - PDU_SES_REL
+          - PDU_SES_EST
         - type: string
 
     LocationAccuracy:
@@ -588,4 +677,26 @@ components:
         - type: string
           enum:
           - NOT_ALLOWED
+          - EXCLUDED_FROM_GROUP
+        - type: string
+
+    FailedCause:
+      anyOf:
+        - type: string
+          enum:
+          - AF_NOT_ALLOWED
+          - MTC_PROVIDER_NOT_ALLOWED
+          - MONITORING_NOT_ALLOWED
+          - UNSUPPORTED_MONITORING_EVENT_TYPE
+          - UNSUPPORTED_MONITORING_REPORT_OPTIONS
+          - UNSPECIFIED
+        - type: string
+      description: Indicates the Failed cause of the failed Monitoring Configuration in the EE subscription
+
+    PdnConnectivityStatus:
+      anyOf:
+        - type: string
+          enum:
+          - ESTABLISHED
+          - RELEASED
         - type: string

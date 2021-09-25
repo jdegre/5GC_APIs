@@ -1,0 +1,258 @@
+openapi: 3.0.0
+info:
+  title: Eees_EECRegistration
+  description: |
+    API for EEC registration.
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+  version: "1.0.0-alpha.1"
+externalDocs:
+  description: 3GPP TS 24.558 V0.4.0 Enabling Edge Applications; Protocol specification.
+  url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+servers:
+  - url: '{apiRoot}/eees-eecregistration/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 6.1 of 3GPP TS 24.558
+paths:
+  /registrations:
+    post:
+      description: Create a new EEC registration at the EES.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EECRegistration'
+      responses:
+        '201':
+          description: Created (EEC information is registered successfully at EES)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EECRegistration'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /registrations/{registrationId}:
+    put:
+      description: Update an existing EEC registration a the EES.
+      parameters:
+        - name: registrationId
+          in: path
+          description: Identifies an individual EEC registration
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Parameters to replace the existing registration
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EECRegistration'
+      responses:
+        '200':
+          description: OK (An individual EEC registration resource updated successfully)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EECRegistration'
+        '204':
+          description: No Content (An individual EEC registration resource updated successfully).
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    delete:
+      description: Remove an existing ECC registration at EES.
+      parameters:
+        - name: registrationId
+          in: path
+          description: Identifies an individual EEC registration
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content (An individual EEC registration resource deleted successfully).
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+  schemas:
+    EECRegistration:
+      description: Describes the parameters to perform EEC Registration related operations.
+      type: object
+      properties:
+        eecId:
+          type: string
+          description: Represents a unique identifier of the EEC.
+        ueId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        acProfs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ACProfile'
+          description: Profiles of ACs for which the EEC provides edge enabling services.
+        expTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        # eecSvcContSupp:
+          # type: array
+          # items:
+            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario' 
+          # description: Profiles of ACs for which the EEC provides edge enabling services.
+        eecCntxId:
+          type: string
+          description: Identifier of the EEC context obtained from a previous registration.
+        srcEesId:
+          type: string
+          description: Identifier of the EES that provided EEC context ID.
+        # endPt:
+          # $ref: 'TS29558_CommonData.yaml#/components/schemas/EndPoint' 
+      required:
+        - eecId
+    ACProfile:
+      description: ECS service provisioning response information.
+      type: object
+      properties:
+        acId:
+          type: string
+          description: Identity of the AC.
+        acType:
+          type: string
+          description: The category or type of AC.
+        prefEcsps:
+          type: array
+          items:
+            type: string
+          description: Indicates to the ECS which ECSPs are preferred for the AC.
+        acSchedule:
+          $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+        expAcGeoServArea:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+        # acSvcContSupp:
+          # type: array
+          # items:
+            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario' 
+          # description: Profiles of ACs for which the EEC provides edge enabling services.
+        eass:
+          type: array
+          items:
+            $ref: '#/components/schemas/EasDetail'
+          minItems: 1
+          description: List of EAS information.
+      required:
+        - acId
+    EasDetail:    
+      description: EAS details.
+      type: object
+      properties:  
+        easId:
+          type: string
+          description: Identifier of the EAS.          
+        expectedSvcKPIs:  
+          $ref: '#/components/schemas/ACServiceKPIs'
+        minimumReqSvcKPIs:  
+          $ref: '#/components/schemas/ACServiceKPIs'
+      required:
+        - easId
+    ACServiceKPIs:       
+      description: EAS details.
+      type: object
+      properties:  
+        connBand:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        reqRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        respTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        avail:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        reqComp:
+          type: string
+          description: The compute resources required by the AC.
+        reqGrapComp:
+          type: string
+          description: The graphical compute resources required by the AC.
+        reqMem:
+          type: string
+          description: The memory resources required by the AC.
+        reqStrg:
+          type: string
+          description: The storage resources required by the AC.

@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.1
+  version: 1.2.0-alpha.2
   title: Nausf_UPUProtection Service
   description: |
     AUSF UPU Protection Service
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.509 V17.2.0; 5G System; Authentication Server Services
+  description: 3GPP TS 29.509 V17.3.0; 5G System; Authentication Server Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
 
 servers:
@@ -77,6 +77,7 @@ paths:
               description: 'Identifier of target AUSF (service) instance towards which the request is redirected'
               schema:
                 type: string
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -89,7 +90,9 @@ components:
 
   schemas:
 
+#
 # COMPLEX TYPES:
+#
 
     UpuInfo:
       description: Contains the UE parameters update Information.
@@ -100,6 +103,8 @@ components:
           items:
             $ref: '#/components/schemas/UpuData'
           minItems: 1
+        upuHeader:
+          $ref: '#/components/schemas/UpuHeader'
         upuAckInd:
           $ref: '#/components/schemas/UpuAckInd'
         supportedFeatures:
@@ -107,6 +112,7 @@ components:
       required:
         - upuDataList
         - upuAckInd
+
     UpuSecurityInfo:
       description: Contains the material generated for securing of UPU. It contains at least the UPU-MAC-IAUSF and CounterUPU.
       type: object
@@ -120,6 +126,7 @@ components:
       required:
         - upuMacIausf
         - counterUpu
+
     UpuData:
       description: Contains UE parameters update data set (e.g., the updated Routing ID Data or the Default configured NSSAI).
       type: object
@@ -137,16 +144,25 @@ components:
         - required: [secPacket]
         - required: [defaultConfNssai]
 
+#
 # SIMPLE TYPES:
+#
 
     UpuMac:
       description: MAC value for protecting UPU procedure (UPU-MAC-IAUSF and UPU-MAC-IUE).
       type: string
       pattern: '^[A-Fa-f0-9]{32}$'
+
     CounterUpu:
       description: CounterUPU.
       type: string
       pattern: '^[A-Fa-f0-9]{4}$'
+
     UpuAckInd:
       description: Contains the indication of whether the acknowledgement from UE is needed.
       type: boolean
+
+    UpuHeader:
+      description: Contains the "UPU Header" IE as specified in clause 9.11.3.53A of 3GPP TS 24.501  (octet 4), encoded as 2 hexadecimal characters.
+      type: string
+      pattern: '^[A-Fa-f0-9]{2}$'
