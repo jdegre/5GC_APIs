@@ -113,6 +113,9 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [IMS Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsSDM.yaml)
 * [IMS UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29562_Nhss_imsUECM.yaml)
 
+## GBA BSF (GBA Bootstrapping Server Function)
+* [GBA Service](https://jdegre.github.io/loader.html?yaml=TS29309_Nbsp_GBA.yaml)
+
 ## SOR-AF (Steering of Roaming Application Function)
 * [Steering of Roaming](https://jdegre.github.io/loader.html?yaml=TS29550_Nsoraf_SOR.yaml)
 
@@ -121,6 +124,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## AF (Application Function)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29517_Naf_EventExposure.yaml)
+* [ProSe](https://jdegre.github.io/loader.html?yaml=TS29557_Naf_ProSe.yaml)
 
 ## CHF (Charging Function)
 * [Spending Limit Control](https://jdegre.github.io/loader.html?yaml=TS29594_Nchf_SpendingLimitControl.yaml)
@@ -147,6 +151,10 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## 5G DDNMF (Inter-5G Direct Discovery Name Management Function)
 * [Discovery](https://jdegre.github.io/loader.html?yaml=TS29555_N5g-ddnmf_Discovery.yaml)
+
+## EDGEAPP (Enabling Edge Applications)
+* [ACR Management Event](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_ACRManagementEvent.yaml)
+* [EEC Registration](https://jdegre.github.io/loader.html?yaml=TS24558_Eees_EECRegistration.yaml)
 
 ## Common API Framework (CAPIF)
 * [Discover Service](https://jdegre.github.io/loader.html?yaml=TS29222_CAPIF_Discover_Service_API.yaml)
@@ -186,6 +194,9 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Dynamic Group](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_DynamicGroup.yaml)
 * [Service Continuity](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ServiceContinuity.yaml)
 * [HD Map Dynamic Information](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_HDMapDynamicInfo.yaml)
+
+## UAS Application Enabler (UAE) Server
+* [C2 Operation Mode Management](https://jdegre.github.io/loader.html?yaml=TS29257_UAE_C2OperationModeManagement.yaml)
 
 ## SEAL (Service Enabler Architecture Layer)
 * [Network Resource Adaptation](https://jdegre.github.io/loader.html?yaml=TS29549_SS_NetworkResourceAdaptation.yaml)
