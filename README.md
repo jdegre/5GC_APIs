@@ -1,4 +1,4 @@
-# OpenAPI Specification Files for 3GPP 5G Core Network (Release 17)
+# OpenAPI Descriptions of 3GPP 5G APIs (Release 17)
 
 [![CircleCI](https://img.shields.io/circleci/build/gh/jdegre/5GC_APIs)](https://app.circleci.com/pipelines/github/jdegre/5GC_APIs?branch=master)
 
