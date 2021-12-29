@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.505 V17.4.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
+  description: 3GPP TS 29.505 V17.5.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
@@ -323,7 +323,7 @@ paths:
 
   /subscription-data/{ueId}/ue-update-confirmation-data/sor-data:
     put:
-      summary: To store the SoR acknowledgement information of a UE
+      summary: To store the SoR acknowledgement information of a UE and ME support of SOR CMCI
       operationId: CreateAuthenticationSoR
       tags:
         - Authentication SoR (Document)
@@ -359,7 +359,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
     get:
-      summary: Retrieves the SoR acknowledgement information of a UE
+      summary: Retrieves the SoR acknowledgement information of a UE and ME support of SOR CMCI
       operationId: QueryAuthSoR
       tags:
         - Authentication SoR (Document)
@@ -377,7 +377,7 @@ paths:
           required: true
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -389,6 +389,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SorData'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    patch:
+      summary: Updates the ME support of SOR CMCI information of a UE
+      operationId: UpdateAuthenticationSoR
+      tags:
+        - Authentication SoR (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -448,7 +497,7 @@ paths:
           required: true
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -519,7 +568,7 @@ paths:
           required: true
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -870,10 +919,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SessionManagementSubscriptionData'
-                minItems: 1
+                $ref: '#/components/schemas/SmSubsData'
           headers:
             Cache-Control:
               description: Cache-Control containing max-age, as described in RFC 7234, 5.2
@@ -1352,6 +1398,64 @@ paths:
           description: Upon success, an empty response body shall be returned.
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: To modify the SMF context data of a UE in the UDR
+      operationId: UpdateSmfContext
+      tags:
+        - SMF Registration (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data:registrations:write
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: pduSessionId
+          in: path
+          description: PDU session id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
   /subscription-data/{ueId}/operator-specific-data:
     get:
@@ -1472,6 +1576,89 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    put:
+      summary: To create an operator-specific data resource of a UE
+      operationId: CreateOperSpecData
+      tags:
+        - Operator-Specific Data Container (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: A map (list of key-value pairs) where operator specific data element name serves as key
+              additionalProperties:
+                $ref: '#/components/schemas/OperatorSpecificDataContainer'
+        required: true
+      responses:
+        '201':
+          description: Upon success, a response body containing a representation of the created Operator Specific Data resource shall be returned
+          content:
+            application/json:
+              schema:
+                type: object
+                description: A map (list of key-value pairs) where operator specific data element name serves as key
+                additionalProperties:
+                  $ref: '#/components/schemas/OperatorSpecificDataContainer'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/subscription-data/{ueId}/operator-specific-data'
+              required: true
+              schema:
+                type: string
+        '204':
+          description: No content
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    delete:
+      summary: To remove an operator-specific data resource of a UE
+      operationId: DeleteOperSpecData
+      tags:
+        - Operator-Specific Data Container (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned.
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -2323,7 +2510,11 @@ paths:
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+            anyOf:
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+              - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+              - type: string
+                pattern: '^anyUE$'
         - name: afInstanceId
           in: path
           description: Application Function Instance Identifier
@@ -2376,7 +2567,11 @@ paths:
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+            anyOf:
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+              - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+              - type: string
+                pattern: '^anyUE$'
         - name: afInstanceId
           in: path
           description: Application Function Instance Identifier
@@ -2410,7 +2605,11 @@ paths:
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+            anyOf:
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+              - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+              - type: string
+                pattern: '^anyUE$'
         - name: afInstanceId
           in: path
           description: Application Function Instance Identifier
@@ -2454,7 +2653,11 @@ paths:
           description: Identifier of the UE
           required: true
           schema:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+            anyOf:
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+              - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/ExtGroupId'
+              - type: string
+                pattern: '^anyUE$'
         - name: supported-features
           in: query
           description: Features required to be supported by the target NF
@@ -3443,7 +3646,7 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/VarUeGroupId'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -3488,7 +3691,7 @@ paths:
               type: string
           style: form
           explode: false
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -3887,7 +4090,7 @@ paths:
           explode: false
           schema:
              $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SharedDataIds'
-        - name: supportedFeatures
+        - name: supported-features
           in: query
           description: Supported Features
           schema:
@@ -4154,7 +4357,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                  - $ref: '#/components/schemas/SubscriptionDataSubscriptions'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
@@ -5299,7 +5504,427 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SmfSubscriptionInfo'
+                $ref: '#/components/schemas/NiddAuthorizationInfo'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /subscription-data/{ueId}/5mbs-data:
+    get:
+      summary: Retrieves the 5mbs subscription data of a UE
+      operationId: Query5mbsData
+      tags:
+        - 5MBSSubscriptionData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/MbsSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /subscription-data/{ueId}:
+    get:
+      summary: Retrieve multiple subscribed data sets of a UE
+      operationId: QueryUeSubscribedData
+      tags:
+        - UE Subscribed Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE Id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: dataset-names
+          in: query
+          description: List of dataset names
+          style: form
+          explode: false
+          schema:
+            $ref: '#/components/schemas/DatasetNames'
+        - name: serving-plmn
+          in: query
+          description: Serving PLMN Id
+          schema:
+            $ref: '#/components/schemas/VarPlmnId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeSubscribedDataSets'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /subscription-data/{ueId}/service-specific-authorization-data/{serviceType}:
+    get:
+      summary: Retrieve ServiceSpecific Authorization Data
+      operationId: GetSSAuData
+      tags:
+        - Query Service Specific Authorization Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE ID
+          required: true
+          schema:
+            type: string
+            pattern: '^(msisdn-[0-9]{5,15}|.+|extid-[^@]+@[^@]+|extgroupid-[^@]+@[^@]+)$'
+        - name: serviceType
+          in: path
+          description: Service Type
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SSAU.yaml#/components/schemas/ServiceType'
+        - name: single-nssai
+          in: query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VarSnssai'
+          description: single NSSAI
+          required: true
+        - name: dnn
+          in: query
+          description: DNN
+          required: true
+          schema:
+            $ref: '#/components/schemas/Dnn'
+        - name: mtc-provider-information
+          in: query
+          description: MTC Provider Information
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        - name: af-id
+          in: query
+          description: Application Function Identifier
+          schema:
+            type: string
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /subscription-data/{ueId}/context-data/service-specific-authorizations/{serviceType}:
+    put:
+      summary: Create Service Specific Authorization Info
+      operationId: CreateServiceSpecificAuthorizationInfo
+      tags:
+        - Service Specific Authorization Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: serviceType
+          in: path
+          description: Service Type
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SSAU.yaml#/components/schemas/ServiceType'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceSpecificAuthorizationInfo'
+        required: true
+      responses:
+        '204':
+          description: Upon success, an empty response body shall be returned
+        '201':
+          description: Upon successful creation, the created resource shall be returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceSpecificAuthorizationInfo'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete Service Specific Authorization Info
+      operationId: RemoveServiceSpecificAuthorizationInfo
+      tags:
+        - Service Specific Authorization Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: serviceType
+          in: path
+          description: Service Type
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SSAU.yaml#/components/schemas/ServiceType'
+      responses:
+        '204':
+          description: Expected response to a successful subscription removal
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modify Service Specific Authorization Info
+      operationId: ModifyServiceSpecificAuthorizationInfo
+      tags:
+        - Service Specific Authorization Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: serviceType
+          in: path
+          description: Service Type
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SSAU.yaml#/components/schemas/ServiceType'
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+        required: true
+      responses:
+        '204':
+          description: Expected response to a valid request
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '403':
+          description: modification is rejected
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    get:
+      summary: Retrieve Service Specific Authorization Info
+      operationId: GetServiceSpecificAuthorizationInfo
+      tags:
+        - Service Specific Authorization Info (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: serviceType
+          in: path
+          description: Service Type
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SSAU.yaml#/components/schemas/ServiceType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceSpecificAuthorizationInfo'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /subscription-data/{ueId}/context-data/roaming-information:
+    put:
+      summary: Update the Roaming Information in the EPC domain
+      operationId: UpdateRoamingInformation
+      tags:
+        - Update the Roaming Information in the EPC domain (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoamingInfo'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoamingInfo'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/subscription-data/{ueId}/context-data/roaming-information'
+              required: true
+              schema:
+                type: string
+        '204':
+          description: Upon success, an empty response body shall be returned
+        default:
+          description: Unexpected error
+
+    get:
+      summary: Retrieves the Roaming Information in the EPC domain
+      operationId: QueryRoamingInformation
+      tags:
+        - Retrieve the Roaming Information in the EPC domain (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoamingInfo'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -5343,6 +5968,9 @@ components:
         akmaAllowed:
           type: boolean
           default: false
+        routingId:
+          type: string
+          pattern: '^[0-9]{1,4}$'
 
     SequenceNumber:
       description: Contains the SQN.
@@ -5423,9 +6051,7 @@ components:
         smsSubsData:
           $ref: '#/components/schemas/SmsSubscriptionData'
         smData:
-          type: array
-          items:
-            $ref: '#/components/schemas/SessionManagementSubscriptionData'
+          $ref: '#/components/schemas/SmSubsData'
         traceData:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
         smsMngData:
@@ -5448,6 +6074,9 @@ components:
           $ref: '#/components/schemas/PpProfileData'
         niddAuthData:
           $ref: '#/components/schemas/AuthorizationData'
+        mbsSubscriptionData:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/MbsSubscriptionData'
+
     AccessAndMobilitySubscriptionData:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/AccessAndMobilitySubscriptionData'
     SmfSelectionSubscriptionData:
@@ -5456,8 +6085,8 @@ components:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
     Dnn:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-    SessionManagementSubscriptionData:
-      $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SessionManagementSubscriptionData'
+    SmSubsData:
+      $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SmSubsData'
     Amf3GppAccessRegistration:
       $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/Amf3GppAccessRegistration'
     AmfNon3GppAccessRegistration:
@@ -5468,6 +6097,8 @@ components:
       $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/SmsfRegistration'
     LocationInfo:
       $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/LocationInfo'
+    RoamingInfo:
+      $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/RoamingInfoUpdate'
     SmsManagementSubscriptionData:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SmsManagementSubscriptionData'
     SmsSubscriptionData:
@@ -5582,8 +6213,7 @@ components:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SdmSubscription'
         subscriptionId:
           type: string
-
-        supported-features:
+        supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     DataChangeNotify:
       description: Container for data which have changed and notification was requested when changed.
@@ -5651,6 +6281,8 @@ components:
           $ref: 'TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
         sorMacIue:
           $ref: 'TS29509_Nausf_SoRProtection.yaml#/components/schemas/SorMac'
+        meSupportOfSorCmci:
+          type: boolean
       required:
         - provisioningTime
         - ueUpdateStatus
@@ -6008,3 +6640,50 @@ components:
             $ref: 'TS29503_Nudm_PP.yaml#/components/schemas/PpDataEntry'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    UeSubscribedDataSets:
+      description: Contains the subscribed data sets of a UE.
+      type: object
+      properties:
+        amData:
+          $ref: '#/components/schemas/AccessAndMobilitySubscriptionData'
+        smfSelData:
+          $ref: '#/components/schemas/SmfSelectionSubscriptionData'
+        smsSubsData:
+          $ref: '#/components/schemas/SmsSubscriptionData'
+        smData:
+          $ref: '#/components/schemas/SmSubsData'
+        traceData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
+        smsMngData:
+          $ref: '#/components/schemas/SmsManagementSubscriptionData'
+        lcsPrivacyData:
+          $ref: '#/components/schemas/LcsPrivacyData'
+        lcsMoData:
+          $ref: '#/components/schemas/LcsMoData'
+        lcsBcaData:
+          $ref: '#/components/schemas/LcsBroadcastAssistanceTypesData'
+        v2xData:
+          $ref: '#/components/schemas/V2xSubscriptionData'
+        proseData:
+          $ref: '#/components/schemas/ProseSubscriptionData'
+        odbData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/OdbData'
+        eeProfileData:
+          $ref: '#/components/schemas/EeProfileData'
+        ppProfileData:
+          $ref: '#/components/schemas/PpProfileData'
+        niddAuthData:
+          $ref: '#/components/schemas/AuthorizationData'
+
+    ServiceSpecificAuthorizationInfo:
+      description: Information related to active Service Specific Authorizations
+      type: object
+      required:
+        - serviceSpecificAuthorizationList
+      properties:
+        serviceSpecificAuthorizationList:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_NIDDAU.yaml#/components/schemas/AuthorizationInfo'
+          minItems: 1

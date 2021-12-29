@@ -1,0 +1,681 @@
+openapi: 3.0.0
+info:
+  title: Ntsctsf_QoSandTSCAssistance Service API
+  version: 1.0.0-alpha.1
+  description: |
+    TSCTSF QoS and TSC Assistance Service.
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.565 V1.0.0; 5G System; Time Sensitive Communication and Time Synchronization function Services; Stage 3.
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
+#
+servers:
+  - url: '{apiRoot}/ntsctsf-qos-tscai/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - ntsctsf-qos-tscai
+paths:
+  /tsc-app-sessions:
+    post:
+      summary: Creates a new Individual TSC Application Session Context resource
+      operationId: PostTSCAppSessions
+      tags:
+        - TSC Application Sessions (Collection)
+      requestBody:
+        description: Contains the information for the creation the resource
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TscAppSessionContextData'
+      responses:
+        '201':
+          description: Successful creation of the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscAppSessionContextData'
+          headers:
+            Location:
+              description: 'Contains the URI of the created individual TSC application session context resource, according to the structure: {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId} or the URI of the created events subscription sub-resource, according to the structure: {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId}/events-subscription}'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        terminationRequest:
+          '{$request.body#/notifUri}/terminate':
+            post:
+              requestBody:
+                description: Request of the termination of the Individual TSC Application Session Context
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TerminationInfo'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged.
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        eventNotification:
+          '{$request.body#/evSubsc/notifUri}/notify':
+            post:
+              requestBody:
+                description: Notification of an event occurrence in the TSCTSF.
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+#               
+  /tsc-app-sessions/{appSessionId}:
+    get:
+      summary: "Reads an existing Individual TSC Application Session Context"
+      operationId: GetTSCAppSession
+      tags:
+        - Individual TSC Application Session Context (Document)
+      parameters:
+        - name: appSessionId
+          description: string identifying the resource
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A representation of the resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscAppSessionContextData'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: "Modifies an existing Individual TSC Application Session Context"
+      operationId: ModAppSession
+      tags:
+        - Individual TSC Application Session Context (Document)
+      parameters:
+        - name: appSessionId
+          description: string identifying the resource
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: modification of the resource.
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/TscAppSessionContextUpdateData'
+      responses:
+        '200':
+          description: successful modification of the resource and a representation of that resource is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscAppSessionContextData'
+        '204':
+          description: The successful modification
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        eventNotification:
+          '{$request.body#/evSubsc/notifUri}/notify':
+            post:
+              requestBody:
+                description: Notification of an event occurrence in the TSCTSF.
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+#                
+#                
+  /tsc-app-sessions/{appSessionId}/delete:
+    post:
+      summary: "Deletes an existing Individual TSC Application Session Context"
+      operationId: DeleteTSCAppSession
+      tags:
+        - Individual TSC Application Session Context (Document)
+      parameters:
+        - name: appSessionId
+          description: string identifying the Individual TSC Application Session Context resource
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: deletion of the Individual TSC Application Session Context resource, request notification
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsSubscReqData'
+      responses:
+        '200':
+          description: The deletion of the resource is confirmed and a resource is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsNotification'
+        '204':
+          description: The deletion is confirmed without returning additional data.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+#               
+  /tsc-app-sessions/{appSessionId}/events-subscription:
+    put:
+      summary: "creates or modifies an Events Subscription subresource"
+      operationId: putEventsSubsc
+      tags:
+        - Events Subscription (Document)
+      parameters:
+        - name: appSessionId
+          description: string identifying the Events Subscription resource
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Creation or modification of an Events Subscription resource.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsSubscReqData'
+      responses:
+        '201':
+          description: The creation of the Events Subscription resource is confirmed and its representation is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscAppSessionContextData'
+          headers:
+            Location:
+              description: 'Contains the URI of the created Events Subscription resource, according to the structure: {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId}/events-subscription}'
+              required: true
+              schema:
+                type: string
+        '200':
+          description: The modification of the Events Subscription resource is confirmed its representation is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscAppSessionContextData'
+        '204':
+          description: The modification of the Events Subscription subresource is confirmed without returning additional data.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        eventNotification:
+          '{$request.body#/notifUri}/notify':
+            post:
+              requestBody:
+                description: Contains the information for the notification of an event occurrence in the TSCTSF.
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged.
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: deletes the Events Subscription subresource
+      operationId: DeleteEventsSubsc
+      tags:
+        - Events Subscription (Document)
+      parameters:
+        - name: appSessionId
+          description: string identifying the Individual TSC Application Session Context resource
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The deletion of the of the Events Subscription sub-resource is confirmed without returning additional data.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            ntsctsf-qos-tscai: Access to the Ntsctsf_QoSandTSCAssistance API
+  schemas:
+    TscAppSessionContextData:
+      description: Represents an Individual TSC Application Session Context resource.
+      type: object
+      required:
+        - notifUri
+        - afId
+        - qosReference
+      oneOf:
+        - required: [ueIpAddr]
+        - required: [ueMac]
+      properties:
+        ueIpAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        ipDomain:
+          type: string
+          description: The IPv4 address domain identifier.
+        ueMac:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        appId:
+          type: string
+          description: Identifies the Application Identifier.
+        ethFlowInfo:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+        flowInfo:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+        afId:
+          type: string
+          description: Identifies the AF identifier.
+        tscQosReq:
+          $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/TscQosRequirement'
+        qosReference:
+          type: string
+          description: Identifies a pre-defined QoS information.
+        altQosReferences:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Identifies an ordered list of pre-defined QoS information.
+        evSubsc:
+          $ref: '#/components/schemas/EventsSubscReqData'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+    TscAppSessionContextUpdateData:
+      description: Describes the authorization data of an Individual TSC Application Session Context created by the PCF.
+      type: object
+      properties:
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        appId:
+          type: string
+          description: Identifies the Application Identifier.
+        ethFlowInfo:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+        flowInfo:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+        tscQosReq:
+          $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/TscQosRequirement'
+        qosReference:
+          type: string
+          description: Identifies a pre-defined QoS information.
+        altQosReferences:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Identifies an ordered list of pre-defined QoS information.
+        evSubsc:
+          $ref: '#/components/schemas/EventsSubscReqData'
+
+    EventsSubscReqData:
+      description: Identifies the events the application subscribes to.
+      type: object
+      required:
+        - events
+        - Uri
+        - notifCorreId
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TscEvent'
+          minItems: 1
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        qosMon:
+          $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/QosMonitoringInformation'
+          minItems: 1
+        usgThres:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
+        notifCorreId:
+          type: string
+    EventsSubscReqDataRm:
+      description: this data type is defined in the same way as the EventsSubscReqData data type, but with the OpenAPI nullable property set to true.
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TscEvent'
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        qosMon:
+          $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/QosMonitoringInformationRm'
+          minItems: 1
+        usgThres:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
+        notifCorreId:
+          type: string
+      nullable: true
+    EventsNotification:
+      description: describes the notification of a matched event
+      type: object
+      required:
+        - notifCorreId
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TscEvent'
+          minItems: 1
+        failedResourcAllocReports:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ResourcesAllocationInfo'
+          minItems: 1
+        succResourcAllocReports:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ResourcesAllocationInfo'
+          minItems: 1
+        qncReports:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/QosNotificationControlInfo'
+          minItems: 1
+        qosMonReports:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/QosMonitoringReport'
+          minItems: 1
+        usgRep:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/AccumulatedUsage'
+
+
+#
+# ENUMERATIONS DATA TYPES
+#        
+    TscEvent:
+      description: Represents an event to notify to the AF.
+      anyOf:
+      - type: string
+        enum:
+          - FAILED_RESOURCES_ALLOCATION
+          - QOS_MONITORING
+          - QOS_GUARANTEED
+          - QOS_NOT_GUARANTEED
+          - SUCCESSFUL_RESOURCES_ALLOCATION
+          - USAGE_REPORT
+      - type: string
+#

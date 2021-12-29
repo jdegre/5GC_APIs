@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nnsacf_NSAC
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.3
   description: |
     Nnsacf_NSAC Service.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.536 V0.3.0; 5G System; Network Slice Admission Control Services; Stage 3.
+  description: 3GPP TS 29.536 V1.0.0; 5G System; Network Slice Admission Control Services; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.536/
 
 servers:
@@ -174,19 +174,26 @@ components:
       properties:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        anType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
         acuOperationList:
           type: array
           items:
             $ref: '#/components/schemas/AcuOperationItem'
           minItems: 1
-        amfId:
+        nfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        anType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        nfType:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        eacNotificationUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         additionalAnType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
       required:
         - supi
+        - anType
+        - nfId
+        - acuOperationList
 
     UeACResponseData:
       type: object
@@ -225,13 +232,27 @@ components:
       properties:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        anType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        pduSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         acuOperationList:
           type: array
           items:
             $ref: '#/components/schemas/AcuOperationItem'
           minItems: 1
+          maxItems: 2
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        pgwFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        additionalAnType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
       required:
         - supi
+        - anType
+        - pduSessionId
+        - acuOperationList
 
     PduACResponseData:
       type: object
@@ -241,6 +262,7 @@ components:
           items:
             $ref: '#/components/schemas/AcuFailureItem'
           minItems: 1
+          maxItems: 2
 
     #
     # SIMPLE DATA TYPES
@@ -292,6 +314,8 @@ components:
           - EXCEED_MAX_UE_NUM_3GPP
           - EXCEED_MAX_UE_NUM_N3GPP
           - EXCEED_MAX_PDU_NUM
+          - EXCEED_MAX_PDU_NUM_3GPP
+          - EXCEED_MAX_PDU_NUM_N3GPP
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -304,3 +328,5 @@ components:
         - EXCEED_MAX_UE_NUM_3GPP
         - EXCEED_MAX_UE_NUM_N3GPP
         - EXCEED_MAX_PDU_NUM
+        - EXCEED_MAX_PDU_NUM_3GPP
+        - EXCEED_MAX_PDU_NUM_N3GPP

@@ -1,0 +1,210 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0.0-alpha.1'
+  title: 'Nhss_gbaUEAU'
+  description: |
+    Nhss UE Authentication Service for GBA.
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.562 Home Subscriber Server (HSS) Services, version 17.3.0
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.562/'
+
+servers:
+  - url: '{apiRoot}/nhss-gba-ueau/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
+
+security:
+  - oAuth2ClientCredentials:
+    - nhss-gba-ueau
+  - {}
+
+paths:
+  /{ueId}/security-information/generate-auth-data:
+    post:
+      summary: Generate GBA authentication data for the UE
+      operationId: GenerateAuthData
+      tags:
+        - Generate Auth Data
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nhss-gba-ueau
+        - oAuth2ClientCredentials:
+          - nhss-gba-ueau
+          - nhss-gba-ueau:generate-auth-data:invoke
+      parameters:
+        - name: ueId
+          in: path
+          description: UE identity of the user
+          required: true
+          schema:
+            $ref: '#/components/schemas/UeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationInfoResult'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nhss-gba-ueau: Access to the nhss-gba-ueau API
+
+  schemas:
+
+#
+# COMPLEX TYPES:
+#
+
+    AuthenticationInfoRequest:
+      type: object
+      properties:
+        authenticationScheme:
+          $ref: '#/components/schemas/AuthenticationScheme'
+        resynchronizationInfo:
+          $ref: '#/components/schemas/ResynchronizationInfo'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    AuthenticationInfoResult:
+      type: object
+      properties:
+        impi:
+          $ref: '#/components/schemas/Impi'
+        3gAkaAv:
+          $ref: '#/components/schemas/3GAkaAv'
+        digestAuth:
+          $ref: '#/components/schemas/DigestAuthentication'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    ResynchronizationInfo:
+      type: object
+      required:
+        - rand
+        - auts
+      properties:
+        rand:
+          $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/Rand'
+        auts:
+          $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/Auts'
+
+    3GAkaAv:
+      type: object
+      required:
+        - rand
+        - xres
+        - autn
+        - ck
+        - ik
+      properties:
+        rand:
+          $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/Rand'
+        xres:
+          $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/Xres'
+        autn:
+          $ref: 'TS29503_Nudm_UEAU.yaml#/components/schemas/Autn'
+        ck:
+          $ref: '#/components/schemas/Ck'
+        ik:
+          $ref: '#/components/schemas/Ik'
+
+    DigestAuthentication:
+      type: object
+      required:
+        - digestRealm
+        - digestAlgorithm
+        - digestQop
+        - ha1
+      properties:
+        digestRealm:
+          type: string
+        digestAlgorithm:
+          $ref: '#/components/schemas/DigestAlgorithm'
+        digestQop:
+          $ref: '#/components/schemas/DigestQop'
+        ha1:
+          type: string
+
+
+#
+# SIMPLE TYPES:
+#
+
+    UeId:
+      type: string
+
+    Impi:
+      type: string
+
+    Ck:
+      type: string
+      pattern: '^[A-Fa-f0-9]{32}$'
+
+    Ik:
+      type: string
+      pattern: '^[A-Fa-f0-9]{32}$'
+
+#
+# ENUMS:
+#
+
+    AuthenticationScheme:
+      anyOf:
+        - type: string
+          enum:
+          - DIGEST_AKAV1_MD5
+          - DIGEST_HTTP
+        - type: string
+    DigestAlgorithm:
+      anyOf:
+        - type: string
+          enum:
+          - MD5
+          - MD5_SESS
+        - type: string
+
+    DigestQop:
+      anyOf:
+        - type: string
+          enum:
+          - AUTH
+          - AUTH_INT
+        - type: string

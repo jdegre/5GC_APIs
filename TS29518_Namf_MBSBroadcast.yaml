@@ -1,0 +1,476 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0-alpha.1
+  title: Namf_MBSBroadcast
+  description: |
+    AMF MBSBroadcast Service
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.518 V17.4.0; 5G System; Access and Mobility Management Services
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
+
+servers:
+  - url: '{apiRoot}/namf-mbs-bc/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials:
+      - namf-mbs-bc
+
+paths:
+  /mbs-contexts:
+    post:
+      summary: Namf_MBSBroadcast ContextCreate service Operation
+      tags:
+        - Broadcast MBS session contexts collection (Collection)
+      operationId: ContextCreate
+      requestBody:
+        content:
+          multipart/related:  # message with binary body part(s)
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/ContextCreateReqData'
+                binaryDataN2Information:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataN2Information:
+                contentType:  application/vnd.3gpp.ngap
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+        required: true
+      callbacks:
+        contextStatusNotification:
+          '{$request.body#/notifyUri}':
+            post:
+              requestBody:  # notification request without binary body part
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/ContextStatusNotification'
+                  multipart/related:  # notification request with binary body part(s)
+                    schema:
+                      type: object
+                      properties: # Request parts
+                        jsonData:
+                          $ref: '#/components/schemas/ContextStatusNotification'
+                        binaryDataN2Information1:
+                          type: string
+                          format: binary
+                        binaryDataN2Information2:
+                          type: string
+                          format: binary
+                        binaryDataN2Information3:
+                          type: string
+                          format: binary
+                        binaryDataN2Information4:
+                          type: string
+                          format: binary
+                        binaryDataN2Information5:
+                          type: string
+                          format: binary
+                        binaryDataN2Information6:
+                          type: string
+                          format: binary
+                        binaryDataN2Information7:
+                          type: string
+                          format: binary
+                        binaryDataN2Information8:
+                          type: string
+                          format: binary
+                        binaryDataN2Information9:
+                          type: string
+                          format: binary
+                        binaryDataN2Information10:
+                          type: string
+                          format: binary
+                    encoding:
+                      jsonData:
+                        contentType:  application/json
+                      binaryDataN2Information1:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information2:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information3:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information4:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information5:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information6:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information7:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information8:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information9:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+                      binaryDataN2Information10:
+                        contentType:  application/vnd.3gpp.ngap
+                        headers:
+                          Content-Id:
+                            schema:
+                              type: string
+              responses:
+                '204':
+                  description: successful notification
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+      responses:
+        '201':
+          description: MBS Broadcast context created successfully
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/namf-mbs-bc/<apiVersion>/mbs-contexts/{mbsContextRef}'
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:  # message without binary body part(s)
+              schema:
+                $ref: '#/components/schemas/ContextCreateRspData'
+            multipart/related:   # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Response parts
+                  jsonData:
+                    $ref: '#/components/schemas/ContextCreateRspData'
+                  binaryDataN2Information:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN2Information:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /mbs-contexts/{mbsContextRef}:
+    delete:
+      summary: Namf_MBSBroadcast ContextDelete service Operation
+      tags:
+        - Individual broadcast MBS session context (Document)
+      operationId: ContextDelete
+      parameters:
+        - name: mbsContextRef
+          in: path
+          required: true
+          description: Unique ID of the broadcast MSB session context to be deleted
+          schema:
+            type: string
+      responses:
+        '204':
+          description: successful deletion
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /mbs-contexts/{mbsContextRef}/update:
+    post:
+      summary: Namf_MBSBroadcast ContextUpdate service Operation
+      tags:
+        - Individual broadcast MBS session context (Document)
+      operationId: ContextUpdate
+      parameters:
+        - name: mbsContextRef
+          in: path
+          description: Unique ID of the broadcast MSB session context to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/related:  # message with binary body part(s)
+            schema:
+              type: object
+              properties: # Request parts
+                jsonData:
+                  $ref: '#/components/schemas/ContextUpdateReqData'
+                binaryDataN2Information:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType:  application/json
+              binaryDataN2Information:
+                contentType:  application/vnd.3gpp.ngap
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+        required: true
+      responses:
+        '200':
+          description: MBS Broadcast context updated successfully
+          content:
+            application/json:  # message without binary body part(s)
+              schema:
+                $ref: '#/components/schemas/ContextUpdateRspData'
+            multipart/related:   # message with binary body part(s)
+              schema:
+                type: object
+                properties: # Response parts
+                  jsonData:
+                    $ref: '#/components/schemas/ContextUpdateRspData'
+                  binaryDataN2Information:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType:  application/json
+                binaryDataN2Information:
+                  contentType:  application/vnd.3gpp.ngap
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            namf-mbs-bc: Access to the Namf_MBSBroadcast API
+
+  schemas:
+
+#
+# STRUCTURED DATA TYPES
+#
+    ContextCreateReqData:
+      description: Data within ContextCreate Request
+      type: object
+      properties:
+        mbsSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        areaSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaSessionId'
+        mbsServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        ngapData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        notifyUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        maxResponseTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - mbsSessionId
+        - mbsServiceArea
+        - ngapData
+        - notifyUri
+
+    ContextCreateRspData:
+      description: Data within ContextCreate Response
+      type: object
+      properties:
+        ngapData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+
+    ContextUpdateReqData:
+      description: Data within ContextUpdate Request
+      type: object
+      properties:
+        mbsServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        ngapData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        notifyUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        maxResponseTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+
+    ContextStatusNotification:
+      description: Data within ContextStatusNotify Request
+      type: object
+      properties:
+        mbsSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        areaSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaSessionId'
+        ngapDataList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+          minItems: 1
+          maxItems: 10
+        operationStatus:
+          $ref: '#/components/schemas/OperationStatus'
+      required:
+        - mbsSessionId
+
+    ContextUpdateRspData:
+      description: Data within ContextUpdate Response
+      type: object
+      properties:
+        ngapData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+
+#
+# SIMPLE DATA TYPES
+#
+
+
+#
+# ENUMERATIONS
+#
+
+    OperationStatus:
+      description: Status of a Broadcast MBS session start or update operation.
+      anyOf:
+      - type: string
+        enum:
+          - MBS_SESSION_START_COMPLETE
+          - MBS_SESSION_START_INCOMPLETE
+          - MBS_SESSION_UPDATE_COMPLETE
+          - MBS_SESSION_UPDATE_INCOMPLETE
+      - type: string

@@ -1,0 +1,145 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0.0-alpha.1'
+  title: 'Nudm_SSAU'
+  description: |
+    Nudm Service Specific Authorization Service.
+    Â© 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.5.0
+  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
+
+servers:
+  - url: '{apiRoot}/nudm-ssau/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
+
+security:
+  - oAuth2ClientCredentials:
+    - nudm-ssau
+  - {}
+
+paths:
+  /{ueIdentity}/{serviceType}/authorize:
+    post:
+      summary: Authorization for the Service specific parameters in the request.
+      operationId: ServiceSpecificAuthorization
+      tags:
+        - Service specific authorization request
+      parameters:
+        - name: ueIdentity
+          in: path
+          description: Represents the scope of the UE for which the Service Specific Parameters are authorized. Contains the GPSI of the user or the external group ID.
+          required: true
+          schema:
+            type: string
+            pattern: '^(msisdn-[0-9]{5,15}|.+|extid-[^@]+@[^@]+|extgroupid-[^@]+@[^@]+)$'
+        - name: serviceType
+          in: path
+          description: Represents the specific service for which the Service Specific Parameters are authorized.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ServiceType'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'TS29503_Nudm_NIDDAU.yaml#/components/schemas/AuthorizationInfo'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29503_Nudm_NIDDAU.yaml#/components/schemas/AuthorizationData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+      callbacks:
+        authUpdateNotification:
+          '{request.body#/authUpdateCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/AuthUpdateNotification'
+              responses:
+                '204':
+                  description: Expected response to a valid request
+
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nudm-ssau: Access to the nudm-ssau API
+
+  schemas:
+
+# COMPLEX TYPES:
+#
+    AuthUpdateNotification:
+      type: object
+      required:
+        - serviceType
+        - authUpdateInfoList
+      properties:
+        serviceType:
+          $ref: '#/components/schemas/ServiceType'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        authUpdateInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthUpdateInfo'
+          minItems: 1
+
+    AuthUpdateInfo:
+      type: object
+      required:
+        - authorizationData
+      properties:
+        authorizationData:
+          $ref: 'TS29503_Nudm_NIDDAU.yaml#/components/schemas/AuthorizationData'
+        invalidityInd:
+          type: boolean
+
+
+
+# SIMPLE TYPES:
+
+
+
+# ENUMS:
+
+    ServiceType:
+      anyOf:
+        - type: string
+          enum:
+          - AF_GUIDANCE_FOR_URSP
+        - type: string

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.4'
+  version: '1.2.0-alpha.5'
   title: 'Nudm_UECM'
   description: |
     Nudm Context Management Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.4.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.5.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -140,7 +140,7 @@ paths:
         default:
           description: Unexpected error
       callbacks:
-        deregistrationeNotification:
+        deregistrationNotification:
           '{request.body#/deregCallbackUri}':
             post:
               requestBody:
@@ -372,6 +372,60 @@ paths:
         default:
           description: Unexpected error
 
+  /{ueId}/registrations/amf-3gpp-access/roaming-info-update:
+    post:
+      summary: Update the Roaming Information
+      operationId: UpdateRoamingInformation
+      tags:
+        - Roaming Information Update
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-uecm
+        - oAuth2ClientCredentials:
+          - nudm-uecm
+          - nudm-uecm:roaming-info-update:write
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoamingInfoUpdate'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoamingInfoUpdate'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudm-uecm/<apiVersion>/{ueId}/registrations/amf-3gpp-access/roaming-info-update'
+              required: true
+              schema:
+                type: string
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
   /{ueId}/registrations/amf-non-3gpp-access:
     put:
       summary: register as AMF for non-3GPP access
@@ -432,7 +486,7 @@ paths:
         default:
           description: Unexpected error
       callbacks:
-        deregistrationeNotification:
+        deregistrationNotification:
           '{request.body#/deregCallbackUri}':
             post:
               requestBody:
@@ -690,7 +744,7 @@ paths:
         default:
           description: Unexpected error
       callbacks:
-        deregistrationeNotification:
+        deregistrationNotification:
           '{request.body#/deregCallbackUri}':
             post:
               requestBody:
@@ -771,6 +825,10 @@ paths:
           in: query
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        - name: smf-instance-id
+          in: query
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
       responses:
         '204':
           description: Expected response to a valid request
@@ -1403,7 +1461,7 @@ paths:
 
   /{ueId}/registrations/nwdaf-registrations/{nwdafRegistrationId}:
     put:
-      summary: register as NWDAF 
+      summary: register as NWDAF
       operationId: NwdafRegistration
       tags:
         - NWDAF registration
@@ -1525,6 +1583,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       requestBody:
         content:
           application/merge-patch+json:
@@ -1537,7 +1600,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+                oneOf:
+                  - $ref: '#/components/schemas/NwdafRegistration'
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
         '204':
           description: Expected response to a valid request
         '400':
@@ -1641,6 +1706,8 @@ components:
           $ref: '#/components/schemas/UeReachableInd'
         reRegistrationRequired:
           type: boolean
+        adminDeregSubWithdrawn:
+          type: boolean
 
     Amf3GppAccessRegistrationModification:
       type: object
@@ -1737,6 +1804,8 @@ components:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         reRegistrationRequired:
+          type: boolean
+        adminDeregSubWithdrawn:
           type: boolean
 
     AmfNon3GppAccessRegistrationModification:
@@ -2025,9 +2094,23 @@ components:
       properties:
         smfInstanceId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        smfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
         pgwFqdn:
           type: string
           nullable: true
+
+    RoamingInfoUpdate:
+      description: Contains the Roaming Information Update
+      type: object
+      required:
+        - servingPlmn
+      properties:
+        roaming:
+          type:
+            boolean
+        servingPlmn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
 
 
 # SIMPLE TYPES:

@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
-  title: uae-c2opmode-mngt
-  version: 1.0.0-alpha.1
+  title: UAE Server C2 Operation Mode Management Service
+  version: 1.0.0-alpha.3
   description: |
     UAE Server C2 Operation Mode Management Service.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.257 V0.2.0; Application layer support for Uncrewed Aerial System (UAS); UAS Application Enabler (UAE) Server Services; Stage 3.
+  description: 3GPP TS 29.257 V1.0.0; Application layer support for Uncrewed Aerial System (UAS); UAS Application Enabler (UAE) Server Services; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.257/
 
 servers:
@@ -24,9 +24,12 @@ security:
     - uae-c2opmode-mngt
 
 paths:
-  /configure:
+  /initiate:
     post:
       summary: Request the provisioning of C2 Operation Mode configuration information for a UAS (i.e. pair of UAV and UAV-C).
+      operationId: InitiateC2OpModeConfig
+      tags:
+        - Initiate C2 Operation Mode configuration
       requestBody:
         required: true
         content:
@@ -67,6 +70,44 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
       callbacks:
+        C2OpModeMngtCompletionNotification:
+          '{$request.body#/notificationUri}/c2mode-mngt-completion':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/C2OpModeMngtCompStatus'
+              responses:
+                '204':
+                  description: No Content. The notification was succesfull and the C2 Operation Mode Management Completion status for the concerned UAS (i.e. pair of UAV and UAV-C) was successfully received and acknowledged by the UASS.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
         SelectedC2CommunicationModeNotification:
           '{$request.body#/notificationUri}/inform-selec-c2mode':
             post:
@@ -78,29 +119,33 @@ paths:
                       $ref: '#/components/schemas/SelectedC2CommModeNotif'
               responses:
                 '204':
-                  description: No Content, Notification was succesfull. The C2 Communication Mode selected by the concerned UAS (i.e. pair of UAV and UAV-C) is successfully received and acknowledged by the UASS.
+                  description: No Content. The notification was succesfull and the C2 Communication Mode selected by the concerned UAS (i.e. pair of UAV and UAV-C) was successfully received and acknowledged by the UASS.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
                 '400':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
                 '403':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
                 '404':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
                 '411':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
                 '413':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
                 '415':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
                 '429':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
                 '500':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
                 '503':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
                 default:
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
         C2CommunicationModeSwitchingNotification:
           '{$request.body#/notificationUri}/inform-c2mode-switch':
             post:
@@ -119,28 +164,32 @@ paths:
                         $ref: '#/components/schemas/C2Result'
                 '204':
                   description: No Content. The targeted C2 Communication Mode switching for the concerned UAS (i.e. pair of UAV and UAV-C) is successfully received and acknowledged, and the UASS does not need to confirm (i.e. validate) it.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
                 '400':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
                 '403':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
                 '404':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
                 '411':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
                 '413':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
                 '415':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
                 '429':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
                 '500':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
                 '503':
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
                 default:
-                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
   securitySchemes:
@@ -150,7 +199,7 @@ components:
         clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
-            <API name in lower letters with underscores>: Access to the <API Name> API
+            uae-c2opmode-mngt: Access to the UAE_C2OperationModeManagement API
 
   schemas:
     ConfigureData:
@@ -177,6 +226,8 @@ components:
           $ref: '#/components/schemas/C2CommMode'
         secondaryC2CommMode:
           $ref: '#/components/schemas/C2CommMode'
+        c2ServiceArea:
+          $ref: '#/components/schemas/C2ServiceArea'
       required:
         - uassId
         - uasId
@@ -209,6 +260,8 @@ components:
           $ref: '#/components/schemas/UasId'
         c2CommModeSwitchType:
           $ref: '#/components/schemas/C2CommModeSwitching'
+        switchingCause:
+          $ref: '#/components/schemas/C2SwitchingCause'
       required:
         - uaeServerId
         - uasId
@@ -243,7 +296,42 @@ components:
         caaId:
           type: string
 
+    C2ServiceArea:
+      description: Represents Represents a C2 service area.
+      type: object
+      properties:
+        ncgiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+        geographicAreaList:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+
+    C2OpModeMngtCompStatus:
+      description: Represents the C2 Operation Mode Management Completion status for a UAV (e.g. UAV, UAV-C).
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/C2OpModeStatus'
+      required:
+        - status
+
 # ENUMS:
+
+    C2OpModeStatus:
+      description: Represents the C2 Operation Mode Management Completion status.
+      anyOf:
+        - type: string
+          enum:
+          - SUCCESSFUL
+          - NOT_SUCCESSFUL
+        - type: string
 
     C2CommMode:
       description: Represents C2 Communication Modes.
@@ -264,4 +352,18 @@ components:
           - NETWORK_ASSISTED_TO_DIRECT_C2
           - DIRECT_TO_UTM_NAVIGATED_C2
           - NETWORK_ASSISTED_TO_UTM_NAVIGATED_C2
+        - type: string
+
+    C2SwitchingCause:
+      description: Represents the C2 Communication Mode Switching cause.
+      anyOf:
+        - type: string
+          enum:
+          - DIRECT_LINK_QUALITY_DEGRADATION
+          - DIRECT_LINK_AVAILABLE
+          - MOVING_BVLOS
+          - LOCATION_CHANGE
+          - TRAFFIC_CONTROL_NEEDED
+          - SECURITY_REASONS
+          - OTHER_REASONS
         - type: string

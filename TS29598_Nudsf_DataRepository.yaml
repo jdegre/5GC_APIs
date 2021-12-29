@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nudsf_DataRepository
-  version: 1.1.0-alpha.4
+  version: 1.1.0-alpha.5
   description: |
     Nudsf Data Repository Service.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.598 UDSF Services, V17.3.0.
+  description: 3GPP TS 29.598 UDSF Services, V17.4.0.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.598/'
 
 servers:
@@ -93,6 +93,66 @@ paths:
         '204':
           description: >-
             The search condition does not match any Record.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary:     Bulk Deletion of Records
+      description: Delete multiple Records based on filter
+      operationId: BulkDeleteRecords
+      tags:
+        - Record CRUD
+      parameters:
+        - name: realmId
+          in: path
+          description: Identifier of the Realm
+          required: true
+          schema:
+            type: string
+            example: Realm01
+        - name: storageId
+          in: path
+          description: Identifier of the Storage
+          required: true
+          schema:
+            type: string
+            example: Storage01
+        - name: filter
+          in: query
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchExpression'
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Successful case. Response contains RecordIdList.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordIdList'
+        '204':
+          description: Successful case.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -615,7 +675,7 @@ paths:
                 blocks:
                   contentType: '*/*' # Block content type can be of any type.
                   headers:
-                    Content-ID: # Block identifier is defined by the Content-Id header.
+                    Content-Id: # Block identifier is defined by the Content-Id header.
                       schema:
                         type: string
                       required: true
@@ -1349,6 +1409,32 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        subscriptionExpiryNotification:
+          '{request.body#/expiryCallbackReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotificationInfo'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
   /{realmId}/{storageId}/meta-schemas/{schemaId}:
     summary: Access to a specific Meta Schema, identified by its SchemaId
@@ -1686,7 +1772,19 @@ components:
       required:
         - meta
       example: >-
-        {"meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-ID": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
+        {"meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-Id": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
+
+    RecordIdList:
+      description: List of Record IDs
+      type: object
+      properties:
+        recordIdList:
+          type: array
+          items:
+            type: string
+          minItems: 1
+      required:
+        - recordIdList
 
     Block:
       description: A Block can be of any type
@@ -1700,8 +1798,12 @@ components:
           $ref: '#/components/schemas/ClientId'
         callbackReference:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        expiryCallbackReference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        expiryNotification:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         subFilter:
           $ref: '#/components/schemas/SubscriptionFilter'
         supportedFeatures:
@@ -1730,7 +1832,7 @@ components:
         - descriptor
         - meta
       example: >-
-        {"descriptor": { "recordRef" : "...", "operationType" : "DELETED"}, "meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-ID": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
+        {"descriptor": { "recordRef" : "...", "operationType" : "DELETED"}, "meta": { "tags" : {"tag1" : ["value1"], "tag2" :["value2"] } }, "blocks": [{"Content-Id": "userDefBinaryBlob", "Content-Type": "text/plain", "content": "QmxvY2sgY29udGVudA=="}, {"Content-Id": "userDefJsonBlob", "Content-Type": "application/json", "content": "{"key": "ftsimpletype-999550000000002", "value": "A3E71A78377179B5B91A;imsi-999550000000123"}]}
 
     NotificationDescription:
       description: Description of a record notification
@@ -1820,6 +1922,7 @@ components:
       oneOf:
         - $ref: '#/components/schemas/SearchCondition'
         - $ref: '#/components/schemas/SearchComparison'
+        - $ref: '#/components/schemas/RecordIdList'
       example:
         { "cond": "OR", "units": [ { "op": "EQ", "tag" : "ueId", "value" : "455345" }, { "op": "EQ", "tag" : "supi", "value" : "imsi-999559807001001" } ] }
 
@@ -1915,6 +2018,17 @@ components:
           - META_AND_BLOCKS
         - type: string
 
+    NotificationInfo:
+      type: object
+      required:
+        - expiredSubscriptions
+      properties:
+        expiredSubscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationSubscription'
+          minItems: 1
+
   headers:
     Cache-Control:
       description: Cache-Control containing max-age, as described in RFC 7234, 5.2
@@ -1952,14 +2066,14 @@ components:
             meta: # The meta part shall be the first part and is mandatory but can be empty
               contentType: application/json
               headers:
-                Content-ID:
+                Content-Id:
                   schema:
                     type: string
                   required: true
             blocks: # 0 or more block parts may follow the meta part
               contentType: '*/*' # Block part can be of any type
               headers:
-                Content-ID: # Block identifier is defined by the Content-ID header.
+                Content-Id: # Block identifier is defined by the Content-Id header.
                   schema:
                     type: string
                   required: true
@@ -1979,21 +2093,21 @@ components:
             descriptor: # The descriptor part shall be the first part and is mandatory
               contentType: application/json
               headers:
-                Content-ID:
+                Content-Id:
                   schema:
                     type: string
                   required: true
             meta: # The meta part shall be the second part and is mandatory but can be empty
               contentType: application/json
               headers:
-                Content-ID:
+                Content-Id:
                   schema:
                     type: string
                   required: true
             blocks: # 0 or more block parts may follow the meta part
               contentType: '*/*' # Block part can be of any type
               headers:
-                Content-ID: # Block identifier is defined by the Content-ID header.
+                Content-Id: # Block identifier is defined by the Content-Id header.
                   schema:
                     type: string
                   required: true
@@ -2064,14 +2178,14 @@ components:
               meta: # The meta part shall be the first par and is mandatory but can be empty.
                 contentType: application/json
                 headers:
-                  Content-ID: # The meta part is identified by the Content-Id header.
+                  Content-Id: # The meta part is identified by the Content-Id header.
                     schema:
                       type: string
                     required: true
               blocks: # Zero or more block parts may follow the meta part.
                 contentType: '*/*' # Block parts can be of any type.
                 headers:
-                  Content-ID: # Block identifier is defined by the Content-Id header.
+                  Content-Id: # Block identifier is defined by the Content-Id header.
                     schema:
                       type: string
                     required: true

@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   title: Namf_EventExposure
   description: |
     AMF Event Exposure Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-evts
 externalDocs:
-  description: 3GPP TS 29.518 V17.3.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.4.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-evts/v1'
@@ -279,6 +279,16 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
           minItems: 1
+        includeSupiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        includeGpsiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         pei:
@@ -345,6 +355,15 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
           minItems: 1
+        ueInAreaFilter:
+          $ref: '#/components/schemas/UeInAreaFilter'
+        minInterval:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        nextReport:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        idleStatusInd:
+          type: boolean
+          default: false
       required:
         - type
     AmfEventNotification:
@@ -440,6 +459,8 @@ components:
           items:
             $ref: '#/components/schemas/SnssaiTaiMapping'
           minItems: 1
+        idleStatusIndication:
+          $ref: '#/components/schemas/IdleStatusIndication'
       required:
         - type
         - state
@@ -551,7 +572,7 @@ components:
             - replace
         path:
           type: string
-          pattern: '^(\/eventList\/0|\/eventList\/[1-9][0-9]*){1}(\/presenceInfoList\/0|\/presenceInfoList\/[1-9][0-9]*)?|\/excludeSupiList|\/excludeGpsiList$'
+          pattern: '^\/eventList\/-|(\/eventList\/0|\/eventList\/[1-9][0-9]*){1}(\/presenceInfoList\/0|\/presenceInfoList\/[1-9][0-9]*)?|\/excludeSupiList|\/excludeGpsiList$'
         value:
           $ref: '#/components/schemas/AmfEvent'
         presenceInfo:
@@ -562,6 +583,16 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
           minItems: 1
         excludeGpsiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+        includeSupiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        includeGpsiList:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
@@ -716,38 +747,53 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
           minItems: 1
-        restrictedSnssaiList:
+        supportedSnssaiList:
           type: array
           items:
-            $ref: '#/components/schemas/RestrictedSnssai'
-          minItems: 1
-        unrestrictedSnssaiList:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
+            $ref: '#/components/schemas/SupportedSnssai'
           minItems: 1
       required:
         - reportingArea
 
-    RestrictedSnssai:
-      description: Restricted S-NSSAIs
+
+    IdleStatusIndication:
       type: object
       properties:
-        plmnIdList:
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        activeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        subsRegTimer:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        edrxCycleLength:
+          type: integer
+        suggestedNumOfDlPackets:
+          type: integer
+
+    UeInAreaFilter:
+      description: Additional filters for UE in Area Report event
+      type: object
+      properties:
+        ueType:
           type: array
           items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+            $ref: '#/components/schemas/UeType'
           minItems: 1
-        anyPlmn:
+        aerialSrvDnnInd:
           type: boolean
           default: false
-        sNssaiList:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
-          minItems: 1
+
+    SupportedSnssai:
+      description: Supported S-NSSAIs
+      type: object
+      properties:
+        sNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
+        restrictionInd:
+          type: boolean
+          default: false
       required:
-        - sNssaiList
+        - sNssai
 
     AmfEventType:
       description: Describes the supported event types of Namf_EventExposure Service
@@ -827,8 +873,6 @@ components:
       - type: string
         enum:
           - DEREGISTERED
-          - REGISTERED_NOT_REACHABLE_FOR_PAGING
-          - REGISTERED_REACHABLE_FOR_PAGING
           - CONNECTED_NOT_REACHABLE_FOR_PAGING
           - CONNECTED_REACHABLE_FOR_PAGING
           - NOT_PROVIDED_FROM_AMF
@@ -850,4 +894,12 @@ components:
         enum:
           - UE_REACHABILITY_STATUS_CHANGE
           - UE_REACHABLE_DL_TRAFFIC
+      - type: string
+
+    UeType:
+      description: Describes the type of UEs
+      anyOf:
+      - type: string
+        enum:
+          - AERIAL_UE
       - type: string

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   title: Nbsf_Management
   description: |
     Binding Support Management Service API.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.521 V17.2.0; 5G System; Binding Support Management Service.
+  description: 3GPP TS 29.521 V17.3.0; 5G System; Binding Support Management Service.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.521/'
 servers:
   - url: '{apiRoot}/nbsf-management/v1'
@@ -471,6 +471,59 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    get:
+      summary: Read PCF for a UE Bindings information
+      operationId: GetPCFForUeBindings
+      tags:
+        - PCF for a UE Bindings (Collection)
+      parameters:
+        - name: supi
+          in: query
+          description: Subscription Permanent Identifier.
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: gpsi
+          in: query
+          description: Generic Public Subscription Identifier
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: supp-feat
+          in: query
+          description: To filter irrelevant responses related to unsupported features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: The individual PCF for a UE binding session binding information resource matching the query parameter(s) is returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PcfForUeBinding'
+                minItems: 0
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /pcf-ue-bindings/{bindingId}:
     delete:
       summary: Delete an existing Individual PCF for a UE Binding information
@@ -735,10 +788,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        snssaiDnnPairs:
+          $ref: '#/components/schemas/SnssaiDnnPair'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -817,6 +868,17 @@ components:
           description: IP end points of the PCF hosting the Npcf_AmPolicyAuthorization service.
         pcfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+    SnssaiDnnPair:
+      description: Contains a S-NSSAI and DNN combination
+      type: object
+      required:
+        - snssai
+        - dnn
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
     BindingLevel:
       anyOf:
       - type: string

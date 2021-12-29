@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.3'
+  version: '1.2.0-alpha.4'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V17.2.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V17.3.0; 5G System; Session Management Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -1028,6 +1028,8 @@ paths:
                   $ref: '#/components/responses/VsmfUpdateError'
                 '404':
                   $ref: '#/components/responses/VsmfUpdateError'
+                '409':
+                  $ref: '#/components/responses/VsmfUpdateError'
                 '411':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/411'
                 '413':
@@ -1842,11 +1844,22 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         nrfAccessTokenUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-        ivSmfRestoration:
-          type: boolean
-          default:  false
         smfBindingInfo:
           type: string
+        pvsInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PvsInfo'
+        oldPduSessionRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        smPolicyNotifyInd:
+          type: boolean
+          default: false
+        pcfUeCallbackInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PcfUeCallbackInfo'
+        satelliteBackhaulCat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
+        upipSupported:
+          type: boolean
+          default: false
       required:
         - servingNfId
         - servingNetwork
@@ -2026,6 +2039,14 @@ components:
           items:
             $ref: '#/components/schemas/SecondaryRatUsageDataReportContainer'
           minItems: 1
+        smPolicyNotifyInd:
+          type: boolean
+          enum:
+           - true
+        pcfUeCallbackInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PcfUeCallbackInfo'
+        satelliteBackhaulCat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
 
     SmContextUpdatedData:
       description: Data within Update SM Context Response
@@ -2160,6 +2181,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         targetDnaiInfo:
           $ref: '#/components/schemas/TargetDnaiInfo'
+        oldPduSessionRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - statusInfo
 
@@ -2312,13 +2335,22 @@ components:
           $ref: '#/components/schemas/UpSecurityInfo'
         vplmnQos:
           $ref: '#/components/schemas/VplmnQos'
-        ivSmfRestoration:
-          type: boolean
-          default:  false
         oldSmContextRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         redundantPduSessionInfo:
           $ref: '#/components/schemas/RedundantPduSessionInformation'
+        oldPduSessionRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        smPolicyNotifyInd:
+          type: boolean
+          default: false
+        pcfUeCallbackInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PcfUeCallbackInfo'
+        satelliteBackhaulCat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
+        upipSupported:
+          type: boolean
+          default: false
       required:
         - dnn
         - servingNetwork
@@ -2482,6 +2514,7 @@ components:
           items:
             $ref: '#/components/schemas/PduSessionNotifyItem'
           minItems: 1
+# The attribute name does not follow the naming conventions specified in 3GPP TS 29.501. The attribute name is kept though as defined in the current specification for backward compatibility reason.
         epsBearerId:
           type: array
           items:
@@ -2585,6 +2618,14 @@ components:
           items:
             $ref: '#/components/schemas/SecondaryRatUsageDataReportContainer'
           minItems: 1
+        smPolicyNotifyInd:
+          type: boolean
+          enum:
+           - true
+        pcfUeCallbackInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PcfUeCallbackInfo'
+        satelliteBackhaulCat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
       required:
         - requestIndication
 
@@ -2846,6 +2887,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ApnRateStatus'
         targetDnaiInfo:
           $ref: '#/components/schemas/TargetDnaiInfo'
+        oldPduSessionRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - statusInfo
 
@@ -2882,6 +2925,8 @@ components:
           $ref: '#/components/schemas/QosFlowProfile'
         associatedAnType:
           $ref: '#/components/schemas/QosFlowAccessType'
+        defaultQosRuleInd:
+          type: boolean
       required:
         - qfi
         - qosRules
@@ -3037,6 +3082,9 @@ components:
           type: boolean
           default: false
         ethernetSupported:
+          type: boolean
+          default: false
+        upipSupported:
           type: boolean
           default: false
 
@@ -3351,6 +3399,8 @@ components:
           type: boolean
         smfBindingInfo:
           type: string
+        satelliteBackhaulCat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
       required:
         - pduSessionId
         - dnn
@@ -3564,6 +3614,8 @@ components:
         smallDataRateStatusReq:
           type: boolean
           default: false
+        pduSessionContextType:
+          $ref: '#/components/schemas/PduSessionContextType'
 
     RetrievedData:
       description: Data within Retrieve Response
@@ -3571,6 +3623,8 @@ components:
       properties:
         smallDataRateStatus:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SmallDataRateStatus'
+        afCoordinationInfo:
+          $ref: '#/components/schemas/AfCoordinationInfo'
 
     SecurityResult:
       description: Security Result
@@ -4280,6 +4334,19 @@ components:
           - CURRENT_PDU_SESSION
           - NEXT_PDU_SESSION
 
+    PduSessionContextType:
+      anyOf:
+      - type: string
+        enum:
+          - AF_COORDINATION_INFO
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Type of PDU Session information. Possible values are
+          - AF_COORDINATION_INFO
 #
 # HTTP request bodies
 #

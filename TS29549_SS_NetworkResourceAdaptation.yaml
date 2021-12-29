@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   title: SS_NetworkResourceAdaptation
   description: |
     SS Network Resource Adaptation Service.
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.549 V17.1.0; Service Enabler Architecture Layer for Verticals (SEAL); Application Programming Interface (API) specification; Stage 3.
+  description: 3GPP TS 29.549 V17.3.0; Service Enabler Architecture Layer for Verticals (SEAL); Application Programming Interface (API) specification; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 
 security:
@@ -349,6 +349,130 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /tsc-streams:
+    post:
+      summary: Create a TSC stream.
+      operationId: PostTscStream
+      tags:
+        - TSC stream creation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TscStreamData'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscStreamData'
+          headers:
+            Location:
+              description: 'Contains the URI of the created individual TSC stream resource'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /tsc-streams/{tscStreamId}:
+    get:
+      summary: "Reads an existing Individual TSC stream data information"
+      operationId: GetTscStreamData
+      tags:
+        - Individual TSC Stream Creation
+      parameters:
+        - name: tscStreamId
+          in: path
+          description: TSC Stream ID corresponding to the VAL stream.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. Resource representation is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TscStreamData'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: "Delete an existing Individual TSC stream"
+      operationId: DeleteTscStream
+      tags:
+        - Individual TSC Stream Deletion
+      parameters:
+        - name: tscStreamId
+          in: path
+          description: TSC Stream ID corresponding to the VAL stream.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content. Resource was succesfully deleted
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -375,6 +499,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         tmgi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        localMbmsInfo:
+          $ref: 'TS29486_VAE_FileDistribution.yaml#/components/schemas/LocalMbmsInfo'
+        localMbmsActInd:
+          type: boolean
         notifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         reqTestNotif:
@@ -452,6 +580,46 @@ components:
       required:
         - event
         - ts
+    TscStreamData:
+      description: TSC stream data information.
+      type: object
+      properties:
+        reqIdentity:
+          type: string
+          description: The identity of the VAL server performing the request.
+        valStreamId:
+          type: string
+          description: Identifies the VAL stream.
+        streamSpec:
+          type: string
+          # Editor’s Note: Align with datatype definition of StreamSpecification
+        trafficSpecInfo:
+          $ref: '#/components/schemas/TrafficSpecInformation'
+      required:
+        - reqIdentity
+        - valStreamId
+        - streamSpec
+        - trafficSpecInfo
+    TrafficSpecInformation:
+      description: The traffic classe supported by the DS-TTs and available end-to-end latency value and Priority Code Point (PCP) value.
+      type: object
+      properties:
+        pcpValue:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        maxFramInt:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        maxFramSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        maxIntFrames:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        maxLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+      required:
+        - pcpValue
+        - maxFramInt
+        - maxFramSize
+        - maxIntFrames
+        - maxLatency
 
 
 # Simple data types and Enumerations

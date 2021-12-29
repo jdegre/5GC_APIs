@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   description: |
     PCF Policy Authorization Service.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V17.2.0; 5G System; Policy Authorization Service;Stage 3.
+  description: 3GPP TS 29.514 V17.3.0; 5G System; Policy Authorization Service;Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -179,6 +179,45 @@ paths:
                   application/json:
                     schema:
                       $ref: '#/components/schemas/PduSessionTsnBridge'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+        eventNotificationPduSession:
+          '{$request.body#/ascReqData/evSubsc/notifUri}/pdu-session':
+            post:
+              requestBody:
+                description: Notification of PDU session established or terminated.
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PduSessionEventNotification'
               responses:
                 '204':
                   description: The receipt of the notification is acknowledged
@@ -1245,6 +1284,17 @@ components:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/UpPathChgEvent'
         addrPreserInd:
           type: boolean
+        simConnInd:
+          type: boolean
+          description: Indicates whether simultaneous connectivity should be temporarily maintained for the source and target PSA.
+        simConnTerm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        easIpReplaceInfos:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/EasIpReplacementInfo'
+          minItems: 1
+          description: Contains EAS IP replacement information.
     SpatialValidity:
       description: describes explicitly the route to an Application location
       type: object
@@ -1294,6 +1344,19 @@ components:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/UpPathChgEvent'
         addrPreserInd:
           type: boolean
+          nullable: true
+        simConnInd:
+          type: boolean
+          nullable: true
+          description: Indicates whether simultaneous connectivity should be temporarily maintained for the source and target PSA.
+        simConnTerm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSecRm'
+        easIpReplaceInfos:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/EasIpReplacementInfo'
+          minItems: 1
+          description: Contains EAS IP replacement information.
           nullable: true
       nullable: true
     AnGwAddress:
@@ -1478,6 +1541,10 @@ components:
           items:
             $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/PortManagementContainer'
           minItems: 1
+        ueIpv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ueIpv6AddrPrefix:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
 
 #
     QosMonitoringInformationRm:
@@ -1590,6 +1657,54 @@ components:
         afAppId:
           $ref: '#/components/schemas/AfAppId'
 #
+#
+    PduSessionEventNotification:
+      description: Indicates PDU session information for the concerned established/terminated PDU session.
+      type: object
+      required:
+        - evNotif
+      properties:
+        evNotif:
+          $ref: '#/components/schemas/AfEventNotification'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        ueIpv4:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ueIpv6:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        ueMac:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+        status:
+          $ref: '#/components/schemas/PduSessionStatus'
+        pcfInfo:
+          $ref: '#/components/schemas/PcfAddressingInfo'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+#
+#
+    PcfAddressingInfo:
+      description: Contains PCF address information.
+      type: object
+      properties:
+        pcfFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+        pcfIpEndPoints:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/IpEndPoint'
+          minItems: 1
+          description: IP end points of the PCF hosting the Npcf_PolicyAuthorization service.
+        pcfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        pcfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        bindLevel:
+          $ref: 'TS29521_Nbsf_Management.yaml#/components/schemas/BindingLevel'
+#
     EventsSubscPutData:
       description: Identifies the events the application subscribes to within an Events Subscription sub-resource data. It may contain the notification of the already met events
       anyOf:
@@ -1668,6 +1783,7 @@ components:
         - type: string
 #
     MpsAction:
+      description: Indicates whether it is an invocation, a revocation or an invocation with authorization of the MPS for DTS service.
       anyOf:
         - type: string
           enum:
@@ -1732,6 +1848,7 @@ components:
           - FAILED_QOS_UPDATE
           - FAILED_RESOURCES_ALLOCATION
           - OUT_OF_CREDIT
+          - PDU_SESSION_STATUS
           - PLMN_CHG
           - QOS_MONITORING
           - QOS_NOTIF
@@ -1878,4 +1995,13 @@ components:
         enum:
           - APP_START
           - APP_STOP
+      - type: string
+#
+    PduSessionStatus:
+      description: Indicates whether the PDU session is established or terminated.
+      anyOf:
+      - type: string
+        enum:
+          - ESTABLISHED
+          - TERMINATED
       - type: string

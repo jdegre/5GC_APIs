@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: N5g-ddnmf_Discovery API
-  version: 1.0.0-alpha.2
+  version: '1.0.0-alpha.3'
   description: |
     N5g-ddnmf_Discovery Service.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.555 V0.3.0; 5G System; 5G Direct Discovery Name Management Services; Stage 3.
+  description: 3GPP TS 29.555 V1.0.0; 5G System; 5G Direct Discovery Name Management Services; Stage 3.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.555/
 
 servers:
@@ -52,11 +52,7 @@ paths:
         required: true
       responses:
         '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AnnounceAuthRespData'
+          description: Successful creation of the resource
           headers:
             Location:
               description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/n5g-ddnmf-disc>/<apiVersion>/{ueId}/announce-authorize/{discEntryId}'
@@ -457,15 +453,6 @@ components:
         restrictedDiscData:
           $ref: '#/components/schemas/AnnounceDiscDataForRestricted'
 
-    AnnounceAuthRespData:
-      type: object
-      description: Represents the obtained Announce Authorize Data for a UE
-      required:
-        - authResult
-      properties:
-        authResult:
-          $ref: '#/components/schemas/AuthorizationResult'
-
     AnnounceDiscDataForOpen:
       type: object
       description: Represents Data for open discovery used to request the authorization to announce for a UE
@@ -537,11 +524,7 @@ components:
     MonitorAuthRespData:
       type: object
       description: Represents the obtained Monitor Authorize Data for a UE
-      required:
-        - authResult
       properties:
-        authResult:
-          $ref: '#/components/schemas/AuthorizationResult'
         authDataOpen:
           $ref: '#/components/schemas/MonitorAuthDataForOpen'
         authDataRestricted:
@@ -617,6 +600,8 @@ components:
       required:
         - discType
       properties:
+        discType:
+          $ref: '#/components/schemas/DiscoveryType'
         openUpdateData:
           $ref: '#/components/schemas/MonitorUpdateDataForOpen'
         restrictedUpdateData:
@@ -636,11 +621,7 @@ components:
     DiscoveryAuthRespData:
       type: object
       description: Represents the obtained authorization Data for a discoverer UE
-      required:
-        - authResult
       properties:
-        authResult:
-          $ref: '#/components/schemas/AuthorizationResult'
         authDataRestricted:
           $ref: '#/components/schemas/AuthDataForRestricted'
 
@@ -768,7 +749,7 @@ components:
       required:
         - supi
         - rpauid
-        - targetPduid
+        - targetRpauid
         - proseRestrictedCode
       properties:
         supi:
@@ -956,19 +937,6 @@ components:
         - OPEN: Discovery type is "open".
         - RESTRICTED: Discovery type is "restricted".
 
-    AuthorizationResult:
-      anyOf:
-      - type: string
-        enum:
-          - SUCCESSFUL
-      - type: string
-        description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
-          content defined in the present version of this API.
-      description: >
-        Possible values are
-        - SUCCESSFUL: The authorisation is successful.
 
     RevocationResult:
       anyOf:

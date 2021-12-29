@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.4'
+  version: '1.2.0-alpha.5'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.3.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V17.4.0; 5G System; Network Function Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -49,6 +49,16 @@ paths:
           required: true
           schema:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        - name: preferred-collocated-nf-types
+          in: query
+          description: collocated NF types that candidate NFs should preferentially support
+          schema:
+            type: array
+            items:
+              $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/CollocatedNfType'
+            minItems: 1
+          style: form
+          explode: false
         - name: requester-nf-instance-id
           in: query
           description: NfInstanceId of the requester NF
@@ -161,6 +171,10 @@ paths:
           style: form
           explode: false
         - name: smf-serving-area
+          in: query
+          schema:
+            type: string
+        - name: mbsmf-serving-area
           in: query
           schema:
             type: string
@@ -722,11 +736,6 @@ paths:
           description: analytics matadata provisioning is supported by NWDAF or not
           schema:
             type: boolean
-        - name: nsacf-serving-area
-          in: query
-          description: the serving area of the NSACF
-          schema:
-            type: string
         - name: nsacf-capability
           in: query
           description: the service capability supported by the target NSACF
@@ -742,6 +751,39 @@ paths:
                 items:
                   $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
                 minItems: 1
+        - name: gmlc-number
+          in: query
+          description: The GMLC Number supported by the GMLC
+          schema:
+            type: string
+            pattern: '^[0-9]{5,15}$'
+        - name: upf-n6-ip
+          in: query
+          description: N6 IP address of PSA UPF supported by the EASDF
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        - name: tai-list
+          in: query
+          description: Tracking Area Identifiers of the NFs being discovered
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+                minItems: 1
+        - name: preferences-precedence
+          in: query
+          description: Indicating the precedence of the preference query parameters (from higher to lower).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                minItems: 2
       responses:
         '200':
           description: Expected response to a valid request
@@ -1200,6 +1242,8 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/NfInstanceInfo'
           minProperties: 1
+        alteredPriorityInd:
+          type: boolean
 
     StoredSearchResult:
       description: Contains a complete search result (i.e. a number of discovered NF Instances), stored by NRF as a consequence of a prior search result
@@ -1228,6 +1272,11 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
         nfStatus:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFStatus'
+        collocatedNfInstances:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/CollocatedNfInstance'
+          minimum: 1
         plmnList:
           type: array
           items:
@@ -1494,6 +1543,14 @@ components:
           additionalProperties:
             $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TsctsfInfo'
           minProperties: 1
+        mbUpfInfoList:
+          description: A map (list of key-value pairs) where a (unique) valid JSON string serves as key of MbUpfInfo
+          type: object
+          additionalProperties:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/MbUpfInfo'
+          minProperties: 1
+        trustAfInfo:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TrustAfInfo'
 
     NFService:
       description: Information of a given NF Service Instance; it is part of the NFProfile of an NF Instance discovered by the NRF
@@ -1620,6 +1677,9 @@ components:
           type: boolean
           default: false
         preferredVendorSpecificFeaturesInd:
+          type: boolean
+          default: false
+        preferredCollocatedNfTypeInd:
           type: boolean
           default: false
 

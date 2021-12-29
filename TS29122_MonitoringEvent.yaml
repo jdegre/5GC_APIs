@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   description: |
     API for Monitoring Event.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V17.3.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.4.0 T8 reference point for Northbound APIs
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -21,9 +21,10 @@ servers:
 paths:
   /{scsAsId}/subscriptions:
     get:
-      summary: read all of the active subscriptions for the SCS/AS
+      summary: Read all of the active subscriptions for the SCS/AS.
+      operationId: FetchAllMonitoringEventSubscriptions
       tags:
-        - MonitoringEvent API SCS/AS level GET Operation
+        - Monitoring Event Subscriptions
       parameters:
         - name: scsAsId
           in: path
@@ -31,6 +32,30 @@ paths:
           required: true
           schema:
             type: string
+        - name: ip-addrs
+          in: query
+          description: The IP address(es) of the requested UE(s).
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+            minItems: 1
+        - name: ip-domain
+          in: query
+          description: The IPv4 address domain identifier. The attribute may only be provided if IPv4 address is included in the ip-addrs query parameter.
+          required: false
+          schema:
+            type: string
+        - name: mac-addrs
+          in: query
+          description: The MAC address(es) of the requested UE(s).
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
+            minItems: 1
       responses:
         '200':
           description: OK (Successful get all of the active subscriptions for the SCS/AS)
@@ -66,9 +91,10 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Creates a new subscription resource for monitoring event notification
+      summary: Creates a new subscription resource for monitoring event notification.
+      operationId: CreateMonitoringEventSubscription
       tags:
-        - MonitoringEvent API Subscription level POST Operation
+        - Monitoring Event Subscriptions
       parameters:
         - name: scsAsId
           in: path
@@ -140,7 +166,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MonitoringEventReport'
+                oneOf:
+                - $ref: '#/components/schemas/MonitoringEventReport'
+                - $ref: '#/components/schemas/MonitoringEventReports'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -166,9 +194,10 @@ paths:
 
   /{scsAsId}/subscriptions/{subscriptionId}:
     get:
-      summary: read an active subscriptions for the SCS/AS and the subscription Id
+      summary: Read an active subscriptions for the SCS/AS and the subscription Id.
+      operationId: FetchIndMonitoringEventSubscription
       tags:
-        - MonitoringEvent API Subscription level GET Operation
+        - Individual Monitoring Event Subscription
       parameters:
         - name: scsAsId
           in: path
@@ -213,9 +242,10 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Updates/replaces an existing subscription resource
+      summary: Updates/replaces an existing subscription resource.
+      operationId: UpdateIndMonitoringEventSubscription
       tags:
-        - MonitoringEvent API subscription level PUT Operation
+        - Individual Monitoring Event Subscription
       parameters:
         - name: scsAsId
           in: path
@@ -273,13 +303,33 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     patch:
+      summary: Modifies an existing subscription of monitoring event.
+      operationId: ModifyIndMonitoringEventSubscription
+      tags:
+        - Individual Monitoring Event Subscription
+      parameters:
+        - name: scsAsId
+          in: path
+          description: Identifier of the SCS/AS.
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource.
+          required: true
+          schema:
+            type: string
       requestBody:
         description: This is used for PATCH request for partial cancellation of certain UE(s) within an active group.
         required: true
         content:
           application/json-patch+json:
             schema:
-              $ref: '#/components/schemas/MonitoringEventSubscriptionPatch'
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
       responses:
         '204':
           description: The resource was modified successfully.
@@ -311,9 +361,10 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing monitoring event subscription
+      summary: Deletes an already existing monitoring event subscription.
+      operationId: DeleteIndMonitoringEventSubscription
       tags:
-        - MonitoringEvent API Subscription level DELETE Operation
+        - Individual Monitoring Event Subscription
       parameters:
         - name: scsAsId
           in: path
@@ -506,37 +557,30 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         tgtNsThreshold:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SACInfo'
-        uavPolicies:
-          type: string
-          description: If "monitoringType" is "AREA_OF_INTEREST", this parameter may be included to indicate the 3GPP network to take corresponding action.
-#Editor’s note: The definition of uavPolicies attribute is FFS.
+        immediateRep:
+          type: boolean
+        uavPolicy:
+          $ref: '#/components/schemas/UavPolicy'
+
+        sesEstInd:
+          type: boolean
+          description: Set to true by the SCS/AS so that only UAV’s with “PDU session established for DNN(s) subject to aerial service” are to be listed in the Event report. Set to false or omitted otherwise.
+        subType:
+          $ref: '#/components/schemas/SubType'
+        addnMonTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonitoringType'
+        addnMonEventReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonitoringEventReport'
       required:
         - notificationDestination
         - monitoringType
       anyOf:
         - required: [maximumNumberOfReports]
         - required: [monitorExpireTime]
-    MonitoringEventSubscriptionPatch:
-      description: Represents partial cancellation of certain UE(s) within an active group.
-      type: object
-      properties:
-        excludedExternalIds:
-          type: array
-          items:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
-          minItems: 1
-          description: Indicates cancellation of the external Identifier(s) within the active group.
-        excludedMsisdns:
-          type: array
-          items:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
-          minItems: 1
-          description: Indicates cancellation of the MSISDN(s) within the active group.
-        notificationDestination:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
-      anyOf:
-        - required: [excludedExternalIds]
-        - required: [excludedMsisdns]
     MonitoringNotification:
       description: Represents an event monitoring notification.
       type: object
@@ -636,6 +680,17 @@ components:
           description: If "monitoringType" is "AREA_OF_INTEREST", this parameter shall be set to true if the specified UAV is in the monitoring area. Set to false or omitted otherwise.
       required:
         - monitoringType
+    MonitoringEventReports:
+      description: Represents a set of event monitoring reports.
+      type: object
+      properties:
+        monitoringEventReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonitoringEventReport'
+          minItems: 1
+      required:
+        - monitoringEventReports
     IdleStatusInfo:
       description: Represents the information relevant to when the UE transitions into idle mode.
       type: object
@@ -674,6 +729,12 @@ components:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
           minItems: 1
           description: Each element identifies the MS internal PSTN/ISDN number allocated for a UE.
+        servLevelDevIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Each element uniquely identifies a UAV.
       required:
         - ueCount
     LocationInfo:
@@ -800,6 +861,18 @@ components:
       required:
         - apiName
         - suppFeat
+    UavPolicy:
+      description: Represents the policy information included in the UAV presence monitoring request.
+      type: object
+      properties:
+        uavMoveInd:
+          type: boolean
+        revokeInd:
+          type: boolean
+      required:
+        - uavMoveInd
+        - revokeInd
+
 #
 # ENUMS
 #
@@ -981,3 +1054,16 @@ components:
           - UNSUPPORTED_BY_UE: Positioning is not supported by UE.
           - NOT_REGISTED_UE: UE is not registered.
           - UNSPECIFIED: Unspecified.
+    SubType:
+      anyOf:
+      - type: string
+        enum:
+          - AERIAL_UE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - AERIAL_UE: The UE has Aerial subscription.

@@ -1,16 +1,16 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.
     © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.508 V17.4.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V17.5.0; 5G System; Session Management Event Exposure Service.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 servers:
-  - url: '{apiRoot}/nsmf_event-exposure/v1'
+  - url: '{apiRoot}/nsmf-event-exposure/v1'
     variables:
       apiRoot:
         default: https://example.com
@@ -408,6 +408,19 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
           minItems: 1
+        targetPeriod:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        transacDispInd:
+          type: boolean
+          description: Indicates the subscription for UE transaction dispersion collectionon, if it is included and set to "true". Default value is "false". Default value is "false".
+        transacMetrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionMetric'
+          description: Indicates Session Management Transaction metrics.
+          minItems: 1
+        ueIpAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
       required:
         - event
     EventNotification:
@@ -422,6 +435,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        ueIpAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        transacInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionInfo'
+          description: Transaction Information.
+          minItems: 1
         sourceDnai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
         targetDnai:
@@ -440,6 +461,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
         targetTraRouting:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+        easIpReplSupport:
+          type: boolean
+          description: Indicates the capability of supporting EAS IP replacement in 5GC.
         ueMac:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
         adIpv4Addr:
@@ -515,6 +539,12 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
           minItems: 1
+        timeWindow:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        smNasFromUe:
+          $ref: '#/components/schemas/SmNasFromUe'
+        smNasFromSmf:
+          $ref: '#/components/schemas/SmNasFromSmf'
       required:
         - event
         - timeStamp
@@ -537,6 +567,54 @@ components:
       required:
         - notifId
         - ackResult
+    SmNasFromUe:
+      description: Represents information on the SM NAS messages that SMF receives from UE for PDU Session.
+      type: object
+      properties:
+        smNasType:
+          type: string
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - smNasType
+        - timeStamp
+    SmNasFromSmf:
+      description: Represents information on the SM congestion control applied SM NAS messages that SMF sends to UE for PDU Session.
+      type: object
+      properties:
+        smNasType:
+          type: string
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        backoffTimer:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        appliedSmccType:
+          $ref: '#/components/schemas/AppliedSmccType'
+      required:
+        - smNasType
+        - timeStamp
+        - backoffTimer
+        - appliedSmccType
+    TransactionInfo:
+      description: Represents SMF Transaction Information.
+      type: object
+      properties:
+        transaction:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        appIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          minItems: 1
+        transacMetrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionMetric'
+          minItems: 1
+      required:
+        - transaction
     SmfEvent:
       anyOf:
       - type: string
@@ -552,6 +630,8 @@ components:
           - PDU_SES_EST
           - QFI_ALLOC
           - QOS_MON
+          - SMCC_EXP
+          - DISPERSION
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -570,6 +650,8 @@ components:
         - PDU_SES_EST: PDU Session Establishment
         - QFI_ALLOC: QFI allocation
         - QOS_MON: QoS Monitoring
+        - SMCC_EXP: SM congestion control experience for PDU Session
+        - DISPERSION: Session Management transaction dispersion
     NotificationMethod:
       anyOf:
       - type: string
@@ -587,3 +669,37 @@ components:
         - PERIODIC
         - ONE_TIME
         - ON_EVENT_DETECTION
+    AppliedSmccType:
+      anyOf:
+      - type: string
+        enum:
+          - DNN_CC
+          - SNSSAI_CC
+        description: >
+          This string indicates the applied SM congestion control.
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - DNN_CC: Indicates the DNN based congestion control.
+        - SNSSAI_CC: Indicates the S-NSSAI based congestion control.
+    TransactionMetric:
+      anyOf:
+      - type: string
+        enum:
+          - PDU_SES_EST
+          - PDU_SES_AUTH
+          - PDU_SES_MODIF
+          - PDU_SES_REL
+      - type: string
+        description: >
+          This string Indicates Session Management Transaction metrics.
+      description: >
+        Possible values are
+        - PDU_SES_EST: PDU Session Establishment
+        - PDU_SES_AUTH: PDU Session Authentication
+        - PDU_SES_MODIF: PDU Session Modification
+        - PDU_SES_REL: PDU Session Release

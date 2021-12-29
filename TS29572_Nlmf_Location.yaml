@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.2'
+  version: '1.2.0-alpha.3'
   title: 'LMF Location'
   description: |
     LMF Location Service.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.572 V17.2.0; 5G System; Location Management Services; Stage 3
+  description: 3GPP TS 29.572 V17.3.0; 5G System; Location Management Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
 
 servers:
@@ -49,6 +49,18 @@ paths:
               jsonData:
                 contentType:  application/json
               binaryDataLppMessage:
+                contentType:  application/vnd.3gpp.lpp
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+              binaryDataLppMessageExt1:
+                contentType:  application/vnd.3gpp.lpp
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+              binaryDataLppMessageExt2:
                 contentType:  application/vnd.3gpp.lpp
                 headers:
                   Content-Id:
@@ -298,19 +310,19 @@ components:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/LcsBroadcastAssistanceTypesData'
         lppMessage:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
-        supportedFeatures:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        uePositioningCapList:
-          description: Indicates the positioning capabilities supported by the UE.
+        lppMessageExt:
+          description: Indicates the lpp message extension.
           type: array
           items:
-            $ref: '#/components/schemas/UePositioningCapabilities'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
           minItems: 1
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        uePositioningCap:
+          $ref: '#/components/schemas/UePositioningCapabilities'
         tnapId:
-          description: This IE shall contain the TNAP Identifier
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TnapId'
         twapId:
-          description: This IE shall contain the TWAP Identifier
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TwapId'
         ueCountryDetInd:
           type: boolean
@@ -327,6 +339,8 @@ components:
           $ref: '#/components/schemas/AccuracyFulfilmentIndicator'
         ageOfLocationEstimate:
           $ref: '#/components/schemas/AgeOfLocationEstimate'
+        timestampOfLocationEstimate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         velocityEstimate:
           $ref: '#/components/schemas/VelocityEstimate'
         civicAddress:
@@ -353,12 +367,8 @@ components:
           $ref: '#/components/schemas/BarometricPressure'
         servingLMFIdentification:
           $ref: '#/components/schemas/LMFIdentification'
-        uePositioningCapList:
-          description: Indicates the positioning capabilities supported by the UE.
-          type: array
-          items:
-            $ref: '#/components/schemas/UePositioningCapabilities'
-          minItems: 1
+        uePositioningCap:
+          $ref: '#/components/schemas/UePositioningCapabilities'
         ueAreaInd:
           $ref: '#/components/schemas/UeAreaIndication'
         supportedFeatures:
@@ -545,7 +555,7 @@ components:
         - $ref: '#/components/schemas/Local3dPointUncertaintyEllipsoid'
 
     UeAreaIndication:
-      description: Indicates area (country or international area) where UE is located 
+      description: Indicates area (country or international area) where UE is located
       type: object
       oneOf:
         - required:
@@ -554,10 +564,10 @@ components:
           - internationalAreaInd
       properties:
         country:
-          description: Indicates country where UE is located 
+          description: Indicates country where UE is located
           type: string
         internationalAreaInd:
-          description: Indicates international area indication if UE is located in international area 
+          description: Indicates international area indication if UE is located in international area
           type: boolean
           default: false
 
@@ -1024,12 +1034,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        uePositioningCapList:
-          description: Indicates the positioning capabilities supported by the UE.
-          type: array
-          items:
-            $ref: '#/components/schemas/UePositioningCapabilities'
-          minItems: 1
+        uePositioningCap:
+          $ref: '#/components/schemas/UePositioningCapabilities'
 
     EventReportMessage:
       description: Indicates an event report message.
@@ -1060,10 +1066,14 @@ components:
           $ref: '#/components/schemas/GeographicArea'
         ageOfLocationEstimate:
           $ref: '#/components/schemas/AgeOfLocationEstimate'
+        timestampOfLocationEstimate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         velocityEstimate:
           $ref: '#/components/schemas/VelocityEstimate'
         ageOfVelocityEstimate:
           $ref: '#/components/schemas/AgeOfLocationEstimate'
+        timestampOfVelocityEstimate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     EventNotifyData:
       description: Information within Event Notify Request.
@@ -1086,6 +1096,8 @@ components:
           $ref: '#/components/schemas/GeographicArea'
         ageOfLocationEstimate:
           $ref: '#/components/schemas/AgeOfLocationEstimate'
+        timestampOfLocationEstimate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         civicAddress:
           $ref: '#/components/schemas/CivicAddress'
         localLocationEstimate:
@@ -1291,10 +1303,9 @@ components:
       maximum: 8640000
 
     UePositioningCapabilities:
-      description: Positioning capabilities supported by the UE.
+      description: Positioning capabilities supported by the UE. A string encoding the "ProvideCapabilities-r9-IEs" IE as specified in clause 6.3 of 3GPP TS 37.355 (start from octet 1).
       type: string
-      minLength: 1
-      maxLength: 255
+      format: byte
 
 #
 # ENUMS
@@ -1474,6 +1485,10 @@ components:
             - NR
             - EUTRA_CONNECTED_TO_5GC
             - NON_3GPP_CONNECTED_TO_5GC
+            - NR_LEO
+            - NR_MEO
+            - NR_GEO
+            - NR_OTHER_SAT
         - type: string
 
     EventClass:
