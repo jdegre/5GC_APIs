@@ -81,8 +81,8 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [NSSAA](https://jdegre.github.io/loader.html?yaml=TS29526_Nnssaaf_NSSAA.yaml)
 
 ## NSACF (Network Slice Admission Control Function)
-* [NSAC](https://jdegre.github.io/loader.html?yaml=TS29536_Nsacf_NSAC.yaml)
-* [Slice Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29536_Nsacf_SliceEventExposure.yaml)
+* [NSAC](https://jdegre.github.io/loader.html?yaml=TS29536_Nnsacf_NSAC.yaml)
+* [Slice Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29536_Nnsacf_SliceEventExposure.yaml)
 
 ## NSSF (Network Slice Selection Function)
 * [NSSAI Availability](https://jdegre.github.io/loader.html?yaml=TS29531_Nnssf_NSSAIAvailability.yaml)
