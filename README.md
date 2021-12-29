@@ -1,4 +1,4 @@
-# OpenAPI Specification Files for 3GPP 5G Core Network (Release 15)
+# OpenAPI Descriptions of 3GPP 5G APIs (Release 15)
 
 [![CircleCI](https://img.shields.io/circleci/build/gh/jdegre/5GC_APIs/Rel-15)](https://app.circleci.com/pipelines/github/jdegre/5GC_APIs?branch=Rel-15)
 
@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **September 2021**<br/>
+API version: **December 2021**<br/>
 Release status: **Frozen** <sup>&#x1F512;</sup><br/>
 Other releases: [Rel-17 (Open)](https://github.com/jdegre/5GC_APIs/tree/master), [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
