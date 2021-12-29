@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.5'
+  version: '1.2.6'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.9.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 16.10.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -478,6 +478,8 @@ components:
         cause:
           type: string
         targetScp:
+          $ref: '#/components/schemas/Uri'
+        targetSepp:
           $ref: '#/components/schemas/Uri'
 
 
@@ -1816,17 +1818,24 @@ components:
         - $ref: '#/components/schemas/NullValue'
 
     SnssaiExtension:
-      description: Extensions to the Snssai data type
+      description: Extensions to the Snssai data type, sdRanges and wildcardSd shall not be present simultaneously
       type: object
+      not:
+        required:
+          - sdRanges
+          - wildcardSd
       properties:
         sdRanges:
+          description: When present, it shall contain the range(s) of Slice Differentiator values supported for the Slice/Service Type value indicated in the sst attribute of the Snssai data type
           type: array
           items:
             $ref: '#/components/schemas/SdRange'
           minItems: 1
         wildcardSd:
+          description: When present, it shall be set to true, to indicate that all SD values are supported for the Slice/Service Type value indicated in the sst attribute of the Snssai data type
           type: boolean
-          default: false
+          enum:
+            - true
 
     SdRange:
       description: A range of SDs (Slice Differentiators)
