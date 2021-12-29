@@ -254,7 +254,7 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [EAS Registration](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_EASRegistration.yaml)
 * [ACR Management Event](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_ACRManagementEvent.yaml)
 * [Session with QoS](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_SessionWithQoS.yaml)
-* [EES Registration](https://jdegre.github.io/loader.html?yaml=TS24558_Eecs_EESRegistration.yaml)
+* [EES Registration](https://jdegre.github.io/loader.html?yaml=TS29558_Eecs_EESRegistration.yaml)
 * [EEC Registration](https://jdegre.github.io/loader.html?yaml=TS24558_Eees_EECRegistration.yaml)
 * [ECS Service Provisioning](https://jdegre.github.io/loader.html?yaml=TS24558_Eecs_ServiceProvisioning.yaml)
 * [EAS Discovery](https://jdegre.github.io/loader.html?yaml=TS24558_Eees_EASDiscovery.yaml)
