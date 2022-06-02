@@ -1,16 +1,16 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.4'
+  version: '1.1.5'
   title: 'NRF OAuth2'
   description: |
-    NRF OAuth2 Authorization.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    NRF OAuth2 Authorization.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V16.10.0; 5G System; Network Function Repository Services; Stage 3
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
+  description: 3GPP TS 29.510 V16.11.0; 5G System; Network Function Repository Services; Stage 3
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 paths:
   /oauth2/token:
@@ -35,6 +35,22 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/AccessTokenReq'
+            encoding:
+              requesterPlmn:
+                contentType: application/json
+              requesterPlmnList:
+                contentType: application/json
+              requesterSnssaiList:
+                contentType: application/json
+              requesterSnpnList:
+                contentType: application/json
+              targetPlmn:
+                contentType: application/json
+              targetSnssaiList:
+                contentType: application/json
+              targetNsiList:
+                style: form
+                explode: true
         required: true
       responses:
         '200':
@@ -116,6 +132,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   headers:
     cache-control:
@@ -130,6 +147,7 @@ components:
         type: string
         enum:
           - no-cache
+
   schemas:
     AccessTokenReq:
       description: Contains information related to the access token request
@@ -189,6 +207,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
         targetNfServiceSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+
     AccessTokenRsp:
       description: Contains information related to the access token response
       type: object
@@ -208,6 +227,7 @@ components:
         scope:
           type: string
           pattern: '^([a-zA-Z0-9_:-]+)( [a-zA-Z0-9_:-]+)*$'
+
     AccessTokenClaims:
       description: The claims data structure for the access token
       type: object
@@ -250,6 +270,7 @@ components:
           minItems: 1
         producerNfSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+
     AccessTokenErr:
       description: Error returned in the access token response message
       type: object

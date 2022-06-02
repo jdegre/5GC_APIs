@@ -5,11 +5,11 @@ info:
   description: |
     Unified Data Repository Service (subscription data).
     The API version is defined in 3GPP TS 29.504.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.505 V16.9.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
+  description: 3GPP TS 29.505 V16.10.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
@@ -397,7 +397,7 @@ paths:
   /subscription-data/{ueId}/ue-update-confirmation-data/subscribed-snssais:
     put:
       summary: To store the NSSAI update acknowledgement information of a UE
-      operationId: Create NSSAI update ack
+      operationId: CreateOrUpdateNssaiAck
       tags:
         - NSSAI update ack (Document)
       parameters:
@@ -1076,7 +1076,7 @@ paths:
 
     put:
       summary: To create an individual SMF context data of a UE in the UDR
-      operationId: CreateSmfContextNon3gpp
+      operationId: CreateOrUpdateSmfRegistration
       tags:
         - SMF Registration (Document)
       parameters:
@@ -1118,7 +1118,7 @@ paths:
 
     delete:
       summary: To remove an individual SMF context data of a UE the UDR
-      operationId: DeleteSmfContext
+      operationId: DeleteSmfRegistration
       tags:
         - SMF Registration (Document)
       parameters:
@@ -3112,6 +3112,12 @@ paths:
           description: Validator for conditional requests, as described in RFC 7232, 3.3
           schema:
             type: string
+        - name: sharedDataId
+          in: path
+          description: Id of the Shared Data
+          required: true
+          schema:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SharedDataId'
       responses:
         '200':
           description: Expected response to a valid request
@@ -4334,6 +4340,8 @@ components:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SdmSubscription'
         subscriptionId:
           type: string
+        uniqueSubscription:
+          type: boolean
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     DataChangeNotify:
