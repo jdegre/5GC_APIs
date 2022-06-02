@@ -2,13 +2,15 @@ openapi: 3.0.0
 info:
   title: EES EAS Registration_API
   description: |
-    API for EAS Registration.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for EAS Registration.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.0.0-alpha.2
+  version: 1.0.0-alpha.3
 externalDocs:
-  description: 3GPP TS 29.558 V1.2.0 Enabling Edge Applications; Application Programming Interface (API) specification; Stage 3
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+  description: >
+    3GPP TS 29.558 V1.4.0 Enabling Edge Applications;
+    Application Programming Interface (API) specification; Stage 3
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 servers:
   - url: '{apiRoot}/eees-easregistration/v1'
     variables:
@@ -252,8 +254,7 @@ components:
           type: string
           description: Identifier of the ASP that provides the EAS.
         type:
-          type: string
-          description: Category or type of EAS.
+          $ref: '#/components/schemas/EASCategory'
         scheds:
           type: array
           items:
@@ -267,7 +268,7 @@ components:
         permLvl:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PermissionLevel'
           minItems: 1
           description: level of service permissions supported by the EAS.
         easFeats:
@@ -275,7 +276,7 @@ components:
           items:
             type: string
           minItems: 1
-          description: Service features supported by EAS.
+          description: Service specific features supported by EAS.
         appLocs:
           type: array
           items:
@@ -309,25 +310,19 @@ components:
       description: Represents the EAS service KPI information.
       properties:
         maxReqRate:
-          type: string
-          description: Maximum request rate from AC supported by EAS.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         maxRespTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         avail:
-          type: string
-          description: Advertised percentage of time the server is available.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         avlComp:
-          type: string
-          description: Maximum compute resource available for the AC.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         avlGraComp:
-          type: string
-          description: Maximum graphical compute resource available for the the AC.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         avlMem:
-          type: string
-          description: Maximum memory resource available for AC.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         avlStrg:
-          type: string
-          description: Maximum storage resource available for AC.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         connBand:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
     EndPoint:
@@ -335,8 +330,7 @@ components:
       description: The end point information to reach EAS.
       properties:
         fqdn:
-          type: string
-          description: Fully qualified domain name.
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         ipv4Addrs:
           type: array
           items:
@@ -356,3 +350,39 @@ components:
         - required: [fqdn]
         - required: [ipv4Addrs]
         - required: [ipv6Addrs]
+    PermissionLevel:
+      anyOf:
+      - type: string
+        enum:
+          - TRIAL
+          - GOLD
+          - SILVER
+          - OTHER
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - TRIAL: Level of service permission supported is TRIAL.
+        - GOLD: Level of service permission supported is GOLD.
+        - SILVER: Level of service permission supported is SILVER.
+        - OTHER: Any other level of service permissions supported.
+    EASCategory:
+      anyOf:
+      - type: string
+        enum:
+          - UAS
+          - V2X
+          - OTHER
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Possible values are
+        - UAS: Category of EAS is for Uncrewed Aerial Services.
+        - V2X: Category of EAS is for V2X Services.
+        - OTHER: Any other type of EAS category.

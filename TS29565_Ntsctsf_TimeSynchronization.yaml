@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
   title: Ntsctsf_TimeSynchronization Service API
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.3
   description: |
-    TSCTSF Time Synchronization Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    TSCTSF Time Synchronization Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.565 V1.0.0; 5G System; Time Sensitive Communication and Time Synchronization Function Services; Stage 3.
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
+  description: 3GPP TS 29.565 V1.2.0; 5G System; Time Sensitive Communication and Time Synchronization Function Services; Stage 3.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
 #
 servers:
   - url: '{apiRoot}/ntsctsf-time-sync/v1'
@@ -45,7 +45,10 @@ paths:
                 $ref: '#/components/schemas/TimeSyncExposureSubsc'
           headers:
             Location:
-              description: 'Contains the URI of the created individual time synchronization exposure subscription resource, according to the structure: {apiRoot}/ntsctsf-time-sync/{apiVersion}/subscriptions/{subscriptionId}'
+              description: >
+                Contains the URI of the created individual time synchronization exposure
+                subscription resource, according to the structure
+                {apiRoot}/ntsctsf-time-sync/{apiVersion}/subscriptions/{subscriptionId}
               required: true
               schema:
                 type: string
@@ -214,10 +217,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/TimeSyncExposureConfig'
+                $ref: '#/components/schemas/TimeSyncExposureConfig'
           headers:
             Location:
-              description: 'Contains the URI of the created individual time synchronization exposure configuration resource, according to the structure: {apiRoot}/ntsctsf-time-sync/{apiVersion}/subscriptions/{subscriptionId}/configurations/{configurationId}'
+              description: >
+                Contains the URI of the created individual time synchronization exposure
+                configuration resource, according to the structure
+                {apiRoot}/ntsctsf-time-sync/{apiVersion}/subscriptions/{subscriptionId}
+                /configurations/{configurationId}
               required: true
               schema:
                 type: string
@@ -257,7 +264,7 @@ paths:
                 content:
                   application/json:
                     schema:
-                      $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/TimeSyncExposureConfigNotif'
+                      $ref: '#/components/schemas/TimeSyncExposureConfigNotif'
               responses:
                 '204':
                   description: The receipt of the notification is acknowledged
@@ -312,7 +319,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/TimeSyncExposureConfig'
+                $ref: '#/components/schemas/TimeSyncExposureConfig'
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -365,7 +372,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/TimeSyncExposureConfig'
+                $ref: '#/components/schemas/TimeSyncExposureConfig'
         '204':
           description: No Content. Resource was successfully modified
         '307':
@@ -435,6 +442,192 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /asti-configurations:
+    post:
+      summary: Creates a new Individual ASTI Configuration resource.
+      operationId: ASTIConfiguration
+      tags:
+        - ASTI Configurations (Collection)
+      requestBody:
+        description: Contains the information for the creation the resource
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTimeDistributionData'
+      responses:
+        '201':
+          description: Successful creation of the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTimeDistributionData'
+          headers:
+            Location:
+              description: >
+                Contains the URI of the created individual ASTI Configuration resource,
+                according to the structure
+                {apiRoot}/ntsctsf-time-sync/{apiVersion}/asti-configurations/{astiConfigId}
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+
+  /asti-configurations/retrieve:
+    post:
+      summary: "Request the status of the 5G access stratum time distribution for a list of UEs."
+      operationId: RequestStatusof5GAccessStratumTimeDistribution
+      tags:
+        - ASTI Configurations Retrieve (Document)
+      requestBody:
+        description: Contains the information for the status of the 5G access stratum time distribution
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusRequestData'
+      responses:
+        '200':
+          description: Successful retrieval of the status of the 5G access stratum time distribution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponseData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /asti-configurations/{astiConfigId}:
+    put:
+      summary: "Modifies an existing Individual ASTI Configuration resource"
+      operationId: ModifyIndividualASTIConfiguration
+      tags:
+        - Individual ASTI Configuration (Document)
+      parameters:
+        - name: astiConfigId
+          description: string identifying an Individual ASTI Configuration
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTimeDistributionData'
+      responses:
+        '200':
+          description: OK. Resource was succesfully modified and representation is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTimeDistributionData'
+        '204':
+          description: No Content. Resource was succesfully modified
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      operationId: DeleteIndividualASTIConfiguration
+      summary: Delete an Individual ASTI Configuration
+      tags:
+        - Individual ASTI Configuration (Document)
+      parameters:
+        - name: astiConfigId
+          in: path
+          description: string identifying an Individual ASTI Configuration
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content. Resource was successfully deleted
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -528,6 +721,8 @@ components:
           items:
             $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/GmCapable'
           minItems: 1
+        asTimeRes:
+          $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/AsTimeResource'
         ptpCapForUes:
           type: object
           additionalProperties:
@@ -536,7 +731,9 @@ components:
           description: Contains the PTP capabilities supported by each of the UE(s). The key of the map is the supi.
       required:
         - upNodeId
-        - ptpCapForUes
+      anyOf:
+        - required: [gmCapables]
+        - required: [asTimeRes]
 
     PtpCapabilitiesPerUe:
       description: Contains the supported PTP capabilities per UE.
@@ -552,3 +749,189 @@ components:
       required:
         - supi
         - ptpCaps
+    TimeSyncExposureConfigNotif:
+      description: Contains the notification of time synchronization service state.
+      type: object
+      properties:
+        configNotifId:
+          type: string
+          description: Notification Correlation ID assigned by the NF service consumer.
+        stateOfConfig:
+          $ref: '#/components/schemas/StateOfConfiguration'
+      required:
+        - configNotifId
+        - stateOfConfig
+
+    StateOfConfiguration:
+      description: Contains the state of the time synchronization configuration.
+      type: object
+      properties:
+        state:
+          type: boolean
+          description: >
+            When it is set to true, it indicates the states of configurations for NW-TT port and all
+            DS-TT port(s) are active. When it is set to false, it indicates the state of
+            configurations for NW-TT port or at least one of the DS-TT port(s) are inactive.
+        inactiveNwtt:
+          type: boolean
+          description: >
+            When it is included and set to true, it indicates the state of configuration for NW-TT
+            port is inactive. It may be included when the "state" attribute is set to false.
+            Default value is false.
+        inactiveDstts:
+          description: >
+            Contains the UE identities. The states of configurations for DS-TT port(s) corresponding
+            to these UEs are inactive. It may be included when the "state" attribute is set to false.
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+      required:
+        - state
+
+    AccessTimeDistributionData:
+      description: Contains the parameters for the creation of 5G access stratum time distribution configuration..
+      type: object
+      properties:
+        supis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        interGrpId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        anyUeInd:
+          type: boolean
+          description: Identifies whether the request applies to any UE. This attribute shall set to "true" if applicable for any UE, otherwise, set to "false".
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        asTimeDisParam:
+          $ref: '#/components/schemas/AsTimeDistributionParam'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - asTimeDisParam
+      oneOf:
+        - required: [supis]
+        - required: [interGrpId]
+        - required: [anyUeInd]
+    AsTimeDistributionParam:
+      description: Contains the 5G access stratum time distribution parameters.
+      type: object
+      properties:
+        asTimeDisEnabled:
+          type: boolean
+          description: When this attribute is included and set to true, it indicates that the access stratum time distribution via Uu reference point is activated.
+        timeSyncErrBudget:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        tempValidity:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TemporalValidity'
+    StatusRequestData:
+      description: Contains the parameters for retrieval of the status of the access stratum time distribution for a list of UEs.
+      type: object
+      properties:
+        supis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+      required:
+        - supis
+    StatusResponseData:
+      description: Contains the parameters for the status of the access stratum time distribution for a list of UEs.
+      type: object
+      properties:
+        inactiveUes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        activeUes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActiveUe'
+          minItems: 1
+    ActiveUe:
+      description: Contains the UE identifier whose status of the access stratum time distribution is active and the optional requested time synchronization error budget.
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        timeSyncErrBudget:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+    TimeSyncExposureConfig:
+      description: Contains the Time Synchronization Configuration parameters.
+      type: object
+      properties:
+        upNodeId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
+        reqPtpIns:
+          $ref: '#/components/schemas/PtpInstance'
+        gmEnable:
+          type: boolean
+          description: Indicates that the AF requests 5GS to act as a grandmaster for PTP or gPTP if it is included and set to true.
+        gmPrio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        timeDom:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        uuErrorBudget:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        configNotifId:
+          type: string
+          description: Notification Correlation ID assigned by the NF service consumer.
+        configNotifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        tempValidity:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TemporalValidity'
+      required: 
+        - upNodeId
+        - reqPtpIns
+        - timeDom
+        - configNotifId
+        - configNotifUri
+    PtpInstance:
+      description: Contains PTP instance configuration and activation requested by the AF.
+      type: object
+      properties:
+        instanceType:
+          $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/InstanceType'
+        protocol:
+          $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/Protocol'
+        ptpProfile:
+            type: string
+        portConfigs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigForPort'
+          minItems: 1
+      required:
+        - instanceType
+        - protocol
+        - ptpProfile
+    ConfigForPort:
+      description: Contains configuration for each port.
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        n6Ind:
+          type: boolean
+        ptpEnable:
+          type: boolean
+        logSyncInter:
+          type: integer
+        logSyncInterInd:
+          type: boolean
+        logAnnouInter:
+          type: integer
+        logAnnouInterInd:
+          type: boolean
+      oneOf:
+        - required: [supi]
+        - required: [n6Ind]

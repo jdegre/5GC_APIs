@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.1.0-alpha.2
+  version: 3.1.0-alpha.3
   description: |
     ConvergedCharging Service    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V17.1.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V17.2.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -41,21 +41,31 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
         '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        '401':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
         '410':
           $ref: 'TS29571_CommonData.yaml#/components/responses/410'
         '411':
@@ -79,6 +89,12 @@ paths:
                     schema:
                       $ref: '#/components/schemas/ChargingNotifyRequest'
               responses:
+                '200':
+                  description: OK.
+                  content:
+                    application/ json:
+                      schema:
+                        $ref: '#/components/schemas/ChargingNotifyResponse'
                 '204':
                   description: 'No Content, Notification was succesfull'
                 '400':
@@ -86,8 +102,9 @@ paths:
                   content:
                     application/problem+json:
                       schema:
-                        $ref: >-
-                          TS29571_CommonData.yaml#/components/schemas/ProblemDetails
+                        oneOf:
+                          - $ref: TS29571_CommonData.yaml#/components/schemas/ProblemDetails
+                          - $ref: '#/components/schemas/ChargingNotifyResponse'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   '/chargingdata/{ChargingDataRef}/update':
@@ -117,21 +134,31 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
         '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        '401':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
+        '405':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/405'
+        '408':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/408'
         '410':
           $ref: 'TS29571_CommonData.yaml#/components/responses/410'
         '411':
@@ -162,14 +189,16 @@ paths:
       responses:
         '204':
           description: No Content.
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        '401':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                oneOf:
+                  - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+                  - $ref: '#/components/schemas/ChargingDataResponse'
         '410':
           $ref: 'TS29571_CommonData.yaml#/components/responses/410'
         '411':
@@ -249,6 +278,10 @@ components:
           $ref: '#/components/schemas/NSPAChargingInformation'
         nSMChargingInformation:
           $ref: '#/components/schemas/NSMChargingInformation'
+        mMTelChargingInformation:
+          $ref: '#/components/schemas/MMTelChargingInformation'
+        iMSChargingInformation:
+          $ref: '#/components/schemas/IMSChargingInformation'
       required:
         - nfConsumerIdentification 
         - invocationTimeStamp
@@ -395,6 +428,8 @@ components:
           type: integer
         uPFID:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        announcementInformation:
+          $ref: '#/components/schemas/AnnouncementInformation'
       required:
         - ratingGroup
     RequestedUnit:
@@ -610,6 +645,8 @@ components:
           items:
             $ref: '#/components/schemas/QosMonitoringReport'
           minItems: 0
+        5GLANTypeService:
+            $ref: '#/components/schemas/5GLANTypeService'
       required:
         - pduSessionID
         - dnnId
@@ -656,6 +693,8 @@ components:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/SteeringFunctionality'
         mAPDUSteeringMode:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/SteeringMode'
+        trafficForwardingWay:
+          $ref: '#/components/schemas/TrafficForwardingWay'
     NSPAContainerInformation:
       type: object
       properties:
@@ -956,6 +995,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
         downlinkVolume:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
+    5GLANTypeService:
+      type: object
+      properties:
+        internalGroupIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
     NEFChargingInformation:
       type: object
       properties:
@@ -1244,6 +1288,436 @@ components:
           items:
             type: integer
           minItems: 0
+    AnnouncementInformation:
+      type: object
+      properties:
+        announcementIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        announcementReference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        variableParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariablePart'
+          minItems: 0
+        timeToPlay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        quotaConsumptionIndicator:
+          $ref: '#/components/schemas/QuotaConsumptionIndicator'
+        announcementPriority:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        playToParty:
+          $ref: '#/components/schemas/PlayToParty'
+        announcementPrivacyIndicator:
+          $ref: '#/components/schemas/AnnouncementPrivacyIndicator'
+        Language:
+          $ref: '#/components/schemas/Language'
+    VariablePart:
+      type: object
+      properties:
+        variablePartType:
+          $ref: '#/components/schemas/VariablePartType'
+        variablePartValue:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        variablePartOrder:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+      required:
+        - variablePartType
+        - variablePartValue
+    Language:
+      type: string
+    MMTelChargingInformation:
+      type: object
+      properties:
+        supplementaryServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplementaryService'
+          minItems: 1
+    SupplementaryService:
+      type: object
+      properties:
+        supplementaryServiceType:
+          $ref: '#/components/schemas/SupplementaryServiceType'
+        supplementaryServiceMode:
+          $ref: '#/components/schemas/SupplementaryServiceMode'
+        numberOfDiversions:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        associatedPartyAddress:
+          type: string
+        conferenceId:
+          type: string
+        participantActionType:
+          $ref: '#/components/schemas/ParticipantActionType'
+        changeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        numberOfParticipants:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        cUGInformation:
+          $ref: '#/components/schemas/OctetString'
+    IMSChargingInformation:
+      type: object
+      properties:
+        eventType:
+          $ref: '#/components/schemas/SIPEventType'
+        iMSNodeFunctionality:
+          $ref: '#/components/schemas/IMSNodeFunctionality'
+        roleOfNode:
+          $ref: '#/components/schemas/RoleOfIMSNode'
+        userInformation:
+          $ref: '#/components/schemas/UserInformation'
+        userLocationInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        ueTimeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        3gppPSDataOffStatus:
+          $ref: '#/components/schemas/3GPPPSDataOffStatus'
+        isupCause:
+          $ref: '#/components/schemas/ISUPCause'
+        controlPlaneAddress:
+          $ref: '#/components/schemas/IMSAddress'
+        vlrNumber:
+          $ref: '#/components/schemas/E164'
+        mscAddress:
+          $ref: '#/components/schemas/E164'
+        userSessionID:
+          type: string
+        outgoingSessionID:
+          type: string
+        sessionPriority:
+          $ref: '#/components/schemas/IMSSessionPriority'
+        callingPartyAddresses:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        calledPartyAddress:
+          type: string
+        numberPortabilityRoutinginformation:
+          type: string
+        carrierSelectRoutingInformation:
+          type: string
+        alternateChargedPartyAddress:
+          type: string
+        requestedPartyAddress:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        calledAssertedIdentities:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        calledIdentityChange:
+          $ref: '#/components/schemas/CalledIdentityChange'
+        associatedURI:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          minItems: 1
+        timeStamps:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        applicationServerInformation:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        interOperatorIdentifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterOperatorIdentifier'
+          minItems: 1
+        imsChargingIdentifier:
+          type: string
+        relatedICID:
+          type: string
+        relatedICIDGenerationNode:
+          type: string
+        transitIOIList:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        earlyMediaDescription:
+          type: array
+          items:
+            $ref: '#/components/schemas/EarlyMediaDescription'
+          minItems: 1
+        sdpSessionDescription:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        sdpMediaComponent:
+          type: array
+          items:
+            $ref: '#/components/schemas/SDPMediaComponent'
+          minItems: 1
+        servedPartyIPAddress:
+          $ref: '#/components/schemas/IMSAddress'
+        serverCapabilities:
+          $ref: '#/components/schemas/ServerCapabilities'
+        trunkGroupID:
+          $ref: '#/components/schemas/TrunkGroupID'
+        bearerService:
+          type: string
+        imsServiceId:
+          type: string
+        messageBodies:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageBody'
+          minItems: 1
+        accessNetworkInformation:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        additionalAccessNetworkInformation:
+          type: string
+        cellularNetworkInformation:
+          type: string
+        accessTransferInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessTransferInformation'
+          minItems: 1
+        accessNetworkInfoChange:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessNetworkInfoChange'
+          minItems: 1
+        imsCommunicationServiceID:
+          type: string
+        imsApplicationReferenceID:
+          type: string
+        causeCode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        reasonHeader:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        initialIMSChargingIdentifier:
+          type: string
+        nniInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/NNIInformation'
+          minItems: 1
+        fromAddress:
+          type: string
+        imsEmergencyIndication:
+          type: boolean
+        imsVisitedNetworkIdentifier:
+          type: string
+        sipRouteHeaderReceived:
+          type: string
+        sipRouteHeaderTransmitted:
+          type: string
+        tadIdentifier:
+          $ref: '#/components/schemas/TADIdentifier'
+        feIdentifierList:
+          type: string
+    OctetString:
+      type: string
+      pattern: '^[0-9a-fA-F]+$'
+    E164:
+      type: string
+      pattern: '^[0-9a-fA-F]+$'
+    IMSAddress:
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        e164:
+          $ref: '#/components/schemas/E164'
+      anyOf:
+        - required: [ ipv4Addr ]
+        - required: [ ipv6Addr ]
+        - required: [ e164 ]
+    ServingNodeAddress:
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+      anyOf:
+        - required: [ ipv4Addr ]
+        - required: [ ipv6Addr ]
+    SIPEventType:
+      type: object
+      properties:
+        sIPMethod:
+          type: string
+        eventHeader:
+          type: string
+        expiresHeader:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+    ISUPCause:
+      type: object
+      properties:
+        iSUPCauseLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        iSUPCauseValue:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        iSUPCauseDiagnostics:
+          $ref: '#/components/schemas/OctetString'
+    CalledIdentityChange:
+      type: object
+      properties:
+        calledIdentity:
+          type: string
+        changeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    InterOperatorIdentifier:
+      type: object
+      properties:
+        originatingIOI:
+          type: string
+        terminatingIOI:
+          type: string
+    EarlyMediaDescription:
+      type: object
+      properties:
+        sDPTimeStamps:
+          $ref: '#/components/schemas/SDPTimeStamps'
+        sDPMediaComponent:
+          type: array
+          items:
+            $ref: '#/components/schemas/SDPMediaComponent'
+          minItems: 0
+        sDPSessionDescription:
+          type: array
+          items:
+            type: string
+          minItems: 0
+    SDPTimeStamps:
+      type: object
+      properties:
+        sDPOfferTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        sDPAnswerTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    SDPMediaComponent:
+      type: object
+      properties:
+        sDPMediaName:
+          type: string
+        SDPMediaDescription:
+          type: array
+          items:
+            type: string
+          minItems: 0
+        localGWInsertedIndication:
+          type: boolean
+        ipRealmDefaultIndication:
+          type: boolean
+        transcoderInsertedIndication:
+          type: boolean
+        mediaInitiatorFlag:
+          $ref: '#/components/schemas/MediaInitiatorFlag'
+        mediaInitiatorParty:
+          type: string
+        threeGPPChargingId:
+          $ref: '#/components/schemas/OctetString'
+        accessNetworkChargingIdentifierValue:
+          $ref: '#/components/schemas/OctetString'
+        sDPType:
+          $ref: '#/components/schemas/SDPType'
+    ServerCapabilities:
+      type: object
+      properties:
+        mandatoryCapability:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+          minItems: 0
+        optionalCapability :
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+          minItems: 0
+        serverName:
+          type: array
+          items:
+            type: string
+          minItems: 0
+    TrunkGroupID:
+      type: object
+      properties:
+        incomingTrunkGroupID:
+          type: string
+        outgoingTrunkGroupID:
+          type: string
+    MessageBody:
+      type: object
+      properties:
+        contentType:
+          type: string
+        contentLength:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        contentDisposition:
+          type: string
+        originator:
+          $ref: '#/components/schemas/OriginatorPartyType'
+      required:
+        - contentType
+        - contentLength
+    AccessTransferInformation:
+      type: object
+      properties:
+        accessTransferType:
+          $ref: '#/components/schemas/AccessTransferType'
+        accessNetworkInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/OctetString'
+          minItems: 0
+        cellularNetworkInformation:
+          $ref: '#/components/schemas/OctetString'
+        interUETransfer:
+          $ref: '#/components/schemas/UETransferType'
+        userEquipmentInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
+        instanceId:
+          type: string
+        relatedIMSChargingIdentifier:
+          type: string
+        relatedIMSChargingIdentifierNode:
+          $ref: '#/components/schemas/IMSAddress'
+        changeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    AccessNetworkInfoChange:
+      type: object
+      properties:
+        accessNetworkInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/OctetString'
+          minItems: 0
+        cellularNetworkInformation:
+          $ref: '#/components/schemas/OctetString'
+        changeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    NNIInformation:
+      type: object
+      properties:
+        sessionDirection:
+          $ref: '#/components/schemas/NNISessionDirection'
+        nNIType:
+          $ref: '#/components/schemas/NNIType'
+        relationshipMode:
+          $ref: '#/components/schemas/NNIRelationshipMode'
+        neighbourNodeAddress:
+          $ref: '#/components/schemas/IMSAddress'
     NotificationType:
       anyOf:
         - type: string
@@ -1555,9 +2029,210 @@ components:
     RedundantTransmissionType:
       anyOf:
         - type: string
-          enum:            
+          enum: 
             - NON_TRANSMISSION
             - END_TO_END_USER_PLANE_PATHS
-            - N3/N9 
+            - N3/N9
             - TRANSPORT_LAYER
+        - type: string
+    VariablePartType:
+      anyOf:
+        - type: string
+          enum:
+            - INTEGER
+            - NUMBER
+            - TIME
+            - DATE
+            - CURRENCY
+        - type: string
+    QuotaConsumptionIndicator:
+      anyOf:
+        - type: string
+          enum:
+            - QUOTA_NOT_USED
+            - QUOTA_IS_USED
+        - type: string
+    PlayToParty:
+      anyOf:
+        - type: string
+          enum:
+            - SERVED
+            - REMOTE
+        - type: string
+    AnnouncementPrivacyIndicator:
+      anyOf:
+        - type: string
+          enum:
+            - NOT_PRIVATE
+            - PRIVATE
+        - type: string
+    SupplementaryServiceType:
+      anyOf:
+        - type: string
+          enum: 
+            - OIP
+            - OIR
+            - TIP
+            - TIR
+            - HOLD
+            - CB
+            - CDIV
+            - CW
+            - MWI
+            - CONF
+            - FA
+            - CCBS
+            - CCNR
+            - MCID
+            - CAT
+            - CUG
+            - PNM
+            - CRS
+            - ECT
+        - type: string
+    SupplementaryServiceMode:
+      anyOf:
+        - type: string
+          enum: 
+            - CFU
+            - CFB
+            - CFNR
+            - CFNL
+            - CD
+            - CFNRC
+            - ICB
+            - OCB
+            - ACR
+            - BLIND_TRANFER
+            - CONSULTATIVE_TRANFER
+        - type: string
+    ParticipantActionType:
+      anyOf:
+        - type: string
+          enum: 
+            - CREATE
+            - JOIN
+            - INVITE_INTO
+            - QUIT
+        - type: string
+    TrafficForwardingWay:
+      anyOf:
+        - type: string
+          enum:            
+            - N6
+            - N19 
+            - LOCAL_SWITCH
+        - type: string
+
+    IMSNodeFunctionality:
+      anyOf:
+        - type: string
+          enum: 
+            - S_CSCF
+            - P_CSCF
+            - I_CSCF
+            - MRFC
+            - MGCF
+            - BGCF
+            - AS
+            - IBCF
+            - S-GW
+            - P-GW
+            - HSGW
+            - E-CSCF 
+            - MME 
+            - TRF
+            - TF
+            - ATCF
+            - PROXY
+            - EPDG
+            - TDF
+            - TWAG
+            - SCEF
+            - IWK_SCEF
+        - type: string
+    RoleOfIMSNode:
+      anyOf:
+        - type: string
+          enum: 
+            - ORIGINATING
+            - TERMINATING
+            - FORWARDING
+        - type: string
+    IMSSessionPriority:
+      anyOf:
+        - type: string
+          enum: 
+            - PRIORITY_0
+            - PRIORITY_1
+            - PRIORITY_2
+            - PRIORITY_3
+            - PRIORITY_4
+        - type: string
+    MediaInitiatorFlag:
+      anyOf:
+        - type: string
+          enum: 
+            - CALLED_PARTY
+            - CALLING_PARTY
+            - UNKNOWN
+        - type: string
+    SDPType:
+      anyOf:
+        - type: string
+          enum: 
+            - OFFER
+            - ANSWER
+        - type: string
+    OriginatorPartyType:
+      anyOf:
+        - type: string
+          enum: 
+            - CALLING
+            - CALLED
+        - type: string
+    AccessTransferType:
+      anyOf:
+        - type: string
+          enum: 
+            - PS_TO_CS
+            - CS_TO_PS
+            - PS_TO_PS
+            - CS_TO_CS
+        - type: string
+    UETransferType:
+      anyOf:
+        - type: string
+          enum: 
+            - INTRA_UE
+            - INTER_UE
+        - type: string
+    NNISessionDirection:
+      anyOf:
+        - type: string
+          enum: 
+            - INBOUND
+            - OUTBOUND
+        - type: string
+    NNIType:
+      anyOf:
+        - type: string
+          enum: 
+            - NON_ROAMING
+            - ROAMING_NO_LOOPBACK
+            - ROAMING_LOOPBACK
+        - type: string
+    NNIRelationshipMode:
+      anyOf:
+        - type: string
+          enum: 
+            - TRUSTED
+            - NON_TRUSTED
+        - type: string
+    TADIdentifier:
+      anyOf:
+        - type: string
+          enum: 
+            - CS
+            - PS
         - type: string

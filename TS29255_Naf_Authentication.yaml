@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Naf_Authentication
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.4
   description: |
     AF Authentication Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.255 V1.0.0; 5G System;Uncrewed Aerial System Service Supplier (USS) Services; Stage 3
+  description: 3GPP TS 29.255 V17.0.0; 5G System;Uncrewed Aerial System Service Supplier (USS) Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.255/
 
 servers:
@@ -43,6 +43,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UAVAuthResponse'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -140,6 +144,8 @@ components:
           type: string
         notifyUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifyCorrId:
+          type: string
         ipAddr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
         pei:
@@ -147,7 +153,7 @@ components:
         authMsg:
           type: string
         uavLocInfo:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
@@ -160,8 +166,6 @@ components:
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         serviceLevelId:
-          type: string
-        authSesCorId:
           type: string
         authMsg:
           type: string
@@ -183,14 +187,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         serviceLevelId:
           type: string
-        authSesCorId:
+        notifyCorrId:
           type: string
         authMsg:
           type: string
         notifyType:
           $ref: '#/components/schemas/NotifyType'
-        revokeCause:
-          $ref: '#/components/schemas/RevokeCause'
         ipAddr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
 
@@ -217,11 +219,6 @@ components:
           - REAUTHORIZE
           - REVOKE
         - type: string
-    RevokeCause:
-      anyOf:
-        - type: string
-          enum:
-          - UNSPECIFIED
 
     ProblemDetailsAuthenticateAuthorize:
       description: Extends ProblemDetails to indicate more details during Authentication failure

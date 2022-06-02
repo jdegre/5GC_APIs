@@ -1,16 +1,16 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.5'
+  version: '1.2.0-alpha.6'
   title: 'NRF NFManagement Service'
   description: |
-    NRF NFManagement Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    NRF NFManagement Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.4.0; 5G System; Network Function Repository Services; Stage 3
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
+  description: 3GPP TS 29.510 V17.5.0; 5G System; Network Function Repository Services; Stage 3
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
   - url: '{apiRoot}/nnrf-nfm/v1'
@@ -31,6 +31,13 @@ paths:
       operationId: GetNFInstances
       tags:
         - NF Instances (Store)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nnrf-nfm
+        - oAuth2ClientCredentials:
+          - nnrf-nfm
+          - nnrf-nfm:nf-instances:read
       parameters:
         - name: nf-type
           in: query
@@ -900,6 +907,7 @@ components:
           tokenUrl: '/oauth2/token'
           scopes:
             nnrf-nfm: Access to the Nnrf_NFManagement API
+            nnrf-nfm:nf-instances:read: Access to read the nf-instances resource
 
   schemas:
 
@@ -1220,7 +1228,7 @@ components:
           description: A map (list of key-value pairs) where a (unique) valid JSON string serves as key of nsacfInfo
           type: object
           additionalProperties:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NsacfInfo'
+            $ref: '#/components/schemas/NsacfInfo'
           minProperties: 1
         mbSmfInfoList:
           description: A map (list of key-value pairs) where a (unique) valid JSON string serves as key of MbSmfInfo
@@ -1242,6 +1250,13 @@ components:
           minProperties: 1
         trustAfInfo:
           $ref: '#/components/schemas/TrustAfInfo'
+        nssaafInfo:
+          $ref: '#/components/schemas/NssaafInfo'
+        hniList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fqdn'
+          minItems: 1
 
     NFService:
       description: Information of a given NF Service Instance; it is part of the NFProfile of an NF Instance
@@ -1427,6 +1442,7 @@ components:
             - GBA_BSF
             - CEF
             - MB-UPF
+            - NSWOF
         - type: string
 
     Fqdn:
@@ -1464,24 +1480,7 @@ components:
         reqNfInstanceId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         subscrCond:
-          oneOf:
-            - $ref: '#/components/schemas/NfInstanceIdCond'
-            - $ref: '#/components/schemas/NfInstanceIdListCond'
-            - $ref: '#/components/schemas/NfTypeCond'
-            - $ref: '#/components/schemas/ServiceNameCond'
-            - $ref: '#/components/schemas/ServiceNameListCond'
-            - $ref: '#/components/schemas/AmfCond'
-            - $ref: '#/components/schemas/GuamiListCond'
-            - $ref: '#/components/schemas/NetworkSliceCond'
-            - $ref: '#/components/schemas/NfGroupCond'
-            - $ref: '#/components/schemas/NfGroupListCond'
-            - $ref: '#/components/schemas/NfSetCond'
-            - $ref: '#/components/schemas/NfServiceSetCond'
-            - $ref: '#/components/schemas/UpfCond'
-            - $ref: '#/components/schemas/ScpDomainCond'
-            - $ref: '#/components/schemas/NwdafCond'
-            - $ref: '#/components/schemas/NefCond'
-            - $ref: '#/components/schemas/DccfCond'
+          $ref: '#/components/schemas/SubscrCond'
         subscriptionId:
           type: string
           pattern: '^([0-9]{5,6}-)?[^-]+$'
@@ -1538,6 +1537,31 @@ components:
             - $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         hnrfUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        onboardingCapability:
+          type: boolean
+          default: false
+        targetHni:
+           $ref: '#/components/schemas/Fqdn'
+
+    SubscrCond:
+      oneOf:
+        - $ref: '#/components/schemas/NfInstanceIdCond'
+        - $ref: '#/components/schemas/NfInstanceIdListCond'
+        - $ref: '#/components/schemas/NfTypeCond'
+        - $ref: '#/components/schemas/ServiceNameCond'
+        - $ref: '#/components/schemas/ServiceNameListCond'
+        - $ref: '#/components/schemas/AmfCond'
+        - $ref: '#/components/schemas/GuamiListCond'
+        - $ref: '#/components/schemas/NetworkSliceCond'
+        - $ref: '#/components/schemas/NfGroupCond'
+        - $ref: '#/components/schemas/NfGroupListCond'
+        - $ref: '#/components/schemas/NfSetCond'
+        - $ref: '#/components/schemas/NfServiceSetCond'
+        - $ref: '#/components/schemas/UpfCond'
+        - $ref: '#/components/schemas/ScpDomainCond'
+        - $ref: '#/components/schemas/NwdafCond'
+        - $ref: '#/components/schemas/NefCond'
+        - $ref: '#/components/schemas/DccfCond'
 
     NfInstanceIdCond:
       description: Subscription to a given NF Instance Id
@@ -1722,6 +1746,18 @@ components:
           items:
             $ref: '#/components/schemas/DataSetId'
           minItems: 1
+        sharedDataIdRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SharedDataIdRange'
+          minItems: 1
+
+    SharedDataIdRange:
+      description: A range of SharedDataIds based on regular-expression matching
+      type: object
+      properties:
+        pattern:
+          type: string
 
     SupiRange:
       description: A range of SUPIs (subscriber identities), either based on a numeric range, or based on regular-expression matching
@@ -1761,7 +1797,7 @@ components:
           type: string
 
     DataSetId:
-      description: Types of data sets stored in UDR
+      description: Types of data sets and subsets stored in UDR
       anyOf:
         - type: string
           enum:
@@ -1769,6 +1805,19 @@ components:
             - POLICY
             - EXPOSURE
             - APPLICATION
+            - A_PFD
+            - A_AFTI
+            - A_IPTV
+            - A_BDT
+            - A_SPD
+            - A_EASD
+            - A_AMI
+            - A_TSD
+            - P_UE
+            - P_SCD
+            - P_BDT
+            - P_PLMNUE
+            - P NSSCD
         - type: string
 
     UdmInfo:
@@ -1871,6 +1920,9 @@ components:
           minItems: 1
         n2InterfaceAmfInfo:
           $ref: '#/components/schemas/N2InterfaceAmfInfo'
+        amfOnboardingCapability:
+          type: boolean
+          default: false
 
     SmfInfo:
       description: Information of an SMF NF Instance
@@ -1917,6 +1969,9 @@ components:
           items:
             $ref: '#/components/schemas/Fqdn'
           minItems: 1
+        smfOnboardingCapability:
+          type: boolean
+          default: false
 
     SnssaiSmfInfoItem:
       description: Set of parameters supported by SMF for a given S-NSSAI
@@ -2173,6 +2228,10 @@ components:
         proseSupportInd:
           type: boolean
           default: false
+        proseCapability:
+          $ref: '#/components/schemas/ProSeCapability'
+        v2xCapability:
+          $ref: '#/components/schemas/V2xCapability'
 
     BsfInfo:
       description: Information of a BSF NF Instance
@@ -2424,6 +2483,7 @@ components:
             - NSSAA_REAUTH_NOTIFICATION
             - NSSAA_REVOC_NOTIFICATION
             - MATCH_INFO_NOTIFICATION
+            - DATA_RESTORATION_NOTIFICATION
         - type: string
 
     TransportProtocol:
@@ -2522,6 +2582,8 @@ components:
           minItems: 1
         conditionEvent:
           $ref: '#/components/schemas/ConditionEventType'
+        subscriptionContext:
+          $ref: '#/components/schemas/SubscriptionContext'
 
     NFStatus:
       description: Status of a given NF Instance stored in NRF
@@ -2578,33 +2640,39 @@ components:
             - nnef-pfdmanagement
             - nnef-smcontext
             - nnef-eventexposure
+            - nnef-eas-deployment-info
             - 3gpp-cp-parameter-provisioning
             - 3gpp-device-triggering
-            - 3gpp-applying-bdt-policy
+            - 3gpp-bdt
             - 3gpp-traffic-influence
             - 3gpp-chargeable-party
             - 3gpp-as-session-with-qos
             - 3gpp-msisdn-less-mo-sms
             - 3gpp-service-parameter
+            - 3gpp-monitoring-event
             - 3gpp-nidd-configuration-trigger
             - 3gpp-nidd
             - 3gpp-analyticsexposure
+            - 3gpp-racs-parameter-provisioning
             - 3gpp-ecr-control
+            - 3gpp-applying-bdt-policy
             - 3gpp-mo-lcs-notify
             - 3gpp-time-sync
             - 3gpp-am-influence
             - 3gpp-am-policyauthorization
             - 3gpp-akma
+            - 3gpp-eas-deployment
             - 3gpp-iptvconfiguration
             - 3gpp-mbs-tmgi
             - 3gpp-mbs-session
+            - 3gpp-authentication
             - npcf-am-policy-control
             - npcf-smpolicycontrol
             - npcf-policyauthorization
             - npcf-bdtpolicycontrol
             - npcf-eventexposure
             - npcf-ue-policy-control
-            - npcf-am-policy-authorization
+            - npcf-am-policyauthorization
             - nsmsf-sms
             - nnssf-nsselection
             - nnssf-nssaiavailability
@@ -2638,6 +2706,7 @@ components:
             - nudsf-dr
             - nudsf-timer
             - nnssaaf-nssaa
+            - nnssaaf-aiw
             - naanf-akma
             - n5gddnmf-discovery
             - nmfaf-3dadm
@@ -3093,6 +3162,12 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/TrustAfInfo'
           minProperties: 1
+        servedNssaafInfo:
+          type: object
+          description: A map (list of key-value pairs) where NF Instance Id serves as key
+          additionalProperties:
+            $ref: '#/components/schemas/NssaafInfo'
+          minProperties: 1
 
     PlmnSnssai:
       description: List of network slices (S-NSSAIs) for a given PLMN ID
@@ -3151,11 +3226,14 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
           minItems: 1
-        afSliceDnnList:
+        unTrustAfInfoList:
           type: array
           items:
-            $ref: '#/components/schemas/AfSliceDnn'
+            $ref: '#/components/schemas/UnTrustAfInfo'
           minItems: 1
+        uasNfFunctionalityInd:
+          type: boolean
+          default: false
 
     PfdData:
       description: List of Application IDs and/or AF IDs managed by a given NEF Instance
@@ -3311,13 +3389,25 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
           minItems: 1
         gmFqdn:
-          $ref: '#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         gmIpv4Addresses:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
           minItems: 1
         gmIpv6Addresses:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+          minItems: 1
+        mwFqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+        mwIpv4Addresses:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+          minItems: 1
+        mwIpv6Addresses:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
@@ -3788,19 +3878,20 @@ components:
           minItems: 1
 
     NsacfCapability:
+      description: NSACF service capabilities (e.g. to monitor and control the number of registered UEs or established PDU sessions per network slice)
       type: object
       properties:
         supportUeSAC:
-          description: >
-            Indicates the service capability of the NSACF to monitor and control the number of registered UEs per network slice for the network slice that is subject to NSAC
-            true: Supported
+          description: |
+            Indicates the service capability of the NSACF to monitor and control the number of registered UEs per network slice for the network slice that is subject to NSAC  
+            true: Supported  
             false (default): Not Supported
           type: boolean
           default: false
         supportPduSAC:
-          description: >
-            Indicates the service capability of the NSACF to monitor and control the number of established PDU sessions per network slice for the network slice that is subject to NSAC
-            true: Supported
+          description: |
+            Indicates the service capability of the NSACF to monitor and control the number of established PDU sessions per network slice for the network slice that is subject to NSAC  
+            true: Supported  
             false (default): Not Supported
           type: boolean
           default: false
@@ -3970,6 +4061,21 @@ components:
           items:
             $ref: '#/components/schemas/IdentityRange'
           minItems: 1
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+          minItems: 1
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        internalGroupIdentifiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalGroupIdRange'
+          minItems: 1
 
     SnssaiTsctsfInfoItem:
       description: Set of parameters supported by TSCTSF for a given S-NSSAI
@@ -4035,8 +4141,8 @@ components:
         supportedPfcpFeatures:
           type: string
 
-    AfSliceDnn:
-      description: AF specific Slices and Dnns
+    UnTrustAfInfo:
+      description: Information of a untrusted AF Instance
       type: object
       required:
         - afId
@@ -4048,6 +4154,9 @@ components:
           items:
             $ref: '#/components/schemas/SnssaiInfoItem'
           minItems: 1
+        mappingInd:
+          type: boolean
+          default: false
 
     TrustAfInfo:
       description: Information of a trusted AF Instance
@@ -4073,6 +4182,9 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
+        mappingInd:
+          type: boolean
+          default: false
 
     SnssaiInfoItem:
       description: Parameters supported by an NF for a given S-NSSAI Set of parameters supported by NF for a given S-NSSAI
@@ -4137,3 +4249,63 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
           minItems: 1
+
+    V2xCapability:
+      description: Indicate the supported V2X Capability by the PCF.
+      type: object
+      properties:
+        lteV2x:
+          type: boolean
+          default: false
+        nrV2x:
+          type: boolean
+          default: false
+
+    NssaafInfo:
+      description: Information of a NSSAAF Instance
+      type: object
+      properties:
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+          minItems: 1
+        internalGroupIdentifiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalGroupIdRange'
+          minItems: 1
+
+    ProSeCapability:
+      description: Indicate the supported ProSe Capability by the PCF.
+      type: object
+      properties:
+        proseDirectDiscovey:
+          type: boolean
+          default: false
+        proseDirectCommunication:
+          type: boolean
+          default: false
+        proseL2UetoNetworkRelay:
+          type: boolean
+          default: false
+        proseL3UetoNetworkRelay:
+          type: boolean
+          default: false
+        proseL2RemoteUe:
+          type: boolean
+          default: false
+        proseL3RemoteUe:
+          type: boolean
+          default: false
+
+    SubscriptionContext:
+      description: Context data related to a created subscription, to be included in notifications sent by NRF.
+      type: object
+      required:
+        - subscriptionId
+      properties:
+        subscriptionId:
+          type: string
+        subscrCond:
+          $ref: '#/components/schemas/SubscrCond'

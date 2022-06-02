@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: 2.2.0-alpha.6
+  version: 2.2.0-alpha.7
   title: 'Nudr_DataRepository API OpenAPI file'
   description: |
     Unified Data Repository Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.504 V17.5.0; 5G System; Unified Data Repository Services; Stage 3
+  description: 3GPP TS 29.504 V17.6.0; 5G System; Unified Data Repository Services; Stage 3
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.504/'
 
 servers:
@@ -97,6 +97,12 @@ paths:
     $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1group-data~1%7BueGroupId%7D~1ee-subscriptions'
   /subscription-data/group-data/{ueGroupId}/ee-subscriptions/{subsId}:
     $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1group-data~1%7BueGroupId%7D~1ee-subscriptions~1%7BsubsId%7D'
+  /subscription-data/group-data/{ueGroupId}/ee-subscriptions/{subsId}/amf-subscriptions:
+    $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1group-data~1%7BueGroupId%7D~1ee-subscriptions~1%7BsubsId%7D~1amf-subscriptions'
+  /subscription-data/group-data/{ueGroupId}/ee-subscriptions/{subsId}/smf-subscriptions:
+    $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1group-data~1%7BueGroupId%7D~1ee-subscriptions~1%7BsubsId%7D~1smf-subscriptions'
+  /subscription-data/group-data/{ueGroupId}/ee-subscriptions/{subsId}/hss-subscriptions:
+    $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1group-data~1%7BueGroupId%7D~1ee-subscriptions~1%7BsubsId%7D~1hss-subscriptions'
   /subscription-data/group-data/{ueGroupId}/ee-profile-data:
     $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1group-data~1%7BueGroupId%7D~1ee-profile-data'
   /subscription-data/group-data/5g-vn-groups:
@@ -151,6 +157,8 @@ paths:
     $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1%7BueId%7D~1context-data~1service-specific-authorizations~1%7BserviceType%7D'
   /subscription-data/{ueId}/5mbs-data:
     $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1%7BueId%7D~15mbs-data'
+  /subscription-data/{ueId}/uc-data:
+    $ref: 'TS29505_Subscription_Data.yaml#/paths/~1subscription-data~1%7BueId%7D~1uc-data'
   /policy-data/ues/{ueId}:
     $ref: 'TS29519_Policy_Data.yaml#/paths/~1policy-data~1ues~1%7BueId%7D'
   /policy-data/ues/{ueId}/am-data:
@@ -221,6 +229,64 @@ paths:
     $ref: 'TS29519_Exposure_Data.yaml#/paths/~1exposure-data~1subs-to-notify'
   /exposure-data/subs-to-notify/{subId}:
     $ref: 'TS29519_Exposure_Data.yaml#/paths/~1exposure-data~1subs-to-notify~1%7BsubId%7D'
+  /data-restoration-events:
+    post:
+    # This is a pseudo operation, clients shall NOT invoke this method!
+      summary: subscribe to data restoration notifications
+      operationId: CreateIndividualSubcription
+      tags:
+        - Subscriptions (Collection)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {}
+      responses:
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        restorationNotification:
+          '{dataRestorationCallbackUri}':
+          # The URI in {dataRestorationCallbackUri} is the default endpoint discovered from NRF.
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/DataRestorationNotification'
+              responses:
+                '204':
+                  description: No Content, Notification was succesfull
+                '307':
+                  description: Temporary Redirect
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
+                  headers:
+                    Location:
+                      description: 'The URI pointing to the resource located on the redirect target NF service consumer'
+                      required: true
+                      schema:
+                        type: string
+                '308':
+                  description: Permanent Redirect
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
+                  headers:
+                    Location:
+                      description: 'The URI pointing to the resource located on the redirect target NF service consumer'
+                      required: true
+                      schema:
+                        type: string
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -237,3 +303,34 @@ components:
             nudr-dr:policy-data: Access to the PolicyData data set
             nudr-dr:exposure-data: Access to the ExposureData data set
             nudr-dr:application-data: Access to the ApplicationData data set
+
+  schemas:
+    DataRestorationNotification:
+      description: Contains identities representing those UEs potentially affected by a data-loss event at the UDR
+      type: object
+      properties:
+        supiRanges:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/SupiRange'
+          minItems: 1
+        gpsiRanges:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/IdentityRange'
+          minItems: 1
+        resetIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        sNssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        dnnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1

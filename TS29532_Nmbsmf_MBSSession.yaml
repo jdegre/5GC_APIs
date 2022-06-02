@@ -2,15 +2,15 @@ openapi: 3.0.0
 
 info:
   title: Nmbsmf-MBSSession
-  version: 1.0.0-alpha.3
+  version: 1.0.0-alpha.5
   description: |
     <API Name> Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.532 V0.3.0; 5G System; 5G Multicast-Broadcast Session Management Services; Stage 3.
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.532/
+  description: 3GPP TS 29.532 V17.0.0; 5G System; 5G Multicast-Broadcast Session Management Services; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.532/
 
 servers:
   - url: '{apiRoot}/nmbsmf-mbssession/v1'
@@ -32,7 +32,9 @@ paths:
         - MBS sessions collection
       operationId: Create
       requestBody:
-        description: Representation of the MBS session to be created in the MB-SMF
+        description: >
+          Representation of the MBS session to be created in the MB-SMF
+          Creates an individual MBS session resource in the MB-SMF.
         required: true
         content:
           application/json:
@@ -40,14 +42,17 @@ paths:
               $ref: '#/components/schemas/CreateReqData'
       responses:
         '201':
-          description: Successful creation of an MBS session
+          description: >
+            Successful creation of an MBS session
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateRspData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nmbsmf-mbssession/<apiVersion>/mbssessions/{mbsSessionRef}'
+              description: >
+                'Contains the URI of the newly created resource, according to the structure:
+                {apiRoot}/nmbsmf-mbssession/<apiVersion>/mbssessions/{mbsSessionRef}'
               required: true
               schema:
                 type: string
@@ -69,6 +74,101 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/413'
         '415':
           $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /mbs-sessions/{mbsSessionRef}:
+    patch:
+      summary:  Updates an individual MBS session resource in the MB-SMF.
+      tags:
+        - Individual MBS session
+      operationId: Update
+      parameters:
+        - name: mbsSessionRef
+          in: path
+          required: true
+          description: Unique ID of the MBS session to be modified
+          schema:
+            type: string
+      requestBody:
+        description: Data within the Update Request
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+      responses:
+        '204':
+          description: >
+            Successful modification of the MBS session without content in the response.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+    delete:
+      summary:  Deletes an individual MBS session resource in the MB-SMF. 
+      tags:
+        - Individual MBS session
+      operationId: Release
+      parameters:
+        - name: mbsSessionRef
+          in: path
+          required: true
+          description: Unique ID of the MBS session to be released
+          schema:
+            type: string
+      responses:
+        '204':
+          description: >
+            Successful release of the MBS session without content in the response.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -281,7 +381,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Data to be modified in the StatusSubscription
+        description: Data to be modified in the MBSSessionSubscription
         required: true
         content:
           application/json-patch+json:
@@ -296,7 +396,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusSubscription'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionSubscription'
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -414,6 +514,55 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+      callbacks:
+        contextStatusNotification:
+          '{$request.body#/subscription/notifUri}':
+            post:
+              parameters:
+                - name: Content-Encoding
+                  in: header
+                  description: Content-Encoding, described in IETF RFC 7231
+                  schema:
+                    type: string
+              requestBody:
+                description: Notification Payload
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/ContextStatusNotifyReqData'
+              responses:
+                '204':
+                  description: Expected response to a successful callback processing
+                  headers:
+                    Accept-Encoding:
+                      description: Accept-Encoding, described in IETF RFC 7694
+                      schema:
+                        type: string
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '501':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
   /mbs-sessions/contexts/subscriptions/{subscriptionId}:
     patch:
@@ -534,16 +683,13 @@ components:
           $ref: '#/components/schemas/ExtMbsSession'
       required:
         - mbsSession
+
     CreateRspData:
       description: Data within Create Response
       type: object
       properties:
-        tmgi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tmgi'
-        ingressTunnelAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
-        subscriptionId:
-          type: string
+        mbsSession:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSession'
 
     ExtMbsSession:
       description: MbsSession common data type with MB-SMF API specific extensions
@@ -573,15 +719,17 @@ components:
           $ref: '#/components/schemas/ContextUpdateAction'
         dlTunnelInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
-        n2Info:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2MbsSmInfo:
+          $ref: '#/components/schemas/N2MbsSmInfo'
         ranNodeId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+        leaveInd:
+          type: boolean
+          enum:
+           - true
       required:
         - nfcInstanceId
-      oneOf:
-        - required: [ mbsSessionId, requestedAction ]
-        - required: [ n2Info, ranNodeId ]
+        - mbsSessionId
 
     ContextUpdateRspData:
       description: Data within ContextUpdate Response
@@ -591,8 +739,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ssm'
         cTeid:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
-        n2Info:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        n2MbsSmInfo:
+          $ref: '#/components/schemas/N2MbsSmInfo'
 
 
     ContextStatusSubscribeReqData:
@@ -672,6 +820,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ssm'
         cTeid:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        mbsServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        mbsAreaSessions:
+          description: >
+            A map (list of key-value pairs) where the key identifies an areaSessionId
+          additionalProperties:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/MbsAreaSession'
+          minProperties: 1
+
 
     ContextStatusEventReport:
       description: Context Status Event Report
@@ -685,6 +842,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionActivityStatus'
         mbsServiceArea:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        mbsAreaSessions:
+          description: >
+            A map (list of key-value pairs) where the key identifies an areaSessionId
+          additionalProperties:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/MbsAreaSession'
+          minProperties: 1
       required:
         - eventType
         - timeStamp
@@ -709,83 +872,41 @@ components:
       type: object
       properties:
         subscription:
-          $ref: '#/components/schemas/StatusSubscription'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionSubscription'
       required:
         - subscription
 
-    StatusSubscription:
-      description: Data within the Status Subscription
-      type: object
-      properties:
-        nfcInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        mbsSessionId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
-        eventList:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatusEvent'
-          minItems: 1
-        notifyUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-        notifyCorrelationId:
-          type: string
-        expiryTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-      required:
-        - nfcInstanceId
-        - mbsSessionId
-        - eventList
-        - notifyUri
-
-    StatusEvent:
-      description: Status Event
-      type: object
-      properties:
-        eventType:
-          $ref: '#/components/schemas/StatusEventType'
-      required:
-        - eventType
 
     StatusSubscribeRspData:
       description: Data within StatusSubscribe Response
       type: object
       properties:
-        mbsSessionId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
-        reportList:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatusEventReport'
-          minItems: 1
+        subscription:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionSubscription'
+        eventList:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionEventReportList'
       required:
-        - mbsSessionId
+        - subscription
 
-    StatusEventReport:
-      description: Status Event Report
-      type: object
-      properties:
-        eventType:
-          $ref: '#/components/schemas/StatusEventType'
-        timeStamp:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-      required:
-        - eventType
-        - timeStamp
 
     StatusNotifyReqData:
       description: Status Notification
       type: object
       properties:
-        reportList:
-          type: array
-          items:
-            $ref: '#/components/schemas/StatusEventReport'
-          minItems: 1
-        notifyCorrelationId:
-          type: string
+        eventList:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionEventReportList'
       required:
-        - reportList
+        - eventList
+
+
+    N2MbsSmInfo:
+      description: N2 MBS Session Management information
+      type: object
+      properties:
+        ngapIeType:
+          $ref: '#/components/schemas/NgapIeType'
+        ngapData:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
 
 
 #
@@ -825,11 +946,14 @@ components:
           - ONE_TIME
       - type: string
 
-    StatusEventType:
-      description: Status Event Type
+
+    NgapIeType:
+      description: NGAP Information Element Type
       anyOf:
       - type: string
         enum:
-          - SESSION_RELEASE
-          - BROADCAST_DELIVERY_STATUS
+          - MBS_DIS_SETUP_REQ
+          - MBS_DIS_SETUP_RSP
+          - MBS_DIS_SETUP_FAIL
+          - MBS_DIS_REL_REQ
       - type: string

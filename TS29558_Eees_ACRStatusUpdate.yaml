@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: EES ACR Status Update Service
+  version: 1.0.0-alpha.1
+  description: |
+    EES ACR Status Update Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: >
+    3GPP TS 29.558 V1.4.0; Enabling Edge Applications;
+    Application Programming Interface (API) specification; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+
+servers:
+  - url: '{apiRoot}/eees-acrstatus-update/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122
+
+paths:
+  /request-acrupdate:
+    post:
+      summary: Request to update the information related to ACR (e.g. indicate the status of ACT, update the notification target address).
+      operationId: RequestACRUpdate
+      tags:
+        - Request ACR Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ACRUpdateData'
+      responses:
+        '200':
+          description: The communicated ACR update information was successfully received. The response body contains the feedback of the EES.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ACRDataStatus'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  schemas:
+    ACRUpdateData:
+      description: Represents the parameters to update the information related to ACR (e.g. indicate the status of ACT, update the notification target address).
+      type: object
+      properties:
+        easId:
+          type: string
+        acId:
+          type: string
+        actResult:
+          $ref: '#/components/schemas/ACTResult'
+        e3SubscIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        e3NotificationUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+      required:
+        - easId
+
+    ACRDataStatus:
+      description: Represents the ACR status information.
+      type: object
+      properties:
+        e3SubscsStatus:
+          $ref: '#/components/schemas/E3SubscsStatus'
+        e3SubscIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+
+# ENUMS:
+
+    ACTResult:
+      description: Represents the result of ACT.
+      anyOf:
+        - type: string
+          enum:
+          - SUCCESSFUL
+          - FAILED
+        - type: string
+
+    E3SubscsStatus:
+      description: Represents the status of the initialization of EDGE-3 subscriptions.
+      anyOf:
+        - type: string
+          enum:
+          - SUCCESSFUL
+          - FAILED
+        - type: string

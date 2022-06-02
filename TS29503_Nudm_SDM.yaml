@@ -1,16 +1,16 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0-alpha.6'
+  version: '2.2.0-alpha.7'
   title: 'Nudm_SDM'
   description: |
-    Nudm Subscriber Data Management Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    Nudm Subscriber Data Management Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.5.0
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.6.0
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
   - url: '{apiRoot}/nudm-sdm/v2'
@@ -52,7 +52,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         - name: supported-features
           in: query
           description: Supported Features
@@ -218,14 +218,14 @@ paths:
              $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         - name: plmn-id
           in: query
-          description: serving PLMN ID
+          description: Serving PLMN ID or SNPN ID
           content:
             application/json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         - name: adjacent-plmns
           in: query
-          description: list of PLMNs adjacent to the UE's serving PLMN
+          description: List of PLMNs adjacent to the UE's serving PLMN
           schema:
             type: array
             items:
@@ -1092,6 +1092,70 @@ paths:
         default:
           description: Unexpected error
 
+  /{supi}/uc-data:
+    get:
+      summary: retrieve a UE's User Consent Subscription Data
+      operationId: GetUcData
+      tags:
+        - User Consent Subscription Data Retrieval
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: uc-purpose
+          in: query
+          description: User consent purpose
+          schema:
+             $ref: '#/components/schemas/UcPurpose'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UcSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
   /{ueId}/sdm-subscriptions:
     post:
       summary: subscribe to notifications
@@ -1868,6 +1932,8 @@ components:
           $ref: '#/components/schemas/ProseSubscriptionData'
         mbsData:
           $ref: '#/components/schemas/MbsSubscriptionData'
+        ucData:
+          $ref: '#/components/schemas/UcSubscriptionData'
 
     UeContextInSmsfData:
       type: object
@@ -2046,6 +2112,11 @@ components:
           minItems: 1
         aerialUeSubInfo:
           $ref: '#/components/schemas/AerialUeSubscriptionInfo'
+        roamingRestrictions:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/RoamingRestrictions'
+        remoteProvInd:
+          type: boolean
+          default: false
 
     PcfSelectionAssistanceInfo:
       type: object
@@ -2260,7 +2331,7 @@ components:
           - pgwIpAddress
       properties:
         pgwFqdn:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         pgwIpAddress:
           $ref: '#/components/schemas/IpAddress'
         smfInstanceId:
@@ -2268,6 +2339,8 @@ components:
         epdgInd:
           type: boolean
           default: false
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
 
 
     PduSession:
@@ -2308,7 +2381,7 @@ components:
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         pgwFqdn:
-          type: string
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         pgwIpAddr:
           $ref: '#/components/schemas/IpAddress'
         plmnId:
@@ -2428,7 +2501,7 @@ components:
             $ref: '#/components/schemas/IpAddress'
           minItems: 1
         dnAaaFqdn:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         iptvAccCtrlInfo:
           type: string
         ipv4Index:
@@ -2442,6 +2515,11 @@ components:
         easDiscoveryAuthorized:
           type: boolean
           default: false
+        onboardingInd:
+          type: boolean
+          default: false
+        aerialUeInd:
+          $ref: '#/components/schemas/AerialUeIndication'
 
     NiddInformation:
       type: object
@@ -2572,7 +2650,15 @@ components:
         nfChangeFilter:
           type: boolean
           default: false
-
+        uniqueSubscription:
+          type: boolean
+        resetIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        ueConSmfDataSubFilter:
+          $ref: '#/components/schemas/UeContextInSmfDataSubFilter'
 
     SdmSubsModification:
       type: object
@@ -3182,6 +3268,35 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
           minItems: 1
 
+    UcSubscriptionData:
+      description: Contains the User Consent Subscription Data.
+      type: object
+      properties:
+        userConsentPerPurposeList:
+          description: A map(list of key-value pairs) where user consent purpose serves as key of user consent
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UserConsent'
+          minProperties: 1
+
+    UeContextInSmfDataSubFilter:
+      description: UE Context In Smf Data Subscription Filter.
+      type: object
+      properties:
+        dnnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1
+        snssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        emergencyInd:
+          type: boolean
+          default: false
+
 
 # SIMPLE TYPES:
 
@@ -3276,6 +3391,25 @@ components:
           - UEC_AMF
           - V2X
           - PROSE
+          - UC
+          - MBS
+        - type: string
+
+    UcPurpose:
+      anyOf:
+        - type: string
+          enum:
+          - ANALYTICS
+          - MODEL_TRAINING
+        - type: string
+      description: Indicates the purpose of the user consent.
+
+    UserConsent:
+      anyOf:
+        - type: string
+          enum:
+          - CONSENT_NOT_GIVEN
+          - CONSENT_GIVEN
         - type: string
 
     PduSessionContinuityInd:

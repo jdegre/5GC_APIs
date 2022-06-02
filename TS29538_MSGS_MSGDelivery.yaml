@@ -1,0 +1,350 @@
+openapi: 3.0.0
+info:
+  title: MSGS_MSGDelivery
+  version: 1.0.0-alpha.2
+  description: |
+    API for MSGG MSGin5G Server Message Delivery Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: >
+    3GPP TS 29.538 V17.0.0; Enabling MSGin5G Service; Application Programming Interfaces (API)
+    specification; Stage 3
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.538/
+
+servers:
+  - url: '{apiRoot}/msgs-msgdelivery/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - msgs-msgdelivery
+
+paths:
+  /deliver-as-message:
+    post:
+      summary: AS deliver message to MSGin5G Server
+      tags:
+        - AS Message delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ASMessageDelivery'
+      responses:
+        '200':
+          description: OK, AS Message delivery successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageDeliveryAck'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /deliver-ue-message:
+    post:
+      summary: UE deliver message to MSGin5G Server
+      tags:
+        - UE Message delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UEMessageDelivery'
+      responses:
+        '200':
+          description: OK, UE Message delivery successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageDeliveryAck'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /deliver-report:
+    post:
+      summary: AS or UE deliver status report to MSGin5G Server
+      tags:
+        - AS/UE status report delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryStatusReport'
+      responses:
+        '200':
+          description: OK, status report delivery successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageDeliveryAck'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            msgs-msgdelivery: Access to the MSGS_MSGDelivery API
+
+
+  schemas:
+#
+# STRUCTURED DATA TYPES
+#
+    ASMessageDelivery:
+      description: Contains the AS message delivery data
+      type: object
+      required:
+        - oriAddr
+        - destAddr
+        - msgId
+        - stoAndFwInd
+      properties:
+        oriAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        destAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        appId:
+          type: string
+        msgId:
+          type: string
+        secCred:
+          type: string
+        delivStReqInd:
+          type: boolean
+        payload:
+          type: string
+        priority:
+          $ref: '#/components/schemas/Priority'
+        segInd:
+          type: boolean
+        segParams:
+          $ref: '#/components/schemas/MessageSegmentParameters'
+        stoAndFwInd:
+          type: boolean
+        stoAndFwParams:
+          $ref: '#/components/schemas/StoreAndForwardParameters'
+        latency:
+          type: integer
+
+    UEMessageDelivery:
+      description: Contains the UE message delivery data
+      type: object
+      required:
+        - oriAddr
+        - destAddr
+        - msgId
+        - stoAndFwInd
+      properties:
+        oriAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        destAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        appId:
+          type: string
+        msgId:
+          type: string
+        secCred:
+          type: string
+        delivStReqInd:
+          type: boolean
+        payload:
+          type: string
+        segInd:
+          type: boolean
+        segParams:
+          $ref: '#/components/schemas/MessageSegmentParameters'
+        stoAndFwInd:
+          type: boolean
+        stoAndFwParams:
+          $ref: '#/components/schemas/StoreAndForwardParameters'
+
+    MessageDeliveryAck:
+      description: Contains the message delivery ack data
+      type: object
+      required:
+        - oriAddr
+        - msgId
+      properties:
+        oriAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        msgId:
+          type: string
+        status:
+          $ref: '#/components/schemas/DeliveryStatus'
+        failureCause:
+          type: string
+
+    MessageSegmentParameters:
+      description: Contains the message segment parameters data
+      type: object
+      properties:
+        segId:
+          type: string
+        totalSegCount:
+          type: integer
+        segNumb:
+          type: integer
+        lastSegFlag:
+          type: boolean
+
+    StoreAndForwardParameters:
+      description: Contains the store and forward parameters data
+      type: object
+      properties:
+        exprTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    DeliveryStatusReport:
+      description: Contains the delivery status report data
+      type: object
+      required:
+        - oriAddr
+        - destAddr
+        - msgId
+        - delivSt
+      properties:
+        oriAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        destAddr:
+          $ref: 'TS29538_MSGG_L3GDelivery.yaml#/components/schemas/Address'
+        msgId:
+          type: string
+        secCred:
+          type: string
+        failureCause:
+          type: string
+        delivSt:
+          $ref: '#/components/schemas/ReportDeliveryStatus'
+
+#
+# SIMPLE DATA TYPES
+#
+
+#
+# ENUMERATIONS
+#
+
+    DeliveryStatus:
+      anyOf:
+      - type: string
+        enum:
+          - DELY_FAILED
+          - DELY_STORED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - DELY_FAILED: Indicates that the message delivery is failed.
+        - DELY_STORED: Indicates that the message is stored for deferred delivery.
+
+    ReportDeliveryStatus:
+      anyOf:
+      - type: string
+        enum:
+          - REPT_DELY_SUCCESS
+          - REPT_DELY_FAILED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - REPT_DELY_SUCCESS: Indicates that the report delivery is successful.
+        - REPT_DELY_FAILED: Indicates that the report delivery is failed.
+
+    Priority:
+      anyOf:
+      - type: string
+        enum:
+          - HIGH
+          - MIDDLE
+          - LOW
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - HIGH: Indicates the messages should be sent in high priority.
+        - MIDDLE: Indicates the messages should be sent in middle priority.
+        - LOW: Indicates the messages should be sent in low priority.

@@ -3,11 +3,11 @@ info:
   title: Eees_EASDiscovery
   description: |
     API for EAS Discovery.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.0.0-alpha.1"
+  version: "1.0.0-alpha.3"
 externalDocs:
-  description: 3GPP TS 24.558 V0.6.0 Enabling Edge Applications; Protocol specification.
+  description: 3GPP TS 24.558 V1.2.0 Enabling Edge Applications; Protocol specification.
   url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
 security:
   - {}
@@ -188,18 +188,64 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-  /eas-profiles:
-    get:
+    patch:
+      description: Partial update an existing EAS Discovery Subscription resource identified by a subscriptionId.
+      tags:
+        - Individual EAS Discovery Subscription
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Identifies an individual EAS discovery subscription resource 
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Parameters to replace the existing subscription
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EasDiscoverySubscriptionPatch'
+      responses:
+        '200':
+          description: OK (An individual EAS discovery subscription resource updated successfully)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EasDiscoverySubscription'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /eas-profiles/request-discovery:
+    post:
       description: Provides EAS information requested by the UE.
       tags:
         - EAS Profiles
-      parameters:
-        - name: disc-req
-          in: query
-          description: EAS discovery request information.
-          required: false
-          schema:
-            $ref: '#/components/schemas/EasDiscoveryReq'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EasDiscoveryReq'
       responses:
         '200':
           description: OK (The requested EAS discovery information was returned successfully)
@@ -230,7 +276,6 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -251,21 +296,21 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         easDiscoveryFilter:
           $ref: '#/components/schemas/EasDiscoveryFilter'
-        # eecSvcContinuity:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
-        # eesSvcContinuity:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
-        # easSvcContinuity:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        eecSvcContinuity:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        eesSvcContinuity:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        easSvcContinuity:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
         locInf:
           $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/LocationInfo'
         easTDnai:
@@ -298,11 +343,11 @@ components:
           $ref: '#/components/schemas/EasDiscoveryFilter'
         easDynInfoFilter:
           $ref: '#/components/schemas/EasDynamicInfoFilter'
-        # easSvcContinuity:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        easSvcContinuity:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
         expTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
         notificationDestination:
@@ -369,11 +414,11 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         svcArea:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
-        # easSvcContinuity:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        easSvcContinuity:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
         svcPermLevel:
           type: string
           description: Service permissions level.
@@ -387,16 +432,16 @@ components:
       description: Represents an EAS discovery information.
       type: object
       properties:
-        #eass:
-          #type: array
-          #items:
-            #$ref: 'TS29558_CommonData.yaml#/components/schemas/EasProfile'
-          #minItems: 1
-          #description: Contains the list of EAS matching the discovery request filters
+        eass:
+          type: array
+          items:
+            $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EASProfile'
+          minItems: 1
+          description: Contains the list of EAS matching the discovery request filters
         lifeTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
-      #required:
-        #- eass
+      required:
+        - eass
     EasDynamicInfoFilter:
       description: Represents EAS dynamic information changes filter.
       type: object
@@ -450,8 +495,8 @@ components:
       type: object
       properties:
         acProf:
-          description: Describes the AC Profile.
-          #$ref: 'TS24558_Eees_EECRegistration.yaml#/components/schemas/ACProfile'
+          # description: Describes the AC Profile.
+          $ref: 'TS24558_Eees_EECRegistration.yaml#/components/schemas/ACProfile'
       required:
         - acProf
     EASDiscEventIDs:
@@ -469,3 +514,18 @@ components:
         Possible values are
         - EAS_AVAILABILITY_CHANGE: Represents the EAS availability change event.
         - EAS_DYNAMIC_INFO_CHANGE: Represents the EAS dynamic information change event.
+    EasDiscoverySubscriptionPatch:
+      description: Represents an Individual EAS Discovery Subscription resource.
+      type: object
+      properties:
+        easDiscoveryFilter:
+          $ref: '#/components/schemas/EasDiscoveryFilter'
+        easDynInfoFilter:
+          $ref: '#/components/schemas/EasDynamicInfoFilter'
+        easSvcContinuity:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        expTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'

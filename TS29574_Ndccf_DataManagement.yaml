@@ -1,0 +1,736 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0-alpha.3
+  title: Ndccf_DataManagement
+  description: |
+    DCCF Data Management Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 29.574 V17.0.0; 5G System; Data Collection Coordination Services; Stage 3.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.574/'
+#
+servers:
+  - url: '{apiRoot}/ndccf-datamanagement/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
+#
+security:
+  - oAuth2ClientCredentials:
+    - ndccf-datamanagement
+  - {}
+#
+paths:
+  /analytics-subscriptions:
+    post:
+      summary: Creates a new Individual DCCF Analytics Subscription resource.
+      operationId: CreateDCCFAnalyticsSubscription
+      tags:
+        - DCCF Analytics Subscriptions (Collection)
+      requestBody:
+        description: Contains the information for the creation the resource
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NdccfAnalyticsSubscription'
+        required: true
+      responses:
+        '201':
+          description: Create a new Individual DCCF Analytics Subscription resource.
+          headers:
+            Location:
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/ndccf-datamanagement/v1/analytics-subscriptions/{subscriptionId}
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NdccfAnalyticsSubscription'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        dccfAnalyticsNotification:
+          '{$request.body#/anaNotifUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NdccfAnalyticsSubscriptionNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged.
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /analytics-subscriptions/{subscriptionId}:
+    delete:
+      summary: Delete an existing Individual DCCF Data Subscription
+      operationId: DeleteDCCFAnalyticsSubscription
+      tags:
+        - Individual DCCF Analytics Subscription (Document)
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: >
+            String identifying a analytics subscription to the Ndccf_DataManagement Service
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: >
+            No Content. The Individual DCCF Analytics Subscription resource matching the
+            subscriptionId was deleted.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Update an existing Individual DCCF Analytics Subscription
+      operationId: UpdateDCCFAnalyticsSubscription
+      tags:
+        - Individual DCCF Analytics Subscription (Document)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NdccfAnalyticsSubscription'
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: >
+            String identifying a analytics subscription to the Ndccf_DataManagement Service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            The Individual DCCF Analytics Subscription resource was modified successfully and a
+            representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NdccfAnalyticsSubscription'
+        '204':
+          description: >
+            The Individual DCCF Analytics Subscription resource was modified successfully.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /data-subscriptions:
+    post:
+      summary: Creates a new Individual DCCF Data Subscription resource.
+      operationId: CreateDCCFDataSubscription
+      tags:
+        - DCCF Data Subscriptions (Collection)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NdccfDataSubscription'
+        required: true
+      responses:
+        '201':
+          description: Create a new Individual DCCF Data Subscription resource.
+          headers:
+            Location:
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/ndccf-datamanagement/v1/data-subscriptions/{subscriptionId}
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NdccfDataSubscription'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        dccfDataNotification:
+          '{$request.body#/dataNotifUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NdccfDataSubscriptionNotification'
+              responses:
+                '204':
+                  description: The receipt of the notification is acknowledged.
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /data-subscriptions/{subscriptionId}:
+    delete:
+      summary: Delete an existing Individual DCCF Data Subscription
+      operationId: DeleteDCCFDataSubscription
+      tags:
+        - Individual DCCF Data Subscription (Document)
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: String identifying a data subscription to the Ndccf_DataManagement Service
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: >
+            No Content. The Individual DCCF Data Subscription resource matching the subscriptionId
+            was deleted.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Update an existing Individual DCCF Data Subscription
+      operationId: UpdateDCCFDataSubscription
+      tags:
+        - Individual DCCF Data Subscription (Document)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NdccfDataSubscription'
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: >
+            String identifying a data subscription to the Ndccf_DataManagement Service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            The Individual DCCF Data Subscription resource was modified successfully and a
+            representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NdccfDataSubscription'
+        '204':
+          description: >
+            The Individual DCCF Data Subscription resource was modified successfully.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+#
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            ndccf-datamanagement: Access to the ndccf-datamanagement API
+#
+  schemas:
+#
+    NdccfAnalyticsSubscription:
+      description: Represents an Individual DCCF Analytics Subscription.
+      type: object
+      required:
+        - anaSub
+        - anaNotifUri
+        - anaNotifCorrId
+      properties:
+        anaSub:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NnwdafEventsSubscription'
+        anaNotifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        anaNotifCorrId:
+          type: string
+          description: Notification correlation identifier.
+        formatInstruct:
+          $ref: '#/components/schemas/FormattingInstruction'
+        procInstructs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessingInstruction'
+          minItems: 1
+          description: Processing instructions to be used for sending event notifications.
+        targetNfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        targetNfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+#
+    NdccfDataSubscription:
+      description: Represents an Individual DCCF Data Subscription.
+      type: object
+      required:
+        - dataNotifUri
+        - dataNotifCorrId
+      oneOf:
+        - required: [amfDataSub]
+        - required: [smfDataSub]
+        - required: [udmDataSub]
+        - required: [nefDataSub]
+        - required: [afDataSub]
+      properties:
+        amfDataSub:
+          $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventSubscription'
+        smfDataSub:
+          $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/NsmfEventExposure'
+        udmDataSub:
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EeSubscription'
+        afDataSub:
+          $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
+        nefDataSub:
+          $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureSubsc'
+        dataNotifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        dataNotifCorrId:
+          type: string
+          description: Notification correlation identifier.
+        formatInstruct:
+          $ref: '#/components/schemas/FormattingInstruction'
+        procInstructs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessingInstruction'
+          minItems: 1
+          description: Processing instructions to be used for sending event notifications.
+        targetNfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        targetNfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+#
+    NdccfAnalyticsSubscriptionNotification:
+      description: Represents a notification for a DCCF analytics subscription.
+      type: object
+      required:
+        - anaNotifCorrId
+      oneOf:
+        - required: [anaNotifications]
+        - required: [anaReports]
+        - required: [fetchInstruct]
+      properties:
+        anaNotifCorrId:
+          type: string
+          description: Notification correlation identifier.
+        anaNotifications:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NnwdafEventsSubscriptionNotification'
+          minItems: 1
+          description: List of analytics subscription notifications.
+        anaReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotifSummaryReport'
+          minItems: 1
+          description: >
+            List of reports with summarized data from multiple analytics notifications that the DCCF
+            has received from NWDAF.
+        fetchInstruct:
+          $ref: '#/components/schemas/FetchInstruction'
+#
+    NdccfDataSubscriptionNotification:
+      description: Represents a notification for a DCCF data subscription.
+      type: object
+      required:
+        - dataNotifCorrId
+      oneOf:
+        - required: [amfEventNotifs]
+        - required: [smfEventNotifs]
+        - required: [udmEventNotifs]
+        - required: [nefEventNotifs]
+        - required: [afEventNotifs]
+        - required: [dataReports]
+        - required: [fetchInstruct]
+      properties:
+        dataNotifCorrId:
+          type: string
+          description: Notification correlation identifier.
+        amfEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventNotification'
+          minItems: 1
+          description: List of notifications on AMF events.
+        smfEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/NsmfEventExposureNotification'
+          minItems: 1
+          description: List of notifications on SMF events.
+        udmEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/MonitoringReport'
+          minItems: 1
+          description: List of notifications on UDM events.
+        nefEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureNotif'
+          minItems: 1
+          description: List of notifications on NEF events.
+        afEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureNotif'
+          minItems: 1
+          description: List of notifications on AF events.
+        dataReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotifSummaryReport'
+          minItems: 1
+          description: List of reports with summarized data from multiple notifications received from data producer.
+        fetchInstruct:
+          $ref: '#/components/schemas/FetchInstruction'
+#
+    FormattingInstruction:
+      description: Contains data or analytics formatting instructions.
+      type: object
+      properties:
+        consTrigNotif:
+          type: boolean
+          description: >
+            Indicates that notifications shall be buffered until the NF service consumer requests
+            their delivery.
+        reportingOptions:
+          $ref: '#/components/schemas/ReportingOptions'
+#
+    ReportingOptions:
+      description: Represents reporting options for processed notifications.
+      type: object
+      oneOf:
+        - required: [notifyWindow]
+        - required: [notifyPeriod]
+        - required: [notifyPeriodInc]
+        - required: [depEventSubId]
+      properties:
+        notifyWindow:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        notifyPeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        notifyPeriodInc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        depEventSubId:
+          type: string
+          description: >
+            Notifications for the present subscription are sent only upon occurrence of events of the
+            subscription with identifier that matches this attribute.
+#
+    ProcessingInstruction:
+      description: Contains instructions related to the processing of notifications.
+      type: object
+      required:
+       - eventId
+       - procInterval
+      properties:
+        eventId:
+          type: string
+          description: >
+            Identifies the (event exposure or analytics) event that the processing instructions shall
+            apply to.
+        procInterval:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        paramProcInstructs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterProcessingInstruction'
+          minItems: 1
+          description: >
+            List of event parameter names, and for each event parameter name, respective event
+            parameter values and sets of the attributes to be used in the summarized reports.
+#
+    ParameterProcessingInstruction:
+      description: >
+        Contains an event parameter name and the respective event parameter values and sets of
+        attributes to be used in summarized reports.
+      type: object
+      required:
+       - name
+       - values
+       - sumAttrs
+      properties:
+        name:
+          type: string
+          description: >
+            A JSON pointer value that references an attribute within the notification object to which
+            the processing instruction is applied.
+        values:
+          type: array
+          items: {}
+          minItems: 1
+          description: A list of values for the attribute identified by the name attribute.
+        sumAttrs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummarizationAttribute'
+          minItems: 1
+          description: Attributes requested to be used in the summarized reports.
+#
+    NotifSummaryReport:
+      description: Represents summarized notifications based on processing instructions.
+      type: object
+      required:
+       - eventId
+       - procInterval
+       - eventReports
+      properties:
+        eventId:
+          type: string
+          description: >
+            Identifies the (event exposure or analytics) event that this report applies to.
+        procInterval:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        eventReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventParamReport'
+          minItems: 1
+          description: List of event parameter reports.
+#
+    EventParamReport:
+      description: Represents a summarized report for one event parameter.
+      type: object
+      required:
+       - name
+       - values
+      properties:
+        name:
+          type: string
+          description: The name of the reported parameter.
+        values:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: The list of values of the reported parameter.
+        spacing:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NumberAverage'
+        duration:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NumberAverage'
+        avgAndVar:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NumberAverage'
+        count:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        minValue:
+          type: string
+          description: The minimum value of the parameter.
+        maxValue:
+          type: string
+          description: The maximum value of the parameter.
+#
+    FetchInstruction:
+      description: Contains instructions for fetching notifications.
+      type: object
+      required:
+        - fetchAddress
+      properties:
+        fetchAddress:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          description: Address from which the data can be fetched.
+#
+    SummarizationAttribute:
+      anyOf:
+      - type: string
+        enum:
+          - SPACING
+          - DURATION
+          - OCCURRENCES
+          - AVG_VAR
+          - MIN_MAX
+      - type: string
+      description: |
+        Possible values are:
+        - SPACING: Average and variance of the time interval separating two consecutive occurrences of the same event and parameter value, or periodicity for periodic reporting.
+        - DURATION: Average and variance of the time for which the parameter value applies.
+        - OCCURRENCES: Number of countable occurrences for the parameter.
+        - AVG_VAR: Average and variance of the parameter.
+        - MIN_MAX: Maximum and minimum parameter values.
+#

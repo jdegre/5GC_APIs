@@ -1,16 +1,16 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0-alpha.4'
+  version: '2.2.0-alpha.5'
   title: 'Nsmsf_SMService Service API'
   description: |
-    SMSF SMService.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    SMSF SMService.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.540 V17.3.0; 5G System; SMS Services; Stage 3
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.540/'
+  description: 3GPP TS 29.540 V17.4.0; 5G System; SMS Services; Stage 3
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.540/'
 
 security:
   - oAuth2ClientCredentials:
@@ -69,37 +69,9 @@ paths:
               schema:
                 type: string
         '307':
-          description: temporary redirect
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMSF or SMSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMSF or SMSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           description: Invalid Service Request
           content:
@@ -130,6 +102,63 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+    patch:
+      summary: Update a parameter in the UE SMS Context in SMSF
+      operationId: SMSServiceParameterUpdate
+      tags:
+        - Parameter update in the UE SMS Context in SMSF
+      parameters:
+        - name: supi
+          in: path
+          required: true
+          description: Subscriber Permanent Identifier (SUPI)
+          schema:
+            type: string
+        - name: supported-features
+          in: query
+          description: Features required to be supported by the target NF
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchResult'
+        '204':
+          description: Successful response
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '422':
+          description: Unprocessable Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
     delete:
       summary: Deactivate SMS Service for a given UE
       operationId: SMServiceDeactivation
@@ -151,37 +180,9 @@ paths:
         '204':
           description: UE Context for SMS is deleted from SMSF
         '307':
-          description: temporary redirect
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMSF or SMSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMSF or SMSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           description: Invalid Service Request
           content:
@@ -243,37 +244,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SmsRecordDeliveryData'
         '307':
-          description: temporary redirect
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMSF or SMSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
-          description: permanent redirect
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/RedirectResponse'
-          headers:
-            Location:
-              description: 'An alternative URI of the resource located on an alternative service instance within the same SMSF or SMSF (service) set'
-              required: true
-              schema:
-                type: string
-            3gpp-Sbi-Target-Nf-Id:
-              description: ' Identifier of the target NF (service) instance ID towards which the request is redirected'
-              schema:
-                type: string
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           description: Invalid Service Request
           content:

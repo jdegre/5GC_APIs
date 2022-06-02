@@ -3,11 +3,11 @@ info:
   title: Eees_EECRegistration
   description: |
     API for EEC registration.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.0.0-alpha.1"
+  version: "1.0.0-alpha.2"
 externalDocs:
-  description: 3GPP TS 24.558 V0.4.0 Enabling Edge Applications; Protocol specification.
+  description: 3GPP TS 24.558 V1.1.0 Enabling Edge Applications; Protocol specification.
   url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
 security:
   - {}
@@ -146,6 +146,57 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    patch:
+      description: partially update an existing EEC registration a the EES.
+      parameters:
+        - name: registrationId
+          in: path
+          description: Identifies an individual EEC registration
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Parameters to replace the existing registration
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EECRegistrationPatch'
+      responses:
+        '200':
+          description: OK (An individual EEC registration resource updated successfully)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EECRegistration'
+        '204':
+          description: No Content (An individual EEC registration resource updated successfully).
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
   securitySchemes:
@@ -256,3 +307,14 @@ components:
         reqStrg:
           type: string
           description: The storage resources required by the AC.
+    EECRegistrationPatch:
+      description: Describes the parameters to perform EEC Registration update.
+      type: object
+      properties:
+        acProfs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ACProfile'
+          description: Profiles of ACs for which the EEC provides edge enabling services.
+        expTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'

@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: 'Nmnp_NPStatus'
+  version: '1.0.0-alpha.1'
+  description: |
+    Nmnp Number Portability Status Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 29.578 V0.1.0; Mobile Number Portability Services.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.578/
+servers:
+  - url: '{apiRoot}/nmnp-npstatus/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - nmnp-npstatus
+  
+paths:
+  /{gpsi}:
+    get:
+      summary: Retrieves the Number Portability status of the UE
+      operationId: GetNumberPortabilityStatus
+      tags:
+        - Number Portability Status (Document)
+      parameters:
+        - name: gpsi
+          in: path
+          description: GPSI of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpStatusInfo'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '404':
+          description: GPSI Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nmnp-npstatus: Access to the nmnp-npstatus API
+  schemas:
+
+# COMPLEX TYPES:
+
+    NpStatusInfo:
+      description: Contains the Subscription Network
+      type: object
+      required:
+        - subscriptionNetwork
+      properties:
+        subscriptionNetwork:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+
+# SIMPLE TYPES:
+
+
+
+# ENUMS:

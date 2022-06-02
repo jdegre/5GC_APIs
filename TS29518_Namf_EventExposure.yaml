@@ -1,18 +1,18 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.4
+  version: 1.2.0-alpha.5
   title: Namf_EventExposure
   description: |
     AMF Event Exposure Service
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 security:
   - {}
   - oAuth2ClientCredentials:
       - namf-evts
 externalDocs:
-  description: 3GPP TS 29.518 V17.4.0; 5G System; Access and Mobility Management Services
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
+  description: 3GPP TS 29.518 V17.5.0; 5G System; Access and Mobility Management Services
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-evts/v1'
     variables:
@@ -364,6 +364,8 @@ components:
         idleStatusInd:
           type: boolean
           default: false
+        dispersionArea:
+          $ref: '#/components/schemas/DispersionArea'
       required:
         - type
     AmfEventNotification:
@@ -461,6 +463,26 @@ components:
           minItems: 1
         idleStatusIndication:
           $ref: '#/components/schemas/IdleStatusIndication'
+        ueAccessBehaviorTrends:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeAccessBehaviorReportItem'
+          minItems: 1
+        ueLocationTrends:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeLocationTrendsReportItem'
+          minItems: 1
+        mmTransLocationReportList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MmTransactionLocationReportItem'
+          minItems: 1
+        mmTransSliceReportList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MmTransactionSliceReportItem'
+          minItems: 1
       required:
         - type
         - state
@@ -755,8 +777,23 @@ components:
       required:
         - reportingArea
 
+    UeAccessBehaviorReportItem:
+      description: Report Item for UE Access Behavior Trends event.
+      type: object
+      properties:
+        stateTransitionType:
+          $ref: '#/components/schemas/AccessStateTransitionType'
+        spacing:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        duration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - stateTransitionType
+        - spacing
+        - duration
 
     IdleStatusIndication:
+      description: Represents the idle status indication.
       type: object
       properties:
         timeStamp:
@@ -775,10 +812,7 @@ components:
       type: object
       properties:
         ueType:
-          type: array
-          items:
-            $ref: '#/components/schemas/UeType'
-          minItems: 1
+          $ref: '#/components/schemas/UeType'
         aerialSrvDnnInd:
           type: boolean
           default: false
@@ -794,6 +828,86 @@ components:
           default: false
       required:
         - sNssai
+
+    UeLocationTrendsReportItem:
+      description: Report Item for UE Location Trends event.
+      type: object
+      properties:
+        tai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+        ncgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        ecgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        n3gaLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/N3gaLocation'
+        spacing:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        duration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        timestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - spacing
+        - duration
+        - timestamp
+
+    DispersionArea:
+      description: Dispersion Area
+      type: object
+      properties:
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        ncgiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+          minItems: 1
+        ecgiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+          minItems: 1
+        n3gaInd:
+          type: boolean
+          default: false
+
+    MmTransactionLocationReportItem:
+      description: UE MM Transaction Report Item per Location
+      type: object
+      properties:
+        tai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+        ncgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ncgi'
+        ecgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        n3gaLocation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/N3gaLocation'
+        timestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        transactions:
+          type: integer
+      required:
+        - timestamp
+        - transactions
+
+    MmTransactionSliceReportItem:
+      description: UE MM Transaction Report Item per Slice
+      type: object
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        timestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        transactions:
+          type: integer
+      required:
+        - timestamp
+        - transactions
 
     AmfEventType:
       description: Describes the supported event types of Namf_EventExposure Service
@@ -817,6 +931,9 @@ components:
           - TYPE_ALLOCATION_CODE_REPORT
           - FREQUENT_MOBILITY_REGISTRATION_REPORT
           - SNSSAI_TA_MAPPING_REPORT
+          - UE_LOCATION_TRENDS
+          - UE_ACCESS_BEHAVIOR_TRENDS
+          - UE_MM_TRANSACTION_REPORT
       - type: string
     AmfEventTrigger:
       description: Describes how AMF should generate the report for the event
@@ -902,4 +1019,19 @@ components:
       - type: string
         enum:
           - AERIAL_UE
+      - type: string
+
+    AccessStateTransitionType:
+      description: Access State Transition Type.
+      anyOf:
+      - type: string
+        enum:
+          - ACCESS_TYPE_CHANGE_3GPP
+          - ACCESS_TYPE_CHANGE_N3GPP
+          - RM_STATE_CHANGE_DEREGISTERED
+          - RM_STATE_CHANGE_REGISTERED
+          - CM_STATE_CHANGE_IDLE
+          - CM_STATE_CHANGE_CONNECTED
+          - HANDOVER
+          - MOBILITY_REGISTRATION_UPDATE
       - type: string

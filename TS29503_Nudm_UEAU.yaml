@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
-  version: '1.2.0-alpha.3'
+  version: '1.2.0-alpha.4'
   title: 'Nudm_UEAU'
   description: |
-    UDM UE Authentication Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    UDM UE Authentication Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.5.0
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.6.0
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
   - url: '{apiRoot}/nudm-ueau/v1'
@@ -30,6 +30,13 @@ paths:
       operationId: GenerateAuthData
       tags:
         - Generate Auth Data
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+          - nudm-ueau:security-information:generate-auth-data:invoke
       parameters:
         - name: supiOrSuci
           in: path
@@ -71,6 +78,13 @@ paths:
       operationId: GetRgAuthData
       tags:
         - Get Auth Data for FN-RG
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+          - nudm-ueau:security-information-rg:read
       parameters:
         - name: supiOrSuci
           in: path
@@ -132,6 +146,13 @@ paths:
       operationId: ConfirmAuth
       tags:
         - Confirm Auth
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+          - nudm-ueau:auth-events:create
       parameters:
         - name: supi
           in: path
@@ -175,6 +196,13 @@ paths:
       operationId: GenerateAv
       tags:
         - Generate HSS Authentication Vectors
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+          - nudm-ueau:hss-security-information:generate-av:invoke
       parameters:
         - name: supi
           in: path
@@ -222,6 +250,13 @@ paths:
       operationId: DeleteAuth
       tags:
         - Delete Auth
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+          - nudm-ueau:auth-event-id:modify
       parameters:
         - name: supi
           in: path
@@ -255,6 +290,54 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /{supi}/gba-security-information/generate-av:
+    post:
+      summary: Generate authentication data for the UE in GBA domain
+      operationId: GenerateGbaAv
+      tags:
+        - Generate GBA Authentication Vectors
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+        - oAuth2ClientCredentials:
+          - nudm-ueau
+          - nudm-ueau:gba-security-information:generate-av:invoke
+      parameters:
+        - name: supi
+          in: path
+          description: SUPI of the user
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GbaAuthenticationInfoRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GbaAuthenticationInfoResult'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -264,6 +347,12 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nudm-ueau: Access to the nudm-ueau API
+            nudm-ueau:security-information:generate-auth-data:invoke: Acess to invoke the "generate-auth-data" custom operation on the "security-information" resource
+            nudm-ueau:security-information-rg:read: Access to read the "security-information-rg" resource
+            nudm-ueau:auth-events:create: Access to create a new child resource on the "auth-events" collection resource
+            nudm-ueau:auth-event-id:modify: Access to modify (delete) an "auth-event-id" individual resource
+            nudm-ueau:hss-security-information:generate-av:invoke: Acess to invoke the "generate-av" custom operation on the "hss-security-information" resource
+            nudm-ueau:gba-security-information:generate-av:invoke: Acess to invoke the "generate-av" custom operation on the "gba-security-information" resource
 
 
   schemas:
@@ -292,6 +381,9 @@ components:
         n5gcInd:
           type: boolean
           default: false
+        nswoInd:
+          type: boolean
+          default: false
 
     AuthenticationInfoResult:
       type: object
@@ -315,7 +407,11 @@ components:
         routingId:
           type: string
           pattern: '^[0-9]{1,4}$'
-
+        pvsInfo:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ServerAddressingInfo'
+          minItems: 1
 
     AuthenticationVector:
       oneOf:
@@ -403,6 +499,12 @@ components:
         authRemovalInd:
           type: boolean
           default: false
+        resetIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+
 
     RgAuthCtx:
       type: object
@@ -437,7 +539,6 @@ components:
           $ref: '#/components/schemas/ResynchronizationInfo'
         anId:
           $ref: '#/components/schemas/AccessNetworkId'
-
 
     HssAuthenticationInfoResult:
       type: object
@@ -510,6 +611,26 @@ components:
         ik:
           $ref: '#/components/schemas/IntegrityKey'
 
+    GbaAuthenticationInfoRequest:
+      type: object
+      required:
+        - authType
+      properties:
+        authType:
+          $ref: '#/components/schemas/GbaAuthType'
+        resynchronizationInfo:
+          $ref: 'TS29562_Nhss_gbaUEAU.yaml#/components/schemas/ResynchronizationInfo'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    GbaAuthenticationInfoResult:
+      type: object
+      properties:
+        3gAkaAv:
+          $ref: 'TS29562_Nhss_gbaUEAU.yaml#/components/schemas/3GAkaAv'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
 
 # SIMPLE TYPES:
 
@@ -547,7 +668,7 @@ components:
 
     ServingNetworkName:
       type: string
-      pattern: '^5G:mnc[0-9]{3}[.]mcc[0-9]{3}[.]3gppnetwork[.]org(:[A-F0-9]{11})?$'
+      pattern: '^(5G:mnc[0-9]{3}[.]mcc[0-9]{3}[.]3gppnetwork[.]org(:[A-F0-9]{11})?)|5G:NSWO$'
 
     Success:
       type: boolean
@@ -583,6 +704,7 @@ components:
           - EAP_AKA_PRIME
           - EAP_TLS
           - NONE
+          - EAP_TTLS
         - type: string
 
     AvType:
@@ -649,4 +771,11 @@ components:
           - GAN_AAA_SERVER
           - WLAN_AAA_SERVER
           - MME
+        - type: string
+
+    GbaAuthType:
+      anyOf:
+        - type: string
+          enum:
+          - DIGEST_AKAV1_MD5
         - type: string

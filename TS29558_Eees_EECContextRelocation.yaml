@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: EES EEC Context Relocation API
+  description: |
+    API for EEC Context Relocation.
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+  version: 1.0.0-alpha.1
+externalDocs:
+  description: 3GPP TS 29.558 V1.3.0 Enabling Edge Applications; Application Programming Interface (API) specification; Stage 3
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+servers:
+  - url: '{apiRoot}/eees-eeccontextreloc/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 7.5 of 3GPP TS 29.558.
+
+paths:
+  /eec-contexts:
+    post:
+      description: S-EES transfers the EEC context information to T-EES.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EECContextPush'
+      responses:
+        '204':
+          description: No Content. The EEC context has been successfully transferred to the T-EES.
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    get:
+      description: T-EES pulls an EEC context information from S-EES.
+      parameters:
+        - name: ees-id
+          in: query
+          description: Unique identifier of the requesting EES.
+          required: true
+          schema:
+            type: string
+        - name: eec-cntx-id
+          in: query
+          description: Unique identifier of the EEC context.
+          required: true
+          schema:
+            type: string
+        - name: sess-cntxs
+          in: query
+          description: List of service session context information being requested.
+          required: false
+          schema:
+            $ref: '#/components/schemas/SessionContexts'
+      responses:
+        '200':
+          description: OK (The EEC context information matching the input parameters in the request is returned by the S-EES).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EECContext'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+
+components:
+  schemas:
+    SessionContexts:
+      type: object
+      description: Represents the list of service session contexts information.
+      properties:
+        sessCntxs:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndividualSessionContext'
+          minItems: 1
+          description: List of service session contexts information.
+      required:
+        - sessCntxs
+    IndividualSessionContext:
+      type: object
+      description: Represents a single service session context information.
+      properties:
+        easId:
+          type: string
+          description: Identifier of the EAS providing the application services.
+        endPt:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
+        acId:
+          type: string
+          description: Identifier of the AC for which the service session information is provided.
+      required:
+        - easId
+        - endPt
+    EECContextPush:
+      type: object
+      description: Represents the EEC context push request data.
+      properties:
+        eesId:
+          type: string
+          description: Identifier of the S-EES pushing the EEC context information.
+        eecCntx:
+          $ref: '#/components/schemas/EECContext'
+      required:
+        - eesId
+        - eecCntx
+    EECContext:
+      type: object
+      description: Represents the EEC context information.
+      properties:
+        eecId:
+          type: string
+          description: Unique idenitfier of the EEC.
+        cntxId:
+          type: string
+          description: Unique idenitfier assigned to the EEC context.
+        ueId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        subs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: List of subscription IDs for the capability expsoure for the EEC ID.
+        ueLoc:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+        acProfs:
+          type: array
+          items:
+            $ref: 'TS24558_Eees_EECRegistration.yaml#/components/schemas/ACProfile'
+          minItems: 1
+          description: List AC profiles.
+        sessCntxs:
+            $ref: '#/components/schemas/SessionContexts'
+      required:
+        - eecId
+        - cntxId

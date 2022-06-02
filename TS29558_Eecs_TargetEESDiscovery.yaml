@@ -1,0 +1,78 @@
+openapi: 3.0.0
+info:
+  title: ECS Target EES Discovery API
+  description: |
+    API for Target EES Discovery.
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+  version: 1.0.0-alpha.1
+externalDocs:
+  description: 3GPP TS 29.558 V1.3.0 Enabling Edge Applications; Application Programming Interface (API) specification; Stage 3
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+servers:
+  - url: '{apiRoot}/eecs-targeteesdiscovery/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 7.5 of 3GPP TS 29.558.
+
+paths:
+  /ees-profiles:
+    get:
+      description: Retrieve the T-EES information.
+      parameters:
+        - name: ees-id
+          in: query
+          description: Unique identifier of the S-EES.
+          required: true
+          schema:
+            type: string
+        - name: eas-id
+          in: query
+          description: Unique identifier of the S-EAS.
+          required: true
+          schema:
+            type: string
+        - name: target-dnai
+          in: query
+          description: The DNAI information associated with the potential T-EES(s) and/or T-EAS(s).
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        - name: ue-id
+          in: query
+          description: Identifier of the UE.
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        - name: ue-location
+          in: query
+          description: The location information of the UE.
+          required: false
+          schema:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+      responses:
+        '200':
+          description: The EDN configuration and the T-EES information determined by ECS.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS24558_Eecs_ServiceProvisioning.yaml#/components/schemas/ECSServProvResp'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'

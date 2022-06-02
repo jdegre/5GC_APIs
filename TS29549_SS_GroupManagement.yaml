@@ -2,13 +2,15 @@ openapi: 3.0.0
 info:
   title: SS_GroupManagement
   description: |
-    API for SEAL Group management.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for SEAL Group management.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0-alpha.4"
+  version: "1.1.0-alpha.5"
 externalDocs:
-  description: 3GPP TS 29.549 V17.3.0 Service Enabler Architecture Layer for Verticals (SEAL); Application Programming Interface (API) specification; Stage 3.
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+  description: >
+    3GPP TS 29.549 V17.4.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    Application Programming Interface (API) specification; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 security:
   - {}
   - oAuth2ClientCredentials: []
@@ -242,6 +244,56 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    patch:
+      description: Modify an existing VAL Group document.
+      parameters:
+        - name: groupDocId
+          in: path
+          description: Identifier of an individual VAL group document.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/VALGroupDocumentPatch'
+      responses:
+        '200':
+          description: The individual VAL Group document is modified successfully and a representation of the updated VAL Group document is returned in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VALGroupDocument'
+        '204':
+          description: No Content. The individual VAL group document is modified successfully.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -276,6 +328,9 @@ components:
           items:
             type: string
           minItems: 1
+        valSvcInf:
+          type: string
+          description: VAL service specific information.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         resUri:
@@ -290,3 +345,33 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
       required:
         - valGroupId
+    VALGroupDocumentPatch:
+      description: Represents details of the partial update of VAL group document information.
+      type: object
+      properties:
+        grpDesc:
+          type: string
+          description: The text description of the VAL group.
+        members:
+          type: array
+          description: The list of VAL User IDs or VAL UE IDs, which are members of the VAL group.
+          items:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+          minItems: 1
+        valGrpConf:
+          type: string
+          description: Configuration data for the VAL group.
+        valServiceIds:
+          type: array
+          description: The list of VAL services enabled on the group.
+          items:
+            type: string
+          minItems: 1
+        locInfo:
+          $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/LocationInfo'
+        addLocInfo:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+        extGrpId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+        com5GLanType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'

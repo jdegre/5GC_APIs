@@ -2,13 +2,13 @@ openapi: 3.0.0
 info:
   title: CAPIF_API_Invoker_Management_API
   description: |
-    API for API invoker management.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for API invoker management.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.2.0-alpha.3"
+  version: "1.2.0-alpha.4"
 externalDocs:
-  description: 3GPP TS 29.222 V17.3.0 Common API Framework for 3GPP Northbound APIs
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
+  description: 3GPP TS 29.222 V17.4.0 Common API Framework for 3GPP Northbound APIs
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/api-invoker-management/v1'
     variables:
@@ -230,6 +230,58 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    patch:
+      description: Modify an individual API invoker details.
+      operationId: ModifyIndApiInvokeEnrolment
+      tags:
+        - Individual API Invoker enrolment details 
+      parameters:
+        - name: onboardingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/APIInvokerEnrolmentDetailsPatch'
+      responses:
+        '200':
+          description: The definition of the service API is modified successfully and a representation of the updated service API is returned in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIInvokerEnrolmentDetails'
+        '204':
+          description: No Content. The definition of the service API is modified successfully.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 components:
   schemas:
     OnboardingInformation:
@@ -295,3 +347,16 @@ components:
           $ref: '#/components/schemas/APIList'
       required:
         - result
+    APIInvokerEnrolmentDetailsPatch:
+      type: object
+      description: Represents an API Invoker’s enrolment details to be updated.
+      properties:
+        onboardingInformation:
+          $ref: '#/components/schemas/OnboardingInformation'
+        notificationDestination:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        apiList:
+          $ref: '#/components/schemas/APIList'
+        apiInvokerInformation:
+          type: string
+          description: Generic information related to the API invoker such as details of the device or the application.

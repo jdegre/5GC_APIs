@@ -1,14 +1,15 @@
 openapi: 3.0.0
 info:
   title: Nucmf_Provisioning
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   description: |
-    UCMF_Provisioning Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    UCMF_Provisioning Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.675 V17.2.0; User Equipment (UE) radio capability provisioning service; Stage 3.
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.675/
+  description: >
+    3GPP TS 29.675 V17.5.0; User Equipment (UE) radio capability provisioning service; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.675/
 servers:
   - url: '{apiRoot}/nucmf-provisioning/v1'
     variables:
@@ -27,7 +28,7 @@ paths:
       tags:
         - UE radio capability provisionings (Collection)
       requestBody:
-        description: create new provisionings for a given SCS/AS.
+        description: Create new provisionings for a given SCS/AS.
         required: true
         content:
           application/json:
@@ -35,14 +36,16 @@ paths:
               $ref: '#/components/schemas/RacsData'
       responses:
         '201':
-          description: Created. The creation of an Individual UE radio capability provisioning resource is confirmed and a representation of that resource is returned.
+          description: >
+            Created. The creation of an Individual UE radio capability provisioning
+            resource is confirmed and a representation of that resource is returned.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RacsData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource'
+              description: Contains the URI of the newly created resource.
               required: true
               schema:
                 type: string
@@ -122,7 +125,7 @@ paths:
       tags:
         - Individual UE radio capability provisioning (Document)
       requestBody:
-        description: update an existing parameter provisioning.
+        description: Update an existing parameter provisioning.
         required: true
         content:
           application/merge-patch+json:
@@ -130,7 +133,9 @@ paths:
               $ref: '#/components/schemas/RacsDataPatch'
       responses:
         '200':
-          description: OK. The Individual UE radio capability provisioning resource is modified and a representation of that resource is returned.
+          description: >
+            OK. The Individual UE radio capability provisioning resource is modified
+            and a representation of that resource is returned.
           content:
             application/json:
               schema:
@@ -173,7 +178,7 @@ paths:
       tags:
         - Individual UE radio capability provisioning (Document)
       requestBody:
-        description: update an existing parameter provisioning.
+        description: Update an existing parameter provisioning.
         required: true
         content:
           application/json:
@@ -181,7 +186,9 @@ paths:
               $ref: '#/components/schemas/RacsData'
       responses:
         '200':
-          description: OK. The Individual UE radio capability provisioning resource is modified and a representation of that resource is returned.
+          description: >
+            OK. The Individual UE radio capability provisioning resource is modified and a
+            representation of that resource is returned.
           content:
             application/json:
               schema:
@@ -225,7 +232,9 @@ paths:
         - Individual UE radio capability provisioning (Document)
       responses:
         '204':
-          description: No Content. The Individual UE radio capability resource was successfully removed. The payload body shall be empty.
+          description: >
+            No Content. The Individual UE radio capability resource was successfully removed.
+            The payload body shall be empty.
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -263,18 +272,26 @@ components:
           additionalProperties:
             $ref: 'TS29122_RacsParameterProvisioning.yaml#/components/schemas/RacsConfiguration'
           minProperties: 1
-          description: Identifies the configuration related to manufacturer specific UE radio capability. Each element uniquely identifies an RACS configuration for an RACS ID and is identified in the map via the RACS ID as key. The response shall include successfully provisioned RACS data.
+          description: >
+            Identifies the configuration related to manufacturer specific UE radio capability.
+            Each element uniquely identifies an RACS configuration for an RACS ID and is
+            identified in the map via the RACS ID as key. The response shall include
+            successfully provisioned RACS data.
         racsReports:
           type: object
           additionalProperties:
             $ref: 'TS29122_RacsParameterProvisioning.yaml#/components/schemas/RacsFailureReport'
           minProperties: 1
-          description: Contains the RACS IDs for which the RACS data are not provisioned successfully. The failure reason is also included. Any string value can be used as a key of the map.
+          description: >
+            Contains the RACS IDs for which the RACS data are not provisioned successfully. The
+            failure reason is also included. Any string value can be used as a key of the map.
           readOnly: true
       required:
         - racsConfigs
     RacsDataPatch:
-      description: Represents a modification of a UE radio capability data provided by the NF service consumer.
+      description: >
+        Represents a modification of a UE radio capability data provided by the NF service
+        consumer.
       type: object
       properties:
         racsConfigs:
@@ -282,4 +299,7 @@ components:
           additionalProperties:
             $ref: 'TS29122_RacsParameterProvisioning.yaml#/components/schemas/RacsConfigurationRm'
           minProperties: 1
-          description: Identifies the configuration related to manufacturer specific UE radio capability. Each element uniquely identifies an RACS configuration for an RACS ID and is identified in the map via the RACS ID as key.
+          description: >
+            Identifies the configuration related to manufacturer specific UE radio
+            capability. Each element uniquely identifies an RACS configuration for an RACS ID
+            and is identified in the map via the RACS ID as key.

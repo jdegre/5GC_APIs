@@ -2,14 +2,16 @@ openapi: 3.0.0
 
 info:
   title: Nnef_Authentication
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.4
   description: |
     NEF Auth Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.256 V1.0.0; 5G System;Uncrewed Aerial Systems Network Function (UAS-NF);Aerial Management Services; Stage 3
+  description: >
+    3GPP TS 29.256 V17.0.0; 5G System;Uncrewed Aerial Systems Network Function (UAS-NF);
+    Aerial Management Services; Stage 3
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.256/
 
 servers:
@@ -51,7 +53,11 @@ paths:
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          description: UAV authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UAVAuthFailure'
         '504':
           $ref: 'TS29571_CommonData.yaml#/components/responses/504'
         default:
@@ -143,9 +149,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
         authResult:
           $ref: '#/components/schemas/AuthResult'
-        uasResourceRelease:
-          type: boolean
-          default: false
 
     AuthNotification:
       description: UAV related notification
@@ -154,6 +157,7 @@ components:
         - gpsi
         - serviceLevelId
         - notifType
+        - authSessCorrId
       properties:
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
@@ -167,8 +171,6 @@ components:
           $ref: '#/components/schemas/NotifType'
         revokeCause:
           type: string
-        ipAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
 
     UAVAuthFailure:
       description: UAV auth failure

@@ -2,13 +2,13 @@ openapi: 3.0.0
 info:
   title: CAPIF_Publish_Service_API
   description: |
-    API for publishing service APIs.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for publishing service APIs.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.2.0-alpha.3"
+  version: "1.2.0-alpha.4"
 externalDocs:
-  description: 3GPP TS 29.222 V17.3.0 Common API Framework for 3GPP Northbound APIs
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
+  description: 3GPP TS 29.222 V17.4.0 Common API Framework for 3GPP Northbound APIs
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/published-apis/v1'
     variables:
@@ -83,7 +83,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceAPIDescription'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceAPIDescription'
+                minItems: 0
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -125,7 +128,7 @@ paths:
             $ref: '#/components/schemas/apfId'
       responses:
         '200':
-          description: Definition of all service API published by the API publishing function.
+          description: Definition of individual service API published by the API publishing function.
           content:
             application/json:
               schema:
@@ -180,6 +183,63 @@ paths:
                 $ref: '#/components/schemas/ServiceAPIDescription'
         '204':
           description: No Content
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    patch:
+      description: Modify an existing published service API.
+      operationId: ModifyIndAPFPubAPI
+      tags:
+        - Individual APF published API
+      parameters:
+        - name: serviceApiId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/serviceApiId'
+        - name: apfId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/apfId'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/ServiceAPIDescriptionPatch'
+      responses:
+        '200':
+          description: The definition of the service API is modified successfully and a representation of the updated service API is returned in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceAPIDescription'
+        '204':
+          description: No Content. The definition of the service API is modified successfully.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -456,6 +516,29 @@ components:
         dcId:
           type: string
           description: Identifies the data center where the AEF providing the service API is located.
+    ServiceAPIDescriptionPatch:
+      type: object
+      description: Represents the parameters to request the modification of an APF published API resource.
+      properties:
+        aefProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/AefProfile'
+          minItems: 1
+        description:
+          type: string
+          description: Text description of the API
+        shareableInfo:
+          $ref: '#/components/schemas/ShareableInformation'
+        serviceAPICategory:
+          type: string
+        apiSuppFeats:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        pubApiPath:
+          $ref: '#/components/schemas/PublishedApiPath'
+        ccfId:
+          type: string
+          description: CAPIF core function identifier.
     Protocol:
       anyOf:
       - type: string

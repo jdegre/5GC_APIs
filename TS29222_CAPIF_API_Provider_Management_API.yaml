@@ -2,13 +2,13 @@ openapi: 3.0.0
 info:
   title: CAPIF_API_Provider_Management_API
   description: |
-    API for API provider domain functions management.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for API provider domain functions management.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0-alpha.2"
+  version: "1.1.0-alpha.3"
 externalDocs:
-  description: 3GPP TS 29.222 V17.2.0 Common API Framework for 3GPP Northbound APIs
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
+  description: 3GPP TS 29.222 V17.4.0 Common API Framework for 3GPP Northbound APIs
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/api-provider-management/v1'
     variables:
@@ -146,6 +146,58 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    patch:
+      description: Modify an individual API provider details.
+      operationId: ModifyIndApiProviderEnrolment
+      tags:
+        - Individual API Provider enrolment details 
+      parameters:
+        - name: registrationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/APIProviderEnrolmentDetailsPatch'
+      responses:
+        '200':
+          description: The definition of the service API is modified successfully and a representation of the updated service API is returned in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIProviderEnrolmentDetails'
+        '204':
+          description: No Content. The definition of the service API is modified successfully.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 components:
   schemas:
     APIProviderEnrolmentDetails:
@@ -219,3 +271,16 @@ components:
         - AEF: API provider function is API Exposing Function.
         - APF: API provider function is API Publishing Function.
         - AMF: API Provider function is API Management Function.
+    APIProviderEnrolmentDetailsPatch:
+      type: object
+      description: Represents an API provider domain's enrolment details.
+      properties:
+        apiProvFuncs:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIProviderFunctionDetails'
+          minItems: 1
+          description: A list of individual API provider domain functions details. When included by the API management function in the HTTP request message, it lists the API provider domain functions that the API management function intends to register/update in registration or update registration procedure. 
+        apiProvDomInfo:
+          type: string
+          description: Generic information related to the API provider domain such as details of the API provider applications.

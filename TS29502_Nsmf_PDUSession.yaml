@@ -1,23 +1,29 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.4'
+  version: '1.2.0-alpha.5'
   title: 'Nsmf_PDUSession'
   description: |
-    SMF PDU Session Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    SMF PDU Session Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V17.3.0; 5G System; Session Management Services; Stage 3
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
+  description: 3GPP TS 29.502 V17.4.0; 5G System; Session Management Services; Stage 3
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
   - url: '{apiRoot}/nsmf-pdusession/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501. The sm-contexts and pdu-sessions resources can be distributed on different processing instances or hosts. Thus the authority and/or deployment-specific string of the apiRoot of the created individual sm context and pdu-session resources' URIs may differ from the authority and/or deployment-specific string of the apiRoot of the sm-contexts and pdu-sessions collections' URIs.
+        description: >
+          apiRoot as defined in clause 4.4 of 3GPP TS 29.501. The sm-contexts and pdu-sessions
+          resources can be distributed on different processing instances or hosts. Thus the
+          authority and/or deployment-specific string of the apiRoot of the created individual
+          sm context and pdu-session resources' URIs may differ from the authority and/or
+          deployment-specific string of the apiRoot of the sm-contexts and pdu-sessions
+          collections' URIs.
 
 security:
   - {}
@@ -134,7 +140,9 @@ paths:
                         type: string
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/<apiVersion>/sm-contexts/{smContextRef}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure:
+                {apiRoot}/nsmf-pdusession/<apiVersion>/sm-contexts/{smContextRef}
               required: true
               schema:
                 type: string
@@ -1204,7 +1212,9 @@ paths:
                         type: string
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-pdusession/<apiVersion>/pdu-sessions/{pduSessionRef}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure:
+                {apiRoot}/nsmf-pdusession/<apiVersion>/pdu-sessions/{pduSessionRef}
               required: true
               schema:
                 type: string
@@ -1796,6 +1806,8 @@ components:
           $ref: '#/components/schemas/N2SmInfoType'
         smContextRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        smContextSmfPlmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         smContextSmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         smContextSmfSetId:
@@ -1844,10 +1856,22 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         nrfAccessTokenUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        nrfOauth2Required:
+          type: object
+          description: 'Map indicating whether the NRF requires Oauth2-based authorization for accessing its services. The key of the map shall be the name of an NRF service, e.g. "nnrf-nfm" or "nnrf-disc"'
+          additionalProperties:
+            type: boolean
+          minProperties: 1
         smfBindingInfo:
           type: string
         pvsInfo:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PvsInfo'
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ServerAddressingInfo'
+          minItems: 1
+        onboardingInd:
+          type: boolean
+          default: false
         oldPduSessionRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         smPolicyNotifyInd:
@@ -1860,6 +1884,8 @@ components:
         upipSupported:
           type: boolean
           default: false
+        uavAuthenticated:
+          type: boolean
       required:
         - servingNfId
         - servingNetwork
@@ -1903,6 +1929,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         selectedOldSmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        interPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
     SmContextUpdateData:
       description: Data within Update SM Context Request
@@ -2112,6 +2140,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         selectedOldSmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        interPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
     SmContextReleaseData:
       description: Data within Release SM Context Request
@@ -2167,6 +2197,8 @@ components:
           items:
             type: string
           minItems: 1
+        newIntermediateSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         newSmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         newSmfSetId:
@@ -2182,6 +2214,8 @@ components:
         targetDnaiInfo:
           $ref: '#/components/schemas/TargetDnaiInfo'
         oldPduSessionRef:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        interPlmnApiRoot:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - statusInfo
@@ -2456,6 +2490,10 @@ components:
           $ref: '#/components/schemas/RedundantPduSessionInformation'
         nspuSupportInd:
           type: boolean
+        interPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        intraPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - pduSessionType
         - sscMode
@@ -2626,6 +2664,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PcfUeCallbackInfo'
         satelliteBackhaulCat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
+        maxIntegrityProtectedDataRateUl:
+          $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
+        maxIntegrityProtectedDataRateDl:
+          $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
       required:
         - requestIndication
 
@@ -2675,6 +2717,10 @@ components:
           minItems: 1
         pti:
           $ref: '#/components/schemas/ProcedureTransactionId'
+        interPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        intraPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
     ReleaseData:
       description: Data within Release Request
@@ -2889,6 +2935,12 @@ components:
           $ref: '#/components/schemas/TargetDnaiInfo'
         oldPduSessionRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        newSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        interPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        intraPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - statusInfo
 
@@ -2906,6 +2958,8 @@ components:
           maximum: 8
         nullQoSProfileIndex:
           type: boolean
+        ngApCause:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NgApCause'
       required:
         - qfi
 
@@ -3303,6 +3357,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         pduSessionRef:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        interPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        intraPlmnApiRoot:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         pcfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         pcfGroupId:
@@ -3349,6 +3407,8 @@ components:
             $ref: '#/components/schemas/EpsBearerInfo'
           minItems: 1
         maxIntegrityProtectedDataRate:
+          $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
+        maxIntegrityProtectedDataRateDl:
           $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
         alwaysOnGranted:
           type: boolean
@@ -3401,6 +3461,9 @@ components:
           type: string
         satelliteBackhaulCat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
+        sscMode:
+          type: string
+          pattern: '^[0-7]$'
       required:
         - pduSessionId
         - dnn
@@ -3745,7 +3808,6 @@ components:
         smfSelectionType:
           $ref: '#/components/schemas/SmfSelectionType'
       required:
-        - targetDnai
         - smfSelectionType
 
     AfCoordinationInfo:
@@ -3765,7 +3827,8 @@ components:
           minItems: 1
 
     NotificationInfo:
-      description: Notification Correlation ID and Notification URI provided by the NF service consumer
+      description: >
+        Notification Correlation ID and Notification URI provided by the NF service consumer
       type: object
       properties:
         notifId:
@@ -3849,7 +3912,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         User Plane Connection State. Possible values are
         - ACTIVATED
         - DEACTIVATED
@@ -3870,7 +3933,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Handover state. Possible values are
         - NONE
         - PREPARING
@@ -3891,7 +3954,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Request Type in Create (SM context) service operation. Possible values are
         - INITIAL_REQUEST
         - EXISTING_PDU_SESSION
@@ -3915,7 +3978,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Request Indication in Update (SM context) service operation. Possible values are
         - UE_REQ_PDU_SES_MOD
         - UE_REQ_PDU_SES_REL
@@ -3939,7 +4002,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Cause for generating a notification. Possible values are
         - QOS_FULFILLED
         - QOS_NOT_FULFILLED
@@ -3978,12 +4041,13 @@ components:
           - CHANGED_ANCHOR_SMF
           - CHANGED_INTERMEDIATE_SMF
           - TARGET_DNAI_NOTIFICATION
+          - REL_DUE_TO_VPLMN_QOS_FAILURE
       - type: string
         description: >
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Cause information. Possible values are
         - REL_DUE_TO_HO
         - EPS_FALLBACK
@@ -4013,6 +4077,7 @@ components:
         - CHANGED_ANCHOR_SMF
         - CHANGED_INTERMEDIATE_SMF
         - TARGET_DNAI_NOTIFICATION
+        - REL_DUE_TO_VPLMN_QOS_FAILURE
 
     ResourceStatus:
       anyOf:
@@ -4028,7 +4093,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Status of SM context or PDU session resource. Possible values are
         - RELEASED
         - UNCHANGED
@@ -4048,7 +4113,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         DNN Selection Mode. Possible values are
         - VERIFIED
         - UE_DNN_NOT_VERIFIED
@@ -4067,7 +4132,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         EPS Interworking Indication. Possible values are
         - NONE
         - WITH_N26
@@ -4106,7 +4171,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         N2 SM Information Type. Possible values are
         - PDU_RES_SETUP_REQ
         - PDU_RES_SETUP_RSP
@@ -4143,7 +4208,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Maximum Integrity Protected Data Rate. Possible values are
           - 64_KBPS
           - MAX_UE_RATE
@@ -4159,7 +4224,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Multi-Access PDU session release Indication. Possible values are
           - REL_MAPDU_OVER_3GPP
           - REL_MAPDU_OVER_N3GPP
@@ -4176,7 +4241,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Type of SM Context information. Possible values are
           - EPS_PDN_CONNECTION
           - SM_CONTEXT
@@ -4195,7 +4260,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Indication of whether a PSA is inserted or removed. Possible values are
           - PSA_INSERTED
           - PSA_REMOVED
@@ -4219,7 +4284,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         N4 Message Type. Possible values are
           - PFCP_SES_EST_REQ
           - PFCP_SES_EST_RSP
@@ -4242,7 +4307,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Access type associated with a QoS Flow. Possible values are
           - 3GPP
           - NON_3GPP
@@ -4259,7 +4324,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Indicates the access type of a MA PDU session that is unavailable. Possible values are
           - 3GA_UNAVAILABLE
           - N3GA_UNAVAILABLE
@@ -4275,7 +4340,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Protection Result of the security policy indicated as "preferred". Possible values are
           - PERFORMED
           - NOT_PERFORMED
@@ -4293,7 +4358,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         QoS monitoring request. Possible values are
           - UL
           - DL
@@ -4312,7 +4377,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Redundancy Sequence Number. Possible values are
           - V1
           - V2
@@ -4329,7 +4394,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Smf Selection Type. Possible values are
           - CURRENT_PDU_SESSION
           - NEXT_PDU_SESSION
@@ -4344,7 +4409,7 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
         Type of PDU Session information. Possible values are
           - AF_COORDINATION_INFO
 #

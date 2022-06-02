@@ -1,14 +1,15 @@
 openapi: 3.0.0
 info:
   title: 3gpp-service-parameter
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   description: |
-    API for AF service paramter
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for AF service paramter  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.522 V17.4.0; 5G System; Network Exposure Function Northbound APIs.
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
+  description: >
+    3GPP TS 29.522 V17.5.0; 5G System; Network Exposure Function Northbound APIs.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
   - oAuth2ClientCredentials: []
@@ -53,7 +54,9 @@ paths:
             minItems: 1
         - name: ip-domain
           in: query
-          description: The IPv4 address domain identifier. The attribute may only be provided if IPv4 address is included in the ip-addrs query parameter.
+          description: >
+            The IPv4 address domain identifier. The attribute may only be provided
+            if IPv4 address is included in the ip-addrs query parameter.
           required: false
           schema:
             type: string
@@ -119,7 +122,7 @@ paths:
                 $ref: '#/components/schemas/ServiceParameterData'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource'
+              description: Contains the URI of the newly created resource.
               required: true
               schema:
                 type: string
@@ -150,7 +153,10 @@ paths:
           '{$request.body#/notificationDestination}':
             post:
               requestBody:
-                description: Notifications upon AF Service Parameter Authorization Update, and/or AF subscribed event notification of the outcome related to the invocation of service parameters provisioning.
+                description: >
+                  Notifications upon AF Service Parameter Authorization Update,
+                  and/or AF subscribed event notification of the outcome related
+                  to the invocation of service parameters provisioning.
                 required: true
                 content:
                   application/json:
@@ -377,14 +383,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        afTransId:
-          type: string
-          description: AF Transaction Reference Id assigned by the NEF for the AF invoked ServiceParameter_Create request. Shall be present by the NEF in HTTP responses and by the AF in HTTP update request.
         externalGroupId:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
         anyUeInd:
           type: boolean
-          description: Identifies whether the AF request applies to any UE. This attribute shall set to "true" if applicable for any UE, otherwise, set to "false".
+          description: >
+            Identifies whether the AF request applies to any UE. This attribute
+            shall set to "true" if applicable for any UE, otherwise, set to "false".
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         ueIpv4:
@@ -404,7 +409,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         requestTestNotification:
           type: boolean
-          description: Set to true by the AF to request the NEF to send a test notification as defined in subclause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
+          description: >
+            Set to true by the AF to request the NEF to send a test notification
+            as defined in subclause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         paramOverPc5:
@@ -419,19 +426,20 @@ components:
           $ref: '#/components/schemas/ParamForProSeU2NRelUe'
         paramForProSeRemUe:
           $ref: '#/components/schemas/ParamForProSeRemUe'
-
-        urspInfluence:
+        urspGuidance:
           type: array
           items:
             $ref: '#/components/schemas/UrspRuleRequest'
           minItems: 1
-          description: Contains the service parameter used to influence the URSP.
+          description: Contains the service parameter used to guide the URSP.
         mtcProviderId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     ServiceParameterDataPatch:
-      description: Represents the parameters to request the modification of a service parameter subscription resource.
+      description: >
+        Represents the parameters to request the modification of a service parameter
+        subscription resource.
       type: object
       properties:
         paramOverPc5:
@@ -446,70 +454,90 @@ components:
           $ref: '#/components/schemas/ParamForProSeU2NRelUeRm'
         paramForProSeRemUe:
           $ref: '#/components/schemas/ParamForProSeRemUeRm'
-        urspInfluence:
+        urspGuidance:
           type: array
           items:
             $ref: '#/components/schemas/UrspRuleRequest'
           minItems: 1
-          description: Contains the service parameter used to influence the URSP.
+          description: Contains the service parameter used to guide the URSP.
+        subNotifEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+          minItems: 1
+          nullable: true
         notificationDestination:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
     ParameterOverPc5:
-      description: Represents configuration parameters for V2X communications over PC5 reference point.
+      description: >
+        Represents configuration parameters for V2X communications over PC5 reference point.
       type: string
     ParameterOverPc5Rm:
-      description: Represents the same as the ParameterOverPc5 data type but with the nullable:true property.
+      description: >
+        Represents the same as the ParameterOverPc5 data type but with the nullable:true property.
       type: string
       nullable: true
     ParameterOverUu:
-      description: Represents configuration parameters for V2X communications over Uu reference point.
+      description: >
+        Represents configuration parameters for V2X communications over Uu reference point.
       type: string
     ParameterOverUuRm:
-      description: Represents the same as the ParameterOverUu data type but with the nullable:true property.
+      description: >
+        Represents the same as the ParameterOverUu data type but with the nullable:true property.
       type: string
       nullable: true
     ParamForProSeDd:
       description: Represents the service parameters for 5G ProSe direct discovery.
       type: string
     ParamForProSeDdRm:
-      description: This data type is defined in the same way as the ParamForProSeDd data type, but with the OpenAPI nullable property set to true.
+      description: >
+        This data type is defined in the same way as the ParamForProSeDd data type,
+        but with the OpenAPI nullable property set to true.
       type: string
       nullable: true
     ParamForProSeDc:
       description: Represents the service parameters for 5G ProSe direct communications.
       type: string
     ParamForProSeDcRm:
-      description: This data type is defined in the same way as the ParamForProSeDc data type, but with the OpenAPI nullable property set to true.
+      description: >
+        This data type is defined in the same way as the ParamForProSeDc data type,
+        but with the OpenAPI nullable property set to true.
       type: string
       nullable: true
     ParamForProSeU2NRelUe:
       description: Represents the service parameters for 5G ProSe UE-to-network relay UE.
       type: string
     ParamForProSeU2NRelUeRm:
-      description: This data type is defined in the same way as the ParamForProSeU2NRelay data type, but with the OpenAPI nullable property set to true.
+      description: >
+        This data type is defined in the same way as the ParamForProSeU2NRelay data type,
+        but with the OpenAPI nullable property set to true.
       type: string
       nullable: true
     ParamForProSeRemUe:
       description: Represents the service parameters for 5G ProSe Remate UE.
       type: string
     ParamForProSeRemUeRm:
-      description: This data type is defined in the same way as the ParamForProSeRemUe data type, but with the OpenAPI nullable property set to true.
+      description: >
+        This data type is defined in the same way as the ParamForProSeRemUe data type,
+        but with the OpenAPI nullable property set to true.
       type: string
       nullable: true
     UrspRuleRequest:
-      description: Contains parameters that can be used to influence the URSP.
+      description: Contains parameters that can be used to guide the URSP.
       type: object
       properties:
         trafficDesc:
-          $ref: 'TS29122_ResourceManagementOfBdt.yaml#/components/schemas/TrafficDescriptor'
+          $ref: '#/components/schemas/TrafficDescriptorComponents'
         routeSelParamSets:
           type: array
           items:
             $ref: '#/components/schemas/RouteSelectionParameterSet'
           minItems: 1
-          description: Sets of parameters that may be used to influence the Route Selection Descriptors of the URSP.
+          description: Sets of parameters that may be used to guide the Route Selection Descriptors of the URSP.
     RouteSelectionParameterSet:
-      description: Contains parameters that can be used to influence the Route Selection Descriptors of the URSP.
+      description: >
+        Contains parameters that can be used to guide the Route Selection
+        Descriptors of the URSP.
       type: object
       properties:
         dnn:
@@ -523,7 +551,17 @@ components:
           items:
             type: string
           minItems: 1
-          description: Indicates where the route selection parameters apply. It may correspond to a geographical area, for example using a geographic zone identifier that is known to the AF and is configured by the operator to correspond to a list of Cell Ids or TAIs.
+          description: >
+            Indicates where the route selection parameters apply. It may correspond
+            to a geographical area, for example using a geographic zone identifier that
+            is known to the AF and is configured by the operator to correspond to a list
+            of or TAIs.
+        spatialValidityTais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+          description: Indicates the TAIs in which the route selection parameters apply. This attribute is applicable only within the 5GC and it shall not be included in the request messages of untrusted AFs for URSP guidance.
     Event:
       anyOf:
       - type: string
@@ -532,20 +570,23 @@ components:
           - UNSUCCESS_UE_POL_DEL_SP
       - type: string
         description: >
-          This string identifies AF subscribe to event(s) notifications related to AF provisioned service parameters.
-      description: >
-        Possible values are
-          - SUCCESS_UE_POL_DEL_SP: Successful UE Policy Delivery related to the invocation of AF provisioned Service Parameters.
-          - UNSUCCESS_UE_POL_DEL_SP: Unsuccessful UE Policy Delivery related to the invocation of AF provisioned Service Parameters.
+          This string identifies AF subscribe to event(s) notifications related to
+          AF provisioned service parameters.
+      description: |
+        Possible values are:
+        - SUCCESS_UE_POL_DEL_SP: Successful UE Policy Delivery related to the invocation of AF provisioned Service Parameters.
+        - UNSUCCESS_UE_POL_DEL_SP: Unsuccessful UE Policy Delivery related to the invocation of AF provisioned Service Parameters.
     AfNotification:
-      description: Notifications upon AF Service Parameter Authorization Update e.g. to revoke the authorization, and/or AF subscribed event notification of the outcome related to the invocation of service parameter provisioning.
+      description: >
+        Notifications upon AF Service Parameter Authorization Update e.g. to
+        revoke the authorization, and/or AF subscribed event notification of the
+        outcome related to the invocation of service parameter provisioning.
       type: object
       properties:
+        subscription:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         reportEvent:
           $ref: '#/components/schemas/Event'
-        afTransId:
-          type: string
-          description: AF transaction identifier.
         authResult:
           $ref: '#/components/schemas/AuthorizationResult'
         gpsi:
@@ -554,7 +595,9 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
         anyUeInd:
           type: boolean
-          description: Identifies whether the AF request applies to any UE. This attribute shall set to "true" if applicable for any UE, otherwise, set to "false".
+          description: >
+            Identifies whether the AF request applies to any UE. This attribute shall
+            set to "true" if applicable for any UE, otherwise, set to "false".
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
@@ -562,7 +605,7 @@ components:
         eventInfo:
           $ref: '#/components/schemas/EventInfo'
       required:
-        - afTransId
+        - subscription
       oneOf:
         - required: [gpsi]
         - required: [externalGroupId]
@@ -570,6 +613,53 @@ components:
       anyOf:
         - required: [reportEvent]
         - required: [authResult]
+    TrafficDescriptorComponents:
+      description: Traffic descriptor components for the requested URSP.
+      type: object
+      properties:
+        appDescs:
+          type: object
+          additionalProperties:
+            $ref: 'TS29522_5GLANParameterProvision.yaml#/components/schemas/AppDescriptor'
+          minProperties: 1
+          description: Describes the operation systems and the corresponding applications for each operation systems. The key of map is osId.
+        flowDescs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Represents a 3-tuple with protocol, server ip and server port for UL/DL application traffic. The content of the string has the same encoding as the IPFilterRule AVP value as defined in IETF RFC 6733.
+        domainDescs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: FQDN(s) or a regular expression which are used as a domain name matching criteria.
+        ethFlowDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+          description: Descriptor(s) for destination information of non-IP traffic in which only ethernet flow description is defined.
+        dnns:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1
+          description: This is matched against the DNN information provided by the application.
+        connCaps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionCapabilities'
+          minItems: 1
+          description: This is matched against the information provided by a UE application when it requests a network connection with certain capabilities.
+      anyOf:
+        - required: [appDescs]
+        - required: [flowDescs]
+        - required: [domainDescs]
+        - required: [ethFlowDescs]
+        - required: [dnns]
+        - required: [connCaps]
     AuthorizationResult:
       anyOf:
       - type: string
@@ -577,10 +667,11 @@ components:
           - AUTH_REVOKED
       - type: string
         description: >
-          This string indicates NEF notify the AF about the service parameters authorization updates result.
-      description: >
-        Possible values are
-          - AUTH_REVOKED: Indicated the service parameters authorization is revoked.
+          This string indicates NEF notify the AF about the service parameters authorization
+          updates result.
+      description: |
+        Possible values are:
+        - AUTH_REVOKED: Indicated the service parameters authorization is revoked.
     EventInfo:
       description: Indicates the event information.
       type: object
@@ -596,9 +687,29 @@ components:
           - UNKNOWN
       - type: string
         description: >
-          This string represents the failure reason for the unsuccessful result. May present if the reported afSubEvent attribute is "UNSUCCESS_UE_POL_DEL_SP".
+          This string represents the failure reason for the unsuccessful result. May be
+          present if the reported afSubEvent attribute is "UNSUCCESS_UE_POL_DEL_SP".
+      description: |
+        Possible values are:
+        - UNSPECIFIED: Indicates the PCF received the UE sent UE policy delivery service cause #111 (Protocol error, unspecified).
+        - UE_NOT_REACHABLE: Indicates the PCF received the notification from the AMF that the UE is not reachable.
+        - UNKNOWN: Indicates unknown reasons upon no response from the UE, e.g. UPDS message type is not defined or not implemented by the UE, or not compatible with the UPDS state, in which the UE shall ignore the UPDS message.
+    ConnectionCapabilities:
+      anyOf:
+      - type: string
+        enum:
+          - IMS
+          - MMS
+          - SUPL
+          - Internet
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
       description: >
         Possible values are
-          - UNSPECIFIED: Indicates the PCF received the UE sent UE policy delivery service cause #111 (Protocol error, unspecified).
-          - UE_NOT_REACHABLE: Indicates the PCF received the notification from the AMF that the UE is not reachable.
-          - UNKNOWN: Indicates unknown reasons upon no response from the UE, e.g. UPDS message type is not defined or not implemented by the UE, or not compatible with the UPDS state, in which the UE shall ignore the UPDS message.
+          - IMS: Indicates the connection capability to support IMS service.
+          - MMS: Indicates the connection capability to support MMS service.
+          - SUPL: Indicates the connection capability to support SUPL service.
+          - Internet: Indicates the connection capability to support Internet service.

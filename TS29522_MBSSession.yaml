@@ -2,15 +2,16 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-mbs-session
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.2
   description: |
-    <API Name> Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for MBS Session management.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.522 V17.4.0; 5G System; Network Exposure Function Northbound APIs.
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
+  description: >
+    3GPP TS 29.522 V17.5.0; 5G System; Network Exposure Function Northbound APIs.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
 servers:
   - url: '{apiRoot}/3gpp-mbs-session/v1'
@@ -21,8 +22,7 @@ servers:
 
 security:
   - {}
-  - oAuth2ClientCredentials:
-    - 3gpp-mbs-session
+  - oAuth2ClientCredentials: []
 
 paths:
   /mbs-sessions:
@@ -47,7 +47,9 @@ paths:
                 $ref: '#/components/schemas/MbsSessionCreateRsp'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/3gpp-mbs-session/v1/mbssessions/{mbsSessionId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/3gpp-mbs-session/v1/mbssessions/{mbsSessionId}
               required: true
               schema:
                 type: string
@@ -87,72 +89,22 @@ paths:
         schema:
           type: string
 
-    put:
-      summary: Updates/replaces an existing MBS session resource
-      tags:
-        - Individual MBS Session
-      requestBody:
-        description: Parameters to update/replace the MBS Session
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSession'
-      responses:
-        '200':
-          description: OK (Successful update of the MBS Session resource)
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSession'
-        '204':
-          description: No Content
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
     patch:
-      summary: Updates/replaces an existing MBS Session resource
+      summary: Request the Modification of an existing Individual MBS Session resource.
       tags:
         - Individual MBS Session
       requestBody:
         required: true
         content:
-          application/merge-patch+json:
+          application/json-patch+json:
             schema:
-              $ref: '#/components/schemas/MbsSessionPatch'
+              type: array
+              items:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PatchItem'
+              minItems: 1
       responses:
-        '200':
-          description: OK. The MBS Session resource was modified successfully.
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSession'
         '204':
-          description: No Content
+          description: No Content. The Individual MBS Session resource was successfully modified.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -305,7 +257,7 @@ paths:
                 $ref: '#/components/schemas/MbsSessionSubsc'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource'
+              description: Contains the URI of the newly created resource.
               required: true
               schema:
                 type: string
@@ -408,9 +360,8 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: '{nrfApiRoot}/oauth2/token'
-          scopes:
-            3gpp-mbs-session: Access to the Nnef-MBSSession API
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
 
   schemas:
 #
@@ -432,45 +383,24 @@ components:
       properties:
         mbsSession:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSession'
-        tmgi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tmgi'
-        inTunAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
-      required:
-        - mbsSession
-    MbsSessionPatch:
-      description: Represents the requested modifications to an Individual MBS Session resource
-      type: object
-      properties:
-        mbsSession:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSession'
       required:
         - mbsSession
     MbsSessionSubsc:
       description: Represents an MBS Session Subscription.
       type: object
       properties:
-        notificationUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-        mbsSessionId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
-        mbsSessionStatus:
-          $ref: '#/components/schemas/MbsSessionStatus'
+        afId:
+          type: string
+        subscription:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionSubscription'
       required:
-        - notificationUri
-        - mbsSessionId
-        - mbsSessionStatus
+        - subscription
     MbsSessionStatusNotif:
       description: Represents an MBS Session Status notification.
       type: object
       properties:
-        mbsSessionId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
-        mbsSessionStatus:
-          $ref: '#/components/schemas/MbsSessionStatus'
-      required:
-        - mbsSessionId
-        - mbsSessionStatus
+        eventList:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionEventReportList'
 
 
 
@@ -481,15 +411,3 @@ components:
 #
 # ENUMERATIONS
 #
-
-    MbsSessionStatus:
-      anyOf:
-        - type: string
-          enum:
-            - MBS_REL_TMGI_EXPIRY
-            - BROADCAST_STATUS
-        - type: string
-      description: >
-        Possible values are
-        - MBS_REL_TMGI_EXPIRY: The AF requests to be notified about MBS Session release due to TMGI expiry.
-        - BROADCAST_STATUS: The AF requests to be notified about MBS Session broadcast status.

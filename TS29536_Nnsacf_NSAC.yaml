@@ -2,15 +2,15 @@ openapi: 3.0.0
 
 info:
   title: Nnsacf_NSAC
-  version: 1.0.0-alpha.3
+  version: 1.0.0-alpha.6
   description: |
-    Nnsacf_NSAC Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    Nnsacf_NSAC Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.536 V1.0.0; 5G System; Network Slice Admission Control Services; Stage 3.
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.536/
+  description: 3GPP TS 29.536 V17.0.0; 5G System; Network Slice Admission Control Services; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.536/
 
 servers:
   - url: '{apiRoot}/nnsacf-nsac/v1'
@@ -172,6 +172,24 @@ components:
     UeACRequestData:
       type: object
       properties:
+        ueACRequestInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeACRequestInfo'
+          minItems: 1
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfType:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        eacNotificationUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+      required:
+        - ueACRequestInfo
+        - nfId
+
+    UeACRequestInfo:
+      type: object
+      properties:
         supi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         anType:
@@ -181,28 +199,25 @@ components:
           items:
             $ref: '#/components/schemas/AcuOperationItem'
           minItems: 1
-        nfId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        nfType:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
-        eacNotificationUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         additionalAnType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
       required:
         - supi
         - anType
-        - nfId
         - acuOperationList
 
     UeACResponseData:
       type: object
       properties:
         acuFailureList:
-          type: array
-          items:
-            $ref: '#/components/schemas/AcuFailureItem'
-          minItems: 1
+          description: A map (list of key-value pairs) where the key of the map shall be UE's supi
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/AcuFailureItem'
+            minItems: 1
+          minProperties: 1
 
     AcuOperationItem:
       type: object
@@ -211,6 +226,11 @@ components:
           $ref: '#/components/schemas/AcuFlag'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      required:
+        - updateFlag
+        - snssai
 
     AcuFailureItem:
       type: object
@@ -219,6 +239,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         reason:
           $ref: '#/components/schemas/AcuFailureReason'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        pduSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
+      required:
+        - snssai
 
     EacNotification:
       description: A map (list of key-value pairs) where Snssai converted to a string serves as key
@@ -228,6 +254,21 @@ components:
       minProperties: 1
 
     PduACRequestData:
+      type: object
+      properties:
+        pduACRequestInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/PduACRequestInfo'
+          minItems: 1
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        pgwFqdn:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+      required:
+        - pduACRequestInfo
+
+    PduACRequestInfo:
       type: object
       properties:
         supi:
@@ -242,10 +283,6 @@ components:
             $ref: '#/components/schemas/AcuOperationItem'
           minItems: 1
           maxItems: 2
-        nfId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
-        pgwFqdn:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
         additionalAnType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
       required:
@@ -258,11 +295,15 @@ components:
       type: object
       properties:
         acuFailureList:
-          type: array
-          items:
-            $ref: '#/components/schemas/AcuFailureItem'
-          minItems: 1
-          maxItems: 2
+          description: A map (list of key-value pairs) where the key of the map shall be UE's supi
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/AcuFailureItem'
+            minItems: 1
+            maxItems: 2
+          minProperties: 1
 
     #
     # SIMPLE DATA TYPES
@@ -295,6 +336,7 @@ components:
         enum:
           - INCREASE
           - DECREASE
+          - UPDATE
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -304,6 +346,7 @@ components:
         Update Flag of ACU operation. Possible values are
         - INCREASE
         - DECREASE
+        - UPDATE
 
     AcuFailureReason:
       anyOf:

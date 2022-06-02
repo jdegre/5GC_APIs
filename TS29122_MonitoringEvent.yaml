@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.2.0-alpha.4
+  version: 1.2.0-alpha.5
   description: |
-    API for Monitoring Event.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for Monitoring Event.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V17.4.0 T8 reference point for Northbound APIs
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
+  description: 3GPP TS 29.122 V17.5.0 T8 reference point for Northbound APIs
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
   - oAuth2ClientCredentials: []
@@ -21,7 +21,7 @@ servers:
 paths:
   /{scsAsId}/subscriptions:
     get:
-      summary: Read all of the active subscriptions for the SCS/AS.
+      summary: Read all or queried active subscriptions for the SCS/AS.
       operationId: FetchAllMonitoringEventSubscriptions
       tags:
         - Monitoring Event Subscriptions
@@ -36,11 +36,13 @@ paths:
           in: query
           description: The IP address(es) of the requested UE(s).
           required: false
-          schema:
-            type: array
-            items:
-              $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
-            minItems: 1
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+                minItems: 1
         - name: ip-domain
           in: query
           description: The IPv4 address domain identifier. The attribute may only be provided if IPv4 address is included in the ip-addrs query parameter.
@@ -58,7 +60,7 @@ paths:
             minItems: 1
       responses:
         '200':
-          description: OK (Successful get all of the active subscriptions for the SCS/AS)
+          description: OK (Successful get all or queried active subscriptions for the SCS/AS)
           content:
             application/json:
               schema:
@@ -321,7 +323,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: This is used for PATCH request for partial cancellation of certain UE(s) within an active group.
+        description: This is used for PATCH request for partial cancellation and/or partial addition of certain UE(s) within an active group.
         required: true
         content:
           application/json-patch+json:
@@ -435,6 +437,18 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
         msisdn:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
+        addedExternalIds:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          minItems: 1
+          description: Indicates the added external Identifier(s) within the active group.
+        addedMsisdns:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          minItems: 1
+          description: Indicates the added MSISDN(s) within the active group.
         excludedExternalIds:
           type: array
           items:
@@ -557,6 +571,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         tgtNsThreshold:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SACInfo'
+        nsRepFormat:
+          $ref: '#/components/schemas/SACRepFormat'
         immediateRep:
           type: boolean
         uavPolicy:
@@ -575,6 +591,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MonitoringEventReport'
+        ueIpAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        ueMacAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
       required:
         - notificationDestination
         - monitoringType
@@ -599,21 +619,30 @@ components:
             $ref: '#/components/schemas/MonitoringEventReport'
           minItems: 1
           description: Monitoring event reports.
-        cancelInd:
-          type: boolean
-          description: Indicates whether to request to cancel the corresponding monitoring subscription. Set to false or omitted otherwise.
+        addedExternalIds:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
+          minItems: 1
+          description: Identifies the added external Identifier(s) within the active group via the "externalGroupId" attribute within the MonitoringEventSubscription data type.
+        addedMsisdns:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
+          minItems: 1
+          description: Identifies the added MSISDN(s) within the active group via the "externalGroupId" attribute within the MonitoringEventSubscription data type.
         cancelExternalIds:
           type: array
           items:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
           minItems: 1
-          description: Identifies the cancelled external Identifier(s) within the active group via the "externalGroupId" attribute within the MonitoringEventSubscription data.
+          description: Identifies the cancelled external Identifier(s) within the active group via the "externalGroupId" attribute within the MonitoringEventSubscription data type.
         cancelMsisdns:
           type: array
           items:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/Msisdn'
           minItems: 1
-          description: Identifies the cancelled MSISDN(s) within the active group via the "externalGroupId" attribute within the MonitoringEventSubscription data.
+          description: Identifies the cancelled MSISDN(s) within the active group via the "externalGroupId" attribute within the MonitoringEventSubscription data type.
         appliedParam:
           $ref: '#/components/schemas/AppliedParameterConfiguration'
       required:
@@ -974,6 +1003,7 @@ components:
           - PLMN
           - TWAN_ID
           - GEO_AREA
+          - CIVIC_ADDR
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -981,12 +1011,13 @@ components:
           content defined in the present version of this API.
       description: >
         Possible values are
-        - CGI_ECGI: The SCS/AS requests to be notified at cell level location accuracy.
-        - ENODEB: The SCS/AS requests to be notified at eNodeB level location accuracy.
-        - TA_RA: The SCS/AS requests to be notified at TA/RA level location accuracy.
-        - PLMN: The SCS/AS requests to be notified at PLMN level location accuracy.
-        - TWAN_ID: The SCS/AS requests to be notified at TWAN identifier level location accuracy.
-        - GEO_AREA: The SCS/AS requests to be notified of the geographical area accuracy.
+        - CGI_ECGI: The SCS/AS requests to be notified using cell level location accuracy.
+        - ENODEB: The SCS/AS requests to be notified using eNodeB level location accuracy.
+        - TA_RA: The SCS/AS requests to be notified using TA/RA level location accuracy.
+        - PLMN: The SCS/AS requests to be notified using PLMN level location accuracy.
+        - TWAN_ID: The SCS/AS requests to be notified using TWAN identifier level location accuracy.
+        - GEO_AREA: The SCS/AS requests to be notified using the geographical area accuracy.
+        - CIVIC_ADDR: The SCS/AS requests to be notified using the civic address accuracy.
     PdnConnectionStatus:
       anyOf:
       - type: string
@@ -1067,3 +1098,11 @@ components:
       description: >
         Possible values are
         - AERIAL_UE: The UE has Aerial subscription.
+    SACRepFormat:
+      anyOf:
+        - type: string
+          enum:
+            - NUMERICAL
+            - PERCENTAGE
+        - type: string
+      description: Indicates the NSAC reporting format.

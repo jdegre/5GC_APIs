@@ -1,0 +1,393 @@
+openapi: 3.0.0
+info:
+  title: SS_NetworkResourceMonitoring
+  description: |
+    API for SEAL Network Resource Monitoring.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+  version: "1.0.0-alpha.1"
+externalDocs:
+  description: >
+    3GPP TS 29.549 V17.4.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    Application Programming Interface (API) specification; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+servers:
+  - url: '{apiRoot}/ss-nrm/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+paths:
+  /subscriptions:
+    post:
+      summary: Create individual unicast monitoring subscription resource or obtain unicast QoS monitoring data for VAL UEs, VAL Group, or VAL Streams.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitoringSubscription'
+      responses:
+        '201':
+          description: The requested individual monitoring subscription resource is successfully created and a representation of the created resource is returned in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringSubscription'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created individual monitoring resource'
+              required: true
+              schema:
+                type: string
+        '200':
+          description: The requested unicast QoS monitoring data is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringReport'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      callbacks:
+        NotifyUnicastMonitoringData:
+          '{$request.body#/notifUri}': 
+            post:
+              summary: Notify on updates of the individual monitoring resorce accoring the requested reporting settings.
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/MonitoringReport'
+              responses:
+                '204':
+                  description: The notification is successfully received.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /subscriptions/{subscriptionId}:
+    delete:
+      summary: Remove an existing individual unicast monitoring subscription resource according to the subscriptionId.
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Represents the identifier of an individual unicast monitoring subscription resource.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The Individual Unicast Monitoring Subscription resource matching the subscriptionId is deleted.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    get:
+      summary: Read an existing individual unicast monitoring subscription resource according to the subscriptionId.
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Represents the identifier of an individual unicast monitoring subscription resource.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested individual unicast monitoring subscription returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringSubscription'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+  schemas:
+    MonitoringReport:
+      description: Indicates the monitoring information for VAL UEs list, VAL Group, or VAL Stream.
+      type: object
+      properties:
+        valUeIds:
+          type: array
+          items:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+          description: List of VAL UEs whose QoS monitoring data is requested.
+        valGroupId:
+          type: string
+          description: The VAL Group Id which QoS monitoring data is requested.
+        valStreamIds:
+          type: array
+          items:
+            type: string
+          description: List of VAL streams for which QoS monitoring data is requested.
+        measData:
+          $ref: '#/components/schemas/MeasurementData'
+        timestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - measData
+        - timestamp
+    MeasurementData:
+      description: Presents the aggregated measurement data.
+      type: object
+      properties:
+        dlDelay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        ulDelay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        rtDelay:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        avgPlr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        avgDataRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxDataRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        avrDlTrafficVol:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        avrUlTrafficVol:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+    MeasurementPeriod:
+      description: >
+        Indicates the measurement time period.
+      type: object
+      properties:
+        measStartTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        measDuration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - measStartTime
+        - measDuration
+    ReportingRequirements:
+      description: Indicates the requested frequency of reporting.
+      type: object
+      properties:
+        reportingMode:
+          $ref: '#/components/schemas/ReportingMode'
+        reportingPeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        reportingThr:
+          $ref: '#/components/schemas/MeasurementData'
+      required:
+        - reportingMode
+    ReportingTermination:
+      description: Indicates when the reporting shall stop.
+      type: object
+      properties:
+        repTerminMode:
+          $ref: '#/components/schemas/TerminationMode'
+        expirationTimer:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        maxRepNum:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        termThr:
+          $ref: '#/components/schemas/MeasurementData'
+      required:
+        - repTerminMode
+    MeasurementRequirements:
+      description: Indicates the measurement requirements.
+      type: object
+      properties:
+        measDataTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeasurementDataType'
+          description: Indicates the required the QoS measurement data types.
+        measAggrGranWnd:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AverWindow'
+        measPeriod:
+          $ref: '#/components/schemas/MeasurementPeriod'
+      required:
+        - measDataTypes
+    MonitoringSubscription:
+      description: The unicast monitoring subscription request.
+      type: object
+      properties:
+        valUeIds:
+          description: List of VAL UEs whose QoS monitoring data is requested.
+          type: array
+          items:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+        valGroupId:
+          type: string
+          description: The VAL Group Id which QoS monitoring data is requested.
+        valStreamIds:
+          type: array
+          items:
+            type: string
+          description: List of VAL streams for which QoS monitoring data is requested.
+        measReqs:
+          $ref: '#/components/schemas/MeasurementRequirements'
+        immRep:
+          type: boolean
+        oneTimeRep:
+          type: boolean
+        monRep:
+          $ref: '#/components/schemas/MonitoringReport'
+        reportFreq:
+          $ref: '#/components/schemas/ReportingRequirements'
+        reportTerm:
+          $ref: '#/components/schemas/ReportingTermination'
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        reqTestNotif:
+          type: boolean
+        wsNotifCfg:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+# Simple data types and Enumerations
+    MeasurementDataType:
+      description: |
+        Indicates the requested measurement data type.  
+        Possible values are:
+        - DL_DELAY: Downlink packet delay.
+        - UL_DELAY: Uplink packet delay.
+        - RT_DELAY: Round trip packet delay.
+        - AVG_PLR: Average packet loss rate.
+        - AVG_DATA_RATE: Average data rate.
+        - MAX_DATA_RATE: Maximum data rate.
+        - AVG_DL_TRAFFIC_VOLUME: Average downlink traffic volume.
+        - AVG_UL_TRAFFIC_VOLUME: Average uplink traffic volume.
+      anyOf:
+      - type: string
+        enum:
+           - DL_DELAY
+           - UL_DELAY
+           - RT_DELAY
+           - AVG_PLR
+           - AVG_DATA_RATE
+           - MAX_DATA_RATE
+           - AVG_DL_TRAFFIC_VOLUME
+           - AVG_UL_TRAFFIC_VOLUME
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+    ReportingMode:
+      description: |
+        Indicates the reporting mode.  
+        Possible values are:
+        - PERIODIC: Periodic reporting mode.
+        - EVENT_TRIGGERED: Event-triggered reporting mode.
+      anyOf:
+      - type: string
+        enum:
+           - PERIODIC
+           - EVENT_TRIGGERED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+    TerminationMode:
+      description: |
+        Indicates the termination mode.  
+        Possible values are:
+        - TIME_TRIGGERED: Time-triggered termination mode.
+        - EVENT_TRIGGERED_NUM_REPORTS_REACHED: Event-triggered termination number of reports reached mode.
+        - EVENT_TRIGGERED_MEAS_THR_REACHED: The event-triggered termination measurement index threshold reached mode.
+        - USER_TRIGGERED: User-triggered termination mode.
+      anyOf:
+      - type: string
+        enum:
+           - TIME_TRIGGERED
+           - EVENT_TRIGGERED_NUM_REPORTS_REACHED
+           - EVENT_TRIGGERED_MEAS_THR_REACHED
+           - USER_TRIGGERED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
