@@ -1,11 +1,17 @@
 openapi: 3.0.0
+
 info:
-  version: '1.0.3'
+  version: '1.0.4'
   title: 'NRF OAuth2'
   description: |
-    NRF OAuth2 Authorization.
-    © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    NRF OAuth2 Authorization.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.510 V15.10.0; 5G System; Network Function Repository Services; Stage 3
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
+
 paths:
   /oauth2/token:
     post:
@@ -18,6 +24,16 @@ paths:
           application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/AccessTokenReq'
+            encoding:
+              requesterPlmn:
+                contentType: application/json
+              targetPlmn:
+                contentType: application/json
+              targetSnssaiList:
+                contentType: application/json
+              targetNsiList:
+                style: form
+                explode: true
         required: true
       responses:
         '200':
@@ -66,6 +82,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   headers:
     cache-control:
@@ -80,6 +97,7 @@ components:
         type: string
         enum:
           - no-cache
+
   schemas:
     AccessTokenReq:
       type: object
@@ -117,6 +135,7 @@ components:
           items:
             type: string
           minItems: 1
+
     AccessTokenRsp:
       type: object
       required:
@@ -135,6 +154,7 @@ components:
         scope:
           type: string
           pattern: '^([a-zA-Z0-9_-]+)( [a-zA-Z0-9_-]+)*$'
+
     AccessTokenClaims:
       type: object
       required:
@@ -174,6 +194,7 @@ components:
           items:
             type: string
           minItems: 1
+
     AccessTokenErr:
       type: object
       required:
@@ -192,6 +213,3 @@ components:
           type: string
         error_uri:
           type: string
-externalDocs:
-  description: 3GPP TS 29.510 V15.5.0; 5G System; Network Function Repository Services; Stage 3
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
