@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.1.6
+  version: 1.1.7
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.520 V16.11.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V16.12.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 security:
   - {}
@@ -332,7 +332,7 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 1
-          description: Identification(s) of network slice to which the subscription applies. When subscribed event is "SLICE_LOAD_LEVEL", either information about slice(s) identified by snssai, or anySlice set to "TRUE" shall be included. It corresponds to snssais in the data model definition of 3GPP TS 29.520. When subscribed is “QOS_SUSTAINABILITY”, the identifications of network slices is optional.
+          description: Identification(s) of network slice to which the subscription applies. When subscribed event is "SLICE_LOAD_LEVEL", either information about slice(s) identified by snssai, or anySlice set to "TRUE" shall be included. It corresponds to snssais in the data model definition of 3GPP TS 29.520. When subscribed is "QOS_SUSTAINABILITY", the identifications of network slices is optional.
         tgtUe:
           $ref: '#/components/schemas/TargetUeInformation'
         congThresholds:
@@ -543,10 +543,12 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
         intGroupIds:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+          minItems: 1
     UeMobility:
       type: object
       properties:
@@ -563,9 +565,12 @@ components:
           items:
             $ref: '#/components/schemas/LocationInfo'
           minItems: 1
-      required:
-        - duration
-        - locInfos
+      allOf:
+        - required: [duration]
+        - required: [locInfos]
+        - oneOf:
+          - required: [ts]
+          - required: [recurringTime]
     LocationInfo:
       type: object
       properties:
@@ -600,9 +605,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-      required:
-        - commDur
-        - trafChar
+      allOf:
+        - required: [commDur]
+        - required: [trafChar]
+        - oneOf:
+          - required: [ts]
+          - required: [recurringTime]
     TrafficCharacterization:
       type: object
       properties:
@@ -626,6 +634,9 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         dlVolVariance:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+      anyOf:
+        - required: [ulVol]
+        - required: [dlVol]
     UserDataCongestionInfo:
       type: object
       properties:
@@ -667,6 +678,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      oneOf:
+        - required: [qosFlowRetThd]
+        - required: [ranUeThrouThd]
     QosRequirement:
       type: object
       properties:
@@ -682,6 +696,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
         per:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
+      oneOf:
+        - required: [5qi]
+        - required: [resType]
     ThresholdLevel:
       type: object
       properties:
@@ -720,9 +737,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-      required:
-        - nfType
-        - nfInstanceId
+      allOf:
+        - required: [nfType]
+        - required: [nfInstanceId]
+        - anyOf:
+          - required: [nfStatus]
+          - required: [nfCpuUsage]
+          - required: [nfMemoryUsage]
+          - required: [nfStorageUsage]
+          - required: [nfLoadLevelAverage]
+          - required: [nfLoadLevelPeak]
     NfStatus:
       type: object
       properties:
@@ -732,6 +756,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         statusUndiscoverable:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+      anyOf:
+        - required: [statusRegistered]
+        - required: [statusUnregistered]
+        - required: [statusUndiscoverable]
     AnySlice:
       type: boolean
       description: FALSE represents not applicable for all slices. TRUE represents applicable for all slices.
@@ -802,6 +830,9 @@ components:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
         ethTrafficFilter:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+      oneOf:
+        - required: [ipTrafficFilter]
+        - required: [ethTrafficFilter]
     AddressList:
       type: object
       properties:
@@ -835,6 +866,11 @@ components:
           $ref: '#/components/schemas/TimeUnit'
         relFlowRatio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+      oneOf:
+        - allOf:
+          - required: [relFlowNum]
+          - required: [relTimeUnit]
+        - required: [relFlowRatio]
     NetworkPerfRequirement:
       type: object
       properties:
@@ -859,9 +895,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-      required:
-        - networkArea
-        - nwPerfType
+      allOf:
+        - required: [networkArea]
+        - required: [nwPerfType]
+        - oneOf:
+          - required: [relativeRatio]
+          - required: [absoluteNum]
     FailureEventInfo:
       type: object
       properties:
