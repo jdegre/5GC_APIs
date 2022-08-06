@@ -1,15 +1,17 @@
 openapi: 3.0.0
 
 info:
-  title: Nmbsmf-MBSSession
-  version: 1.0.0-alpha.5
+  title: 'Nmbsmf-MBSSession'
+  version: 1.0.0
   description: |
-    <API Name> Service.
+    MB-SMF MBSSession Service.
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.532 V17.0.0; 5G System; 5G Multicast-Broadcast Session Management Services; Stage 3.
+  description: >
+    3GPP TS 29.532 V17.1.0; 5G System; 5G Multicast-Broadcast Session Management Services;
+    Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.532/
 
 servers:
@@ -704,6 +706,8 @@ components:
         policyAuthInd:
           type: boolean
           default: false
+        mbsSecurityContext:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSecurityContext'
 
     ContextUpdateReqData:
       description: Data within ContextUpdate Request
@@ -822,11 +826,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         mbsServiceArea:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
-        mbsAreaSessions:
+        mbsServiceAreaInfoList:
           description: >
             A map (list of key-value pairs) where the key identifies an areaSessionId
           additionalProperties:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/MbsAreaSession'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceAreaInfo'
           minProperties: 1
 
 
@@ -838,20 +842,25 @@ components:
           $ref: '#/components/schemas/ContextStatusEventType'
         timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        qosInfo:
+          $ref: '#/components/schemas/QosInfo'
         statusInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionActivityStatus'
         mbsServiceArea:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
-        mbsAreaSessions:
+        mbsServiceAreaInfoList:
           description: >
             A map (list of key-value pairs) where the key identifies an areaSessionId
           additionalProperties:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/MbsAreaSession'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceAreaInfo'
           minProperties: 1
+        multicastTransAddInfo:
+          $ref: '#/components/schemas/MulticastTransportAddressChangeInfo'
+        mbsSecurityContext:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSecurityContext'
       required:
         - eventType
         - timeStamp
-# Editor's Note: the encoding of the qosInfo IE is FFS
 
     ContextStatusNotifyReqData:
       description: Context Status Notification
@@ -908,6 +917,77 @@ components:
         ngapData:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
 
+    MulticastTransportAddressChangeInfo:
+      description: Multicast Transport Address Change Information
+      type: object
+      properties:
+        llSsm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ssm'
+        cTeid:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        areaSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaSessionId'
+      required:
+        - llSsm
+        - cTeid
+
+    QosInfo:
+      description: QoS Information
+      type: object
+      properties:
+        qosFlowsAddModRequestList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosFlowAddModifyRequestItem'
+          minItems: 1
+        qosFlowsRelRequestList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
+          minItems: 1
+
+
+    QosFlowAddModifyRequestItem:
+      description: Individual MBS QoS flow requested to be created or modified
+      type: object
+      properties:
+        qfi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
+        qosFlowProfile:
+          $ref: '#/components/schemas/QosFlowProfile'
+      required:
+        - qfi
+
+    QosFlowProfile:
+      description: MBS QoS flow profile
+      type: object
+      properties:
+        5qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
+        nonDynamic5Qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NonDynamic5Qi'
+        dynamic5Qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dynamic5Qi'
+        arp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Arp'
+        gbrQosFlowInfo:
+          $ref: '#/components/schemas/GbrQosFlowInformation'
+      required:
+        - 5qi
+
+    GbrQosFlowInformation:
+      description: GBR MBS QoS flow information
+      type: object
+      properties:
+        maxFbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        guaFbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxPacketLossRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+      required:
+        - maxFbrDl
+        - guaFbrDl
 
 #
 # SIMPLE DATA TYPES
@@ -935,6 +1015,8 @@ components:
           - STATUS_INFO
           - SERVICE_AREA_INFO
           - SESSION_RELEASE
+          - MULT_TRANS_ADD_CHANGE
+          - SECURITY_INFO
       - type: string
 
     ReportingMode:

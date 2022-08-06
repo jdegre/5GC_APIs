@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.0-alpha.4
+  version: 1.1.0
   title: SS_NetworkResourceAdaptation
   description: |
     SS Network Resource Adaptation Service.  
@@ -9,7 +9,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.4.0; Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V17.5.0; Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 
@@ -46,7 +46,8 @@ paths:
                 $ref: '#/components/schemas/MulticastSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the created individual multicast subscription resource'
+              description: >
+                Contains the URI of the created individual multicast subscription resource.
               required: true
               schema:
                 type: string
@@ -209,7 +210,8 @@ paths:
                 $ref: '#/components/schemas/UnicastSubscription'
           headers:
             Location:
-              description: 'Contains the URI of the created individual unicast subscription resource'
+              description: >
+                Contains the URI of the created individual unicast subscription resource.
               required: true
               schema:
                 type: string
@@ -358,12 +360,6 @@ paths:
       tags:
         - TSC stream availability discovery
       parameters:
-        - name: requestor-identity
-          in: query
-          description: The requester identity of the VAL server performing the request.
-          required: true
-          schema:
-            type: string
         - name: stream-specs
           in: query
           description: >
@@ -529,7 +525,7 @@ paths:
                 $ref: '#/components/schemas/TscStreamData'
           headers:
             Location:
-              description: 'Contains the URI of the created individual TSC stream resource'
+              description: Contains the URI of the created individual TSC stream resource.
               required: true
               schema:
                 type: string
@@ -644,6 +640,7 @@ components:
         - anncMode
         - multiQosReq
         - notifUri
+
     UnicastSubscription:
       description: Represents a unicast subscription.
       type: object
@@ -665,6 +662,7 @@ components:
       required:
         - valTgtUe
         - notifUri
+
     UserPlaneNotification:
       description: Represents a notification on User Plane events.
       type: object
@@ -679,6 +677,7 @@ components:
       required:
         - notifId
         - eventNotifs
+
     NrmEventNotification:
       description: Represents a notification on an individual User Plane event.
       type: object
@@ -697,6 +696,7 @@ components:
       required:
         - event
         - ts
+
     TscStreamAvailability:
       description: >
         TSC stream availability information includes the stream specification and list of traffic 
@@ -714,6 +714,7 @@ components:
       required:
         - streamSpec
         - trafficSpecs
+
     StreamSpecification:
       description: >
         Stream specification includes MAC addresses of the source and destination DS-TT ports.
@@ -726,6 +727,7 @@ components:
       required:
         - srcMacAddr
         - dstMacAddr
+
     TrafficSpecification:
       description: >
         The traffic classe supported by the DS-TTs and available end-to-end maximum latency value.
@@ -733,19 +735,16 @@ components:
       properties:
         trafficClass:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
-          description: The traffic class supported by the DS-TTs with value between 0 to 7.
         e2eMaxLatency:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - trafficClass
         - e2eMaxLatency
+
     TscStreamData:
       description: TSC stream data information.
       type: object
       properties:
-        reqIdentity:
-          type: string
-          description: The identity of the VAL server performing the request.
         streamSpec:
           $ref: '#/components/schemas/StreamSpecification'
         trafficSpecInfo:
@@ -753,8 +752,11 @@ components:
       required:
         - streamSpec
         - trafficSpecInfo
+
     TrafficSpecInformation:
-      description: The traffic classe supported by the DS-TTs and available end-to-end latency value and Priority Code Point (PCP) value.
+      description: >
+        The traffic classe supported by the DS-TTs and available end-to-end latency
+        value and Priority Code Point (PCP) value.
       type: object
       properties:
         pcpValue:
@@ -788,10 +790,11 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - NRM: NRM server performs the service announcement.
         - VAL: VAL server performs the service announcement.
+
     DeliveryMode:
       anyOf:
       - type: string
@@ -803,10 +806,11 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - UNICAST: Unicast delivery.
         - MULTICAST: Multicast delivery.
+
     NrmEvent:
       anyOf:
       - type: string
@@ -817,6 +821,6 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - UP_DELIVERY_MODE: User Plane delivery mode.

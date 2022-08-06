@@ -5,16 +5,16 @@ info:
     API for publishing service APIs.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.2.0-alpha.4"
+  version: "1.2.0"
 externalDocs:
-  description: 3GPP TS 29.222 V17.4.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V17.5.0 Common API Framework for 3GPP Northbound APIs
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/published-apis/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222.
+        description: apiRoot as defined in clause 7.5 of 3GPP TS 29.222.
 paths:
 
 # APF published API
@@ -27,7 +27,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/apfId'
+            type: string
       requestBody:
         required: true
         content:
@@ -36,14 +36,18 @@ paths:
               $ref: '#/components/schemas/ServiceAPIDescription'
       responses:
         '201':
-          description: Service API published successfully The URI of the created resource shall be returned in the "Location" HTTP header.
+          description: >
+            Service API published successfully The URI of the created resource
+            shall be returned in the "Location" HTTP header.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceAPIDescription'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/published-apis/v1/{apfId}/service-apis/{serviceApiId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure 
+                {apiRoot}/published-apis/v1/{apfId}/service-apis/{serviceApiId}
               required: true
               schema:
                 type: string
@@ -76,7 +80,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/apfId'
+            type: string
       responses:
         '200':
           description: Definition of all service API(s) published by the API publishing function.
@@ -120,15 +124,16 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/serviceApiId'
+            type: string
         - name: apfId
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/apfId'
+            type: string
       responses:
         '200':
-          description: Definition of individual service API published by the API publishing function.
+          description: >
+            Definition of individual service API published by the API publishing function.
           content:
             application/json:
               schema:
@@ -162,12 +167,12 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/serviceApiId'
+            type: string
         - name: apfId
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/apfId'
+            type: string
       requestBody:
         required: true
         content:
@@ -219,12 +224,12 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/serviceApiId'
+            type: string
         - name: apfId
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/apfId'
+            type: string
       requestBody:
         required: true
         content:
@@ -233,7 +238,9 @@ paths:
               $ref: '#/components/schemas/ServiceAPIDescriptionPatch'
       responses:
         '200':
-          description: The definition of the service API is modified successfully and a representation of the updated service API is returned in the request body.
+          description: >
+            The definition of the service API is modified successfully and a
+            representation of the updated service API is returned in the request body.
           content:
             application/json:
               schema:
@@ -273,12 +280,12 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/serviceApiId'
+            type: string
         - name: apfId
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/apfId'
+            type: string
       responses:
         '204':
           description: The individual published service API matching the serviceAPiId is deleted.
@@ -307,13 +314,6 @@ paths:
 
 components:
   schemas:
-# Data types uses as path variables
-    apfId:
-      type: string
-      description: Identification of the API publishing function.
-    serviceApiId:
-      type: string
-      description: String identifying an individual published service API.
 # Data Type for representations
     ServiceAPIDescription:
       type: object
@@ -321,16 +321,22 @@ components:
       properties:
         apiName:
           type: string
-          description: API name, it is set as {apiName} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: API name, it is set as {apiName} part of the URI structure as defined in clause 4.4 of 3GPP TS 29.501.
         apiId:
           type: string
-          description: API identifier assigned by the CAPIF core function to the published service API. Shall not be present in the HTTP POST request from the API publishing function to the CAPIF core function. Shall be present in the HTTP POST response from the CAPIF core function to the API publishing function and in the HTTP GET response from the CAPIF core function to the API invoker (discovery API).
+          description: >
+            API identifier assigned by the CAPIF core function to the published service API.
+            Shall not be present in the HTTP POST request from the API publishing function
+            to the CAPIF core function. Shall be present in the HTTP POST response from the
+            CAPIF core function to the API publishing function and in the HTTP GET response
+            from the CAPIF core function to the API invoker (discovery API).
         aefProfiles:
           type: array
           items:
             $ref: '#/components/schemas/AefProfile'
           minItems: 1
-          description: AEF profile information, which includes the exposed API details (e.g. protocol).
+          description: >
+            AEF profile information, which includes the exposed API details (e.g. protocol).
         description:
           type: string
           description: Text description of the API
@@ -349,6 +355,7 @@ components:
           description: CAPIF core function identifier.
       required:
         - apiName
+
     InterfaceDescription:
       type: object
       description: Represents the description of an API's interface.
@@ -364,10 +371,13 @@ components:
           items:
             $ref: '#/components/schemas/SecurityMethod'
           minItems: 1
-          description: Security methods supported by the interface, it take precedence over the security methods provided in AefProfile, for this specific interface.
+          description: >
+            Security methods supported by the interface, it take precedence over
+            the security methods provided in AefProfile, for this specific interface.
       oneOf:
         - required: [ipv4Addr]
         - required: [ipv6Addr]
+
     AefProfile:
       type: object
       description: Represents the AEF profile data.
@@ -408,6 +418,7 @@ components:
       oneOf:
         - required: [domainName]
         - required: [interfaceDescriptions]
+
     Resource:
       type: object
       description: Represents the API resource data.
@@ -419,16 +430,22 @@ components:
           $ref: '#/components/schemas/CommunicationType'
         uri:
           type: string
-          description: Relative URI of the API resource, it is set as {apiSpecificResourceUriPart} part of the URI structure as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: >
+            Relative URI of the API resource, it is set as {apiSpecificResourceUriPart} part
+            of the URI structure as defined in clause 4.4 of 3GPP TS 29.501.
         custOpName:
           type: string
-          description: it is set as {custOpName} part of the URI structure for a custom operation associated with a resource as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: >
+            it is set as {custOpName} part of the URI structure for a custom operation
+            associated with a resource as defined in clause 4.4 of 3GPP TS 29.501.
         operations:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
           minItems: 1
-          description: Supported HTTP methods for the API resource. Only applicable when the protocol in AefProfile indicates HTTP.
+          description: >
+            Supported HTTP methods for the API resource. Only applicable when the
+            protocol in AefProfile indicates HTTP.
         description:
           type: string
           description: Text description of the API resource
@@ -436,6 +453,7 @@ components:
         - resourceName
         - commType
         - uri
+
     CustomOperation:
       type: object
       description: Represents the description of a custom operation.
@@ -444,19 +462,24 @@ components:
           $ref: '#/components/schemas/CommunicationType'
         custOpName:
           type: string
-          description: it is set as {custOpName} part of the URI structure for a custom operation without resource association as defined in subclause 4.4 of 3GPP TS 29.501.
+          description: >
+            it is set as {custOpName} part of the URI structure for a custom operation
+            without resource association as defined in clause 4.4 of 3GPP TS 29.501.
         operations:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
           minItems: 1
-          description: Supported HTTP methods for the API resource. Only applicable when the protocol in AefProfile indicates HTTP.
+          description: >
+            Supported HTTP methods for the API resource. Only applicable when the
+            protocol in AefProfile indicates HTTP.
         description:
           type: string
           description: Text description of the custom operation
       required:
         - commType
         - custOpName
+
     Version:
       type: object
       description: Represents the API version information.
@@ -480,21 +503,29 @@ components:
           description: Custom operations without resource association.
       required:
         - apiVersion
+
     ShareableInformation:
       type: object
-      description: Indicates whether the service API and/or the service API category can be shared to the list of CAPIF provider domains.
+      description: >
+        Indicates whether the service API and/or the service API category can be shared
+        to the list of CAPIF provider domains.
       properties:
         isShareable:
           type: boolean
-          description: Set to "true" indicates that the service API and/or the service API category can be shared to the list of CAPIF provider domain information. Otherwise set to "false".
+          description: >
+            Set to "true" indicates that the service API and/or the service API
+            category can be shared to the list of CAPIF provider domain information.
+            Otherwise set to "false".
         capifProvDoms:
           type: array
           items:
             type: string
           minItems: 1
-          description: List of CAPIF provider domains to which the service API information to be shared.
+          description: >
+            List of CAPIF provider domains to which the service API information to be shared.
       required:
         - isShareable
+
     PublishedApiPath:
       type: object
       description: Represents the published API path within the same CAPIF provider domain.
@@ -505,8 +536,11 @@ components:
             type: string
           minItems: 1
           description: A list of CCF identifiers where the service API is already published.
+
     AefLocation:
-      description: The location information (e.g. civic address, GPS coordinates, data center ID) where the AEF providing the service API is located.
+      description: >
+        The location information (e.g. civic address, GPS coordinates, data center ID)
+        where the AEF providing the service API is located.
       type: object
       properties:
         civicAddr:
@@ -515,10 +549,13 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
         dcId:
           type: string
-          description: Identifies the data center where the AEF providing the service API is located.
+          description: >
+            Identifies the data center where the AEF providing the service API is located.
+
     ServiceAPIDescriptionPatch:
       type: object
-      description: Represents the parameters to request the modification of an APF published API resource.
+      description: >
+        Represents the parameters to request the modification of an APF published API resource.
       properties:
         aefProfiles:
           type: array
@@ -539,6 +576,7 @@ components:
         ccfId:
           type: string
           description: CAPIF core function identifier.
+
     Protocol:
       anyOf:
       - type: string
@@ -550,10 +588,11 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - HTTP_1_1: HTTP version 1.1
         - HTTP_2: HTTP version 2
+
     CommunicationType:
       anyOf:
       - type: string
@@ -565,10 +604,11 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - REQUEST_RESPONSE: The communication is of the type request-response
         - SUBSCRIBE_NOTIFY: The communication is of the type subscribe-notify
+
     DataFormat:
       anyOf:
       - type: string
@@ -579,9 +619,10 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - JSON: JavaScript Object Notation
+
     SecurityMethod:
       anyOf:
       - type: string
@@ -594,11 +635,12 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - PSK: Security method 1 (Using TLS-PSK) as described in 3GPP TS 33.122
         - PKI: Security method 2 (Using PKI) as described in 3GPP TS 33.122
         - OAUTH: Security method 3 (TLS with OAuth token) as described in 3GPP TS 33.122
+
     Operation:
       anyOf:
       - type: string
@@ -613,8 +655,8 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - GET: HTTP GET method
         - POST: HTTP POST method
         - PUT: HTTP PUT method

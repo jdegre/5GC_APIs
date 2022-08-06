@@ -1,19 +1,19 @@
 openapi: 3.0.0
 info:
   title: M1_ContentHostingProvisioning
-  version: 1.0.0
+  version: 1.1.0
   description: |
     5GMS AF M1 Content Hosting Provisioning API
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 tags:
   - name: M1_ContentHostingProvisioning
     description: '5G Media Streaming: Provisioning (M1) APIs: Content Hosting Provisioning'
 externalDocs:
-  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V17.1.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
-  - url: '{apiRoot}/3gpp-m1/v1'
+  - url: '{apiRoot}/3gpp-m1/v2'
     variables:
       apiRoot:
         default: https://example.com
@@ -234,6 +234,15 @@ components:
               type: string
         certificateId:
           $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        supplementaryDistributionNetworks:
+          type: object
+          properties:
+            default:
+              $ref: '#/components/schemas/DistributionNetworkType'
+          required:
+            - default
+          additionalProperties:
+            $ref: '#/components/schemas/DistributionMode'
     # Schema for the resource itself
     ContentHostingConfiguration:
       type: object
@@ -250,3 +259,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DistributionConfiguration'
+
+    DistributionNetworkType:
+      anyOf:
+        - type: string
+          enum: [NETWORK_EMBMS]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    DistributionMode:
+      anyOf:
+        - type: string
+          enum: [MODE_EXCLUSIVE, MODE_HYBRID, MODE_DYNAMIC]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.

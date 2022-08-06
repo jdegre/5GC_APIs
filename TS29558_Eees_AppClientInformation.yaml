@@ -2,13 +2,18 @@ openapi: 3.0.0
 info:
   title: EES Application Client Information_API
   description: |
-    API for EES Application Client Information.
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for EES Application Client Information.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.0.0-alpha.1
+  version: 1.0.0
 externalDocs:
-  description: 3GPP TS 29.558 V1.3.0 Enabling Edge Applications; Application Programming Interface (API) specification; Stage 3
-  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+  description: >
+    3GPP TS 29.558 V17.0.0 Enabling Edge Applications;
+    Application Programming Interface (API) specification; Stage 3
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+security:
+  - {}
+  - oAuth2ClientCredentials: []
 servers:
   - url: '{apiRoot}/eees-appclientinformation/v1'
     variables:
@@ -74,6 +79,10 @@ paths:
               responses:
                 '204':
                   description: No Content (successful notification)
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/400'
                 '401':
@@ -97,7 +106,6 @@ paths:
                 default:
                   $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-
   /subscriptions/{subscriptionId}:
     get:
       description: Retrieve an Individual AC information subscription information.
@@ -115,6 +123,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACInfoSubscription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -133,6 +145,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     put:
       description: Fully replace an existing Individual AC information Subscription.
       parameters:
@@ -179,6 +192,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     patch:
       description: Partially update an existing Individual AC information Subscription.
       parameters:
@@ -197,13 +211,20 @@ paths:
               $ref: '#/components/schemas/ACInfoSubscriptionPatch'
       responses:
         '200':
-          description: OK (The Individual AC information Subscription is successfully modified and the updated subscription information is returned in the response).
+          description: >
+            OK (The Individual AC information Subscription is successfully modified
+            and the updated subscription information is returned in the response).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACInfoSubscription'
         '204':
-          description: No Content (The individual AC information subscription was modified successfully).
+          description: >
+            No Content (The individual AC information subscription was modified successfully).
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -226,6 +247,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     delete:
       description: Delete an existing Individual AC information Subscription.
       parameters:
@@ -238,6 +260,10 @@ paths:
       responses:
         '204':
           description: The individual subscription is deleted.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -258,6 +284,14 @@ paths:
 # Components
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
   schemas:
     ACInfoSubscription:
       type: object
@@ -280,13 +314,16 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         requestTestNotification:
           type: boolean
-          description: Set to true by the EAS to request the EES to send a test notification. Set to false or omitted otherwise.
+          description: >
+            Set to true by the EAS to request the EES to send a test notification.
+            Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - easId
+
     ACInfoSubscriptionPatch:
       type: object
       description: Represents the partial update of Individual AC Information Subscription.
@@ -303,6 +340,7 @@ components:
           $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/ReportingInformation'
         notificationDestination:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+
     ACFilters:
       type: object
       description: Represents the filters information for AC Information Subscription.
@@ -342,13 +380,15 @@ components:
           description: List of UE identifiers hosting the AC.
         locInfs:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+
     ACInfoNotification:
       type: object
       description: AC Information notification.
       properties:
         subId:
           type: string
-          description: Identifier of the AC information subscription for which this notification is related to.
+          description: >
+            Identifier of the AC information subscription for which this notification is related to.
         acInfs:
           type: array
           items:
@@ -358,6 +398,7 @@ components:
       required:
         - subId
         - acInfs
+
     ACInformation:
       type: object
       description: AC Information matching the filter criteria.

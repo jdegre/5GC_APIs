@@ -2,15 +2,15 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-mbs-session
-  version: 1.0.0-alpha.2
+  version: 1.0.0
   description: |
-    API for MBS Session management.  
+    API for MBS Session Management.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
   description: >
-    3GPP TS 29.522 V17.5.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V17.6.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
 servers:
@@ -27,12 +27,12 @@ security:
 paths:
   /mbs-sessions:
     post:
-      summary:  Create
+      summary: Create an Individual MBS Session resource.
       tags:
         - MBS sessions collection
-      operationId: Create
+      operationId: CreateMBSSession
       requestBody:
-        description: representation of the MBS session to be created in the NEF
+        description: Representation of the new MBS session to be created at the NEF.
         required: true
         content:
           application/json:
@@ -40,7 +40,8 @@ paths:
               $ref: '#/components/schemas/MbsSessionCreateReq'
       responses:
         '201':
-          description: successful creation of an MBS session
+          description: >
+            Created. Successful creation of a new Individual MBS session resource.
           content:
             application/json:
               schema:
@@ -49,14 +50,10 @@ paths:
             Location:
               description: >
                 Contains the URI of the newly created resource, according to the structure
-                {apiRoot}/3gpp-mbs-session/v1/mbssessions/{mbsSessionId}
+                {apiRoot}/3gpp-mbs-session/v1/mbssessions/{mbsSessionRef}
               required: true
               schema:
                 type: string
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -80,17 +77,17 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-  /mbs-sessions/{mbsSessionId}:
+  /mbs-sessions/{mbsSessionRef}:
     parameters:
-      - name: mbsSessionId
+      - name: mbsSessionRef
         in: path
-        description: Identifier of the MBS Session
+        description: Identifier of the Individual MBS Session resource.
         required: true
         schema:
           type: string
 
     patch:
-      summary: Request the Modification of an existing Individual MBS Session resource.
+      summary: Request the modification of an existing Individual MBS Session resource.
       tags:
         - Individual MBS Session
       requestBody:
@@ -104,7 +101,8 @@ paths:
               minItems: 1
       responses:
         '204':
-          description: No Content. The Individual MBS Session resource was successfully modified.
+          description: >
+            No Content. The concerned Individual MBS Session resource was successfully modified.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -133,12 +131,13 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing MBS Session resource
+      summary: Deletes an existing Individual MBS Session resource.
       tags:
         - Individual MBS Session
       responses:
         '204':
-          description: No Content (Successful deletion of the existing MBS Session resource)
+          description: >
+            No Content. Successful deletion of the concerned Individual MBS Session resource.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -163,12 +162,13 @@ paths:
 
   /mbs-sessions/subscriptions:
     get:
-      summary: read all of the active MBS Sessions status subscriptions
+      summary: Retrieve all of the active MBS Sessions subscriptions.
       tags:
         - MBS Session Subscriptions
       responses:
         '200':
-          description: OK. 
+          description: >
+            OK. All the MBS Session Subscriptions resources managed by the NEF are returned.
           content:
             application/json:
               schema:
@@ -199,58 +199,20 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Creates a new MBS Session subscription resource 
+      summary: Creates a new Individual MBS Session subscription resource.
       tags:
         - MBS Session subscriptions
       requestBody:
-        description: Request to create a new MBS Session subscription resource
+        description: Request the creation of a new MBS Session subscription resource.
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/MbsSessionSubsc'
-      callbacks:
-        notificationUri:
-          '{request.body#/notificationUri}':
-            post:
-              requestBody:  # contents of the callback message
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/MbsSessionStatusNotif'
-              responses:
-                '204':
-                  description: No Content (successful notification)
-                '307':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-                '308':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
-                '400':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-                '401':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-                '403':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-                '404':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-                '411':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
-                '413':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
-                '415':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
-                '429':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-                '500':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-                '503':
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-                default:
-                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
       responses:
         '201':
-          description: Created (Successful creation of subscription)
+          description: >
+            Created. Successful creation of a new Individual MBS Session subscription.
           content:
             application/json:
               schema:
@@ -283,22 +245,62 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      callbacks:
+        notificationUri:
+          '{request.body#/notificationUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/MbsSessionStatusNotif'
+              responses:
+                '204':
+                  description: No Content. Successful reception of the notification.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
   /mbs-sessions/subscriptions/{subscriptionId}:
     parameters:
       - name: subscriptionId
         in: path
-        description: Identifier of the MBS Session subscription resource
+        description: Identifier of the MBS Session subscription resource.
         required: true
         schema:
           type: string
     get:
-      summary: read an active MBS Session subscriptions for the SCS/AS and the subscription Id
+      summary: Retrieve an Individual MBS Session subscription resource identified by the subscription Id.
       tags:
         - Individual MBS Session subscription
       responses:
         '200':
-          description: OK (Successful get the active subscription)
+          description: >
+            OK. Successful retrieval of the targeted Individual MBS Session subscription resource.
           content:
             application/json:
               schema:
@@ -327,12 +329,13 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing subscription
+      summary: Deletes an existing Individual MBS Session subscription resource.
       tags:
         - Individual MBS Session Subscription
       responses:
         '204':
-          description: No Content (Successful deletion of the existing subscription)
+          description: >
+            No Content. Successful deletion of the existing Individual MBS Session subscription resource.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -368,7 +371,7 @@ components:
 # STRUCTURED DATA TYPES
 #
     MbsSessionCreateReq:
-      description: Data within Create Request
+      description: Data within the MBS Session Create Request.
       type: object
       properties:
         afId:
@@ -378,7 +381,7 @@ components:
       required:
         - mbsSession
     MbsSessionCreateRsp:
-      description: Data within Create Response
+      description: Data within the MBS Session Create Response.
       type: object
       properties:
         mbsSession:
@@ -401,8 +404,6 @@ components:
       properties:
         eventList:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionEventReportList'
-
-
 
 #
 # SIMPLE DATA TYPES

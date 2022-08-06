@@ -1,0 +1,455 @@
+openapi: 3.0.0
+info:
+  title: Ndcaf_DataReporting
+  version: 1.0.0
+  description: |
+    Data Collection AF: Data Collection and Reporting Configuration API and Data Reporting API
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+tags:
+  - name: Ndcaf_DataReporting
+    description: 'Data Collection and Reporting: Client Configuration and Data Reporting (R2/R3/R4) APIs'
+
+externalDocs:
+  description: 'TS 26.532 V17.0.0; Data Collection and Reporting; Protocols and Formats'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.532/'
+
+servers:
+  - url: '{apiRoot}/3gpp-ndcaf_data-reporting/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.532 clause 5.2.
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
+paths:
+  /sessions:
+    post:
+      operationId: CreateSession
+      summary: 'Create a new Data Reporting Session'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataReportingSession'
+      responses:
+        '201':
+          description: 'Data Reporting Session successfully created'
+          headers:
+            Location:
+              description: 'URL including the resource identifier of the newly created Data Reporting Session.'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataReportingSession'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /sessions/{sessionId}:
+    parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+          description: 'The resource identifier of an existing Data Reporting Session.'
+    get:
+      operationId: RetrieveSession
+      summary: 'Retrieve an existing Data Reporting Session'
+      responses:
+        '200':
+          description: 'Representation of Data Reporting Session is returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataReportingSession'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      operationId: DestroySession
+      summary: 'Destroy an existing Data Reporting Session'
+      responses:
+        '204':
+          description: 'Data Reporting Session resource successfully destroyed'
+          # No Content
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+  /sessions/{sessionId}/report:
+    parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+          description: 'The resource identifier of an existing Data Reporting Session.'
+    post:
+      operationId: Report
+      summary: 'Report UE data in the context of an existing Data Reporting Session'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataReport'
+      responses:
+        '200':
+          description: 'Data Report accepted and updated Data Reporting Session is returned'
+          headers:
+            Location:
+              description: 'URL including the resource identifier of the returned Data Reporting Session.'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataReportingSession'
+        '204':
+          description: 'Data Report accepted'
+          # No Content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUri}'
+          scopes: {}
+      description: >
+        For a trusted data collection client, 'ndcaf-datareporting' shall be used
+        as 'scopes' and '{nrfApiRoot}/oauth2/token' shall be used as 'tokenUri'.
+
+  schemas:
+    DataReportingSession:
+      description: "A representation of a Data Reporting Session."
+      type: object
+      properties:
+        sessionId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        validUntil:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        externalApplicationId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        supportedDomains:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataDomain'
+          minItems: 0
+        reportingConditions:
+          type: object
+          # Check that the following is the correct syntax to constrain the type of the dictionary keys
+          properties:
+            default:
+              $ref: '#/components/schemas/DataDomain'
+          required:
+            - default
+          additionalProperties:
+            $ref: '#/components/schemas/ReportingCondition'
+      required:
+        - externalApplicationId
+        - supportedDomains
+
+    ReportingCondition:
+      description: "A condition that triggers data reporting by a data collection client to the Data Collection AF."
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ReportingConditionType'
+        period:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        parameter:
+          type: string
+        threshold:
+          anyOf:
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Double'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Int32'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Int64'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint16'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
+          - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        reportWhenBelow:
+          type: boolean
+        eventTrigger:
+          $ref: '#/components/schemas/ReportingEventTrigger'
+      required:
+        - type
+
+    DataReport:
+      description: "A data report sent by a data collection client to the Data Collection AF."
+      type: object
+      properties:
+        externalApplicationId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        serviceExperienceRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceExperienceRecord'
+          minItems: 1
+        locationRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationRecord'
+          minItems: 1
+        communicationRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommunicationRecord'
+          minItems: 1      
+        performanceDataRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceDataRecord'
+          minItems: 1
+        applicationSpecificRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationSpecificRecord'
+          minItems: 1
+        tripPlanRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/TripPlanRecord'
+          minItems: 1
+        mediaStreamingAccessRecords:
+          type: array
+          items:
+            $ref: 'TS26512_R4_DataReporting.yaml#/components/schemas/MediaStreamingAccessRecord'
+          minItems: 1
+      required:
+        - externalApplicationId
+
+    DataDomain:
+      description: "A data reporting domain."
+      anyOf:
+      - type: string
+        enum: [SERVICE_EXPERIENCE, LOCATION, COMMUNICATION, PERFORMANCE, APPLICATION_SPECIFIC, MS_ACCESS_ACTIVITY, PLANNED_TRIPS]
+      - type: string
+        description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    ReportingConditionType:
+      description: "The type of condition that triggers reporting by a data collection client to the Data Collection AF."
+      anyOf:
+      - type: string
+        enum: [INTERVAL, THRESHOLD, EVENT]
+      - type: string
+        description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    ReportingEventTrigger:
+      description: "The type of event that triggers reporting by a data collection client to the Data Collection AF."
+      anyOf:
+      - type: string
+        enum: [LOCATION, DESTINATION]
+      - type: string
+        description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    BaseRecord:
+      type: object
+      properties:
+        timestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - timestamp
+
+    ServiceExperienceRecord:
+      allOf:
+        - $ref: '#/components/schemas/BaseRecord'
+        - type: object
+          properties:
+            serviceExperienceInfos:
+              $ref: '#/components/schemas/PerFlowServiceExperienceInfo'
+          required:
+            - serviceExperienceInfos
+ 
+    PerFlowServiceExperienceInfo:
+      type: object
+      properties:
+        serviceExperience:
+          $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/SvcExperience'
+        timeInterval:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        remoteEndpoint:
+          $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AddrFqdn'
+      required:
+        - serviceExperience
+        - timeInterval
+        - remoteEndpoint
+
+    LocationRecord:
+      allOf:
+        - $ref: '#/components/schemas/BaseRecord'
+        - type: object
+          properties:
+            location:
+              $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LocationData'
+          required:
+            - location
+    
+    CommunicationRecord:
+      allOf:
+        - $ref: '#/components/schemas/BaseRecord'
+        - type: object
+          properties:
+            timeInterval:
+              $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+            uplinkVolume:
+              $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+            downlinkVolume:
+              $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+          required:
+            - timeInterval
+    
+    PerformanceDataRecord:
+      allOf:
+        - $ref: '#/components/schemas/BaseRecord'
+        - type: object
+          properties:
+            timeInterval:
+              $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+            location:
+              $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+            remoteEndpoint:
+              $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AddrFqdn'
+            packetDelayBudget:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+            packetLossRate:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+            uplinkThroughput:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+            downlinkThrougput:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+          required:
+            - timeInterval
+    
+    ApplicationSpecificRecord:
+      allOf:
+        - $ref: '#/components/schemas/BaseRecord'
+        - type: object
+          properties:
+            recordType:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+            recordContainer:
+              {}
+              # (Syntax determined by recordType.)
+          required:
+            - recordIdentifier
+    
+    TripPlanRecord:
+      allOf:
+        - $ref: '#/components/schemas/BaseRecord'
+        - type: object
+          properties:
+            startingPoint:
+              $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LocationData'
+            waypoints:
+              type: array
+              items:
+                $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LocationData'
+              minItems: 1
+            destination:
+              $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LocationData'
+            estimatedAverageSpeed:
+              $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/HorizontalSpeed'
+            estimatedArrivalTime:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+          required:
+            - startingPoint
+            - destination

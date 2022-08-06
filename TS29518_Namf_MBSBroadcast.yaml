@@ -1,14 +1,15 @@
 openapi: 3.0.0
+
 info:
-  version: 1.0.0-alpha.2
+  version: 1.0.0
   title: Namf_MBSBroadcast
   description: |
-    AMF MBSBroadcast Service
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    AMF MBSBroadcast Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.518 V17.5.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.6.0; 5G System; Access and Mobility Management Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 
 servers:
@@ -16,7 +17,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 
 security:
   - {}
@@ -555,8 +556,11 @@ components:
       properties:
         mbsSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
-        areaSessionId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaSessionId'
+        mbsServiceAreaInfoList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceAreaInfo'
+          minItems: 1
         mbsServiceArea:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
         n2MbsSmInfo:
@@ -565,16 +569,23 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         maxResponseTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
         - mbsSessionId
-        - mbsServiceArea
-        - ngapData
+        - n2MbsSmInfo
         - notifyUri
+        - snssai
+      oneOf:
+        - required: [ mbsServiceArea ]
+        - required: [ mbsServiceAreaInfoList ]
 
     ContextCreateRspData:
       description: Data within ContextCreate Response
       type: object
       properties:
+        mbsSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
         n2MbsSmInfoList:
           type: array
           items:
@@ -583,6 +594,9 @@ components:
           maxItems: 10
         operationStatus:
           $ref: '#/components/schemas/OperationStatus'
+      required:
+        - mbsSessionId
+
 
     ContextUpdateReqData:
       description: Data within ContextUpdate Request
@@ -590,12 +604,30 @@ components:
       properties:
         mbsServiceArea:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        mbsServiceAreaInfoList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceAreaInfo'
+          minItems: 1
         n2MbsSmInfo:
           $ref: '#/components/schemas/N2MbsSmInfo'
+        ranIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+          minItems: 1
+        noNgapSignallingInd:
+          type: boolean
+          enum:
+            - true
         notifyUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         maxResponseTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        n2MbsInfoChangeInd:
+          type: boolean
+      not:
+        required: [ mbsServiceArea, mbsServiceAreaInfoList ]
 
     ContextStatusNotification:
       description: Data within ContextStatusNotify Request
@@ -611,6 +643,11 @@ components:
             $ref: '#/components/schemas/N2MbsSmInfo'
           minItems: 1
           maxItems: 10
+        operationEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationEvent'
+          minItems: 1
         operationStatus:
           $ref: '#/components/schemas/OperationStatus'
       required:
@@ -637,6 +674,42 @@ components:
           $ref: '#/components/schemas/NgapIeType'
         ngapData:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+        randId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+      required:
+        - ngapIeType
+        - ngapData
+        - randId
+
+    OperationEvent:
+      description: Operation Event for a Broadcast MBS Session.
+      type: object
+      properties:
+        opEventType:
+          $ref: '#/components/schemas/OpEventType'
+        amfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        ngranFailureEventList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NgranFailureEvent'
+          minItems: 1
+      required:
+        - opEventType
+
+
+    NgranFailureEvent:
+      description: NG-RAN failure event for a NG-RAN
+      type: object
+      properties:
+        ngranId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+        ngranFailureIndication:
+          $ref: '#/components/schemas/NgranFailureIndication'
+      required:
+        - ngranId
+        - ngranFailureIndication
+
 
 #
 # SIMPLE DATA TYPES
@@ -663,8 +736,27 @@ components:
       anyOf:
       - type: string
         enum:
-          - MBS_SES_SETUP_REQ
+          - MBS_SES_REQ
           - MBS_SES_RSP
           - MBS_SES_FAIL
-          - MBS_SES_MOD_REQ
+          - MBS_SES_REL_RSP
+      - type: string
+
+    OpEventType:
+      description: Operation Event Type.
+      anyOf:
+      - type: string
+        enum:
+          - AMF_CHANGE
+          - NG_RAN_EVENT
+      - type: string
+
+    NgranFailureIndication:
+      description: Indicates a NG-RAN failure event.
+      anyOf:
+      - type: string
+        enum:
+          - NG_RAN_RESTART_OR_START
+          - NG_RAN_FAILURE_WITHOUT_RESTART
+          - NG_RAN_NOT_REACHABLE
       - type: string

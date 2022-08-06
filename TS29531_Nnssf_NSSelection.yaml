@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0-alpha.4'
+  version: '2.2.0'
   title: 'NSSF NS Selection'
   description: |
     NSSF Network Slice Selection Service.  
@@ -18,7 +18,7 @@ servers:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 externalDocs:
-  description: 3GPP TS 29.531 V17.4.0; 5G System; Network Slice Selection Services; Stage 3
+  description: 3GPP TS 29.531 V17.5.0; 5G System; Network Slice Selection Services; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.531/
 paths:
   /network-slice-information:
@@ -181,6 +181,11 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 1
+        nsagInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/NsagInfo'
+          minItems: 1
 
     SubscribedSnssai:
       description: Contains the subscribed S-NSSAI
@@ -299,6 +304,7 @@ components:
           minItems: 1
         defaultConfiguredSnssaiInd:
           type: boolean
+          default: false
         mappingOfNssai:
           type: array
           items:
@@ -310,11 +316,9 @@ components:
           type: boolean
         suppressNssrgInd:
           type: boolean
-        rejectedNssaiRa:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-          minItems: 1
+        nsagSupported:
+          type: boolean
+          default: false
 
     SliceInfoForPDUSession:
       description: Contains the slice information requested during PDU Session establishment procedure
@@ -359,6 +363,14 @@ components:
           type: boolean
         suppressNssrgInd:
           type: boolean
+        rejectedNssaiRa:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        nsagSupported:
+          type: boolean
+          default: false
 
     ConfiguredSnssai:
       description: Contains the configured S-NSSAI(s) authorized by the NSSF in the serving PLMN and optional mapped home S-NSSAI
@@ -371,6 +383,33 @@ components:
         mappedHomeSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
 
+    NsagInfo:
+      description: Contains the association of NSAGs and S-NSSAI(s) along with the TA(s) within which the association is valid.
+      type: object
+      required:
+        - nsagIds
+        - snssaiList
+      properties:
+        nsagIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NsagId'
+          minItems: 1
+        snssaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TaiRange'
+          minItems: 1
 
     RoamingIndication:
       description: Contains the indication on roaming

@@ -5,12 +5,15 @@ info:
     API for EES ACR Management Event.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.0.0-alpha.2
+  version: 1.0.0
 externalDocs:
   description: >
-    3GPP TS 29.558 V1.4.0 Enabling Edge Applications;
+    3GPP TS 29.558 V17.0.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+security:
+  - {}
+  - oAuth2ClientCredentials: []
 servers:
   - url: '{apiRoot}/eees-acrmgntevent/v1'
     variables:
@@ -67,6 +70,44 @@ paths:
                   $ref: 'TS29122_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+        UPPathChangeAvailabilityNotif:
+          '{request.body#/notificationDestination}/report-availability':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/AvailabilityNotif'
+              responses:
+                '204':
+                  description: No Content. The notification is successful received.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
       responses:
         '201':
           description: Created (Successful creation)
@@ -81,7 +122,9 @@ paths:
               schema:
                 type: string
         '204':
-          description: Successful case. The resource has been successfully created and no additional content is to be sent in the response message.
+          description: >
+            Successful case. The resource has been successfully created and no
+            additional content is to be sent in the response message.
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -260,7 +303,9 @@ paths:
               $ref: '#/components/schemas/AcrMgntEventsSubscriptionPatch'
       responses:
         '200':
-          description: The Individual ACR Management Events Subscription is successfully modified and the updated subscription information is returned in the response.
+          description: >
+            The Individual ACR Management Events Subscription is successfully modified
+            and the updated subscription information is returned in the response.
           content:
             application/json:
               schema:
@@ -329,6 +374,14 @@ paths:
 # Components
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
   schemas:
     AcrMgntEventsSubscription:
       type: object
@@ -339,8 +392,6 @@ components:
         easId:
           type: string
           description: Identifier of an EAS.
-        tgtUeId:
-          $ref: '#/components/schemas/TargetUeIdentification'
         eventSubscs:
           type: array
           items:
@@ -351,22 +402,12 @@ components:
           $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/ReportingInformation'
         notificationDestination:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
-        dnaiChgType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
-        easAckInd:
-          type: boolean
         eventReports:
           type: array
           items:
             $ref: '#/components/schemas/AcrMgntEventReport'
           minItems: 1
           description: The ACR management event report(s).
-        easChars:
-          type: array
-          items:
-            $ref: 'TS24558_Eees_EASDiscovery.yaml#/components/schemas/EasCharacteristics'
-          minItems: 1
-          description: A list of EAS characteristics.
         failEventReports:
           type: array
           items:
@@ -375,16 +416,18 @@ components:
           description: Failure event reports.
         requestTestNotification:
           type: boolean
-          description: Set to true by the EAS to request the EES to send a test notification. Set to false or omitted otherwise.
+          description: >
+            Set to true by the EAS to request the EES to send a test notification.
+            Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - easId
-        - tgtUeId
         - eventSubscs
         - notificationDestination
+
     AcrMgntEventSubsc:
       type: object
       description: Represents an ACR Management Event Subscription.
@@ -393,12 +436,27 @@ components:
           $ref: '#/components/schemas/AcrMgntEvent'
         eventFilter:
           $ref: '#/components/schemas/AcrMgntEventFilter'
+        evtReq:
+          $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/ReportingInformation'
+        tgtUeId:
+          $ref: '#/components/schemas/TargetUeIdentification'
+        dnaiChgType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
+        easAckInd:
+          type: boolean
+        easChars:
+          type: array
+          items:
+            $ref: 'TS24558_Eees_EASDiscovery.yaml#/components/schemas/EasCharacteristics'
+          minItems: 1
+          description: A list of EAS characteristics.
       required:
         - event
-        - eventFilter
+
     AcrMgntEventsSubscriptionPatch:
       type: object
-      description: Represents a modification request of Individual ACR Management Events Subscription.
+      description: >
+        Represents a modification request of Individual ACR Management Events Subscription.
       properties:
         eventSubscs:
           type: array
@@ -410,27 +468,16 @@ components:
           $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/ReportingInformation'
         notificationDestination:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
-        dnaiChgType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeTypeRm'
-        easAckInd:
-          type: boolean
-        easChars:
-          type: array
-          items:
-            $ref: 'TS24558_Eees_EASDiscovery.yaml#/components/schemas/EasCharacteristics'
-          minItems: 1
-          description: A list of EAS characteristics.
 
-    AcrMgntEventFilter:
-      type: string
-# Editor’s Note: Definition of AcrMgntEventFilter data type is FFS.
     AcrMgntEventsNotification:
       type: object
       description: Represents the ACR management events notification.
       properties:
         subpId:
           type: string
-          description: String identifying the Individual ACR Management Events Subscription for which the notification is delivered.
+          description: >
+            String identifying the Individual ACR Management Events Subscription
+            for which the notification is delivered.
         eventReports:
           type: array
           items:
@@ -440,6 +487,7 @@ components:
       required:
         - subpId
         - eventReports
+
     AcrMgntEventReport:
       type: object
       description: Represents an ACR management event report.
@@ -451,10 +499,12 @@ components:
         upPathChgInfo:
           $ref: '#/components/schemas/UpPathChangeInfo'
         easEndPoint:
-          type: string
-# Editor’s Note: the reference for the EndPoint data tye is defined in Eees_EASRegistration API, and will be updated later.
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
+        actStatus:
+          $ref: '#/components/schemas/ActStatus'
       required:
         - event
+
     FailureAcrMgntEventInfo:
       type: object
       description: Represents a failure ACR management event.
@@ -466,6 +516,7 @@ components:
       required:
         - event
         - failureCode
+
     TargetUeIdentification:
       description: Identifies the target UE information.
       type: object
@@ -478,13 +529,66 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
         ueIpAddr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+      oneOf:
+        - required: [gpsi]
+        - required: [intGrpId]
+        - required: [extGrpId]
+        - required: [ueIpAddr]
 
-    AcrMgntEventFailureCode:
-      type: string
-# Editor’s Note: Definition of AcrMgntEventFailureCode data type is FFS.
+    AvailabilityNotif:
+      type: object
+      description: >
+        Represents the availability information of user plane path management events monitoring
+        via the 3GPP 5GC network.
+      properties:
+        availabilityStatus:
+          $ref: '#/components/schemas/AvailabilityStatus'
+      required:
+        - availabilityStatus
+
     UpPathChangeInfo:
-      type: string
-# Editor’s Note: Definition of UpPathChangeInfo data type is FFS.
+      description: Represents user plane path change information.
+      type: object
+      properties:
+        ueId:
+          $ref: '#/components/schemas/IndUeIdentification'
+        dnaiChgType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
+        sourceTrafficRoute:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+        targetTrafficRoute:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteToLocation'
+        sourceDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        targetDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        srcUeIpv4Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        srcUeIpv6Prefix:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        tgtUeIpv4Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        tgtUeIpv6Prefix:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+      required:
+        - ueId
+        - dnaiChgType
+
+    IndUeIdentification:
+      description: Represents identification information of a UE.
+      type: object
+      properties:
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        externalId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalId'
+        ueIpAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+      oneOf:
+        - required: [gpsi]
+        - required: [externalId]
+        - required: [ueIpAddr]
+
     AcrMgntEvent:
       anyOf:
       - type: string
@@ -492,13 +596,68 @@ components:
           - UP_PATH_CHG
           - ACR_MONITORING
           - ACR_FACILITATION
+          - ACT_START_STOP
       - type: string
         description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
-          content defined in the present version of this API.
-      description: >
-        Possible values are
+          This string represents the ACR management.
+      description: |
+        Possible values are:
         - UP_PATH_CHG: User plane path change event.
         - ACR_MONITORING: ACR monitoring event.
         - ACR_FACILITATION: ACR facilitation event.
+        - ACT_START_STOP: ACT start/stop event.
+
+    AcrMgntEventFilter:
+      anyOf:
+      - type: string
+        enum:
+          - INTRA_EDN_MOBILITY
+          - INTER_EDN_MOBILITY
+      - type: string
+        description: >
+          This string represents the ACR Management Event filter.
+      description: |
+        Possible values are:
+        - INTRA_EDN_MOBILITY: Indicates that the ACR Management Event filter is intra-EDN mobility.
+        - INTER_EDN_MOBILITY: Indicates that the ACR Management Event filter is inter-EDN mobility.
+    ActStatus:
+      anyOf:
+      - type: string
+        enum:
+          - ACT_START
+          - ACT_STOP
+      - type: string
+        description: >
+          This string represents the ACT status, i.e. ACT start or stop.
+      description: |
+        Possible values are:
+        - ACT_START: Indicates ACT start.
+        - ACT_STOP: Indicates ACT stop.
+
+    AcrMgntEventFailureCode:
+      anyOf:
+      - type: string
+        enum:
+          - 3GPP_UP_PATH_CHANGE_MON_NOT_AVAILABLE
+          - OTHER_REASONS
+      - type: string
+        description: >
+          This string represents the reason for ACR Management subscription failure for an event.
+      description: |
+        Possible values are:
+        - 3GPP_UP_PATH_CHANGE_MON_NOT_AVAILABLE: Indicates that the ACR Management Event Subscription failed because user plane path management event notifications from the 3GPP network is NOT available. This value is only applicable for the "UP_PATH_CHG", "ACR_MONITORING" and "ACR_FACILITATION" events.
+        - OTHER_REASONS: Indicates that the ACR Management Event Subscription failed for other reasons. This value is applicable for all events.
+
+    AvailabilityStatus:
+      anyOf:
+      - type: string
+        enum:
+          - AVAILABLE
+          - NOT_AVAILABLE
+      - type: string
+        description: >
+          This string represents the availability status.
+      description: |
+        Possible values are:
+        - AVAILABLE: Indicates availability.
+        - NOT_AVAILABLE: Indicates unavailability.

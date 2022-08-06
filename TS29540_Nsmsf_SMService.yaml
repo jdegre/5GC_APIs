@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0-alpha.5'
+  version: '2.2.0'
   title: 'Nsmsf_SMService Service API'
   description: |
     SMSF SMService.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.540 V17.4.0; 5G System; SMS Services; Stage 3
+  description: 3GPP TS 29.540 V17.5.0; 5G System; SMS Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.540/'
 
 security:
@@ -22,7 +22,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 
 paths:
   /ue-contexts/{supi}:
@@ -271,6 +271,92 @@ paths:
             application/problem+json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
+  /ue-contexts/{supi}/send-mt-sms:
+    post:
+      summary: Send MT SMS payload for a given UE
+      operationId: SendMtSMS
+      tags:
+        - Send SMS payload in downlink direction
+      parameters:
+        - name: supi
+          in: path
+          required: true
+          description: Subscriber Permanent Identifier (SUPI)
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/related:
+            schema:
+              type: object
+              properties:
+                jsonData:
+                  $ref: 'TS29577_Nipsmgw_SMService.yaml#/components/schemas/SmsData'
+                binaryPayload:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType: application/json
+              binaryPayload:
+                contentType: application/vnd.3gpp.sms
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+        required: true
+      responses:
+        '200':
+          description: sending delivery report
+          content:
+            multipart/related:
+              schema:
+                type: object
+                properties:
+                  jsonData:
+                    $ref: 'TS29577_Nipsmgw_SMService.yaml#/components/schemas/SmsDeliveryData'
+                  binaryPayload:
+                    type: string
+                    format: binary
+              encoding:
+                jsonData:
+                  contentType: application/json
+                binaryPayload:
+                  contentType: application/vnd.3gpp.sms
+                  headers:
+                    Content-Id:
+                      schema:
+                        type: string
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          description: Invalid Service Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '403':
+          description: Unable to deliver SMS at SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '404':
+          description: Unable to found UE Context for SMS in SMSF
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+
 
 components:
 

@@ -1,0 +1,276 @@
+openapi: 3.0.1
+info:
+  title: AI/ML NRM
+  version: 17.0.0
+  description: >-
+    OAS 3.0.1 specification of the AI/ML NRM
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 28.105; AI/ML Management
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.105/
+paths: {}
+components:
+  schemas:
+
+#-------- Definition of types-----------------------------------------------------
+
+    AIMLEntityList:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIMLEntity'
+
+    AIMLEntity:
+      type: object
+      properties:
+        aIMLEntityId:
+          type: string
+        inferenceType:
+          type: string
+        aIMLEntityVersion:
+          type: string
+        expectedRunTimeContext:
+          type: string
+        trainingContext:
+          type: string
+        runTimeContext:
+          type: string
+
+    RequestStatus:
+      type: string
+      enum:
+        - NOT_STARTED
+        - TRAINING_IN_PROGRESS
+        - SUSPENDED
+        - FINISHED
+        - CANCELLED
+
+    PerformanceRequirements:
+      type: array
+      items:
+        $ref: '#/components/schemas/ModelPerformance'
+
+    ModelPerformance:
+      type: object
+      properties:
+        inferenceOutputName:
+          type: string
+        performanceMetric:
+          type: string
+        performanceScore:
+          type: number
+          format: float
+        decisionConfidenceScore:
+          type: number
+          format: float          
+
+    TrainingProcessMonitor:
+      description: >-
+        This data type is the "ProcessMonitor" data type defined in “genericNrm.yaml” with specialisations for usage in the "AIMLTrainingProcess".
+      type: object
+      properties:
+        aIMLTrainingProcessId:
+          type: string
+        status:
+          type: string
+          enum:
+            - RUNNING
+            - CANCELLING
+            - CANCELLED
+            - SUSPENDED
+            - FINSHED
+        progressPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+        progressStateInfo:
+          type: string
+          enum:
+            - COLLECTING_DATA
+            - PREPARING_TRAINING_DATA
+            - TRAINING
+        resultStateInfo:
+          type: string
+
+#-------- Definition of abstract IOCs --------------------------------------------
+
+
+
+#-------- Definition of concrete IOCs --------------------------------------------
+
+    SubNetwork-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              $ref: 'TS28623_GenericNrm.yaml#/components/schemas/SubNetwork-Attr'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/SubNetwork-ncO'
+        - type: object
+          properties:
+            SubNetwork:
+              $ref: '#/components/schemas/SubNetwork-Multiple'
+            ManagedElement:
+              $ref: '#/components/schemas/ManagedElement-Multiple'
+            AIMLTrainingFunction:
+              $ref: '#/components/schemas/AIMLTrainingFunction-Multiple'
+
+    ManagedElement-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-Attr'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-ncO'
+        - type: object
+          properties:
+            AIMLTrainingFunction:
+              $ref: '#/components/schemas/AIMLTrainingFunction-Multiple'
+
+    AIMLTrainingFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
+                - type: object
+                  properties:
+                    aIMLEntityList:
+                      $ref: '#/components/schemas/AIMLEntityList'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+        - type: object
+          properties:
+            AIMLTrainingRequest:
+              $ref: '#/components/schemas/AIMLTrainingRequest-Multiple'
+            AIMLTrainingProcess:
+              $ref: '#/components/schemas/AIMLTrainingProcess-Multiple'
+            AIMLTrainingReport:
+              $ref: '#/components/schemas/AIMLTrainingReport-Multiple'
+
+    AIMLTrainingRequest-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    aIMLEntityId:
+                      type: string
+                    candidateTraingDataSource:
+                      type: array
+                      items:
+                        type: string
+                    traingDataQualityScore:
+                      type: number
+                      format: float
+                    trainingRequestSource:
+                      type: string
+                    requestStatus:
+                      $ref: '#/components/schemas/RequestStatus'
+                    expectedRuntimeContext:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+                    performanceRequirements:
+                      $ref: '#/components/schemas/PerformanceRequirements'
+                    cancelRequest:
+                      type: boolean
+                    suspendRequest:
+                      type: boolean
+
+    AIMLTrainingProcess-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    aIMLTrainingProcessId:
+                      type: string
+                    priority:
+                      type: integer
+                    terminationConditions:
+                      type: string
+                    progressStatus:
+                      $ref: '#/components/schemas/TrainingProcessMonitor'
+                    cancelProcess:
+                      type: boolean
+                    suspendProcess:
+                      type: boolean
+                    trainingRequestRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+                    trainingReportRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+
+    AIMLTrainingReport-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    aIMLEntityId:
+                      type: string
+                    areConsumerTrainingDataUsed:
+                      type: boolean
+                    usedConsumerTrainingData:
+                      type: array
+                      items:
+                        type: string
+                    confidenceIndication:
+                      type: integer
+                    modelPerformanceTraining:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ModelPerformance'
+                    areNewTrainingDataUsed:
+                      type: boolean
+
+
+#-------- Definition of JSON arrays for name-contained IOCs ----------------------
+
+    SubNetwork-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/SubNetwork-Single'
+    ManagedElement-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/ManagedElement-Single'
+    AIMLTrainingFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIMLTrainingFunction-Single'
+    AIMLTrainingRequest-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIMLTrainingRequest-Single'
+    AIMLTrainingProcess-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIMLTrainingProcess-Single'
+    AIMLTrainingReport-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AIMLTrainingReport-Single'
+
+
+#-------- Definitions in TS 28.104 for TS 28.532 ---------------------------------
+
+    resources-AiMlNrm:
+      oneOf:
+        - $ref: '#/components/schemas/SubNetwork-Single'
+        - $ref: '#/components/schemas/ManagedElement-Single'
+
+        - $ref: '#/components/schemas/AIMLTrainingFunction-Single'
+        - $ref: '#/components/schemas/AIMLTrainingRequest-Single'
+        - $ref: '#/components/schemas/AIMLTrainingProcess-Single'
+        - $ref: '#/components/schemas/AIMLTrainingReport-Single'

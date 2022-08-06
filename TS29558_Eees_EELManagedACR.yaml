@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EES EEL Managed ACR Service
-  version: 1.0.0-alpha.1
+  version: 1.0.0
   description: |
     EES EEL Managed ACR Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -9,10 +9,12 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V1.4.0; Enabling Edge Applications; 
+    3GPP TS 29.558 V17.0.0; Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
-
+security:
+  - {}
+  - oAuth2ClientCredentials: []
 servers:
   - url: '{apiRoot}/eees-eel-acr/v1'
     variables:
@@ -35,7 +37,9 @@ paths:
               $ref: '#/components/schemas/EELACRReq'
       responses:
         '200':
-          description: The requested EEL Managed ACR initiation was successfully received and processed. The response body contains the feedback of the EES.
+          description: >
+            The requested EEL Managed ACR initiation was successfully received and
+            processed. The response body contains the feedback of the EES.
           content:
             application/json:
               schema:
@@ -75,7 +79,9 @@ paths:
         - ACT Status Subscriptions (Collection)
       responses:
         '200':
-          description: OK. All the active ACT status subscriptions managed by the EES shall be returned.
+          description: >
+            OK. All the active ACT status subscriptions managed by the EES shall
+            be returned.
           content:
             application/json:
               schema:
@@ -118,14 +124,17 @@ paths:
               $ref: '#/components/schemas/ACTStatusSubsc'
       responses:
         '200':
-          description: OK. The subscription is successfully created and a representation of the created Individual ACT Status Subscription resource shall be returned.
+          description: >
+            OK. The subscription is successfully created and a representation of the
+            created Individual ACT Status Subscription resource shall be returned.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ACTStatusSubsc'
           headers:
             Location:
-              description: Contains the URI of the created Individual ACT Status Subscription resource.
+              description: >
+                Contains the URI of the created Individual ACT Status Subscription resource.
               required: true
               schema:
                 type: string
@@ -163,7 +172,9 @@ paths:
                       $ref: '#/components/schemas/ACTStatusNotif'
               responses:
                 '204':
-                  description: No Content. The ACT status notification is successfully received and acknowledged.
+                  description: >
+                    No Content. The ACT status notification is successfully received
+                    and acknowledged.
                 '307':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/307'
                 '308':
@@ -206,7 +217,8 @@ paths:
             type: string
       responses:
         '200':
-          description: OK. The requested real-time UAV status subscription resource is returned.
+          description: >
+            OK. The requested real-time UAV status subscription resource is returned.
           content:
             application/json:
               schema:
@@ -235,9 +247,19 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
   schemas:
     EELACRReq:
-      description: Represents the parameters to request the EES (e.g. S-EES) to handle all the operations of an ACR.
+      description: >
+        Represents the parameters to request the EES (e.g. S-EES) to handle all the
+        operations of an ACR.
       type: object
       properties:
         ueId:
@@ -265,7 +287,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     ACTStatusSubsc:
-      description: Represents the parameters to request the creation of a subscription to ACT status reporting.
+      description: >
+        Represents the parameters to request the creation of a subscription to ACT
+        status reporting.
       type: object
       properties:
         easId:

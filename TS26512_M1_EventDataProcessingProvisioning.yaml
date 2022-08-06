@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: M1_EventDataProcessingProvisioning
+  version: 1.0.0
+  description: |
+    5GMS AF M1 Event Data Processing Provisioning API
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M1_EventDataProcessingProvisioning
+    description: '5G Media Streaming: Provisioning (M1) APIs: Event Data Processing Provisioning'
+externalDocs:
+  description: 'TS 26.512 V17.1.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m1/v2'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 6.1.
+paths:
+  /provisioning-sessions/{provisioningSessionId}/event-data-processing-configurations:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+    post:
+      operationId: createEventDataProcessingConfiguration
+      summary: 'Supply an Event Data Processing Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Event Data Processing Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventDataProcessingConfiguration'
+      responses:
+        '201':
+          description: 'Event Data Processing Configuration Created'
+          headers:
+            Location:
+              description: 'URL of the newly created Event Data Processing Configuration (same as request URL).'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+  /provisioning-sessions/{provisioningSessionId}/event-data-processing-configurations/{eventDataProcessingConfigurationId}:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+      - name: eventDataProcessingConfigurationId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an Event Data Processing Configuration.'
+    get:
+      operationId: retrieveEventDataProcessingConfiguration
+      summary: 'Retrieve the specified Event Data Processing Configuration of the specified Provisioning Session'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDataProcessingConfiguration'
+    put:
+      operationId: updateEventDataProcessingConfiguration
+      summary: 'Update the specified Event Data Processing Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Event Data Processing Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventDataProcessingConfiguration'
+      responses:
+        '204':
+          description: 'Updated Event Data Processing Configuration'
+        '404':
+          description: 'Not Found'
+    patch:
+      operationId: patchEventDataProcessingConfiguration
+      summary: 'Patch the specified Event Data Processing Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Event Data Processing Configuration'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/EventDataProcessingConfiguration'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/EventDataProcessingConfiguration'
+      responses:
+        '200':
+          description: 'Patched Event Data Processing Configuration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDataProcessingConfiguration'
+        '404':
+          description: 'Not Found'
+    delete:
+      operationId: destroyEventDataProcessingConfiguration
+      summary: 'Destroy the specified Event Data Processing Configuration of the specified Provisioning Session'
+      responses:
+        '204':
+          description: 'Destroyed Event Data Processing Configuration'
+        '404':
+          description: 'Not Found'
+components:
+  schemas:
+    EventDataProcessingConfiguration:
+      type: object
+      required:
+        - eventDataProcessingConfigurationId
+        - eventId
+        - dataAccessProfiles
+      properties:
+        eventDataProcessingConfigurationId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        eventId:
+          $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEvent'
+        authorizationUrl:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+        dataAccessProfiles:
+          type: array
+          items:
+            $ref: 'TS26532_Ndcaf_DataReportingProvisioning.yaml#/components/schemas/DataAccessProfile'

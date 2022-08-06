@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.5'
+  version: '1.2.0'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V17.4.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V17.5.0; 5G System; Session Management Services; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -2002,6 +2002,10 @@ components:
           items:
             $ref: '#/components/schemas/IndirectDataForwardingTunnelInfo'
           minItems: 1
+        n9DlForwardingTunnel:
+          $ref: '#/components/schemas/TunnelInfo'
+        n9InactivityTimer:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         epsBearerSetup:
           type: array
           items:
@@ -2122,6 +2126,8 @@ components:
           items:
             $ref: '#/components/schemas/IndirectDataForwardingTunnelInfo'
           minItems: 1
+        n9UlForwardingTunnel:
+          $ref: '#/components/schemas/TunnelInfo'
         cause:
           $ref: '#/components/schemas/Cause'
         maAcceptedInd:
@@ -2142,6 +2148,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         interPlmnApiRoot:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        anchorSmfFeatures:
+          $ref: '#/components/schemas/AnchorSmfFeatures'
 
     SmContextReleaseData:
       description: Data within Release SM Context Request
@@ -2238,6 +2246,8 @@ components:
         selectedDnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         sNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        hplmnSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         vsmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
@@ -2385,6 +2395,8 @@ components:
         upipSupported:
           type: boolean
           default: false
+        upCnxState:
+          $ref: '#/components/schemas/UpCnxState'
       required:
         - dnn
         - servingNetwork
@@ -2668,6 +2680,8 @@ components:
           $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
         maxIntegrityProtectedDataRateDl:
           $ref: '#/components/schemas/MaxIntegrityProtectedDataRate'
+        upCnxState:
+          $ref: '#/components/schemas/UpCnxState'
       required:
         - requestIndication
 
@@ -2692,6 +2706,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         roamingChargingProfile:
           $ref: 'TS32291_Nchf_ConvergedCharging.yaml#/components/schemas/RoamingChargingProfile'
+        homeProvidedChargingId:
+          type: string
         upSecurity:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UpSecurity'
         maxIntegrityProtectedDataRateUl:
@@ -2817,6 +2833,10 @@ components:
           default: false
         hsmfPduSessionUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        newSmfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        newSmfPduSessionUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         cause:
@@ -2850,6 +2870,11 @@ components:
           $ref: '#/components/schemas/QosMonitoringInfo'
         epsPdnCnxInfo:
           $ref: '#/components/schemas/EpsPdnCnxInfo'
+        n9DataForwardingInd:
+          type: boolean
+          default: false
+        n9InactivityTimer:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
       required:
         - requestIndication
 
@@ -2937,6 +2962,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         newSmfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        epsPdnCnxInfo:
+          $ref: '#/components/schemas/EpsPdnCnxInfo'
         interPlmnApiRoot:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         intraPlmnApiRoot:
@@ -3464,6 +3491,10 @@ components:
         sscMode:
           type: string
           pattern: '^[0-7]$'
+        dlsetSupportInd:
+          type: boolean
+        n9fscSupportInd:
+          type: boolean
       required:
         - pduSessionId
         - dnn
@@ -3527,6 +3558,13 @@ components:
           $ref: '#/components/schemas/DnaiInformation'
         psaUpfId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        ulClBpId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        n9UlPdrIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint16'
+          minItems: 1
       required:
         - n4MessageType
         - n4MessagePayload
@@ -3842,6 +3880,13 @@ components:
         - notifId
         - notifUri
 
+    AnchorSmfFeatures:
+      description: Anchor SMF supported features 
+      type: object
+      properties:
+        psetrSupportInd:
+          type: boolean
+
 #
 # SIMPLE DATA TYPES
 #
@@ -4042,6 +4087,10 @@ components:
           - CHANGED_INTERMEDIATE_SMF
           - TARGET_DNAI_NOTIFICATION
           - REL_DUE_TO_VPLMN_QOS_FAILURE
+          - REL_DUE_TO_SMF_NOT_SUPPORT_PSETR
+          - REL_DUE_TO_SNPN_SNPN_MOBILITY
+          - REL_DUE_TO_NO_HR_AGREEMENT
+          - REL_DUE_TO_UNSPECIFIED_REASON
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4078,6 +4127,10 @@ components:
         - CHANGED_INTERMEDIATE_SMF
         - TARGET_DNAI_NOTIFICATION
         - REL_DUE_TO_VPLMN_QOS_FAILURE
+        - REL_DUE_TO_SMF_NOT_SUPPORT_PSETR
+        - REL_DUE_TO_SNPN_SNPN_MOBILITY
+        - REL_DUE_TO_NO_HR_AGREEMENT
+        - REL_DUE_TO_UNSPECIFIED_REASON
 
     ResourceStatus:
       anyOf:

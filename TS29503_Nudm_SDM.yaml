@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.0-alpha.7'
+  version: '2.2.0'
   title: 'Nudm_SDM'
   description: |
     Nudm Subscriber Data Management Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.6.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.7.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -17,7 +17,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 
 security:
   - oAuth2ClientCredentials:
@@ -53,6 +53,13 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+        - name: disaster-roaming-ind
+          in: query
+          description: Indication whether Disaster Roaming service is applied or not
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: supported-features
           in: query
           description: Supported Features
@@ -123,6 +130,13 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: disaster-roaming-ind
+          in: query
+          description: Indication whether Disaster Roaming service is applied or not
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -233,6 +247,13 @@ paths:
             minItems: 1
           style: form
           explode: false
+        - name: disaster-roaming-ind
+          in: query
+          description: Indication whether Disaster Roaming service is applied or not
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -356,6 +377,13 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: disaster-roaming-ind
+          in: query
+          description: Indication whether Disaster Roaming service is applied or not
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -2491,6 +2519,9 @@ components:
           default: false
         secondaryAuth:
           type: boolean
+        uavSecondaryAuth:
+          type: boolean
+          default: false
         dnAaaIpAddressAllocation:
           type: boolean
         dnAaaAddress:
@@ -2520,6 +2551,8 @@ components:
           default: false
         aerialUeInd:
           $ref: '#/components/schemas/AerialUeIndication'
+        subscribedMaxIpv6PrefixSize:
+          type: integer
 
     NiddInformation:
       type: object
@@ -2693,6 +2726,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        additionalSupis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        additionalGpsis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
 
     AcknowledgeInfo:
       type: object
@@ -3390,6 +3433,7 @@ components:
           - LCS_MO
           - UEC_AMF
           - V2X
+          - LCS_BCA
           - PROSE
           - UC
           - MBS
@@ -3401,6 +3445,8 @@ components:
           enum:
           - ANALYTICS
           - MODEL_TRAINING
+          - NW_CAP_EXPOSURE
+          - EDGEAPP_UE_LOCATION
         - type: string
       description: Indicates the purpose of the user consent.
 

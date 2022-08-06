@@ -1,20 +1,20 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.7
+  version: 1.2.0
   title: Npcf_UEPolicyControl
   description: |
     UE Policy Control Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.525 V17.6.0; 5G System; UE Policy Control Service.
+  description: 3GPP TS 29.525 V17.7.0; 5G System; UE Policy Control Service.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.525/'
 servers:
   - url: '{apiRoot}/npcf-ue-policy-control/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 security:
   - {}
   - oAuth2ClientCredentials:
@@ -41,7 +41,9 @@ paths:
                 $ref: '#/components/schemas/PolicyAssociation'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/npcf-ue-policy-control/v1/policies/{polAssoId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/npcf-ue-policy-control/v1/policies/{polAssoId}'
               required: true
               schema:
                 type: string
@@ -79,7 +81,9 @@ paths:
                       $ref: '#/components/schemas/PolicyUpdate'
               responses: 
                 '200':
-                  description: OK. The current applicable values corresponding to the policy control request trigger is reported
+                  description: >
+                    OK. The current applicable values corresponding to the policy control request
+                    trigger is reported
                   content:
                     application/json:
                       schema:
@@ -230,7 +234,9 @@ paths:
   /policies/{polAssoId}/update:
     post:
       operationId: ReportObservedEventTriggersForIndividualUEPolicyAssociation
-      summary: Report observed event triggers and possibly obtain updated policies for an individual UE policy association.
+      summary: >
+        Report observed event triggers and possibly obtain updated policies for an individual UE
+        policy association.
       tags:
         - Individual UE Policy Association (Document)
       requestBody:
@@ -290,7 +296,9 @@ components:
             npcf-ue-policy-control: Access to the Npcf_UEPolicyControl API
   schemas:
     PolicyAssociation:
-      description: Contains the description of a policy association that is returned by the PCF when a policy Association is created, updated, or read.
+      description: >
+        Contains the description of a policy association that is returned by the PCF when a policy
+        Association is created, updated, or read.
       type: object
       properties:
         request:
@@ -306,19 +314,24 @@ components:
           items:
             $ref: '#/components/schemas/RequestTrigger'
           minItems: 1
-          description: Request Triggers that the PCF subscribes. Only values "LOC_CH" and "PRA_CH" are permitted.
+          description: >
+            Request Triggers that the PCF subscribes. Only values "LOC_CH" and "PRA_CH" are permitted.
         pras:
           type: object
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
-          description: Contains the presence reporting area(s) for which reporting was requested. The praId attribute within the PresenceInfo data type is the key of the map.
+          description: >
+            Contains the presence reporting area(s) for which reporting was requested.
+            The praId attribute within the PresenceInfo data type is the key of the map.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - suppFeat
     PolicyAssociationRequest:
-      description: Represents information that the NF service consumer provides when requesting the creation of a policy association.
+      description: >
+        Represents information that the NF service consumer provides when requesting the creation of
+        a policy association.
       type: object
       properties:
         notificationUri:
@@ -338,7 +351,7 @@ components:
         altNotifFqdns:
           type: array
           items:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
           minItems: 1
           description: Alternate or backup FQDN(s) where to send Notifications.
         supi:
@@ -386,7 +399,9 @@ components:
         - suppFeat
         - supi
     PolicyAssociationUpdateRequest:
-      description: Represents Information that the NF service consumer provides when requesting the update of a policy association.
+      description: >
+        Represents Information that the NF service consumer provides when requesting the update of
+        a policy association.
       type: object
       properties:
         notificationUri:
@@ -406,7 +421,7 @@ components:
         altNotifFqdns:
           type: array
           items:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
           minItems: 1
           description: Alternate or backup FQDN(s) where to send Notifications.
         triggers:
@@ -419,7 +434,9 @@ components:
           type: object
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
-          description: Contains the UE presence status for tracking area for which changes of the UE presence occurred. The praId attribute within the PresenceInfo data type is the key of the map.
+          description: >
+            Contains the UE presence status for tracking area for which changes of the UE presence
+            occurred. The praId attribute within the PresenceInfo data type is the key of the map.
           minProperties: 1
         userLoc:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
@@ -448,7 +465,9 @@ components:
             $ref: '#/components/schemas/ProSeCapability'
           minItems: 1
     PolicyUpdate:
-      description: Represents updated policies that the PCF provides in a notification or in the reply to an Update Request.
+      description: >
+        Represents updated policies that the PCF provides in a notification or in the reply to an
+        Update Request.
       type: object
       properties:
         resourceUri:
@@ -465,18 +484,23 @@ components:
             $ref: '#/components/schemas/RequestTrigger'
           minItems: 1
           nullable: true
-          description: Request Triggers that the PCF subscribes. Only values "LOC_CH" and "PRA_CH" are permitted.
+          description: >
+            Request Triggers that the PCF subscribes. Only values "LOC_CH" and "PRA_CH" are permitted.
         pras:
           type: object
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
-          description: Contains the presence reporting area(s) for which reporting was requested. The praId attribute within the PresenceInfo data type is the key of the map.
+          description: >
+            Contains the presence reporting area(s) for which reporting was requested.
+            The praId attribute within the PresenceInfo data type is the key of the map.
           minProperties: 1
           nullable: true
       required:
         - resourceUri
     TerminationNotification:
-      description: Represents a request to terminate a policy association that the PCF provides in a notification.
+      description: >
+        Represents a request to terminate a policy association that the PCF provides in a
+        notification.
       type: object
       properties:
         resourceUri:
@@ -487,7 +511,9 @@ components:
         - resourceUri
         - cause
     UePolicyTransferFailureNotification:
-      description: Represents information on the failure of a UE policy transfer to the UE because the UE is not reachable.
+      description: >
+        Represents information on the failure of a UE policy transfer to the UE because the UE is not
+        reachable.
       type: object
       properties:
         cause:
@@ -501,7 +527,8 @@ components:
         - cause
         - ptis
     UeRequestedValueRep:
-      description: Contains the current applicable values corresponding to the policy control request triggers.
+      description: >
+        Contains the current applicable values corresponding to the policy control request triggers.
       type: object
       properties:
         userLoc:
@@ -511,7 +538,9 @@ components:
           additionalProperties:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
           minProperties: 1
-          description: Contains the UE presence statuses for tracking areas. The praId attribute within the PresenceInfo data type is the key of the map.
+          description: >
+            Contains the UE presence statuses for tracking areas. The praId attribute within the
+            PresenceInfo data type is the key of the map.
         plmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         connectState:
@@ -538,15 +567,22 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - LOC_CH: Location change (tracking area). The tracking area of the UE has changed.
-        - PRA_CH: Change of UE presence in PRA. The AMF reports the current presence status of the UE in a Presence Reporting Area, and notifies that the UE enters/leaves the Presence Reporting Area.
-        - UE_POLICY: A MANAGE UE POLICY COMPLETE message or a MANAGE UE POLICY COMMAND REJECT message, as defined in Annex D.5 of 3GPP TS 24.501 or a "UE POLICY PROVISIONING REQUEST" message, as defined in subclause 7.2.1.1 of 3GPP TS 24.587 , has been received by the AMF and is being forwarded.
+        - PRA_CH: Change of UE presence in PRA. The AMF reports the current presence status of the UE
+          in a Presence Reporting Area, and notifies that the UE enters/leaves the Presence Reporting
+          Area.
+        - UE_POLICY: A MANAGE UE POLICY COMPLETE message or a MANAGE UE POLICY COMMAND REJECT
+          message, as defined in Annex D.5 of 3GPP TS 24.501 or a "UE POLICY PROVISIONING REQUEST"
+          message, as defined in clause 7.2.1.1 of 3GPP TS 24.587 , has been received by the AMF
+          and is being forwarded.
         - PLMN_CH: PLMN change. the serving PLMN of UE has changed. 
         - CON_STATE_CH: Connectivity state change: the connectivity state of UE has changed. 
-        - GROUP_ID_LIST_CHG: UE Internal Group Identifier(s) has changed. This policy control request trigger does not require a subscription
-        - UE_CAP_CH: UE Capabilities change: the UE provided 5G ProSe capabilities have changed. This policy control request trigger does not require subscription. 
+        - GROUP_ID_LIST_CHG: UE Internal Group Identifier(s) has changed. This policy control request
+          trigger does not require a subscription
+        - UE_CAP_CH: UE Capabilities change: the UE provided 5G ProSe capabilities have changed.
+          This policy control request trigger does not require subscription. 
     PolicyAssociationReleaseCause:
       anyOf:
       - type: string
@@ -559,11 +595,13 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - UNSPECIFIED: This value is used for unspecified reasons.
-        - UE_SUBSCRIPTION: This value is used to indicate that the policy association needs to be terminated because the subscription of UE has changed (e.g. was removed).
-        - INSUFFICIENT_RES: This value is used to indicate that the server is overloaded and needs to abort the policy association.
+        - UE_SUBSCRIPTION: This value is used to indicate that the policy association needs to be
+          terminated because the subscription of UE has changed (e.g. was removed).
+        - INSUFFICIENT_RES: This value is used to indicate that the server is overloaded and needs
+          to abort the policy association.
     Pc5Capability:
       anyOf:
       - type: string
@@ -576,11 +614,14 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
-        - LTE_PC5: This value is used to indicate that UE supports PC5 LTE RAT for V2X communications over the PC5 reference point.
-        - NR_PC5: This value is used to indicate that UE supports PC5 NR RAT for V2X communications over the PC5 reference point.
-        - LTE_NR_PC5: This value is used to indicate that UE supports both PC5 LTE and NR RAT for V2X communications over the PC5 reference point. 
+      description: |
+        Possible values are:
+        - LTE_PC5: This value is used to indicate that UE supports PC5 LTE RAT for V2X communications
+          over the PC5 reference point.
+        - NR_PC5: This value is used to indicate that UE supports PC5 NR RAT for V2X communications
+          over the PC5 reference point.
+        - LTE_NR_PC5: This value is used to indicate that UE supports both PC5 LTE and NR RAT for
+          V2X communications over the PC5 reference point. 
     ProSeCapability:
       anyOf:
       - type: string
@@ -596,11 +637,17 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           the content defined in the present version of this API.
-      description: >
-        Possible values are
-        - PROSE_DD: This value is used to indicate that 5G ProSe Direct Discovery is supported by the UE.
-        - PROSE_DC: This value is used to indicate that 5G ProSe Direct Communication is supported by the UE.
-        - PROSE_L2_U2N_RELAY: This value is used to indicate that Layer-2 5G ProSe UE-to-Network Relay is supported by the UE.
-        - PROSE_L3_U2N_RELAY: This value is used to indicate that Layer-3 5G ProSe UE-to-Network Relay is supported by the UE.
-        - PROSE_L2_REMOTE_UE: This value is used to indicate that Layer-2 5G ProSe Remote UE is supported by the UE.
-        - PROSE_L3_REMOTE_UE: This value is used to indicate that Layer-3 5G ProSe Remote UE is supported by the UE.
+      description: |
+        Possible values are:
+        - PROSE_DD: This value is used to indicate that 5G ProSe Direct Discovery is supported
+          by the UE.
+        - PROSE_DC: This value is used to indicate that 5G ProSe Direct Communication is supported
+          by the UE.
+        - PROSE_L2_U2N_RELAY: This value is used to indicate that Layer-2 5G ProSe UE-to-Network
+          Relay is supported by the UE.
+        - PROSE_L3_U2N_RELAY: This value is used to indicate that Layer-3 5G ProSe UE-to-Network
+          Relay is supported by the UE.
+        - PROSE_L2_REMOTE_UE: This value is used to indicate that Layer-2 5G ProSe Remote UE is
+          supported by the UE.
+        - PROSE_L3_REMOTE_UE: This value is used to indicate that Layer-3 5G ProSe Remote UE is
+          supported by the UE.

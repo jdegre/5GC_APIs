@@ -1,27 +1,33 @@
 openapi: 3.0.0
 info:
   title: Eecs_ServiceProvisioning
+  version: "1.0.0"
   description: |
     API for ECS Service Provisioning.
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.0.0-alpha.3"
+
 externalDocs:
-  description: 3GPP TS 24.558 V1.2.0 Enabling Edge Applications; Protocol specification.
+  description: 3GPP TS 24.558 V17.0.0 Enabling Edge Applications; Protocol specification.
   url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/eecs-serviceprovisioning/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 7.5 of 3GPP TS 29.558
+
 paths:
   /subscriptions:
     post:
-      description: Creates a new subscription in ECS in order to be notified of provisioning data changes of interest.
+      description: >
+        Creates a new subscription in ECS in order to be notified of provisioning data 
+        changes of interest.
       tags:
         - Service Provisioning Subscriptions
       requestBody:
@@ -71,7 +77,8 @@ paths:
                   $ref: 'TS29122_CommonData.yaml#/components/responses/default'
       responses:
         '201':
-          description: Individual ECS Service Provisioning Subscription resource created successfully.
+          description: >
+            Individual ECS Service Provisioning Subscription resource created successfully.
           content:
             application/json:
               schema:
@@ -107,7 +114,9 @@ paths:
 
   /subscriptions/{subscriptionId}:
     put:
-      description: Updates an existing individual service provisioning subscription identified by the subscriptionId.
+      description: >
+        Updates an existing individual service provisioning subscription identified
+        by the subscriptionId.
       tags:
         - Individual Service Provisioning Subscription
       parameters:
@@ -126,7 +135,9 @@ paths:
               $ref: '#/components/schemas/ECSServProvSubscription'
       responses:
         '200':
-          description: OK (The individual service provisioning subscription matching the subscriptionId was modified successfully)
+          description: >
+            OK (The individual service provisioning subscription matching the subscriptionId
+            was modified successfully).
           content:
             application/json:
               schema:
@@ -155,7 +166,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      description: Deletes an existing individual service provisioning subscription identified by the subscriptionId.
+      description: >
+        Deletes an existing individual service provisioning subscription identified by
+        the subscriptionId.
       tags:
         - Individual Service Provisioning Subscription
       parameters:
@@ -167,7 +180,9 @@ paths:
             type: string
       responses:
         '204':
-          description: The individual service provisioning subscription matching the subscriptionId is deleted.
+          description: >
+            The individual service provisioning subscription matching the subscriptionId is
+            deleted.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -189,7 +204,9 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     patch:
-      description: Partially updates an existing individual service provisioning subscription identified by the subscriptionId.
+      description: >
+        Partially updates an existing individual service provisioning subscription identified
+        by the subscriptionId.
       tags:
         - Individual Service Provisioning Subscription
       parameters:
@@ -208,7 +225,9 @@ paths:
               $ref: '#/components/schemas/ECSServProvSubscriptionPatch'
       responses:
         '200':
-          description: OK (The individual service provisioning subscription matching the subscriptionId was modified successfully)
+          description: >
+            OK (The individual service provisioning subscription matching the subscriptionId
+            was modified successfully)
           content:
             application/json:
               schema:
@@ -250,13 +269,15 @@ paths:
               $ref: '#/components/schemas/ECSServProvReq'
       responses:
         '200':
-          description: OK (The requested service provisioning information was returned successfully).
+          description: >
+            OK (The requested service provisioning information was returned successfully).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ECSServProvResp'
         '204':
-          description: No Content (the requested service provisioning information does not exist).
+          description: >
+            No Content (the requested service provisioning information does not exist).
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -298,16 +319,18 @@ components:
           description: Represents a unique identifier of the EEC.
         ueId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        # acProfs:
-          # type: array
-          # items:
-            # $ref: 
-          # description: Information about services the EEC wants to connect to.
-        # eecSvcContSupp:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        acProfs:
+          type: array
+          items:
+            $ref: 'TS24558_Eees_EECRegistration.yaml#/components/schemas/ACProfile'
+          description: Information about services the EEC wants to connect to.
+        eecSvcContSupp:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: >
+            Indicates if the EEC supports service continuity or not, also indicates which
+            ACR scenarios are supported by the EEC.
         connInfo:
           type: array
           items:
@@ -338,18 +361,20 @@ components:
           description: Represents a unique identifier of the EEC.
         ueId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        # acProfs:
-          # type: array
-          # items:
-            # $ref: 
-          # description: Information about services the EEC wants to connect to.
+        acProfs:
+          type: array
+          items:
+            $ref: 'TS24558_Eees_EECRegistration.yaml#/components/schemas/ACProfile'
+          description: Information about services the EEC wants to connect to.
         expTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
-        # eecSvcContSupp:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+        eecSvcContSupp:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: >
+            Indicates if the EEC supports service continuity or not, also indicates which
+            ACR scenarios are supported by the EEC.
         connInfo:
           type: array
           items:
@@ -359,7 +384,9 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         requestTestNotification:
           type: boolean
-          description: Set to true by Subscriber to request the ECS to send a test notification. Set to false or omitted otherwise.
+          description: >
+            Set to true by Subscriber to request the ECS to send a test notification. Set to 
+            false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         suppFeat:
@@ -372,7 +399,9 @@ components:
       properties:
         subId:
           type: string
-          description: Identifier of the individual service provisioning subscription for which the service provisioning notification is delivered.
+          description: >
+            Identifier of the individual service provisioning subscription for which the service
+            provisioning notification is delivered.
         ednCnfgInfo:
           type: array
           items:
@@ -425,9 +454,8 @@ components:
         eesId:
           type: string
           description: Identity of the EES
-        # endPt:
-          # $ref: 'TS29558_CommonData.yaml#/components/schemas/EndPoint' 
-          # description: Endpoint information (e.g. URI, FQDN, IP address) used to communicate with the EES.
+        endPt:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint' 
         easIds:
           type: array
           items:
@@ -443,14 +471,18 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
           description: Represents list of Data network access identifier.
-        # eesSvcContSupp:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario'
-          # description: Indicates if the EES supports service continuity or not, also indicates which ACR scenarios are supported by the EES.
+        eesSvcContSupp:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: >
+            Indicates if the EES supports service continuity or not, also indicates which ACR
+            scenarios are supported by the EES.
         eecRegConf:
           type: boolean
-          description: Indicates whether the EEC is required to register on the EES to use edge services or not.
+          description: >
+            Indicates whether the EEC is required to register on the EES to use edge services
+            or not.
       required:
         - eesId
         - eecRegConf
@@ -469,7 +501,9 @@ components:
           type: array
           items:
             $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
-          description: Indicates if the EEC supports service continuity or not, also indicates which ACR scenarios are supported by the EEC.
+          description: >
+            Indicates if the EEC supports service continuity or not, also indicates which ACR
+            scenarios are supported by the EEC.
         connInfo:
           type: array
           items:

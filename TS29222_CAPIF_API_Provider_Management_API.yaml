@@ -5,16 +5,16 @@ info:
     API for API provider domain functions management.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0-alpha.3"
+  version: "1.1.0"
 externalDocs:
-  description: 3GPP TS 29.222 V17.4.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V17.5.0 Common API Framework for 3GPP Northbound APIs
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/api-provider-management/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
+        description: apiRoot as defined in clause 7.5 of 3GPP TS 29.222
 
 paths:
   /registrations:
@@ -35,7 +35,9 @@ paths:
                 $ref: '#/components/schemas/APIProviderEnrolmentDetails'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/api-provider-management/v1/registrations/{registrationId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/api-provider-management/v1/registrations/{registrationId}
               required: true
               schema:
                 type: string
@@ -105,7 +107,9 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Representation of the API provider domain registration details to be updated in CAPIF core function.
+        description: >
+          Representation of the API provider domain registration details to be updated
+          in CAPIF core function.
         required: true
         content:
           application/json:
@@ -165,7 +169,9 @@ paths:
               $ref: '#/components/schemas/APIProviderEnrolmentDetailsPatch'
       responses:
         '200':
-          description: The definition of the service API is modified successfully and a representation of the updated service API is returned in the request body.
+          description: >
+            The definition of the service API is modified successfully and a
+            representation of the updated service API is returned in the request body.
           content:
             application/json:
               schema:
@@ -206,47 +212,77 @@ components:
       properties:
         apiProvDomId:
           type: string
-          description: API provider domain ID assigned by the CAPIF core function to the API management function while registering the API provider domain. Shall not be present in the HTTP POST request from the API Management function to the CAPIF core function, to on-board itself. Shall be present in all other HTTP requests and responses.
+          description: >
+            API provider domain ID assigned by the CAPIF core function to the API management
+            function while registering the API provider domain. Shall not be present in the
+            HTTP POST request from the API Management function to the CAPIF core function,
+            to on-board itself. Shall be present in all other HTTP requests and responses.
           readOnly: true
         regSec:
           type: string
-          description: Security information necessary for the CAPIF core function to validate the registration of the API provider domain. Shall be present in HTTP POST request from API management function to CAPIF core function for API provider domain registration.
+          description: >
+            Security information necessary for the CAPIF core function to validate the
+            registration of the API provider domain. Shall be present in HTTP POST request
+            from API management function to CAPIF core function for API provider domain
+            registration.
         apiProvFuncs:
           type: array
           items:
             $ref: '#/components/schemas/APIProviderFunctionDetails'
           minItems: 1
-          description: A list of individual API provider domain functions details. When included by the API management function in the HTTP request message, it lists the API provider domain functions that the API management function intends to register/update in registration or update registration procedure. When included by the CAPIF core function in the HTTP response message, it lists the API domain functions details that are registered or updated successfully.
+          description: >
+            A list of individual API provider domain functions details. When included by
+            the API management function in the HTTP request message, it lists the API
+            provider domain functions that the API management function intends to
+            register/update in registration or update registration procedure. When
+            included by the CAPIF core function in the HTTP response message, it lists
+            the API domain functions details that are registered or updated successfully.
         apiProvDomInfo:
           type: string
-          description: Generic information related to the API provider domain such as details of the API provider applications.
+          description: >
+            Generic information related to the API provider domain such as details
+            of the API provider applications.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         failReason:
           type: string
-          description: Registration or update specific failure information of failed API provider domain function registrations.Shall be present in the HTTP response body if atleast one of the API provider domain function registration or update registration fails.
+          description: >
+            Registration or update specific failure information of failed API provider
+            domain function registrations.Shall be present in the HTTP response
+            body if atleast one of the API provider domain function registration or update
+            registration fails.
       required:
         - regSec
+
     APIProviderFunctionDetails:
       type: object
       description: Represents API provider domain function's details.
       properties:
         apiProvFuncId:
           type: string
-          description: API provider domain functionID assigned by the CAPIF core function to the API provider domain function while registering/updating the API provider domain. Shall not be present in the HTTP POST request from the API management function to the CAPIF core function, to register itself. Shall be present in all other HTTP requests and responses.
+          description: >
+            API provider domain functionID assigned by the CAPIF core function to the
+            API provider domain function while registering/updating the API provider domain.
+            Shall not be present in the HTTP POST request from the API management function to
+            the CAPIF core function, to register itself. Shall be present in all other HTTP
+            requests and responses.
         regInfo:
           $ref: '#/components/schemas/RegistrationInformation'
         apiProvFuncRole:
           $ref: '#/components/schemas/ApiProviderFuncRole'
         apiProvFuncInfo:
           type: string
-          description: Generic information related to the API provider domain function such as details of the API provider applications.
+          description: >
+            Generic information related to the API provider domain function such as details
+            of the API provider applications.
       required:
         - regInfo
         - apiProvFuncRole
+
     RegistrationInformation:
       type: object
-      description: Represents registration information of an individual API provider domain function.
+      description: >
+        Represents registration information of an individual API provider domain function.
       properties:
         apiProvPubKey:
           type: string
@@ -256,6 +292,7 @@ components:
           description: API provider domain function's client certificate
       required:
         - apiProvPubKey
+
     ApiProviderFuncRole:
       anyOf:
       - type: string
@@ -265,12 +302,14 @@ components:
           - AMF
       - type: string
         description: >
-          This string provides forward-compatiblity with future extensions to the enumeration but is not used to encode content defined in the present version of this API.
-      description: >
-        Possible values are
+          This string provides forward-compatiblity with future extensions to the enumeration
+          but is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:
         - AEF: API provider function is API Exposing Function.
         - APF: API provider function is API Publishing Function.
         - AMF: API Provider function is API Management Function.
+
     APIProviderEnrolmentDetailsPatch:
       type: object
       description: Represents an API provider domain's enrolment details.
@@ -280,7 +319,13 @@ components:
           items:
             $ref: '#/components/schemas/APIProviderFunctionDetails'
           minItems: 1
-          description: A list of individual API provider domain functions details. When included by the API management function in the HTTP request message, it lists the API provider domain functions that the API management function intends to register/update in registration or update registration procedure. 
+          description: >
+            A list of individual API provider domain functions details. When included by
+            the API management function in the HTTP request message, it lists the API
+            provider domain functions that the API management function intends to
+            register/update in registration or update registration procedure. 
         apiProvDomInfo:
           type: string
-          description: Generic information related to the API provider domain such as details of the API provider applications.
+          description: >
+            Generic information related to the API provider domain such as details
+            of the API provider applications.

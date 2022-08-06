@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.6'
+  version: '1.2.0'
   title: 'Nudm_UECM'
   description: |
     Nudm Context Management Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.6.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.7.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -17,7 +17,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 
 security:
   - oAuth2ClientCredentials:
@@ -67,6 +67,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistrationDataSets'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
+  /{ueId}/registrations/send-routing-info-sm:
+    post:
+      summary: Retreive addressing information for SMS delivery
+      operationId: SendRoutingInfoSm
+      tags:
+        - SendRoutingInfoSM (Custom Operation)
+      parameters:
+        - name: ueId
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutingInfoSmRequest'
+        required: true
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutingInfoSmResponse'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '403':
@@ -1896,6 +1935,20 @@ components:
           items:
             type: string
           minItems: 1
+        disasterRoamingInd:
+          type: boolean
+          default: false
+        ueMINTCapability:
+          type: boolean
+        sorSnpnSiSupported:
+          type: boolean
+          default: false
+        udrRestartInd:
+          type: boolean
+          default: false
+        lastSynchronizationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
 
     Amf3GppAccessRegistrationModification:
       type: object
@@ -1919,8 +1972,8 @@ components:
         ueSrvccCapability:
           type: boolean
           nullable: true
-        registrationTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        ueMINTCapability:
+          type: boolean
 
     EpsInterworkingInfo:
       type: object
@@ -2005,6 +2058,17 @@ components:
           items:
             type: string
           minItems: 1
+        disasterRoamingInd:
+          type: boolean
+          default: false
+        sorSnpnSiSupported:
+          type: boolean
+          default: false
+        udrRestartInd:
+          type: boolean
+          default: false
+        lastSynchronizationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     AmfNon3GppAccessRegistrationModification:
       type: object
@@ -2023,8 +2087,6 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/BackupAmfInfo'
-        registrationTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     SmfRegistration:
       type: object
@@ -2076,6 +2138,11 @@ components:
           items:
             type: string
           minItems: 1
+        udrRestartInd:
+          type: boolean
+          default: false
+        lastSynchronizationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     SmsfRegistration:
       type: object
@@ -2106,7 +2173,14 @@ components:
           items:
             type: string
           minItems: 1
-
+        smsfSbiSupInd:
+          type: boolean
+          default: false
+        udrRestartInd:
+          type: boolean
+          default: false
+        lastSynchronizationTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
     DeregistrationData:
       type: object
@@ -2174,6 +2248,8 @@ components:
           $ref: '#/components/schemas/E164Number'
         ipSmGwDiameterAddress:
           $ref: '#/components/schemas/NetworkNodeDiameterAddress'
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         unriIndicator:
           type: boolean
           default: false
@@ -2182,6 +2258,9 @@ components:
           items:
             type: string
           minItems: 1
+        ipSmGwSbiSupInd:
+          type: boolean
+          default: false
 
 
     AmfDeregInfo:
@@ -2337,6 +2416,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         recoveryTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         supiRanges:
           type: array
           items:
@@ -2362,6 +2443,8 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
           minItems: 1
+        udmGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
 
     RoamingInfoUpdate:
       description: Contains the Roaming Information Update
@@ -2394,7 +2477,7 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
           minItems: 1
         fqdn:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
 
     NwdafRegistrationInfo:
       description: List of NwdafRegistration
@@ -2407,6 +2490,68 @@ components:
           items:
             $ref: '#/components/schemas/NwdafRegistration'
           minItems: 1
+
+    RoutingInfoSmRequest:
+      description: Request body of the send-routing-info-sm custom operation
+      type: object
+      properties:
+        ipSmGwInd:
+          type: boolean
+          default: false
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    RoutingInfoSmResponse:
+      description: Addressing information of available nodes for SMS delivery
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        smsf3Gpp:
+          $ref: '#/components/schemas/SmsfRegistration'
+        smsfNon3Gpp:
+          $ref: '#/components/schemas/SmsfRegistration'
+        ipSmGw:
+          $ref: '#/components/schemas/IpSmGwInfo'
+        smsRouter:
+          $ref: '#/components/schemas/SmsRouterInfo'
+
+    IpSmGwInfo:
+      description: Contains the IP-SM-GW Information
+      type: object
+      properties:
+        ipSmGwRegistration:
+          $ref: '#/components/schemas/IpSmGwRegistration'
+        ipSmGwGuidance:
+          $ref: '#/components/schemas/IpSmGwGuidance'
+
+    IpSmGwGuidance:
+      description: >
+        Contains guidance information (e.g. minimum and recommended delivery times) of the IP-SM-GW
+      type: object
+      required:
+        - minDeliveryTime
+        - recommDeliveryTime
+      properties:
+        minDeliveryTime:
+          type: integer
+          minimum: 30
+          maximum: 600
+        recommDeliveryTime:
+          type: integer
+          minimum: 30
+          maximum: 600
+
+    SmsRouterInfo:
+      description: Addressing information of the SMS Router configured at the UDM
+      type: object
+      properties:
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        diameterAddress:
+          $ref: '#/components/schemas/NetworkNodeDiameterAddress'
+        mapAddress:
+          $ref: '#/components/schemas/E164Number'
 
 
 # SIMPLE TYPES:
@@ -2443,6 +2588,7 @@ components:
           - 5GS_TO_EPS_MOBILITY_UE_INITIAL_REGISTRATION
           - REREGISTRATION_REQUIRED
           - SMF_CONTEXT_TRANSFERRED
+          - DUPLICATE_PDU_SESSION
         - type: string
 
     RegistrationReason:

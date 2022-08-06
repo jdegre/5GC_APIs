@@ -1,0 +1,66 @@
+openapi: 3.0.1
+info:
+  title: MDA Report
+  version: 17.0.0
+  description: >-
+    OAS 3.0.1 specification of the MDA Report
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 28.104; MDA Report
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.104/
+paths: {}
+components:
+  schemas:
+
+#-------- Definition of types-----------------------------------------------------
+
+    MDAOutputs:
+      type: object
+      properties:
+        mDAType:
+          type: string
+        mdaOutputList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MDAOutputEntry'
+        mDARequestRef:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+    MDAOutputEntry:
+      type: object
+      properties:
+        mDAOutputIEName:
+          type: string
+        mdaOutputIEValue: {}
+        analyticsWindow:
+          $ref: '#/components/schemas/TimeWindow'
+        confidenceDegree:
+          type: number
+          format: float
+
+
+    TimeWindow:
+      type: object
+      properties:
+        startTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        endTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+
+
+#-------- Definition of MDA Report --------------------------------------------
+
+    MDAReport:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    mDAReportID:
+                      type: string
+                    mDAOutputs:
+                      $ref: '#/components/schemas/MDAOutputs'

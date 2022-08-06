@@ -3,14 +3,14 @@ info:
   version: '-'
   title: 'Unified Data Repository Service API file for subscription data'
   description: |
-    Unified Data Repository Service (subscription data).
-    The API version is defined in 3GPP TS 29.504.
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    Unified Data Repository Service (subscription data).  
+    The API version is defined in 3GPP TS 29.504.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.505 V17.6.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
-  url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
+  description: 3GPP TS 29.505 V17.7.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
 
@@ -2719,6 +2719,16 @@ paths:
             minItems: 1
           style: form
           explode: false
+        - name: nf-identifiers
+          in: query
+          description: NF Identifiers
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/NfIdentifier'
+            minItems: 1
+          style: form
+          explode: false
       responses:
         '200':
           description: Expected response to a valid request
@@ -2727,7 +2737,7 @@ paths:
               schema:
                type: array
                items:
-                $ref: '#/components/schemas/EeSubscription'
+                $ref: '#/components/schemas/EeSubscriptionExt'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -5863,10 +5873,10 @@ paths:
 
   /subscription-data/{ueId}/context-data/roaming-information:
     put:
-      summary: Update the Roaming Information in the EPC domain
+      summary: Update the Roaming Information of the EPC domain
       operationId: UpdateRoamingInformation
       tags:
-        - Update the Roaming Information in the EPC domain (Document)
+        - Update the Roaming Information of the EPC domain (Document)
       security:
         - {}
         - oAuth2ClientCredentials:
@@ -5885,7 +5895,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RoamingInfo'
+              $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/RoamingInfoUpdate'
         required: true
       responses:
         '201':
@@ -5893,7 +5903,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoamingInfo'
+                $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/RoamingInfoUpdate'
           headers:
             Location:
               description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nudr-dr/<apiVersion>/subscription-data/{ueId}/context-data/roaming-information'
@@ -5906,10 +5916,10 @@ paths:
           description: Unexpected error
 
     get:
-      summary: Retrieves the Roaming Information in the EPC domain
+      summary: Retrieves the Roaming Information of the EPC domain
       operationId: QueryRoamingInformation
       tags:
-        - Retrieve the Roaming Information in the EPC domain (Document)
+        - Retrieve the Roaming Information of the EPC domain (Document)
       security:
         - {}
         - oAuth2ClientCredentials:
@@ -5930,7 +5940,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoamingInfo'
+                $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/RoamingInfoUpdate'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
@@ -6623,8 +6633,6 @@ components:
       $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/SmsfRegistration'
     LocationInfo:
       $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/LocationInfo'
-    RoamingInfo:
-      $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/RoamingInfoUpdate'
     SmsManagementSubscriptionData:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SmsManagementSubscriptionData'
     SmsSubscriptionData:
@@ -6683,6 +6691,7 @@ components:
             - number
             - boolean
             - object
+            - array
         dataTypeDefinition:
           type: string
         value:
@@ -6692,8 +6701,15 @@ components:
             - type: number
             - type: boolean
             - type: object
+            - type: array
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        resetIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+
     AuthMethod:
       description: Contains the Authentication Method.
       anyOf:
@@ -7223,3 +7239,32 @@ components:
           items:
             $ref: 'TS29503_Nudm_NIDDAU.yaml#/components/schemas/AuthorizationInfo'
           minItems: 1
+
+    NfIdentifier:
+      type: object
+      required:
+        - nfType
+      properties:
+        nfType:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+
+    EeSubscriptionExt:
+      allOf:
+        - $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EeSubscription'
+        - $ref: '#/components/schemas/AdditionalEeSubsInfo'
+
+    AdditionalEeSubsInfo:
+      type: object
+      properties:
+        amfSubscriptionInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmfSubscriptionInfo'
+          minItems: 1
+          maxItems: 2
+        smfSubscriptionInfo:
+          $ref: '#/components/schemas/SmfSubscriptionInfo'
+        hssSubscriptionInfo:
+          $ref: '#/components/schemas/HssSubscriptionInfo'

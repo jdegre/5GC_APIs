@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: 'Niwmsc_SMService'
+  version: '1.0.0'
+  description: |
+    SMS-IWMSC Short Message Service.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 29.579 V17.0.0; 5G System; SMS Services; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.579/
+
+servers:
+  - url: '{apiRoot}/niwmsc-smservice/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
+security:
+  - oAuth2ClientCredentials:
+    - niwmsc-smservice
+  - {}
+
+paths:
+  /mo-sm-infos/{supi}/sendsms:
+    post:
+      summary: Send SMS payload for a given UE
+      operationId: SendSMS
+      tags:
+        - Send MO SMS message and the delivery report
+      parameters:
+        - name: supi
+          in: path
+          required: true
+          description: Subscription Permanent Identifier (SUPI)
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/related:
+            schema:
+              type: object
+              properties:
+                jsonData:
+                  $ref: '#/components/schemas/SmsData'
+                binaryPayload:
+                  type: string
+                  format: binary
+            encoding:
+              jsonData:
+                contentType: application/json
+              binaryPayload:
+                contentType: application/vnd.3gpp.sms
+                headers:
+                  Content-Id:
+                    schema:
+                      type: string
+        required: true
+      responses:
+        '200':
+          description: sending delivery report
+          content:
+            multipart/related:
+              schema:
+                $ref: '#/components/schemas/SmsDeliveryData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+components:
+
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            niwmsc-smservice: Access to the niwmsc-smservice API
+
+  schemas:
+
+    SmsData:
+      description: >
+        Information within resquest message invoking MoForwardSm service operation,
+        for delivering MO SMS.
+      type: object
+      required:
+        - smsPayload
+      properties:
+        smsPayload:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+
+    SmsDeliveryData:
+      description: >
+        Information within response message invoking MoForwardSm service operation,
+        for delivering MO SMS Delivery Report.
+      type: object
+      required:
+        - smsPayload
+      properties:
+        smsPayload:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+
+# COMPLEX TYPES:
+
+
+
+# SIMPLE TYPES:
+
+
+
+# ENUMS:

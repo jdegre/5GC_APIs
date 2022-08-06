@@ -1,20 +1,20 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.5
+  version: 1.2.0
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.508 V17.6.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V17.7.0; 5G System; Session Management Event Exposure Service.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 servers:
   - url: '{apiRoot}/nsmf-event-exposure/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 security:
   - {}
   - oAuth2ClientCredentials:
@@ -37,7 +37,9 @@ paths:
           description: Created.
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nsmf-event-exposure/v1/subscriptions/{subId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/nsmf-event-exposure/v1/subscriptions/{subId}
               required: true
               schema:
                 type: string
@@ -286,7 +288,9 @@ components:
             nsmf-event-exposure: Access to the Nsmf_EventExposure API
   schemas:
     NsmfEventExposure:
-      description: Represents an Individual SMF Notification Subscription resource. The serviveName property corresponds to the serviceName in the main body of the specification.
+      description: >
+        Represents an Individual SMF Notification Subscription resource. The serviveName property
+        corresponds to the serviceName in the main body of the specification.
       type: object
       properties:
         supi:
@@ -295,7 +299,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         anyUeInd:
           type: boolean
-          description: Any UE indication. This IE shall be present if the event subscription is applicable to any UE. Default value "false" is used, if not present.
+          description: >
+            Any UE indication. This IE shall be present if the event subscription is applicable to any
+            UE. Default value "false" is used, if not present.
         groupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         pduSeId:
@@ -326,7 +332,7 @@ components:
         altNotifFqdns:
           type: array
           items:
-            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
           minItems: 1
           description: Alternate or backup FQDN(s) where to send Notifications.
         eventSubs:
@@ -417,7 +423,9 @@ components:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         transacDispInd:
           type: boolean
-          description: Indicates the subscription for UE transaction dispersion collectionon, if it is included and set to "true". Default value is "false".
+          description: >
+            Indicates the subscription for UE transaction dispersion collectionon, if it is included
+            and set to "true". Default value is "false".
         transacMetrics:
           type: array
           items:
@@ -510,18 +518,40 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
         appId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        ethFlowDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+          minItems: 1
+          description: >
+            Descriptor(s) for non-IP traffic. It allows the encoding of multiple UL and/or DL flows.
+            Each entry of the array describes a single Ethernet flow.
         ethfDescs:
           type: array
           items:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
           minItems: 1
           maxItems: 2
+          description: >
+            Contains the UL and/or DL Ethernet flows. Each entry of the array describes a single
+            Ethernet flow.
+        flowDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
+          minItems: 1
+          description: >
+            Descriptor(s) for IP traffic. It allows the encoding of multiple UL and/or DL flows.
+            Each entry of the array describes a single IP flow.
         fDescs:
           type: array
           items:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
           minItems: 1
           maxItems: 2
+          description: >
+            Contains the UL and/or DL IP flows. Each entry of the array describes a single
+            IP flow.
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
@@ -548,7 +578,11 @@ components:
         smNasFromSmf:
           $ref: '#/components/schemas/SmNasFromSmf'
         upRedTrans:
-          type: string
+          type: boolean
+          description: >
+            Indicates whether the redundant transmission is setup or terminated. Set to "true" if 
+            the redundant transmission is setup, otherwise set to "false" if the redundant 
+            transmission is terminated. Default value is set to "false".
         ssId:
           type: string
         bssId:
@@ -570,7 +604,11 @@ components:
     SubId:
       type: string
       format: SubId
-      description: Identifies an Individual SMF Notification Subscription. To enable that the value is used as part of a URI, the string shall only contain characters allowed according to the "lower-with-hyphen" naming convention defined in 3GPP TS 29.501. In an OpenAPI schema, the format shall be designated as "SubId".
+      description: >
+        Identifies an Individual SMF Notification Subscription. To enable that the value is used as
+        part of a URI, the string shall only contain characters allowed according to the
+        "lower-with-hyphen" naming convention defined in 3GPP TS 29.501. In an OpenAPI schema, the
+        format shall be designated as "SubId".
     AckOfNotify:
       description: Represents an acknowledgement information of an event notification.
       type: object
@@ -587,7 +625,8 @@ components:
         - notifId
         - ackResult
     SmNasFromUe:
-      description: Represents information on the SM NAS messages that SMF receives from UE for PDU Session.
+      description: >
+        Represents information on the SM NAS messages that SMF receives from UE for PDU Session.
       type: object
       properties:
         smNasType:
@@ -598,7 +637,9 @@ components:
         - smNasType
         - timeStamp
     SmNasFromSmf:
-      description: Represents information on the SM congestion control applied SM NAS messages that SMF sends to UE for PDU Session.
+      description: >
+        Represents information on the SM congestion control applied SM NAS messages that SMF sends to
+        UE for PDU Session.
       type: object
       properties:
         smNasType:
@@ -686,8 +727,8 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - AC_TY_CH: Access Type Change
         - UP_PATH_CH: UP Path Change
         - PDU_SES_REL: PDU Session Release
@@ -702,7 +743,8 @@ components:
         - SMCC_EXP: SM congestion control experience for PDU Session
         - DISPERSION: Session Management transaction dispersion
         - RED_TRANS_EXP: Redundant transmission experience for PDU Session
-        - WLAN_INFO: WLAN information on PDU session for which Access Type is NON_3GPP_ACCESS and RAT Type is TRUSTED_WLAN
+        - WLAN_INFO: WLAN information on PDU session for which Access Type is NON_3GPP_ACCESS and
+          RAT Type is TRUSTED_WLAN
         - UPF_INFO: The UPF information, including the UPF ID/address/FQDN information.
     NotificationMethod:
       anyOf:
@@ -716,8 +758,8 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - PERIODIC
         - ONE_TIME
         - ON_EVENT_DETECTION
@@ -728,14 +770,14 @@ components:
           - DNN_CC
           - SNSSAI_CC
         description: >
-          This string indicates the applied SM congestion control.
+          This string indicates the type of applied SM congestion control.
       - type: string
         description: >
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - DNN_CC: Indicates the DNN based congestion control.
         - SNSSAI_CC: Indicates the S-NSSAI based congestion control.
     TransactionMetric:
@@ -749,8 +791,8 @@ components:
       - type: string
         description: >
           This string Indicates Session Management Transaction metrics.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - PDU_SES_EST: PDU Session Establishment
         - PDU_SES_AUTH: PDU Session Authentication
         - PDU_SES_MODIF: PDU Session Modification
@@ -764,7 +806,7 @@ components:
       - type: string
         description: >
           This string Indicates the status of the PDU Session.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - ACTIVATED: PDU Session status is activated.
         - DEACTIVATED: PDU Session status is deactivated.

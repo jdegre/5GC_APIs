@@ -1,0 +1,223 @@
+openapi: 3.0.1
+info:
+  title: Common Type Definitions
+  version: 17.2.0
+  description: >-
+    OAS 3.0.1 specification of common type definitions in the Generic NRM
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 28.623; Generic NRM; Common type definitions
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.623/
+paths: {}
+components:
+  schemas:
+  
+    Float:
+      type: number
+      format: float
+    DateTime:
+      type: string
+      format: date-time
+    Latitude:
+      type: number
+      format: float
+      minimum: -90
+      maximum: 90
+    Longitude:
+      type: number
+      format: float
+      minimum: -180
+      maximum: 180
+
+    Dn:
+      type: string
+    DnList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Dn'
+
+    Mcc:
+      type: string
+      pattern: '^[0-9]{3}$'
+    Mnc:
+      type: string
+      pattern: '^[0-9]{2,3}$'
+    Nid:
+      type: string
+      pattern: '^[A-Fa-f0-9]{11}$'
+    PlmnId:
+      type: object
+      properties:
+        mcc:
+          $ref: '#/components/schemas/Mcc'
+        mnc:
+          $ref: '#/components/schemas/Mnc'
+    Tac:
+      type: string
+      pattern: '(^[A-Fa-f0-9]{4}$)|(^[A-Fa-f0-9]{6}$)'
+    UtraCellId:
+      type: integer
+    EutraCellId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{7}$'
+    NrCellId:
+      type: string
+      pattern: '^[A-Fa-f0-9]{9}$'
+    TimeWindow:
+      type: object
+      properties:
+        startTime:
+          $ref: '#/components/schemas/DateTime'
+        endTime:
+          $ref: '#/components/schemas/DateTime'
+    GeoCoordinate:
+      type: object
+      properties:
+        latitude:
+          $ref: '#/components/schemas/Latitude'
+        longitude:
+          $ref: '#/components/schemas/Longitude'
+    ConvexGeoPolygon:
+      type: array
+      items:
+        $ref: '#/components/schemas/GeoCoordinate'
+    GeoAreaToCellMapping:
+      type: object
+      properties:
+        convexGeoPolygon:
+          $ref: '#/components/schemas/ConvexGeoPolygon'
+        associationThreshold:
+          type: integer
+    AreaOfInterest:
+      oneOf:
+        - $ref: '#/components/schemas/GeoAreaToCellMapping'
+        - type: array
+          items:
+            $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tai'
+        - type: array
+          items:
+            $ref: '#/components/schemas/NrCellId'
+        - type: array
+          items:
+            $ref: '#/components/schemas/EutraCellId'
+        - type: array
+          items:
+            $ref: '#/components/schemas/UtraCellId'
+    Fqdn:
+      type: string
+    Ipv4Addr:
+      type: string
+      pattern: '^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$'
+      example: '198.51.100.1'
+    Ipv6Addr:
+      type: string
+      allOf:
+        - pattern: '^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$'
+        - pattern: '^((([^:]+:){7}([^:]+))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?))$'
+      example: '2001:db8:85a3::8a2e:370:7334'
+    Ipv6Prefix:
+      type: string
+      allOf:
+        - pattern: '^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))(\/(([0-9])|([0-9]{2})|(1[0-1][0-9])|(12[0-8])))$'
+        - pattern: '^((([^:]+:){7}([^:]+))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?))(\/.+)$'
+      example: '2001:db8:abcd:12::0/64'
+    IpAddr:
+      oneOf:
+        - $ref: '#/components/schemas/Ipv4Addr'
+        - $ref: '#/components/schemas/Ipv6Addr'
+    HostAddr:
+      #  This definition will be deprecated, when all occurances of HostAddr
+      #  are replaced by Host.
+      oneOf:
+        - $ref: '#/components/schemas/Ipv4Addr'
+        - $ref: '#/components/schemas/Ipv6Addr'
+        - $ref: '#/components/schemas/Fqdn'
+    Host:
+      oneOf:
+        - $ref: '#/components/schemas/IpAddr'
+        - $ref: '#/components/schemas/Fqdn'
+    Uri:
+      type: string
+
+    AdministrativeState:
+      type: string
+      enum:
+        - LOCKED
+        - UNLOCKED
+    OperationalState:
+      type: string
+      enum:
+        - ENABLED
+        - DISABLED
+    UsageState:
+      type: string
+      enum:
+        - IDEL
+        - ACTIVE
+        - BUSY
+
+    AttributeNameValuePairSet:
+      description: >-
+        The key of this map is the attribute name, and the value the attribute value.
+      type: object
+      minProperties: 1
+      additionalProperties:
+        nullable: true
+    AttributeValueChangeSet:
+      description: >-
+        The first array item contains the attribute name value pairs with the new values,
+        and the second array item the attribute name value pairs with the optional old values.
+      type: array
+      items:
+        $ref: '#/components/schemas/AttributeNameValuePairSet'
+      minItems: 1
+      maxItems: 2
+
+    Filter:
+      description: >-
+        The filter format shall be compliant to XPath 1.0.
+      type: string
+    SystemDN:
+      type: string
+
+    NotificationId:
+      type: integer
+    NotificationType:
+      oneOf:
+        - $ref: 'TS28532_FaultMnS.yaml#/components/schemas/AlarmNotificationTypes'
+        - $ref: 'TS28532_ProvMnS.yaml#/components/schemas/CmNotificationTypes'
+        - $ref: 'TS28532_PerfMnS.yaml#/components/schemas/PerfNotificationTypes'
+        - $ref: 'TS28532_HeartbeatNtf.yaml#/components/schemas/HeartbeatNotificationTypes'
+        - $ref: 'TS28532_FileDataReportingMnS.yaml#/components/schemas/FileNotificationTypes'
+    NotificationHeader:
+      type: object
+      properties:
+        href:
+          $ref: '#/components/schemas/Uri'
+        notificationId:
+          $ref: '#/components/schemas/NotificationId'
+        notificationType:
+          $ref: '#/components/schemas/NotificationType'
+        eventTime:
+          $ref: '#/components/schemas/DateTime'
+        systemDN:
+          $ref: '#/components/schemas/SystemDN'
+      required:
+        - href
+        - notificationId
+        - notificationType
+        - eventTime
+        - systemDN
+
+    ErrorResponse:
+      description: >-
+        Default schema for the response message body in case the request
+        is not successful.
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            errorInfo:
+              type: string

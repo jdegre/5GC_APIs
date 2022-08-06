@@ -1,0 +1,1058 @@
+openapi: 3.0.1
+info:
+  title: Fault Supervision MnS
+  version: 17.1.0
+  description: >-
+    OAS 3.0.1 definition of the Fault Supervision MnS
+    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 28.532; Generic management services
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.532/
+servers:
+  - url: '{MnSRoot}/FaultSupervisionMnS/{MnSversion}'
+    variables:
+      MnSRoot:
+        description: See subclause 4.4.3 of TS 32.158
+        default: http://example.com/3GPPManagement
+      MnSversion:
+        description: Version number of the OpenAPI definition
+        default: XXX
+paths:
+  /alarms:
+    get:
+      summary: Retrieve multiple alarms
+      description: >-
+        Retrieves the alarms identified by alarmAckState, baseObjectInstance
+        and filter.
+      parameters:
+        - name: alarmAckState
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AlarmAckState'
+        - name: baseObjectInstance
+          in: query
+          required: false
+          schema:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        - name: filter
+          in: query
+          required: false
+          schema:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/Filter'
+      responses:
+        '200':
+          description: >-
+            Success case ("200 OK").
+            Returns the alarms identified in the request. The alarmId is the key
+            of the map.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  allOf:
+                      - type: object
+                        properties:
+                          lastNotificationHeader:
+                            $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+                      - $ref: '#/components/schemas/AlarmRecord'
+                      - type: object
+                        properties:
+                          comments:
+                            $ref: '#/components/schemas/Comments'
+        default:
+          description: Response in case of error.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+    patch:
+      summary: 'Clear, acknowledge or unacknowledge multiple alarms'
+      description: >-
+        Clears, acknowledges or unacknowledges multiple alarms using patch. Depending
+        on which action is to be performed, different merge patch documents need
+        to be used.
+      requestBody:
+        description: >-
+          Patch documents for acknowledging and unacknowledging, or clearing multiple
+          alarms. The keys in the map are the alarmIds to be patched.
+        content:
+          application/merge-patch+json:
+            schema:
+              oneOf:
+                - type: object
+                  additionalProperties:
+                    $ref: '#/components/schemas/MergePatchAcknowledgeAlarm'
+                - type: object
+                  additionalProperties:
+                    $ref: '#/components/schemas/MergePatchClearAlarm'
+      responses:
+        '204':
+          description: >-
+            Success case ("204 No content").
+            The response message body is empty.
+        default:
+          description: Response in case of error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FailedAlarm'
+  /alarms/alarmCount:
+    get:
+      summary: Get the alarm count per perceived severity
+      parameters:
+        - name: alarmAckState
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AlarmAckState'
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >-
+            Success case ("200 OK").
+            The alarm count per perceived severity is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlarmCount'
+        default:
+          description: Response in case of error. The error case needs rework.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+  /alarms/{alarmId}:
+    patch:
+      summary: 'Clear, acknowledge or unacknowledge a single alarm'
+      description: >-
+        Clears, acknowledges or uncknowldeges a single alarm by patching the alarm
+        information. A conditional acknowledge request based on the perceived
+        severity is not supported.
+      parameters:
+        - name: alarmId
+          in: path
+          description: Identifies the alarm to be patched.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/MergePatchAcknowledgeAlarm'
+                - $ref: '#/components/schemas/MergePatchClearAlarm'
+      responses:
+        '204':
+          description: >-
+            Success case (204 No content).
+            The response message body is absent.
+        default:
+          description: Response in case of error.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+  /alarms/{alarmId}/comments:
+    post:
+      summary: Add a comment to a single alarm
+      description: >-
+        Adds a comment to an alarm identified by alarmId. The id of the new comment
+        is allocated by the producer.
+      parameters:
+        - name: alarmId
+          in: path
+          description: Identifies the alarm to which the comment shall be added.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses:
+        '201':
+          description: >-
+            Success case (201 Created).
+            The representation of the newly created comment resource shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          headers:
+            Location:
+              description: URI of the newly created comment resource.
+              required: true
+              schema:
+                type: string
+        default:
+          description: Error case.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+
+  /subscriptions:
+    post:
+      summary: Create a subscription
+      description: >-
+        To create a subscription the representation of the subscription is
+        POSTed on the /subscriptions collection resource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscription'
+      responses:
+        '201':
+          description: >-
+            Success case ("201 Created").
+            The representation of the newly created subscription resource shall
+            be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+          headers:
+            Location:
+              description: URI of the newly created subscription resource
+              required: true
+              schema:
+                type: string
+        default:
+          description: Error case.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+      callbacks:
+        notifyNewAlarm:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      oneOf:
+                        - $ref: '#/components/schemas/NotifyNewAlarm'
+                        - $ref: '#/components/schemas/NotifyNewSecAlarm'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyClearedAlarm:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyClearedAlarm'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyChangedAlarm:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyChangedAlarm'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyChangedAlarmGeneral:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      oneOf:
+                        - $ref: '#/components/schemas/NotifyChangedAlarmGeneral'
+                        - $ref: '#/components/schemas/NotifyChangedSecAlarmGeneral'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyCorrelatedNotificationChanged:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyCorrelatedNotificationChanged'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyAckStateChanged:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyAckStateChanged'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyComments:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyComments'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyPotentialFaultyAlarmList:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyPotentialFaultyAlarmList'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+        notifyAlarmListRebuilt:
+          '{request.body#/consumerReference}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/NotifyAlarmListRebuilt'
+              responses:
+                '204':
+                  description: >-
+                    Success case ("204 No Content").
+                    The notification is successfully delivered. The response message
+                    body is absent.
+                default:
+                  description: Error case.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+  /subscriptions/{subscriptionId}:
+    delete:
+      summary: Delete a subscription
+      description: >-
+        The subscription is deleted by deleting the corresponding subscription
+        resource. The resource to be deleted is identified with the path
+        component of the URI.
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: Identifies the subscription to be deleted.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: >-
+            Success case ("204 No Content").
+            The subscription resource has been deleted. The response message body
+            is absent.
+        default:
+          description: Error case.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+
+  #---- Definition of AlarmRecord ----------------------------------------------------#
+ 
+    AlarmId:
+      type: string
+    AlarmType:
+      type: string
+      enum:
+        - COMMUNICATIONS_ALARM
+        - QUALITY_OF_SERVICE_ALARM
+        - PROCESSING_ERROR_ALARM
+        - EQUIPMENT_ALARM
+        - ENVIRONMENTAL_ALARM
+        - INTEGRITY_VIOLATION
+        - OPERATIONAL_VIOLATION
+        - PHYSICAL_VIOLATION
+        - SECURITY_SERVICE_OR_MECHANISM_VIOLATION
+        - TIME_DOMAIN_VIOLATION
+    ProbableCause:
+      description: >-
+        The value of the probable cause may be a specific standardized string, or any
+        vendor provided string. Probable cause strings are not standardized in the
+        present document. They may be added in a future version. Up to then the
+        mapping of the generic probable cause strings "PROBABLE_CAUSE_001" to
+        "PROBABLE_CAUSE_005" is vendor specific.
+        The value of the probable cause may also be an integer. The mapping of integer
+        values to probable causes is vendor specific.
+      oneOf:
+        - anyOf:
+            - type: string
+              enum:
+                - PROBABLE_CAUSE_001
+                - PROBABLE_CAUSE_002
+                - PROBABLE_CAUSE_003
+                - PROBABLE_CAUSE_004
+                - PROBABLE_CAUSE_005
+            - type: string
+        - type: integer
+    SpecificProblem:
+      oneOf:
+        - type: string
+        - type: integer
+    PerceivedSeverity:
+      type: string
+      enum:
+        - INDETERMINATE
+        - CRITICAL
+        - MAJOR
+        - MINOR
+        - WARNING
+        - CLEARED
+    TrendIndication:
+      type: string
+      enum:
+        - MORE_SEVERE
+        - NO_CHANGE
+        - LESS_SEVERE
+    ThresholdHysteresis:
+      type: object
+      required:
+        - high
+      properties:
+        high:
+          oneOf:
+            - type: integer
+            - $ref: 'TS28623_ComDefs.yaml#/components/schemas/Float'
+        low:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Float'
+    ThresholdLevelInd:
+      oneOf:
+        - type: object
+          properties:
+            up:
+              $ref: '#/components/schemas/ThresholdHysteresis'
+        - type: object
+          properties:
+            down:
+              $ref: '#/components/schemas/ThresholdHysteresis'
+    ThresholdInfo:
+      type: object
+      properties:
+        observedMeasurement:
+          type: string
+        observedValue:
+          oneOf:
+            - type: integer
+            - $ref: 'TS28623_ComDefs.yaml#/components/schemas/Float'
+        thresholdLevel:
+          $ref: '#/components/schemas/ThresholdLevelInd'
+        armTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+      required:
+        - observedMeasurement
+        - observedValue
+    CorrelatedNotification:
+      type: object
+      properties:
+        sourceObjectInstance:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        notificationIds:
+          type: array
+          items:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationId'
+      required:
+        - sourceObjectInstance
+        - notificationIds
+    CorrelatedNotifications:
+      type: array
+      items:
+        $ref: '#/components/schemas/CorrelatedNotification'
+    AckState:
+      type: string
+      enum:
+        - ACKNOWLEDGED
+        - UNACKNOWLEDGED
+
+    AlarmRecord:
+      description: >-
+        The alarmId is not a property of an alarm record. It is used as key
+        in the map of alarm records instead.
+      type: object
+      properties:
+        # alarmId:
+        #  $ref: '#/components/schemas/AlarmId'
+        objectInstance:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        notificationId:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationId'
+        alarmRaisedTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        alarmChangedTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        alarmClearedTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        alarmType:
+          $ref: '#/components/schemas/AlarmType'
+        probableCause:
+          $ref: '#/components/schemas/ProbableCause'
+        specificProblem:
+          $ref: '#/components/schemas/SpecificProblem'
+        perceivedSeverity:
+          $ref: '#/components/schemas/PerceivedSeverity'
+        backedUpStatus:
+          type: boolean
+        backUpObject:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        trendIndication:
+          $ref: '#/components/schemas/TrendIndication'
+        thresholdinfo:
+          $ref: '#/components/schemas/ThresholdInfo'
+        correlatedNotifications:
+          $ref: '#/components/schemas/CorrelatedNotifications'
+        stateChangeDefinition:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeValueChangeSet'
+        monitoredAttributes:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+        proposedRepairActions:
+          type: string
+        additionalText:
+          type: string
+        additionalInformation:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+
+        rootCauseIndicator:
+          type: boolean
+
+        ackTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        ackUserId:
+          type: string
+        ackSystemId:
+          type: string
+        ackState:
+          $ref: '#/components/schemas/AckState'
+
+        clearUserId:
+          type: string
+        clearSystemId:
+          type: string
+        serviceUser:
+          type: string
+        serviceProvider:
+          type: string
+        securityAlarmDetector:
+          type: string
+
+  #---- Definition of alarm notifications --------------------------------------------#
+  
+    AlarmNotificationTypes:
+      type: string
+      enum:
+        - notifyNewAlarm
+        - notifyChangedAlarm
+        - notifyChangedAlarmGeneral
+        - notifyAckStateChanged
+        - notifyCorrelatedNotificationChanged
+        - notifyComments
+        - notifyClearedAlarm
+        - notifyAlarmListRebuilt
+        - notifyPotentialFaultyAlarmList
+    AlarmListAlignmentRequirement:
+      type: string
+      enum:
+        - ALIGNMENT_REQUIRED
+        - ALIGNMENT_NOT_REQUIRED
+
+    NotifyNewAlarm:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - probableCause
+            - perceivedSeverity
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            specificProblem:
+              $ref: '#/components/schemas/SpecificProblem'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            backedUpStatus:
+              type: boolean
+            backUpObject:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+            trendIndication:
+              $ref: '#/components/schemas/TrendIndication'
+            thresholdInfo:
+              $ref: '#/components/schemas/ThresholdInfo'
+            correlatedNotifications:
+              $ref: '#/components/schemas/CorrelatedNotifications'
+            stateChangeDefinition:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeValueChangeSet'
+            monitoredAttributes:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+            proposedRepairActions:
+              type: string
+            additionalText:
+              type: string
+            additionalInformation:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+            rootCauseIndicator:
+              type: boolean
+    NotifyNewSecAlarm:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - probableCause
+            - perceivedSeverity
+            - serviceUser
+            - serviceProvider
+            - securityAlarmDetector 
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            correlatedNotifications:
+              $ref: '#/components/schemas/CorrelatedNotifications'
+            additionalText:
+              type: string
+            additionalInformation:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+            rootCauseIndicator:
+              type: boolean
+            serviceUser:
+              type: string
+            serviceProvider:
+              type: string
+            securityAlarmDetector:
+              type: string
+    NotifyClearedAlarm:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - probableCause
+            - perceivedSeverity
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            correlatedNotifications:
+              $ref: '#/components/schemas/CorrelatedNotifications'
+            clearUserId:
+              type: string
+            clearSystemId:
+              type: string
+    NotifyChangedAlarm:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - probableCause
+            - perceivedSeverity
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+    NotifyChangedAlarmGeneral:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            specificProblem:
+              $ref: '#/components/schemas/SpecificProblem'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            correlatedNotifications:
+              $ref: '#/components/schemas/CorrelatedNotifications'
+            backedUpStatus:
+              type: boolean
+            backUpObject:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+            trendIndication:
+              $ref: '#/components/schemas/TrendIndication'
+            thresholdInfo:
+              $ref: '#/components/schemas/ThresholdInfo'
+            stateChangeDefinition:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeValueChangeSet'
+            monitoredAttributes:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+            proposedRepairActions:
+              type: string
+            additionalText:
+              type: string
+            additionalInformation:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+            rootCauseIndicator:
+              type: boolean
+            changedAlarmAttributes:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+    NotifyChangedSecAlarmGeneral:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - serviceUser
+            - serviceProvider
+            - securityAlarmDetector
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            correlatedNotifications:
+              $ref: '#/components/schemas/CorrelatedNotifications'
+            additionalText:
+              type: string
+            additionalInformation:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+            rootCauseIndicator:
+              type: boolean
+            serviceUser:
+              type: string
+            serviceProvider:
+              type: string
+            securityAlarmDetector:
+              type: string
+            changedAlarmAttributes:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
+    NotifyCorrelatedNotificationChanged:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - correlatedNotifications
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            correlatedNotifications:
+              $ref: '#/components/schemas/CorrelatedNotifications'
+            rootCauseIndicator:
+              type: boolean
+    NotifyAckStateChanged:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - probableCause
+            - perceivedSeverity
+            - ackState
+            - ackUserId
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            ackState:
+              $ref: '#/components/schemas/AckState'
+            ackUserId:
+              type: string
+            ackSystemId:
+              type: string
+    NotifyComments:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - alarmId
+            - alarmType
+            - probableCause
+            - perceivedSeverity
+            - comments
+          properties:
+            alarmId:
+              $ref: '#/components/schemas/AlarmId'
+            alarmType:
+              $ref: '#/components/schemas/AlarmType'
+            probableCause:
+              $ref: '#/components/schemas/ProbableCause'
+            perceivedSeverity:
+              $ref: '#/components/schemas/PerceivedSeverity'
+            comments:
+              $ref: '#/components/schemas/Comments'
+    NotifyPotentialFaultyAlarmList:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - reason
+          properties:
+            reason:
+              type: string
+    NotifyAlarmListRebuilt:
+      allOf:
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
+        - type: object
+          required:
+            - reason
+          properties:
+            reason:
+              type: string
+            alarmListAlignmentRequirement:
+              $ref: '#/components/schemas/AlarmListAlignmentRequirement'
+
+  #---- Definition of query parameters -----------------------------------------------#
+  
+    AlarmAckState:
+      type: string
+      enum:
+        - ALL_ALARMS
+        - ALL_ACTIVE_ALARMS
+        - ALL_ACTIVE_AND_ACKNOWLEDGED_ALARMS
+        - ALL_ACTIVE_AND_UNACKNOWLEDGED_ALARMS
+        - ALL_CLEARED_AND_UNACKNOWLEDGED_ALARMS
+        - ALL_UNACKNOWLEDGED_ALARMS
+        
+  #---- Definition of patch documents ------------------------------------------------#
+
+    MergePatchAcknowledgeAlarm:
+      description: >-
+        Patch document acknowledging or unacknowledging a single alarm. For
+        acknowleding an alarm the value of ackState is ACKNOWLEDGED, for unacknowleding
+        an alarm the value of ackState is UNACKNOWLEDGED.
+      type: object
+      required:
+        - ackUserId
+        - ackState
+      properties:
+        ackUserId:
+          type: string
+        ackSystemId:
+          type: string
+        ackState:
+          $ref: '#/components/schemas/AckState'
+    MergePatchClearAlarm:
+      description: Patch document for clearing a single alarm
+      type: object
+      required:
+        - clearUserId
+        - perceivedSeverity
+      properties:
+        clearUserId:
+          type: string
+        clearSystemId:
+          type: string
+        perceivedSeverity:
+          type: string
+          enum:
+            - CLEARED
+
+  #---- Definition of method responses -----------------------------------------------#
+
+    FailedAlarm:
+      type: object
+      required:
+        - alarmId
+        - failureReason
+      properties:
+        alarmId:
+          $ref: '#/components/schemas/AlarmId'
+        failureReason:
+          type: string
+
+  #---- Definition of resources ------------------------------------------------------#
+
+    AlarmCount:
+      type: object
+      required:
+        - criticalCount
+        - majorCount
+        - minorCount
+        - warningCount
+        - indeterminateCount
+        - clearedCount
+      properties:
+        criticalCount:
+          type: integer
+        majorCount:
+          type: integer
+        minorCount:
+          type: integer
+        warningCount:
+          type: integer
+        indeterminateCount:
+          type: integer
+        clearedCount:
+          type: integer
+    Comment:
+      type: object
+      properties:
+        commentTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        commentUserId:
+          type: string
+        commentSystemId:
+          type: string
+        commentText:
+          type: string
+    Comments:
+      description: >-
+        Collection of comments. The comment identifiers are allocated by the
+        MnS producer and used as key in the map.
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/Comment'
+    Subscription:
+      type: object
+      properties:
+        consumerReference:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Uri'
+        timeTick:
+          type: integer
+        filter:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Filter'

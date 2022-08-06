@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0-alpha.2'
+  version: '1.2.0'
   title: 'N32 Handshake API'
   description: |
     N32-c Handshake Service.  
@@ -14,7 +14,7 @@ servers:
         default: https://example.com
         description:  apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 externalDocs:
-  description: 3GPP TS 29.573 V17.4.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
+  description: 3GPP TS 29.573 V17.5.0; 5G System; Public Land Mobile Network (PLMN) Interconnection; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.573/
 
 paths:
@@ -259,6 +259,7 @@ components:
           items:
             $ref: '#/components/schemas/IeInfo'
           minItems: 1
+# The attribute name does not follow the naming conventions specified in 3GPP TS 29.501. The attribute name is kept though as defined in the current specification for backward compatibility reason.
 
     ProtectionPolicy:
       description: The protection policy to be negotiated between the SEPPs
@@ -285,7 +286,7 @@ components:
         - supportedSecCapabilityList
       properties:
         sender:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         supportedSecCapabilityList:
           type: array
           items:
@@ -294,13 +295,21 @@ components:
         3GppSbiTargetApiRootSupported:
           type: boolean
           default: false
+# The attribute name does not follow the naming conventions specified in 3GPP TS 29.501. The attribute name is kept though as defined in the current specification for backward compatibility reason.
         plmnIdList:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
           minItems: 1
+        snpnIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+          minItems: 1
         targetPlmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        targetSnpnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         intendedUsagePurpose:
           type: array
           items:
@@ -317,16 +326,22 @@ components:
         - selectedSecCapability
       properties:
         sender:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         selectedSecCapability:
           $ref: '#/components/schemas/SecurityCapability'
         3GppSbiTargetApiRootSupported:
           type: boolean
           default: false
+# The attribute name does not follow the naming conventions specified in 3GPP TS 29.501. The attribute name is kept though as defined in the current specification for backward compatibility reason.
         plmnIdList:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
+        snpnIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
           minItems: 1
         allowedUsagePurpose:
           type: array
@@ -368,7 +383,7 @@ components:
             $ref: '#/components/schemas/IpxProviderSecInfo'
           minItems: 1
         sender:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
 
     SecParamExchRspData:
       description: Response data structure for parameter exchange
@@ -391,7 +406,7 @@ components:
             $ref: '#/components/schemas/IpxProviderSecInfo'
           minItems: 1
         sender:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
 
     N32fContextInfo:
       description: N32-f context information
@@ -421,6 +436,9 @@ components:
           type: string
         n32fErrorType:
           $ref: '#/components/schemas/N32fErrorType'
+        n32fContextId:
+          type: string
+          pattern: '^[A-Fa-f0-9]{16}$'
         failedModificationList:
           type: array
           items:
@@ -439,7 +457,7 @@ components:
         - n32fErrorType
       properties:
         ipxId:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         n32fErrorType:
           $ref: '#/components/schemas/N32fErrorType'
     N32fErrorDetail:
@@ -460,7 +478,7 @@ components:
         - ipxProviderId
       properties:
         ipxProviderId:
-          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/Fqdn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         rawPublicKeyList:
           type: array
           items:
@@ -517,6 +535,10 @@ components:
           enum:
             - ROAMING
             - INTER_PLMN_MOBILITY
+            - SMS_INTERCONNECT
             - ROAMING_TEST
             - INTER_PLMN_MOBILITY_TEST
+            - SMS_INTERCONNECT_TEST
+            - SNPN_INTERCONNECT
+            - SNPN_INTERCONNECT_TEST
         - type: string

@@ -5,16 +5,16 @@ info:
     API for API invoker management.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.2.0-alpha.4"
+  version: "1.2.0"
 externalDocs:
-  description: 3GPP TS 29.222 V17.4.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V17.5.0 Common API Framework for 3GPP Northbound APIs
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 servers:
   - url: '{apiRoot}/api-invoker-management/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 7.5 of 3GPP TS 29.222
+        description: apiRoot as defined in clause 7.5 of 3GPP TS 29.222
 
 paths:
   /onboardedInvokers:
@@ -75,7 +75,9 @@ paths:
                 $ref: '#/components/schemas/APIInvokerEnrolmentDetails'
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/api-invoker-management/v1/onboardedInvokers/{onboardingId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/api-invoker-management/v1/onboardedInvokers/{onboardingId}
               required: true
               schema:
                 type: string
@@ -201,9 +203,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIInvokerEnrolmentDetails'
         '202':
-          description: The CAPIF core has accepted the API invoker update details request and is processing it.
+          description: >
+            The CAPIF core has accepted the API invoker update details request and is processing it.
         '204':
-          description: API invoker’s information updated successfully, with no content to be sent in the response body.
+          description: >
+            API invoker's information updated successfully, with no content to be
+            sent in the response body.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -249,7 +254,9 @@ paths:
               $ref: '#/components/schemas/APIInvokerEnrolmentDetailsPatch'
       responses:
         '200':
-          description: The definition of the service API is modified successfully and a representation of the updated service API is returned in the request body.
+          description: >
+            The definition of the service API is modified successfully and a
+            representation of the updated service API is returned in the request body.
           content:
             application/json:
               schema:
@@ -290,27 +297,35 @@ components:
       properties:
         apiInvokerPublicKey:
           type: string
-          description: The API Invoker’s public key
+          description: The API Invoker's public key
         apiInvokerCertificate:
           type: string
-          description: The API Invoker’s generic client certificate, provided by the CAPIF core function.
+          description: >
+            The API Invoker's generic client certificate, provided by the CAPIF core function.
         onboardingSecret:
           type: string
-          description: The API Invoker’s onboarding secret, provided by the CAPIF core function.
+          description: >
+            The API Invoker's onboarding secret, provided by the CAPIF core function.
       required:
         - apiInvokerPublicKey
+
     APIList:
       type: array
       items:
         $ref: 'TS29222_CAPIF_Publish_Service_API.yaml#/components/schemas/ServiceAPIDescription'
       minItems: 1
       description: The list of service APIs that the API Invoker is allowed to invoke
+
     APIInvokerEnrolmentDetails:
       type: object
       properties:
         apiInvokerId:
           type: string
-          description: API invoker ID assigned by the CAPIF core function to the API invoker while on-boarding the API invoker. Shall not be present in the HTTP POST request from the API invoker to the CAPIF core function, to on-board itself. Shall be present in all other HTTP requests and responses.
+          description: >
+            API invoker ID assigned by the CAPIF core function to the API invoker while
+            on-boarding the API invoker. Shall not be present in the HTTP POST request
+            from the API invoker to the CAPIF core function, to on-board itself. Shall be
+            present in all other HTTP requests and responses.
           readOnly: true
         onboardingInformation:
           $ref: '#/components/schemas/OnboardingInformation'
@@ -318,20 +333,25 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         requestTestNotification:
           type: boolean
-          description: Set to true by Subscriber to request the CAPIF core function to send a test notification as defined in in subclause 7.6. Set to false or omitted otherwise.
+          description: >
+            Set to true by Subscriber to request the CAPIF core function to send a
+            test notification as defined in in clause 7.6. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         apiList:
           $ref: '#/components/schemas/APIList'
         apiInvokerInformation:
           type: string
-          description: Generic information related to the API invoker such as details of the device or the application.
+          description: >
+             Generic information related to the API invoker such as details of
+             the device or the application.
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - onboardingInformation
         - notificationDestination
       description: Information about the API Invoker that requested to onboard
+
     OnboardingNotification:
       type: object
       description: Represents a notification of on-boarding or update result.
@@ -347,9 +367,10 @@ components:
           $ref: '#/components/schemas/APIList'
       required:
         - result
+
     APIInvokerEnrolmentDetailsPatch:
       type: object
-      description: Represents an API Invoker’s enrolment details to be updated.
+      description: Represents an API Invoker's enrolment details to be updated.
       properties:
         onboardingInformation:
           $ref: '#/components/schemas/OnboardingInformation'
@@ -359,4 +380,6 @@ components:
           $ref: '#/components/schemas/APIList'
         apiInvokerInformation:
           type: string
-          description: Generic information related to the API invoker such as details of the device or the application.
+          description: >
+            Generic information related to the API invoker such as details of
+            the device or the application.

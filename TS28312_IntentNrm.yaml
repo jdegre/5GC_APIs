@@ -1,0 +1,645 @@
+openapi: 3.0.1
+info:
+  title: Intent NRM
+  version: 17.0.0
+  description: >-
+    OAS 3.0.1 definition of the Intent NRM
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 28.312; Intent driven management services for mobile networks
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.312/
+paths: {}
+components:
+  schemas:
+
+    Intent-Single:
+      allOf:
+      - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'    
+      - type: object
+        properties:
+          userLabel:
+            type: string
+          intentExpectations:
+            type: array
+            items:
+              $ref: "#/components/schemas/IntentExpectation"
+          intentContexts:
+            type: array
+            items:
+              $ref: "#/components/schemas/IntentContext"
+          intentFulfilmentInfo:
+            $ref: "#/components/schemas/FulfilmentInfo"
+    IntentExpectation:
+      type: object
+      properties:
+        expectationId:
+          type: string
+        expectationVerb:
+           $ref: "#/components/schemas/ExpectationVerb"
+        expectationObjects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExpectationObject"
+        expectationTargets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExpectationTarget"
+        expectationContexts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExpectationContext"
+        expectationfulfilmentInfo:
+            $ref: "#/components/schemas/FulfilmentInfo"
+    
+    ExpectationObject:
+      type: object
+      properties:
+        objectType:
+          type: string
+          enum:
+            - RAN_SubNetwrok  #value for Radio Network Expectation--#
+            - Service_Support  #value for Service Support Expectation--#
+            - TBD    #-This will be added based on defined scenario specfic intent expectation-#
+        objectInstance:
+          $ref: "TS28623_ComDefs.yaml#/components/schemas/Dn"
+        objectContexts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObjectContext"            
+    
+    ExpectationTarget:
+      oneOf:
+      #--ExpectationTargets defind for Radio Network Expectation (ObjectType is RAN_SubNetwork)- #      
+        - $ref: "#/components/schemas/WeakRSRPRatioTarget"
+        - $ref: "#/components/schemas/LowSINRRatioTarget"
+        - $ref: "#/components/schemas/AveULRANUEThptTarget"
+        - $ref: "#/components/schemas/AveDLRANUEThptTarget"
+        - $ref: "#/components/schemas/LowULRANUEThptRatioTarget"
+        - $ref: "#/components/schemas/LowDLRANUEThptRatioTarget"
+      #--ExpectationTargets defind for Radio Network Expectation (ObjectType is RAN_SubNetwork)- #   
+      #--ExpectationTargets defind for Service Support Expectation (ObjectType is ServiceSupport)- #
+        - $ref: "#/components/schemas/DLThptPerUETarget"
+        - $ref: "#/components/schemas/ULThptPerUETarget"
+        - $ref: "#/components/schemas/DLLatencyTarget"
+        - $ref: "#/components/schemas/ULLatencyTarget"
+        - $ref: "#/components/schemas/MaxNumberofUEsTarget"
+        - $ref: "#/components/schemas/ActivityFactorTarget"
+        - $ref: "#/components/schemas/UESpeedTarget"
+     #--ExpectationTargets defind for Service Support Expectation (ObjectType is ServiceSupport)- #
+      #--ExpectationTargets defind for other Scenario specific Expectation-----TBD---------------# 
+      #--ExpectationTargets defind for other Scenario specific Expectation-----TBD---------------# 
+    
+    
+    ObjectContext:
+      oneOf:
+      #--ObjectContext defind for Radio Network Expectation (ObjectType is RAN_SubNetwork)-------#          
+        - $ref: "#/components/schemas/CoverageAreaPolygonContext"
+        - $ref: "#/components/schemas/CoverageTACContext"
+        - $ref: "#/components/schemas/PLMNContext"
+        - $ref: "#/components/schemas/NRFqBandContext"
+        - $ref: "#/components/schemas/RATContext"
+      #--ObjectContext defind for Radio Network Expectation (ObjectType is RAN_SubNetwork)-------#   
+      #--ObjectContext defind for Service Support Expectation (ObjectType is ServiceSupport)-------#
+        - $ref: "#/components/schemas/EdgeIdenfiticationIdContext"
+        - $ref: "#/components/schemas/EdgeIdenfiticationLocContext"
+        - $ref: "#/components/schemas/CoverageAreaTAContext"
+      #--ObjectContext defind for Service Support Expectation (ObjectType is ServiceSupport)-------#
+
+      #--ObjectContext defind for other Scenario specific Expectation -----------TBD------------#  
+      #--ObjectContext defind for other Scenario specific Expectation -----------TBD------------#  
+
+ 
+    ExpectationContext:
+      oneOf:
+     #--ExpectationContext defind for Service Support Expectation (ObjectType is Service_Support)- #
+        - $ref: "#/components/schemas/ServiceStartTimeContext"
+        - $ref: "#/components/schemas/ServiceEndTimeContext"
+        - $ref: "#/components/schemas/UEMobilityLevelContext"
+        - $ref: "#/components/schemas/ResourceSharingLevelContext"
+     #--ExpectationContext defind for Service Support Expectation (ObjectType is Service_Support)- #   
+
+    IntentContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+        contextCondition:
+          $ref: "#/components/schemas/Condition"
+        contextValueRange:
+          type: array
+          items:
+            type: number 
+    Condition:
+      type: string
+      enum:
+        - Is_equal_to
+        - Is_less_than
+        - Is_greater_than
+        - Is_within_the_range
+
+    FulfilStatus:
+      type: string
+      enum:
+          - FULFILLED
+          - NOT_FULFILLED
+
+    NotFulfilledState:
+      type: string
+      enum:
+          - ACKNOWLEDGED
+          - COMPLIANT
+          - DEGRADED
+          - SUSPENDED
+          - TERMINATED
+          - FULFILMENTFAILED
+
+    FulfilmentInfo:
+      type: object
+      properties:
+        fulfilStatus:
+          $ref: "#/components/schemas/FulfilStatus"
+        notFullfilledState:
+          description: ->
+            An attribute which is used when FulfilmentInfo is implemented for IntentFulfilmentInfo
+          $ref: "#/components/schemas/NotFulfilledState"
+        notFulfilledReasons:
+          description: ->
+            An attribute which is used when FulfilmentInfo is implemented for IntentFulfilmentInfo
+          type: string
+
+    ExpectationVerb:
+      type: string
+      enum:
+          - DELIVER
+          - ENSURE
+
+   #-------Definition of the concrete ExpectationTarget dataType----------#     
+    WeakRSRPRatioTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - WeakRSRPRatio
+        targetCondition:
+          type: string
+          enum:
+            - Is_less_than
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+        targetContexts:
+          $ref: "#/components/schemas/WeakRSRPContext"
+        targetFulfilmentInfo:
+          $ref: "#/components/schemas/FulfilmentInfo"
+
+    WeakRSRPContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - WeakRSRPThreshold
+        contextCondition:
+          type: string
+          enum:
+            - Is_less_than
+        contextValueRange:
+          type: number
+
+    LowSINRRatioTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - LowSINRRatio
+        targetCondition:
+          type: string
+          enum:
+            - Is_less_than
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+        targetContexts:
+          $ref: "#/components/schemas/LowSINRContext"
+        targetFulfilmentInfo:
+          $ref: "#/components/schemas/FulfilmentInfo"
+
+    LowSINRContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - LowSINRThreshold
+        contextCondition:
+          type: string
+          enum:
+            - Is_less_than
+        contextValueRange:
+          type: integer
+
+    AveULRANUEThptTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - AveULRANUEThpt
+        targetCondition:
+          type: string
+          enum:
+            - Is_greater_than
+        targetValueRange:
+          type: integer
+        targetFulfilmentInfo:
+          $ref: "#/components/schemas/FulfilmentInfo"
+
+    AveDLRANUEThptTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - AveDLRANUEThpt
+        targetCondition:
+          type: string
+          enum:
+            - Is_greater_than
+        targetValueRange:
+          type: integer
+        targetFulfilmentInfo:
+          $ref: "#/components/schemas/FulfilmentInfo"
+
+    LowULRANUEThptRatioTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - LowULRANUEThptRatio
+        targetCondition:
+          type: string
+          enum:
+            - Is_less_than
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+        targetContexts:
+          $ref: "#/components/schemas/LowULRANUEThptContext"
+        targetFulfilmentInfo:
+          $ref: "#/components/schemas/FulfilmentInfo"
+
+    LowULRANUEThptContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - LowULRANUEThptThreshold
+        contextCondition:
+          type: string
+          enum:
+            - Is_less_than
+        contextValueRange:
+          type: number
+
+    LowDLRANUEThptRatioTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - LowDLRANUEThptRatio
+        targetCondition:
+          type: string
+          enum:
+            - Is_less_than
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+        targetContexts:
+          $ref: "#/components/schemas/LowDLRANUEThptContext"
+        targetFulfilmentInfo:
+          $ref: "#/components/schemas/FulfilmentInfo"
+
+    LowDLRANUEThptContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - LowDLRANUEThptThreshold
+        contextCondition:
+          type: string
+          enum:
+            - Is_less_than
+        contextValueRange:
+          type: number
+    DLThptPerUETarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - DlThptPerUE
+        targetCondition:
+          type: string
+          enum:
+            - Is_greater_than
+        targetValueRange:
+          $ref: "TS28541_SliceNrm.yaml#/components/schemas/XLThpt"
+    ULThptPerUETarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - UlThptPerUE
+        targetCondition:
+          type: string
+          enum:
+            - Is_greater_than
+        targetValueRange:
+          $ref: "TS28541_SliceNrm.yaml#/components/schemas/XLThpt"
+    DLLatencyTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - DlLatency
+        targetCondition:
+          type: string
+          enum:
+            - Is_less_than
+        targetValueRange:
+          type: integer
+    ULLatencyTarget:
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - UlLatency
+        targetCondition:
+          type: string
+          enum:
+            - Is_less_than
+        targetValueRange:
+          type: integer
+    MaxNumberofUEsTarget:
+      type: object
+      properties:
+        targetAttribute:
+          type: string
+          enum:
+            - maxNumberofUEs
+        targetCondition:
+          type: string
+          enum:
+            - Is_less _than
+        targetValueRange:
+          type: integer
+    ActivityFactorTarget:
+      type: object
+      properties:
+        targetAttribute:
+          type: string
+          enum:
+            - activityFactor
+        targetCondition:
+          type: string
+          enum:
+            - Is_equal _than
+        targetValueRange:
+          type: integer
+    UESpeedTarget:
+      type: object
+      properties:
+        targetAttribute:
+          type: string
+          enum:
+            - uESpeed
+        targetCondition:
+          type: string
+          enum:
+            - Is_less _than
+        targetValueRange:
+          type: integer
+
+   #-------Definition of the concrete ExpectationTarget  dataType----------#  
+   
+   #-------Definition of the concrete ObjectTarget dataType----------------#  
+    CoverageAreaPolygonContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - CoverageAreaPolygon
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            $ref: "#/components/schemas/CoverageArea"
+    CoverageArea:
+      type: string
+    CoverageTACContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - CoverageAreaTac
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            $ref: "TS28541_NrNrm.yaml#/components/schemas/NrTac"
+
+    PLMNContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - PLMN
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            $ref: "TS28541_NrNrm.yaml#/components/schemas/PlmnId"
+
+    NRFqBandContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - NRFqBand
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            type: string
+
+    RATContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - RAT
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            type: string
+            enum:
+              - UTRAN
+              - EUTRAN
+              - NR
+    EdgeIdenfiticationIdContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - edgeIdentificationId
+        contextCondition:
+          type: string
+          enum:
+            - Is_equal_than
+        contextValueRange:
+          type: array
+          items:
+            type: string
+    EdgeIdenfiticationLocContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - edgeIdentificationTarget
+        contextCondition:
+          type: string
+          enum:
+            - Is_equal_than
+        contextValueRange:
+          type: array
+          items:
+            type: string
+    CoverageAreaTAContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - coverageAreaTA
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            $ref: "#/components/schemas/CoverageAreaTAList"
+    CoverageAreaTAList:
+          type: integer
+
+   #-------Definition of the concrete ObjectTarget dataType----------------#
+   #-------Definition of the concrete ExpectionContext dataType----------------#
+    ServiceStartTimeContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - ServiceStartTime
+        contextCondition:
+          type: string
+          enum:
+            - Is_equal_than
+        contextValueRange:
+          type: string
+    ServiceEndTimeContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - ServiceEndTime
+        contextCondition:
+          type: string
+          enum:
+            - Is_equal_than
+        contextValueRange:
+          type: string
+    UEMobilityLevelContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - UEMobilityLevel
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            $ref: "TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel"
+    ResourceSharingLevelContext:
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - ResourceSharingLevel
+        contextCondition:
+          type: string
+          enum:
+            - Is_within_the_range
+        contextValueRange:
+          type: array
+          items:
+            $ref: "TS28541_SliceNrm.yaml#/components/schemas/SharingLevel"
+   #-------Definition of the concrete ExpectionContext dataType----------------#
+
+   
+   #------Definition of JSON arrays for name-contained IOCs ---------------#
+                                
+    Intent-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/Intent-Single'              
+   #------Definition of JSON arrays for name-contained IOCs ---------------#
+   
+   #----- Definitions in TS 28.312 for TS 28.532 --------------------------#
+    resources-intentNrm:
+      oneOf:
+       - $ref: '#/components/schemas/Intent-Single'
+   #----- Definitions in TS 28.312 for TS 28.532 --------------------------#

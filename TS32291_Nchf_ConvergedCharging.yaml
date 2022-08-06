@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.1.0-alpha.3
+  version: 3.1.0
   description: |
-    ConvergedCharging Service    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    ConvergedCharging Service    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V17.2.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V17.3.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -44,6 +44,10 @@ paths:
                 oneOf:
                   - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
                   - $ref: '#/components/schemas/ChargingDataResponse'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '401':
           $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
@@ -97,6 +101,10 @@ paths:
                         $ref: '#/components/schemas/ChargingNotifyResponse'
                 '204':
                   description: 'No Content, Notification was succesfull'
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
                 '400':
                   description: Bad request
                   content:
@@ -129,6 +137,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargingDataResponse'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           description: Bad request
           content:
@@ -189,6 +201,10 @@ paths:
       responses:
         '204':
           description: No Content.
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '401':
           $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '404':
@@ -282,6 +298,16 @@ components:
           $ref: '#/components/schemas/MMTelChargingInformation'
         iMSChargingInformation:
           $ref: '#/components/schemas/IMSChargingInformation'
+        edgeInfrastructureUsageChargingInformation':
+          $ref: '#/components/schemas/EdgeInfrastructureUsageChargingInformation'
+        eASDeploymentChargingInformation:
+          $ref: '#/components/schemas/EASDeploymentChargingInformation'
+        directEdgeEnablingServiceChargingInformation:
+          $ref: '#/components/schemas/NEFChargingInformation'
+        exposedEdgeEnablingServiceChargingInformation:
+          $ref: '#/components/schemas/NEFChargingInformation'
+        proSeChargingInformation:
+          $ref: '#/components/schemas/ProseChargingInformation'
       required:
         - nfConsumerIdentification 
         - invocationTimeStamp
@@ -396,7 +422,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         tariffTimeChange:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-
       required:
         - triggerType
         - triggerCategory
@@ -472,7 +497,6 @@ components:
         eventTimeStamps:
           
           type: array
-
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
           minItems: 0
@@ -482,6 +506,8 @@ components:
           $ref: '#/components/schemas/PDUContainerInformation'
         nSPAContainerInformation:
           $ref: '#/components/schemas/NSPAContainerInformation'
+        pC5ContainerInformation:
+          $ref: '#/components/schemas/PC5ContainerInformation'
       required:
         - localSequenceNumber
     GrantedUnit:
@@ -640,11 +666,6 @@ components:
           $ref: '#/components/schemas/RedundantTransmissionType'
         pDUSessionPairID:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
-        qosMonitoringReport:
-          type: array
-          items:
-            $ref: '#/components/schemas/QosMonitoringReport'
-          minItems: 0
         5GLANTypeService:
             $ref: '#/components/schemas/5GLANTypeService'
       required:
@@ -695,6 +716,11 @@ components:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/SteeringMode'
         trafficForwardingWay:
           $ref: '#/components/schemas/TrafficForwardingWay'
+        qosMonitoringReport:
+          type: array
+          items:
+            $ref: '#/components/schemas/QosMonitoringReport'
+          minItems: 0
     NSPAContainerInformation:
       type: object
       properties:
@@ -1412,8 +1438,11 @@ components:
           items:
             type: string
           minItems: 1
-        calledIdentityChange:
-          $ref: '#/components/schemas/CalledIdentityChange'
+        calledIdentityChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalledIdentityChange'
+          minItems: 1
         associatedURI:
           type: array
           items:
@@ -1523,6 +1552,211 @@ components:
           $ref: '#/components/schemas/TADIdentifier'
         feIdentifierList:
           type: string
+    EdgeInfrastructureUsageChargingInformation:
+      type: object
+      properties:
+        meanVirtualCPUUsage:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        meanVirtualMemoryUsage:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        meanVirtualDiskUsage:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        durationStartTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        durationEndTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    EASDeploymentChargingInformation:
+      type: object
+      properties:
+# To be introduced once the reference to EdgeNrm.yaml is resolved
+#       eEASDeploymentRequirements:
+#         $ref: 'EdgeNrm.yaml#/components/schemas/EASRequirements'
+        lCMStartTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        lCMEndTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
+    PC5ContainerInformation:
+      type: object
+      properties:
+        coverageInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CoverageInfo'
+        radioParameterSetInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RadioParameterSetInfo'
+        transmitterInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransmitterInfo'
+          minItems: 0
+        timeOfFirst Transmission:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        timeOfFirst Reception:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    CoverageInfo:
+      type: object
+      properties:
+        coverageStatus:
+          type: boolean
+        changeTime:  
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        locationInfo:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+          minItems: 0
+          
+    RadioParameterSetInfo:
+      type: object
+      properties:
+        radioParameterSetValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/OctetString'
+          minItems: 0
+        changeTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+    TransmitterInfo:
+      type: object
+      properties:
+        proseSourceIPAddress:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        proseSourceL2Id:
+          type: string
+    ProseChargingInformation:
+      type: object
+      properties:
+        announcingPlmnID:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        announcingUeHplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        announcingUeVplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        monitoringUeHplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        monitoringUeVplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        discovererUeHplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        discovererUeVplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        discovereeUeHplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        discovereeUeVplmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        monitoredPlmnIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        proseApplicationID:
+          type: string
+        ApplicationId:
+          type: string
+        applicationSpecificDataList:
+          type: array
+          items:
+            type: string
+          minItems: 0
+        proseFunctionality:
+          $ref: '#/components/schemas/ProseFunctionality'
+        proseEventType:
+          $ref: '#/components/schemas/ProseEventType'
+        directDiscoveryModel:
+          $ref: '#/components/schemas/DirectDiscoveryModel'
+        validityPeriod:
+          type: integer
+        roleOfUE:
+          $ref: '#/components/schemas/RoleOfUE'
+        proseRequestTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        pC3ProtocolCause:
+          type: integer
+        monitoringUEIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        requestedPLMNIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        timeWindow:
+          type: integer
+        rangeClass:
+          $ref: '#/components/schemas/RangeClass'
+        proximityAlertIndication:
+          type: boolean
+        proximityAlertTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        proximityCancellationTimestamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        relayIPAddress:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        proseUEToNetworkRelayUEID :
+          type: string
+        proseDestinationLayer2ID:
+          type: string
+        pFIContainerInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/PFIContainerInformation'
+          minItems: 0
+        transmissionDataContainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/PC5DataContainer'
+          minItems: 0
+        receptionDataContainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/PC5DataContainer'
+          minItems: 0
+      required:
+        - aPIName
+
+    PFIContainerInformation:
+      type: object
+      properties:
+        pFI:
+          type: string
+        reportTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        timeofFirstUsage:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        timeofLastUsage:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        qoSInformation:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/QosData'
+        qoSCharacteristics:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/QosCharacteristics'
+        userLocationInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        uetimeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone' 
+        presenceReportingAreaInformation:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+          minProperties: 0
+
+    PC5DataContainer:
+      type: object
+      properties:
+        localSequenceNumber:
+          type: string
+        changeTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        coverageStatus:
+          type: boolean
+        userLocationInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        dataVolume:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
+        changeCondition:
+          type: string
+        radioResourcesId:
+          $ref: '#/components/schemas/RadioResourcesId'
+        radioFrequency:
+          type: string 
+        pC5RadioTechnology:
+          type: string
+
     OctetString:
       type: string
       pattern: '^[0-9a-fA-F]+$'
@@ -1813,6 +2047,7 @@ components:
             - IPV4
             - IPV6
             - URL
+            - URI
         - type: string
     TriggerCategory:
       anyOf:
@@ -2123,7 +2358,6 @@ components:
             - N19 
             - LOCAL_SWITCH
         - type: string
-
     IMSNodeFunctionality:
       anyOf:
         - type: string
@@ -2235,4 +2469,54 @@ components:
           enum: 
             - CS
             - PS
+        - type: string
+    ProseFunctionality:
+      anyOf:
+        - type: string
+          enum: 
+            - DIRECT_DISCOVERY
+            - DIRECT_COMMUNICATION
+        - type: string
+    ProseEventType:
+      anyOf:
+        - type: string
+          enum: 
+            - ANNOUNCING
+            - MONITORING
+            - MATCH_REPORT
+        - type: string
+    DirectDiscoveryModel:
+      anyOf:
+        - type: string
+          enum: 
+            - MODEL_A
+            - MODEL_B
+        - type: string
+    RoleOfUE:
+      anyOf:
+        - type: string
+          enum: 
+            - ANNOUNCING_UE
+            - MONITORING_UE
+            - REQUESTOR_UE
+            - REQUESTED_UE
+        - type: string
+    RangeClass:
+      anyOf:
+        - type: string
+          enum: 
+            - RESERVED
+            - 50_METER
+            - 100_METER
+            - 200_METER
+            - 500_METER
+            - 1000_METER
+            - UNUSED
+        - type: string
+    RadioResourcesId:
+      anyOf:
+        - type: string
+          enum: 
+            - OPERATOR_PROVIDED
+            - CONFIGURED
         - type: string

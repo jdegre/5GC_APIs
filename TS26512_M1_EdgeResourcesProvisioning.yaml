@@ -1,0 +1,161 @@
+openapi: 3.0.0
+info:
+  title: M1_EdgeResourcesProvisioning
+  version: 2.0.0
+  description: |
+    5GMS AF M1 Edge Resources Provisioning API
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+tags:
+  - name: M1_EdgeResourcesProvisioning
+    description: '5G Media Streaming: Provisioning (M1) APIs: Edge Resources Provisioning'
+externalDocs:
+  description: 'TS 26.512 V17.1.0; 5G Media Streaming (5GMS); Protocols'
+  url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
+servers:
+  - url: '{apiRoot}/3gpp-m1/v2'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: See 3GPP TS 29.512 clause 7.10.
+paths:
+  /provisioning-sessions/{provisioningSessionId}/edge-resources-configurations:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+    get:
+      operationId: retrieveEdgeResourcesConfiguration
+      summary: 'Retrieve the Edge Resources Configuration of the specified Provisioning Session'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdgeResourcesConfiguration'
+    put:
+      operationId: updateEdgeResourcesConfiguration
+      summary: 'Update an Edge Resources Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of an Edge Resources Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdgeResourcesConfiguration'
+      responses:
+        '204':
+          description: 'Updated Edge Resources Configuration'
+        '404':
+          description: 'Not Found'
+    patch:
+      operationId: patchEdgeResourcesConfiguration
+      summary: 'Patch the Edge Resources Configuration for the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of a Edge Resources Configuration'
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/EdgeResourcesConfiguration'
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/EdgeResourcesConfiguration'
+      responses:
+        '200':
+          description: 'Patched Edge Resources Configuration'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdgeResourcesConfiguration'
+        '404':
+          description: 'Not Found'
+    delete: 
+      operationId: destroyEdgeResourcesConfiguration
+      responses:
+        '204':
+          description: 'Destroyed Edge Resources Configuration'
+        '404':
+          description: 'Not Found'
+
+components:
+  schemas:    
+    EdgeResourcesConfiguration:
+      type: object
+      required:
+        - edgeResourcesConfigurationId
+        - edgeManagementMode
+        - easRequirements
+      properties:
+        edgeResourcesConfigurationId:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        edgeManagementMode:
+          $ref: '#/components/schemas/EdgeManagementMode'
+        eligibilityCriteria:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/EdgeProcessingEligibilityCriteria'
+        easRequirements:
+          $ref: '#/components/schemas/EASRequirements'
+        easRelocationRequirements:
+          $ref: '#/components/schemas/M1EASRelocationRequirements'
+
+    M1EASRelocationRequirements:
+      type: object
+      required:
+        - tolerance
+      properties:
+        tolerance:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/EASRelocationTolerance'
+        maxInterruptionDuration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UintegerRm'
+        maxResponseTimeDifference:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UintegerRm'
+
+    EASRequirements:
+        type: object
+        required:
+          - easProviderIds
+          - easType
+          - easFeatures
+          - serviceAvailabilitySchedule
+          - serviceContinuityScenarios
+        properties:
+          easProviderIds:
+            type: array
+            items:
+              type: string
+          easType:
+            type: string
+          easFeatures:
+            type: array
+            items:
+              type: string
+          serviceKpi:
+            $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EASServiceKPI'
+          serviceArea:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/GeographicalServiceArea'
+          serviceAvailabilitySchedule:
+            type: array
+            items:
+              $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+          serviceContinuityScenarios:
+            type: array
+            items:
+              $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          serviceContinuitySupport:
+            type: array
+            items:
+              $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+
+    EdgeManagementMode:
+      anyOf:
+        - type: string
+          enum: [EM_AF_DRIVEN, EM_APP_DRIVEN]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.

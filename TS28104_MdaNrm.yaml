@@ -1,0 +1,216 @@
+openapi: 3.0.1
+info:
+  title: MDA NRM
+  version: 17.0.0
+  description: >-
+    OAS 3.0.1 specification of the MDA NRM
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+externalDocs:
+  description: 3GPP TS 28.104; MDA 
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.104/
+paths: {}
+components:
+  schemas:
+
+#-------- Definition of types-----------------------------------------------------
+
+    MDATypes:
+      type: array
+      items:
+        type: string
+
+    MDAOutputs:
+      type: array
+      items:
+        $ref: '#/components/schemas/MDAOutputPerMDAType'
+
+    MDAOutputPerMDAType:
+      type: object
+      properties:
+        mDAType:
+          type: string
+        mDAOutputIEFilters:
+          type: array
+          items:
+            $ref: '#/components/schemas/MDAOutputIEFilter'
+
+    MDAOutputIEFilter:
+      type: object
+      properties:
+        mDAOutputIEName:
+          type: string
+        filterValue:
+          type: string
+        threshold:
+          $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ThresholdInfo'
+        analyticsPeriod:
+          type: array
+          items:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        timeOut:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+
+    ReportingMethod:
+      type: string
+      enum:
+        - FILE
+        - STREAMING
+        - NOTIFICATION
+
+    ReportingTarget:
+      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Uri'
+
+    AnalyticsScope:
+      oneOf:
+        - type: object
+          properties:
+            managedEntitiesScope:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+        - type: object
+          properties:
+            areaScope:
+              $ref: '#/components/schemas/GeoAreaList'
+
+    GeoAreaList:
+      type: array
+      items:
+        $ref: '#/components/schemas/GeoArea'
+
+    GeoArea:
+      type: object
+      properties:
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coordinate'
+        altitude:
+          type: number
+          format: float
+
+    Coordinate:
+      type: object
+      properties:
+        latitude:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Latitude'
+        longitude:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Longitude'
+
+
+#-------- Definition of abstract IOCs --------------------------------------------
+
+
+
+#-------- Definition of concrete IOCs --------------------------------------------
+
+    SubNetwork-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              $ref: 'TS28623_GenericNrm.yaml#/components/schemas/SubNetwork-Attr'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/SubNetwork-ncO'
+        - type: object
+          properties:
+            SubNetwork:
+              $ref: '#/components/schemas/SubNetwork-Multiple'
+            ManagedElement:
+              $ref: '#/components/schemas/ManagedElement-Multiple'
+            MDAFunction:
+              $ref: '#/components/schemas/MDAFunction-Multiple'
+            MDAReport:
+              $ref: '#/components/schemas/MDAReport-Multiple'
+
+
+    ManagedElement-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-Attr'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-ncO'
+        - type: object
+          properties:
+            MDAFunction:
+              $ref: '#/components/schemas/MDAFunction-Multiple'
+
+    MDAFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
+                - type: object
+                  properties:
+                    supportedMDACapabilities:
+                      $ref: '#/components/schemas/MDATypes'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+        - type: object
+          properties:
+            MDARequest:
+              $ref: '#/components/schemas/MDARequest-Multiple'
+
+    MDARequest-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    requestedMDAOutputs:
+                      $ref: '#/components/schemas/MDAOutputs'
+                    reportingMethod:
+                      $ref: '#/components/schemas/ReportingMethod'
+                    reportingTarget:
+                      $ref: '#/components/schemas/ReportingTarget'
+                    analyticsScope:
+                      $ref: '#/components/schemas/AnalyticsScope'
+                    startTime:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+                    stopTime:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+
+    MDAReport-Single:
+      $ref: 'TS28104_MdaReport.yaml#/components/schemas/MDAReport'
+
+
+#-------- Definition of JSON arrays for name-contained IOCs ----------------------
+
+    SubNetwork-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/SubNetwork-Single'
+    ManagedElement-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/ManagedElement-Single'
+    MDAFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/MDAFunction-Single'
+    MDARequest-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/MDARequest-Single'
+
+    MDAReport-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/MDAReport-Single'
+
+#-------- Definitions in TS 28.104 for TS 28.532 ---------------------------------
+
+    resources-mdaNrm:
+      oneOf:
+        - $ref: '#/components/schemas/SubNetwork-Single'
+        - $ref: '#/components/schemas/ManagedElement-Single'
+
+        - $ref: '#/components/schemas/MDAFunction-Single'
+        - $ref: '#/components/schemas/MDARequest-Single'
+        - $ref: '#/components/schemas/MDAReport-Single'

@@ -1,27 +1,30 @@
 openapi: 3.0.0
+
 info:
   title: Npcf_BDTPolicyControl Service API
-  version: 1.2.0-alpha.1
+  version: 1.2.0
   description: |
     PCF BDT Policy Control Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-#
+
 externalDocs:
   description: >
-    3GPP TS 29.554 V17.3.0; 5G System; Background Data Transfer Policy Control Service.
+    3GPP TS 29.554 V17.4.0; 5G System; Background Data Transfer Policy Control Service.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.554/'
-#
+
 servers:
   - url: '{apiRoot}/npcf-bdtpolicycontrol/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
+
 security:
   - {}
   - oAuth2ClientCredentials:
     - npcf-bdtpolicycontrol
+
 paths:
   /bdtpolicies:
     post:
@@ -53,9 +56,6 @@ paths:
               required: true
               schema:
                 type: string
-#
-# Error scenarios POST
-#
         '303':
           description: >
             See Other. The result of the POST request would be equivalent to the
@@ -88,9 +88,6 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#
-# End error scenarios POST
-#
       callbacks:
         BdtNotification:
           '{$request.body#/notifUri}':
@@ -130,7 +127,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#
+
   /bdtpolicies/{bdtPolicyId}:
     get:
       summary: Read an Individual BDT policy
@@ -151,16 +148,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BdtPolicy'
-#
-# Redirection scenarios GET
-#
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
           $ref: 'TS29571_CommonData.yaml#/components/responses/308'
-#
-# Error scenarios GET
-#
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -179,9 +170,6 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#
-# End error scenarios GET
-#
     patch:
       summary: Update an Individual BDT policy
       operationId: UpdateBDTPolicy
@@ -215,16 +203,10 @@ paths:
                 $ref: '#/components/schemas/BdtPolicy'
         '204':
           description: The Individual BDT Policy resource is modified.
-#
-# Redirection scenarios PATCH
-#
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
           $ref: 'TS29571_CommonData.yaml#/components/responses/308'
-#
-# Error scenarios PATCH
-#
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -247,11 +229,9 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#
-# End error scenarios PATCH
-#
-#
+
 components:
+
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
@@ -260,10 +240,11 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             npcf-bdtpolicycontrol: Access to the Npcf_BDTPolicyControl API
+
   schemas:
-#
+
 # Structured data types
-#
+
     BdtPolicy:
       description: Represents an Individual BDT policy resource.
       type: object
@@ -272,7 +253,7 @@ components:
           $ref: '#/components/schemas/BdtPolicyData'
         bdtReqData:
           $ref: '#/components/schemas/BdtReqData'
-#
+
     BdtReqData:
       description: >
         Contains service requirements for creation a new Individual BDT policy resource.
@@ -310,7 +291,7 @@ components:
           description: Indicates whether the BDT warning notification is enabled or disabled.
           type: boolean
           default: false
-#
+
     BdtPolicyData:
       description: Describes the authorization data of an Individual BDT policy resource.
       type: object
@@ -331,7 +312,7 @@ components:
           type: integer
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-#
+
     PatchBdtPolicy:
       description: >
         Describes the updates in authorization data of an Individual BDT Policy created
@@ -342,7 +323,7 @@ components:
           $ref: '#/components/schemas/BdtPolicyDataPatch'
         bdtReqData:
           $ref: '#/components/schemas/BdtReqDataPatch'
-#
+
     BdtPolicyDataPatch:
       description: >
         A JSON Merge Patch body schema containing modification instruction to be performed
@@ -358,7 +339,7 @@ components:
             policy. If the BdtNotification_5G feature is supported value 0 indicates that
             no transfer policy is selected.
           type: integer
-#
+
     BdtReqDataPatch:
       description: >
         A JSON Merge Patch body schema containing modification instruction to be performed
@@ -370,7 +351,7 @@ components:
         warnNotifReq:
           description: Indicates whether the BDT warning notification is enabled or disabled.
           type: boolean
-#
+
     TransferPolicy:
       description: Describes a transfer policy.
       type: object
@@ -391,6 +372,7 @@ components:
         transPolicyId:
           description: Contains an identity of a transfer policy.
           type: integer
+
     NetworkAreaInfo:
       description: >
         Describes a network area information in which the NF service consumer requests
@@ -421,7 +403,7 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
           minItems: 1
-#
+
     Notification:
       description: Describes a BDT notification.
       type: object
@@ -443,11 +425,9 @@ components:
           $ref: '#/components/schemas/NetworkAreaInfo'
         timeWindow:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
-#
+
 # Simple data types
-#
+
     AspId:
       description: Contains an identity of an application service provider.
       type: string
-#
-#

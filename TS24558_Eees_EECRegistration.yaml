@@ -1,23 +1,27 @@
 openapi: 3.0.0
 info:
   title: Eees_EECRegistration
+  version: "1.0.0"
   description: |
     API for EEC registration.
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
-  version: "1.0.0-alpha.2"
 externalDocs:
-  description: 3GPP TS 24.558 V1.1.0 Enabling Edge Applications; Protocol specification.
-  url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
+  description: >
+    3GPP TS 24.558 V17.0.0 Enabling Edge Applications; Protocol specification.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/'
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/eees-eecregistration/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 6.1 of 3GPP TS 24.558
+
 paths:
   /registrations:
     post:
@@ -30,7 +34,7 @@ paths:
               $ref: '#/components/schemas/EECRegistration'
       responses:
         '201':
-          description: Created (EEC information is registered successfully at EES)
+          description: Created (EEC information is registered successfully at EES).
           content:
             application/json:
               schema:
@@ -80,13 +84,14 @@ paths:
               $ref: '#/components/schemas/EECRegistration'
       responses:
         '200':
-          description: OK (An individual EEC registration resource updated successfully)
+          description: OK (An individual EEC registration resource updated successfully).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EECRegistration'
         '204':
-          description: No Content (An individual EEC registration resource updated successfully).
+          description: >
+            No Content (An individual EEC registration resource updated successfully).
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -125,7 +130,8 @@ paths:
             type: string
       responses:
         '204':
-          description: No Content (An individual EEC registration resource deleted successfully).
+          description: >
+            No Content (An individual EEC registration resource deleted successfully).
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -164,13 +170,14 @@ paths:
               $ref: '#/components/schemas/EECRegistrationPatch'
       responses:
         '200':
-          description: OK (An individual EEC registration resource updated successfully)
+          description: OK (An individual EEC registration resource updated successfully).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EECRegistration'
         '204':
-          description: No Content (An individual EEC registration resource updated successfully).
+          description: >
+            No Content (An individual EEC registration resource updated successfully).
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -206,6 +213,7 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
     EECRegistration:
       description: Describes the parameters to perform EEC Registration related operations.
@@ -223,19 +231,21 @@ components:
           description: Profiles of ACs for which the EEC provides edge enabling services.
         expTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
-        # eecSvcContSupp:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario' 
-          # description: Profiles of ACs for which the EEC provides edge enabling services.
+        eecSvcContSupp:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario' 
+          description: Profiles of ACs for which the EEC provides edge enabling services.
         eecCntxId:
           type: string
           description: Identifier of the EEC context obtained from a previous registration.
         srcEesId:
           type: string
           description: Identifier of the EES that provided EEC context ID.
-        # endPt:
-          # $ref: 'TS29558_CommonData.yaml#/components/schemas/EndPoint' 
+        endPt:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint' 
+        unfulfilledAcProfs:
+          $ref: '#/components/schemas/UnfulfilledAcProfile'
       required:
         - eecId
     ACProfile:
@@ -257,11 +267,11 @@ components:
           $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
         expAcGeoServArea:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
-        # acSvcContSupp:
-          # type: array
-          # items:
-            # $ref: 'TS29558_CommonData.yaml#/components/schemas/ACRScenario' 
-          # description: Profiles of ACs for which the EEC provides edge enabling services.
+        acSvcContSupp:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario' 
+          description: Profiles of ACs for which the EEC provides edge enabling services.
         eass:
           type: array
           items:
@@ -318,3 +328,21 @@ components:
           description: Profiles of ACs for which the EEC provides edge enabling services.
         expTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        unfulfilledAcProfs:
+          $ref: '#/components/schemas/UnfulfilledAcProfile'
+    UnfulfilledAcProfile:
+      description: Desrcibes AC Profile ID and reason sent by EES in EEC Register response.
+      type: object
+      properties:
+        acId:
+          type: string
+          description: The AC ID of a AC profile.
+        reason:
+          $ref: '#/components/schemas/UnfulfillACProfRsn'
+    UnfulfillACProfRsn:
+      anyOf:
+        - type: string
+          enum:
+            - EAS_NOT_AVAILABLE
+            - REQ_UNFULFILLED
+      description: represents reason for unfulfilled AC profile requirements.

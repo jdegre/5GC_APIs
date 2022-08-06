@@ -1,27 +1,31 @@
 openapi: 3.0.0
+
 info:
   title: Ntsctsf_QoSandTSCAssistance Service API
-  version: 1.0.0-alpha.2
+  version: 1.0.0
   description: |
     TSCTSF QoS and TSC Assistance Service.  
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.565 V1.2.0; 5G System; Time Sensitive Communication and Time Synchronization function Services; Stage 3.
+  description: >
+    3GPP TS 29.565 V17.0.0; 5G System; Time Sensitive Communication and Time Synchronization function 
+    Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
-#
+
 servers:
   - url: '{apiRoot}/ntsctsf-qos-tscai/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 
 security:
   - {}
   - oAuth2ClientCredentials:
     - ntsctsf-qos-tscai
+
 paths:
   /tsc-app-sessions:
     post:
@@ -30,7 +34,7 @@ paths:
       tags:
         - TSC Application Sessions (Collection)
       requestBody:
-        description: Contains the information for the creation the resource
+        description: Contains the information for the creation the resource.
         required: true
         content:
           application/json:
@@ -38,7 +42,7 @@ paths:
               $ref: '#/components/schemas/TscAppSessionContextData'
       responses:
         '201':
-          description: Successful creation of the resource
+          description: Successful creation of the resource.
           content:
             application/json:
               schema:
@@ -50,7 +54,7 @@ paths:
                 according to the structure
                 {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId} or the URI of the
                 created events subscription sub-resource, according to the structure
-                {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId}/events-subscription}'
+                {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId}/events-subscription}
               required: true
               schema:
                 type: string
@@ -81,7 +85,8 @@ paths:
           '{$request.body#/notifUri}/terminate':
             post:
               requestBody:
-                description: Request of the termination of the Individual TSC Application Session Context
+                description: >
+                  Request of the termination of the Individual TSC Application Session Context
                 required: true
                 content:
                   application/json:
@@ -128,7 +133,7 @@ paths:
                       $ref: '#/components/schemas/EventsNotification'
               responses:
                 '204':
-                  description: The receipt of the notification is acknowledged
+                  description: The receipt of the notification is acknowledged.
                 '307':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/307'
                 '308':
@@ -155,16 +160,15 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#               
   /tsc-app-sessions/{appSessionId}:
     get:
-      summary: "Reads an existing Individual TSC Application Session Context"
+      summary: Reads an existing Individual TSC Application Session Context
       operationId: GetTSCAppSession
       tags:
         - Individual TSC Application Session Context (Document)
       parameters:
         - name: appSessionId
-          description: string identifying the resource
+          description: String identifying the resource.
           in: path
           required: true
           schema:
@@ -199,19 +203,19 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     patch:
-      summary: "Modifies an existing Individual TSC Application Session Context"
+      summary: Modifies an existing Individual TSC Application Session Context
       operationId: ModAppSession
       tags:
         - Individual TSC Application Session Context (Document)
       parameters:
         - name: appSessionId
-          description: string identifying the resource
+          description: String identifying the resource.
           in: path
           required: true
           schema:
             type: string
       requestBody:
-        description: modification of the resource.
+        description: Modification of the resource.
         required: true
         content:
           application/merge-patch+json:
@@ -219,13 +223,15 @@ paths:
               $ref: '#/components/schemas/TscAppSessionContextUpdateData'
       responses:
         '200':
-          description: successful modification of the resource and a representation of that resource is returned
+          description: >
+            successful modification of the resource and a representation of that resource is 
+            returned.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TscAppSessionContextData'
         '204':
-          description: The successful modification
+          description: The successful modification.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -265,7 +271,7 @@ paths:
                       $ref: '#/components/schemas/EventsNotification'
               responses:
                 '204':
-                  description: The receipt of the notification is acknowledged
+                  description: The receipt of the notification is acknowledged.
                 '307':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/307'
                 '308':
@@ -292,23 +298,22 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#                
-#                
   /tsc-app-sessions/{appSessionId}/delete:
     post:
-      summary: "Deletes an existing Individual TSC Application Session Context"
+      summary: Deletes an existing Individual TSC Application Session Context
       operationId: DeleteTSCAppSession
       tags:
         - Individual TSC Application Session Context (Document)
       parameters:
         - name: appSessionId
-          description: string identifying the Individual TSC Application Session Context resource
+          description: String identifying the Individual TSC Application Session Context resource.
           in: path
           required: true
           schema:
             type: string
       requestBody:
-        description: deletion of the Individual TSC Application Session Context resource, request notification
+        description: >
+          Deletion of the Individual TSC Application Session Context resource, request notification.
         required: false
         content:
           application/json:
@@ -349,16 +354,15 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-#               
   /tsc-app-sessions/{appSessionId}/events-subscription:
     put:
-      summary: "creates or modifies an Events Subscription subresource"
+      summary: Creates or modifies an Events Subscription subresource
       operationId: putEventsSubsc
       tags:
         - Events Subscription (Document)
       parameters:
         - name: appSessionId
-          description: string identifying the Events Subscription resource
+          description: String identifying the Events Subscription resource
           in: path
           required: true
           schema:
@@ -372,11 +376,13 @@ paths:
               $ref: '#/components/schemas/EventsSubscReqData'
       responses:
         '201':
-          description: The creation of the Events Subscription resource is confirmed and its representation is returned.
+          description: >
+            The creation of the Events Subscription resource is confirmed and its representation is
+            returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TscAppSessionContextData'
+                $ref: '#/components/schemas/EventsSubscReqData'
           headers:
             Location:
               description: >
@@ -387,13 +393,17 @@ paths:
               schema:
                 type: string
         '200':
-          description: The modification of the Events Subscription resource is confirmed its representation is returned.
+          description: >
+            The modification of the Events Subscription resource is confirmed and its representation
+            is returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TscAppSessionContextData'
+                $ref: '#/components/schemas/EventsSubscReqData'
         '204':
-          description: The modification of the Events Subscription subresource is confirmed without returning additional data.
+          description: >
+            The modification of the Events Subscription subresource is confirmed without returning 
+            additional data.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -425,7 +435,8 @@ paths:
           '{$request.body#/notifUri}/notify':
             post:
               requestBody:
-                description: Contains the information for the notification of an event occurrence in the TSCTSF.
+                description: >
+                  Contains the information for the notification of an event occurrence in the TSCTSF.
                 required: true
                 content:
                   application/json:
@@ -461,20 +472,22 @@ paths:
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     delete:
-      summary: deletes the Events Subscription subresource
+      summary: Deletes the Events Subscription subresource.
       operationId: DeleteEventsSubsc
       tags:
         - Events Subscription (Document)
       parameters:
         - name: appSessionId
-          description: string identifying the Individual TSC Application Session Context resource
+          description: String identifying the Individual TSC Application Session Context resource
           in: path
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: The deletion of the of the Events Subscription sub-resource is confirmed without returning additional data.
+          description: >
+            The deletion of the of the Events Subscription sub-resource is confirmed without returning 
+            additional data.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -495,7 +508,9 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
+
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
@@ -504,6 +519,7 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             ntsctsf-qos-tscai: Access to the Ntsctsf_QoSandTSCAssistance API
+
   schemas:
     TscAppSessionContextData:
       description: Represents an Individual TSC Application Session Context resource.
@@ -556,12 +572,23 @@ components:
             type: string
           minItems: 1
           description: Identifies an ordered list of pre-defined QoS information.
+        altQosReqs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AlternativeServiceRequirementsData'
+          minItems: 1
+          description: >
+            Identifies an ordered list of alternative service requirements that include individual
+            QoS parameter sets. The lower the index of the array for a given entry, the higher the
+            priority.
         evSubsc:
           $ref: '#/components/schemas/EventsSubscReqData'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
     TscAppSessionContextUpdateData:
-      description: Describes the authorization data of an Individual TSC Application Session Context created by the PCF.
+      description: >
+        Describes the authorization data of an Individual TSC Application Session Context created by
+        the PCF.
       type: object
       properties:
         notifUri:
@@ -580,7 +607,7 @@ components:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
           minItems: 1
         tscQosReq:
-          $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/TscQosRequirement'
+          $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/TscQosRequirementRm'
         qosReference:
           type: string
           description: Identifies a pre-defined QoS information.
@@ -590,15 +617,24 @@ components:
             type: string
           minItems: 1
           description: Identifies an ordered list of pre-defined QoS information.
+        altQosReqs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AlternativeServiceRequirementsData'
+          minItems: 1
+          description: >
+            Identifies an ordered list of alternative service requirements that include individual
+            QoS parameter sets. The lower the index of the array for a given entry, the higher the
+            priority.
         evSubsc:
-          $ref: '#/components/schemas/EventsSubscReqData'
+          $ref: '#/components/schemas/EventsSubscReqDataRm'
 
     EventsSubscReqData:
       description: Identifies the events the application subscribes to.
       type: object
       required:
         - events
-        - Uri
+        - notifUri
         - notifCorreId
       properties:
         events:
@@ -610,13 +646,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         qosMon:
           $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/QosMonitoringInformation'
-          minItems: 1
         usgThres:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThreshold'
         notifCorreId:
           type: string
     EventsSubscReqDataRm:
-      description: this data type is defined in the same way as the EventsSubscReqData data type, but with the OpenAPI nullable property set to true.
+      description: >
+        This data type is defined in the same way as the EventsSubscReqData data type, but with the 
+        OpenAPI nullable property set to true.
       type: object
       required:
         - events
@@ -625,18 +662,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TscEvent'
+          minItems: 1
         notifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         qosMon:
           $ref: 'TS29122_AsSessionWithQoS.yaml#/components/schemas/QosMonitoringInformationRm'
-          minItems: 1
         usgThres:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
         notifCorreId:
           type: string
       nullable: true
+
     EventsNotification:
-      description: describes the notification of a matched event
+      description: Describes the notification of matched events.
       type: object
       required:
         - notifCorreId
@@ -651,7 +689,7 @@ components:
           minItems: 1
 
     EventNotification:
-      description: describes a notification of an matched event
+      description: Describes a notification of an matched event.
       type: object
       required:
         - event
@@ -663,7 +701,7 @@ components:
           items:
             type: integer
           minItems: 1
-          description: Identifies the IP flows that were sent during event subscription
+          description: Identifies the IP flows that were sent during event subscription.
         qosMonReports:
           type: array
           items:
@@ -673,11 +711,14 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/AccumulatedUsage'
         appliedQosRef:
           type: string
-          description: The currently applied QoS reference. Applicable for event QOS_NOT_GUARANTEED or SUCCESSFUL_RESOURCES_ALLOCATION.
+          description: >
+            The currently applied alternative QoS requirement referring to an alternative QoS
+            reference or a requested alternative QoS parameter set. Applicable for
+            event QOS_NOT_GUARANTEED or SUCCESSFUL_RESOURCES_ALLOCATION.
 
 #
 # ENUMERATIONS DATA TYPES
-#        
+#
     TscEvent:
       description: Represents an event to notify to the AF.
       anyOf:
@@ -689,4 +730,3 @@ components:
           - QOS_NOT_GUARANTEED
           - SUCCESSFUL_RESOURCES_ALLOCATION
       - type: string
-#

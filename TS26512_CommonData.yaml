@@ -1,16 +1,16 @@
 openapi: 3.0.0
 info:
   title: 5GMS Common Data Types
-  version: 1.0.0
+  version: 1.1.0
   description: |
     5GMS Common Data Types
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 tags:
   - name: 5GMS Common Data Types
     description: '5G Media Streaming: Common Data Types'
 externalDocs:
-  description: 'TS 26.512 V16.2.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V17.1.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 paths: {}
 components:
@@ -172,6 +172,61 @@ components:
       anyOf:
         - type: string
           enum: [DOWNLINK, UPLINK]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    EndpointAddress:
+      type: object
+      required:
+        - portNumber
+      properties:
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        portNumber:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint16'
+
+    CacheStatus:
+      anyOf:
+        - type: string
+          enum: [HIT, MISS, EXPIRED]
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    EdgeProcessingEligibilityCriteria:
+      type: object
+      required:
+        - serviceDataFlowDescriptions
+        - ueLocations
+        - timeWindows
+        - appRequest
+      properties:
+        serviceDataFlowDescriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceDataFlowDescription'
+        ueLocations:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+        timeWindows:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        appRequest:
+          type: boolean
+
+    EASRelocationTolerance:
+      anyOf:
+        - type: string
+          enum: [RELOCATION_UNAWARE, RELOCATION_TOLERANT, RELOCATION_INTOLERANT]
         - type: string
           description: >
             This string provides forward-compatibility with future

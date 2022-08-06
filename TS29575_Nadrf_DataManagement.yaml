@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0-alpha.3
+  version: 1.0.0
   title: Nadrf_DataManagement
   description: |
     ADRF Data Management Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.575 V17.0.0; 5G System; Analytics Data Repository Services; Stage 3.
+  description: 3GPP TS 29.575 V17.1.0; 5G System; Analytics Data Repository Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.575/'
 #
 servers:
@@ -15,7 +15,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause clause 4.4 of 3GPP TS 29.501.
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501.
 #
 security:
   - oAuth2ClientCredentials:
@@ -41,7 +41,9 @@ paths:
           description: Successful creation of new Individual ADRF Data Store Record resource.
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nadrf-datamanagement/v1/data-store-records/{storeTransId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/nadrf-datamanagement/<apiVersion>/data-store-records/{storeTransId}
               required: true
               schema:
                 type: string
@@ -72,7 +74,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     get:
-      summary: "Retrieves existing Individual ADRF Data Store Records"
+      summary: Retrieves existing Individual ADRF Data Store Records.
       operationId: GetAdrfDataStoreRecords
       tags:
         - ADRF Data Store Records (Collection)
@@ -143,7 +145,9 @@ paths:
               schema:
                 $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
         - name: time-period
-          description: Represents a start time and a stop time during which requested data is collected or to be collected.
+          description: >
+            Represents a start time and a stop time during which requested data is collected 
+            or to be collected.
           in: query
           required: false
           content:
@@ -179,20 +183,22 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /data-store-records/{storeTransId}:
     delete:
-      summary: Delete an existing Individual ADRF Data Store Record
+      summary: Delete an existing Individual ADRF Data Store Record.
       operationId: DeleteADRFDataStoreRecord
       tags:
         - Individual ADRF Data Store Record (Document)
       parameters:
         - name: storeTransId
           in: path
-          description: String identifying a Data Store Record in ADRF
+          description: String identifying a Data Store Record in ADRF.
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: No Content. The Individual ADRF Data Store Record resource matching the storeTransId was deleted.
+          description: >
+            No Content. The Individual ADRF Data Store Record resource matching the
+            storeTransId was deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -205,12 +211,6 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -237,7 +237,9 @@ paths:
           description: Created a new Individual ADRF Data Retrieval Subscription resource.
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/nadrf-datamanagement/v1/data-retrieval-subscriptions/{subscriptionId}'
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/nadrf-datamanagement/<apiVersion>/data-retrieval-subscriptions/{subscriptionId}
               required: true
               schema:
                 type: string
@@ -308,20 +310,24 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /data-retrieval-subscriptions/{subscriptionId}:
     delete:
-      summary: Delete an existing Individual ADRF Data Retrieval Subscription
+      summary: Delete an existing Individual ADRF Data Retrieval Subscription resource.
       operationId: DeleteADRFDataRetrievalSubscription
       tags:
         - Individual ADRF Data Retrieval Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
-          description: String identifying a data retrieval subscription to the Nadrf_DataManagement Service.
+          description: >
+            String identifying a data retrieval subscription to the Nadrf_DataManagement 
+            Service.
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: No Content. The Individual ADRF Data Retrieval Subscription resource matching the subscriptionId was deleted.
+          description: >
+            No Content. The Individual ADRF Data Retrieval Subscription resource matching
+            the subscriptionId was deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -334,12 +340,6 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -362,7 +362,8 @@ paths:
         required: true
       responses:
         '200':
-          description: Successful response with reference used to identify the subscription at the ADRF.
+          description: >
+            Successful response with reference used to identify the subscription at the ADRF.
           content:
             application/json:
               schema:
@@ -391,7 +392,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /request-storage-sub-removal:
     post:
-      summary: triggers the removal of ADRF storage subscription.
+      summary: Triggers the removal of ADRF storage subscription.
       operationId: DeleteADRFStorageSubscription
       tags:
         - ADRF Storage Subscriptions
@@ -403,7 +404,8 @@ paths:
         required: true
       responses:
         '204':
-          description: No Content. The ADRF Storage Subscription matching the provided reference was deleted.
+          description: >
+            No Content. The ADRF Storage Subscription matching the provided reference was deleted.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -428,7 +430,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
   /remove-stored-data-analytics:
     post:
-      summary: remove ADRF data based on data or analytics specification.
+      summary: Remove ADRF data based on data or analytics specification.
       operationId: DeleteADRFData
       tags:
         - ADRF Stored Data
@@ -480,52 +482,39 @@ components:
       description: Represents an Individual ADRF Data Store Record.
       type: object
       oneOf:
-        - required: [anaNotifications]
-        - required: [amfEventNotifs]
-        - required: [smfEventNotifs]
-        - required: [udmEventNotifs]
-        - required: [nefEventNotifs]
-        - required: [afEventNotifs]
+        - allOf:
+          - required: [anaSub]
+          - required: [anaNotifications]
+        - allOf:
+          - required: [dataSub]
+          - required: [dataNotif]
       properties:
+        dataNotif:
+          $ref: '#/components/schemas/DataNotification'
         anaNotifications:
           type: array
           items:
             $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NnwdafEventsSubscriptionNotification'
           minItems: 1
           description: List of analytics subscription notifications.
-        amfEventNotifs:
+        anaSub:
           type: array
           items:
-            $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventNotification'
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NnwdafEventsSubscription'
           minItems: 1
-          description: List of notifications of AMF events.
-        smfEventNotifs:
+          description: >
+            Represents the subscription information of the corresponding analytics notification.
+        dataSub:
           type: array
           items:
-            $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/NsmfEventExposureNotification'
+            $ref: '#/components/schemas/DataSubscription'
           minItems: 1
-          description: List of notifications of SMF events.
-        udmEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/MonitoringReport'
-          minItems: 1
-          description: List of notifications of UDM events.
-        nefEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureNotif'
-          minItems: 1
-          description: List of notifications of NEF events.
-        afEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureNotif'
-          minItems: 1
-          description: List of notifications of AF events.
+          description: >
+            Represents the subscription information of the corresponding data notification.
 #
     NadrfDataStoreSubscription:
-      description: Contains information to be used by the ADRF to create a Data or Analytics subscription.
+      description: >
+        Contains information to be used by the ADRF to create a Data or Analytics subscription.
       type: object
       allOf:
         - oneOf:
@@ -551,7 +540,7 @@ components:
     NadrfDataRetrievalSubscription:
       description: Represents an Individual ADRF Data Retrieval Subscription.
       type: object
-      required:  
+      required:
         - notifCorrId
         - notificationURI
         - timePeriod
@@ -563,7 +552,6 @@ components:
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NnwdafEventsSubscription'
         dataSub:
           $ref: '#/components/schemas/DataSubscription'
-
         notificationURI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         timePeriod:
@@ -573,17 +561,16 @@ components:
           description: Notification correlation identifier.
 #
     NadrfDataRetrievalNotification:
-      description: Represents a notification that corresponds with an Individual ADRF Data Retrieval Subscription.
+      description: >
+        Represents a notification that corresponds with an Individual ADRF Data
+        Retrieval Subscription.
       type: object
       required:
         - notifCorrId
       oneOf:
         - required: [anaNotifications]
-        - required: [amfEventNotifs]
-        - required: [smfEventNotifs]
-        - required: [udmEventNotifs]
-        - required: [nefEventNotifs]
-        - required: [afEventNotifs]
+        - required: [dataNotif]
+        - required: [fetchInstruct]
       properties:
         notifCorrId:
           type: string
@@ -594,37 +581,10 @@ components:
             $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NnwdafEventsSubscriptionNotification'
           minItems: 1
           description: List of analytics subscription notifications.
-        amfEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventNotification'
-          minItems: 1
-          description: List of notifications of AMF events.
-        smfEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/NsmfEventExposureNotification'
-          minItems: 1
-          description: List of notifications of SMF events.
-        udmEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/MonitoringReport'
-          minItems: 1
-          description: List of notifications of UDM events.
-        nefEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureNotif'
-          minItems: 1
-          description: List of notifications of NEF events.
-        afEventNotifs:
-          type: array
-          items:
-            $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureNotif'
-          minItems: 1
-          description: List of notifications of AF events.
-#
+        dataNotif:
+          $ref: '#/components/schemas/DataNotification'
+        fetchInstruct:
+          $ref: 'TS29576_Nmfaf_3caDataManagement.yaml#/components/schemas/FetchInstruction'#
     NadrfDataStoreSubscriptionRef:
       description: Contains a reference to a request for a Data or Analytics subscription.
       type: object
@@ -671,4 +631,45 @@ components:
           $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
         nefDataSub:
           $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureSubsc'
+#
+    DataNotification:
+      description: Represents a Data Subscription Notification.
+      type: object
+      oneOf:
+        - required: [amfEventNotifs]
+        - required: [smfEventNotifs]
+        - required: [udmEventNotifs]
+        - required: [nefEventNotifs]
+        - required: [afEventNotifs]
+      properties:
+        amfEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventNotification'
+          minItems: 1
+          description: List of notifications of AMF events.
+        smfEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/NsmfEventExposureNotification'
+          minItems: 1
+          description: List of notifications of SMF events.
+        udmEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/MonitoringReport'
+          minItems: 1
+          description: List of notifications of UDM events.
+        nefEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureNotif'
+          minItems: 1
+          description: List of notifications of NEF events.
+        afEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureNotif'
+          minItems: 1
+          description: List of notifications of AF events.
 #

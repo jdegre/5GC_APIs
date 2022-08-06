@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: 3gpp-time-sync-exposure
-  version: 1.0.0-alpha.4
+  version: 1.0.0
   description: |
     API for time synchronization exposure.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 29.522 V17.5.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V17.6.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -18,7 +18,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122.
 paths:
   /{afId}/subscriptions:
     get:
@@ -207,6 +207,67 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
+    put:
+      summary: Updates/replaces an existing subscription resource
+      tags:
+        - Individual Time Synchronization Exposure Subscription
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Parameters to update/replace the existing subscription
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSyncExposureSubsc'
+      responses:
+        '200':
+          description: OK (Successful deletion of the existing subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeSyncExposureSubsc'
+        '204':
+          description: >
+            Successful case. The resource has been successfully updated and no additional
+            content is to be sent in the response message.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
       summary: Deletes an already existing subscription
@@ -571,244 +632,6 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-  /{afId}/asti-configurations:
-    get:
-      summary: read all of the active configuration of 5G access stratum time distribution for the AF
-      tags:
-        - ASTI Configurations
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK (Successful get all of the active configurations for the AF)
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccessTimeDistributionData'
-                minItems: 0
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
-    post:
-      summary: Creates a new configuration resource
-      tags:
-        - ASTI Configurations
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: new configuration creation
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccessTimeDistributionData'
-      responses:
-        '201':
-          description: Created (Successful creation)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessTimeDistributionData'
-          headers:
-            Location:
-              description: 'Contains the URI of the newly created resource'
-              required: true
-              schema:
-                type: string
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
-  /{afId}/asti-configurations/retrieve:
-    post:
-      summary: "Request the status of the 5G access stratum time distribution for a list of UEs."
-      tags:
-        - ASTI Configurations Retrieve (Document)
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Contains the information for the status of the 5G access stratum time distribution
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StatusRequestData'
-      responses:
-        '200':
-          description: Successful retrieval of the status of the 5G access stratum time distribution
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponseData'
-        '400':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '404':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
-        '411':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
-        '413':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
-        '415':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
-        '429':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-
-  /{afId}/asti-configurations/{astiConfigId}:
-    get:
-      summary: read an active configuration for the AF and the configuration Id
-      tags:
-        - Individual ASTI Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: astiConfigId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK (Successful get the active configuration)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessTimeDistributionData'
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
-
-    delete:
-      summary: Deletes an already existing configuration
-      tags:
-        - Individual ASTI Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: astiConfigId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content (Successful deletion of the existing configuration)
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
 
 components:
   securitySchemes:
@@ -877,7 +700,7 @@ components:
           type: boolean
           description: >
             Set to true by the SCS/AS to request the SCEF to send a test notification
-            as defined in subclause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
+            as defined in clause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         suppFeat:
@@ -928,7 +751,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         timeDom:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        uuErrorBudget:
+        timeSyncErrBdgt:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         configNotifId:
           type: string
@@ -1064,19 +887,35 @@ components:
       description: Contains the state of the time synchronization configuration.
       type: object
       properties:
-        state:
+        stateOfNwtt:
           type: boolean
-          description: When it is set to true, it indicates the states of configurations for NW-TT port and all DS-TT port are active. When it is set to false, it indicates the state of configurations for NW-TT port or at least one of the DS-TT port are inactive
-        inactiveNwtt:
-          type: boolean
-          description: When it is included and set to true, it indicates the state of configuration for NW-TT port is inactive. It may be included when the "state" attribute is set to false. Default value is false.
-        inactiveDstts:
-          description: Contains the UE identities. The states of configurations for DS-TT ports corresponding to these UEs are inactive. It may be included when the "state" attribute is set to false.
+          description: >
+            When the PTP port state is Leader, Follower or Passive, it is included and set to true
+            to indicate the state of configuration for NW-TT port is active; when PTP port state is
+            in any other case, it is included and set to false to indicate the state of
+            configuration for NW-TT port is inactive. Default value is false.
+        stateOfDstts:
+          description: >
+            Contains the PTP port states of the DS-TT(s).
           type: array
           items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+            $ref: '#/components/schemas/StateOfDstt'
           minItems: 1
+    StateOfDstt:
+      description: Contains the PTP port state of a DS-TT.
+      type: object
+      properties:
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        state:
+          type: boolean
+          description: >
+            When the PTP port state is Leader, Follower or Passive, it is included and set to true
+            to indicate the state of configuration for DS-TT port is active; when PTP port state is
+            in any other case, it is included and set to false to indicate the state of 
+            configuration for DS port is inactive. Default value is false.
       required:
+        - gpsi
         - state
 
     Protocol:
@@ -1095,71 +934,6 @@ components:
         - IPV4: Indicates IPv4 as defined in IEEE Std 1588 [45] Annex C is supported.
         - IPV6: Indicates IPv6 as defined in IEEE Std 1588 [45] Annex D is supported.
 
-    AccessTimeDistributionData:
-      description: Contains the parameters for the creation of 5G access stratum time distribution configuration..
-      type: object
-      properties:
-        gpsis:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-          minItems: 1
-        exterGroupId:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
-        anyUeInd:
-          type: boolean
-          description: Identifies whether the request applies to any UE. This attribute shall set to "true" if applicable for any UE, otherwise, set to "false".
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        asTimeDisParam:
-          $ref: 'TS29565_Ntsctsf_TimeSynchronization.yaml#/components/schemas/AsTimeDistributionParam'
-        suppFeat:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-      required:
-        - asTimeDisParam
-      oneOf:
-        - required: [gpsis]
-        - required: [interGrpId]
-        - required: [anyUeInd]
-    StatusRequestData:
-      description: Contains the parameters for retrieval of the status of the access stratum time distribution for a list of UEs.
-      type: object
-      properties:
-        gpsis:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-          minItems: 1
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-      required:
-        - gpsis
-    StatusResponseData:
-      description: Contains the parameters for the status of the access stratum time distribution for a list of UEs.
-      type: object
-      properties:
-        inactiveUes:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-          minItems: 1
-        activeUes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActiveUe'
-          minItems: 1
-    ActiveUe:
-      description: Contains the UE identifier whose status of the access stratum time distribution is active and the optional requested time synchronization error budget.
-      type: object
-      properties:
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        timeSyncErrBdgt:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
     GmCapable:
       anyOf:
       - type: string

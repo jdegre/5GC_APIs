@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 'Nsoraf_SOR'
-  version: 1.1.0-alpha.3
+  version: 1.1.0
   description: |
     Nsoraf Steering Of Roaming Service.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.550 V17.3.0; Steering Of Roaming Application Function Services.
+  description: 3GPP TS 29.550 V17.4.0; Steering Of Roaming Application Function Services.
   url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.550/
 servers:
   - url: '{apiRoot}/nsoraf-sor/v1'
@@ -40,19 +40,17 @@ paths:
              $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         - name: plmn-id
           in: query
-          description: serving PLMN ID
+          description: serving PLMN ID or SNPN ID
           required: true
           content:
             application/json:
               schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         - name: access-type
           in: query
           description: Access type used by the UE
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
       responses:
         '200':
           description: Expected response to a valid request
@@ -125,7 +123,11 @@ components:
           scopes:
             nsoraf-sor: Access to the Nsoraf_SOR API
   schemas:
-    # API specific definitions
+
+#
+# COMPLEX DATA TYPES
+#
+
     SorInformation:
       description: Represents the SoR information to be conveyed to a UE.
       type: object
@@ -133,8 +135,10 @@ components:
         - sorAckIndication
         - sorSendingTime
       properties:
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         steeringContainer:
-          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/SteeringContainer'
+          $ref: '#/components/schemas/SteeringContainer'
         sorAckIndication:
           type: boolean
         sorCmci:
@@ -143,8 +147,11 @@ components:
           type: boolean
         sorSendingTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
     SorAckInfo:
-      description: Represents an indication to the SOR-AF on the reception status of the acknowledgment of successful reception of SoR Information by a UE.
+      description: >
+        Represents an indication to the SOR-AF on the reception status of the
+        acknowledgment of successful reception of SoR Information by a UE.
       type: object
       required:
         - sorAckStatus
@@ -156,8 +163,47 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         meSupportOfSorCmci:
           type: boolean
+
+    SteeringContainer:
+      description: It consists of either a list (array) of SteeringInfo objects or a Secured Packet
+      oneOf:
+        - type: array
+          items:
+            $ref: '#/components/schemas/SteeringInfo'
+          minItems: 1
+        - $ref: 'TS29509_Nausf_SoRProtection.yaml#/components/schemas/SecuredPacket'
+
+    SteeringInfo:
+      description: >
+        Contains either a PLMN-ID, an SNPN-ID or a GIN and, for the case of PLMNs, zero or more
+        preferred access technologies for accessing such PLMN
+      type: object
+      oneOf:
+        - required: [ plmnId ]
+        - required: [ snpnId ]
+        - required: [ gin ]
+      properties:
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        snpnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+        gin:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+        accessTechList:
+          type: array
+          items:
+            $ref: 'TS29509_Nausf_SoRProtection.yaml#/components/schemas/AccessTech'
+          minItems: 1
+
+
+#
+# ENUMS
+#
+
     SorAckStatus:
-      description: Represents the reception status of the acknowledgment of successful reception of SoR Information by a UE.
+      description: >
+        Represents the reception status of the acknowledgment of successful reception of
+        SoR Information by a UE.
 
       anyOf:
         - type: string

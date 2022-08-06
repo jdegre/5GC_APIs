@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Npcf_PolicyAuthorization Service API
-  version: 1.2.0-alpha.5
+  version: 1.2.0
   description: |
     PCF Policy Authorization Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.514 V17.4.0; 5G System; Policy Authorization Service; Stage 3.
+  description: 3GPP TS 29.514 V17.5.0; 5G System; Policy Authorization Service; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.514/'
 #
 servers:
@@ -16,7 +16,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 
 security:
   - {}
@@ -1531,11 +1531,15 @@ components:
     AccessNetChargingIdentifier:
       description: Describes the access network charging identifier.
       type: object
-      required:
-        - accNetChaIdValue
+      oneOf:
+        - required: [accNetChaIdValue]
+        - required: [accNetChargIdString]
       properties:
         accNetChaIdValue:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ChargingId'
+        accNetChargIdString:
+          type: string
+          description: A character string containing the access network charging identifier.
         flows:
           type: array
           items:
@@ -1587,6 +1591,13 @@ components:
           minItems: 1
         ueIpv4Addr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        ipDomain:
+          type: string
+          description: IPv4 address domain identifier.
         ueIpv6AddrPrefix:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
 

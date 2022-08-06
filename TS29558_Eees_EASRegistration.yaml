@@ -5,10 +5,10 @@ info:
     API for EAS Registration.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.0.0-alpha.3
+  version: 1.0.0
 externalDocs:
   description: >
-    3GPP TS 29.558 V1.4.0 Enabling Edge Applications;
+    3GPP TS 29.558 V17.0.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 servers:
@@ -17,7 +17,9 @@ servers:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 7.5 of 3GPP TS 29.558.
-
+security:
+  - {}
+  - oAuth2ClientCredentials: []
 paths:
   /registrations:
     post:
@@ -81,6 +83,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EASRegistration'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -99,6 +105,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     put:
       description: Fully replace an existing EAS Registration resource.
       parameters:
@@ -122,7 +129,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/EASRegistration'
         '204':
-          description: No Content. The individual EAS registration information is updated successfully.
+          description: >
+            No Content. The individual EAS registration information is updated successfully.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -145,6 +157,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     patch:
       description: Partially update an existing EAS Registration resource.
       parameters:
@@ -163,13 +176,19 @@ paths:
               $ref: '#/components/schemas/EASRegistrationPatch'
       responses:
         '200':
-          description: The Individual EAS registration is successfully modified and the updated registration information is returned in the response.
+          description: >
+            The Individual EAS registration is successfully modified and the updated
+            registration information is returned in the response.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EASRegistration'
         '204':
           description: No Content. The individual EAS registration information is updated successfully.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -192,6 +211,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     delete:
       description: Delete an existing EAS registration at EES.
       parameters:
@@ -204,6 +224,10 @@ paths:
       responses:
         '204':
           description: The individual EAS registration is deleted.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -222,6 +246,14 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
   schemas:
     EASRegistration:
       type: object
@@ -235,6 +267,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - easProf
+
     EASProfile:
       type: object
       description: Represents the EAS profile information.
@@ -297,6 +330,7 @@ components:
       required:
         - easId
         - endPt
+
     EASRegistrationPatch:
       type: object
       description: Represents partial update request of individual EAS registration information.
@@ -305,6 +339,7 @@ components:
           $ref: '#/components/schemas/EASProfile'
         expTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTimeRm'
+
     EASServiceKPI:
       type: object
       description: Represents the EAS service KPI information.
@@ -325,6 +360,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         connBand:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+
     EndPoint:
       type: object
       description: The end point information to reach EAS.
@@ -350,6 +386,7 @@ components:
         - required: [fqdn]
         - required: [ipv4Addrs]
         - required: [ipv6Addrs]
+
     PermissionLevel:
       anyOf:
       - type: string
@@ -363,12 +400,13 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - TRIAL: Level of service permission supported is TRIAL.
         - GOLD: Level of service permission supported is GOLD.
         - SILVER: Level of service permission supported is SILVER.
         - OTHER: Any other level of service permissions supported.
+
     EASCategory:
       anyOf:
       - type: string
@@ -381,8 +419,8 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Possible values are:
         - UAS: Category of EAS is for Uncrewed Aerial Services.
         - V2X: Category of EAS is for V2X Services.
         - OTHER: Any other type of EAS category.

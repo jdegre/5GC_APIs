@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: 3gpp-service-parameter
-  version: 1.1.0-alpha.3
+  version: 1.1.0
   description: |
     API for AF service paramter  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 29.522 V17.5.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V17.6.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -18,7 +18,7 @@ servers:
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in subclause 5.2.4 of 3GPP TS 29.122.
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122.
 
 paths:
   /{afId}/subscriptions:
@@ -34,7 +34,7 @@ paths:
       tags:
         - Service Parameter Subscriptions
       parameters:
-        - name: gpsi
+        - name: gpsis
           in: query
           description: The GPSI of the requested UE(s).
           required: false
@@ -411,7 +411,7 @@ components:
           type: boolean
           description: >
             Set to true by the AF to request the NEF to send a test notification
-            as defined in subclause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
+            as defined in clause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         paramOverPc5:
@@ -546,14 +546,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         precedence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        spatialValidity:
+        spatialValidityAreas:
           type: array
           items:
-            type: string
+            $ref: 'TS29522_AMPolicyAuthorization.yaml#/components/schemas/GeographicalArea'
           minItems: 1
           description: >
             Indicates where the route selection parameters apply. It may correspond
-            to a geographical area, for example using a geographic zone identifier that
+            to a geographical area, for example using a geographic shape that
             is known to the AF and is configured by the operator to correspond to a list
             of or TAIs.
         spatialValidityTais:
@@ -589,15 +589,11 @@ components:
           $ref: '#/components/schemas/Event'
         authResult:
           $ref: '#/components/schemas/AuthorizationResult'
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        externalGroupId:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
-        anyUeInd:
-          type: boolean
-          description: >
-            Identifies whether the AF request applies to any UE. This attribute shall
-            set to "true" if applicable for any UE, otherwise, set to "false".
+        gpsis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
@@ -606,10 +602,6 @@ components:
           $ref: '#/components/schemas/EventInfo'
       required:
         - subscription
-      oneOf:
-        - required: [gpsi]
-        - required: [externalGroupId]
-        - required: [anyUeInd]
       anyOf:
         - required: [reportEvent]
         - required: [authResult]
@@ -701,7 +693,7 @@ components:
           - IMS
           - MMS
           - SUPL
-          - Internet
+          - INTERNET
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -712,4 +704,4 @@ components:
           - IMS: Indicates the connection capability to support IMS service.
           - MMS: Indicates the connection capability to support MMS service.
           - SUPL: Indicates the connection capability to support SUPL service.
-          - Internet: Indicates the connection capability to support Internet service.
+          - INTERNET: Indicates the connection capability to support Internet service.

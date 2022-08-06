@@ -1,0 +1,254 @@
+openapi: 3.0.1
+
+info:
+  title: coslaNrm
+  version: 17.3.0
+  description: >-
+    OAS 3.0.1 specification of the Cosla NRM
+    © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 28.536 V17.3.0; Cosla NRM
+  url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.536/
+
+paths: {}
+
+components:
+
+  schemas:
+
+#------------ Type definitions ---------------------------------------------------
+
+    ControlLoopLifeCyclePhase:
+      type: string
+      enum:
+        - PREPARATION
+        - COMMISSIONING
+        - OPERATION
+        - DECOMMISSIONING
+
+    ObservationTime:
+      type: integer
+
+    AssuranceGoalStatusObserved:
+      type: string
+      enum:
+        - FULFILLED
+        - NOT_FULFILLED
+
+    AssuranceGoalStatusPredicted:
+      type: string
+      enum:
+        - FULFILLED
+        - NOT_FULFILLED
+
+    AssuranceTargetStatusObserved:
+      type: string
+      enum:
+        - FULFILLED
+        - NOT_FULFILLED
+
+    AssuranceTargetStatusPredicted:
+      type: string
+      enum:
+        - FULFILLED
+        - NOT_FULFILLED
+
+    AssuranceTargetName:
+      type: string
+
+    AssuranceTarget:
+      type: object
+      properties:
+        assuranceTargetName:
+          $ref: '#/components/schemas/AssuranceTargetName'
+        assuranceTargetValue:
+          type: string
+         
+    AssuranceTargetList:
+      type: array
+      items:
+        $ref: '#/components/schemas/AssuranceTarget'
+
+    AssuranceGoalStatus:
+      type: object
+      properties:
+        assuranceGoalStatusId:
+          type: string
+        assuranceGoalId:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        assuranceGoalStatusObserved:
+          $ref: '#/components/schemas/AssuranceGoalStatusObserved'
+        assuranceGoalStatusPredicted:
+          $ref: '#/components/schemas/AssuranceGoalStatusPredicted'
+        assuranceGoalRef:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+    AssuranceGoalStatusList:
+      type: array
+      items:
+        $ref: '#/components/schemas/AssuranceGoalStatus'
+
+    AssuranceTargetStatus:
+      type: object
+      properties:
+        assuranceTargetStatusId:
+          type: string
+        assuranceTargetName:
+          $ref: '#/components/schemas/AssuranceTargetName'
+        assuranceTargetStatusObserved:
+          $ref: '#/components/schemas/AssuranceTargetStatusObserved'
+        assuranceTargetStatusPredicted:
+          $ref: '#/components/schemas/AssuranceTargetStatusPredicted'
+         
+    AssuranceTargetStatusList:
+      type: array
+      items:
+         $ref: '#/components/schemas/AssuranceTargetStatus'
+     
+    AttributeNameList:
+      type: array
+      items:
+         type: string
+          
+    ACCLDisallowedAttributes:
+      type: object
+      properties:
+        managedEntityIdentifier:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        attributeNameList:
+          $ref: '#/components/schemas/AttributeNameList'
+
+    AssuranceScope:
+      type: object
+      properties:
+        taiList:
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/TaiList'
+
+#-------- Definition of concrete IOCs --------------------------------------------
+    MnS:
+      oneOf:
+        - type: object
+          properties:
+            SubNetwork:
+              $ref: '#/components/schemas/SubNetwork-Multiple'
+        - type: object
+          properties:
+            ManagedElement:
+              $ref: '#/components/schemas/ManagedElement-Multiple'
+
+    SubNetwork-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/SubNetwork-Attr'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/SubNetwork-ncO'
+        - type: object
+          properties:
+            AssuranceClosedControlLoop:
+              $ref: '#/components/schemas/AssuranceClosedControlLoop-Multiple'
+ 
+    ManagedElement-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-Attr'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-ncO'
+        - type: object
+          properties:
+            AssuranceClosedControlLoop:
+              $ref: '#/components/schemas/AssuranceClosedControlLoop-Multiple'
+
+    AssuranceClosedControlLoop-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              type: object
+              properties:
+                    operationalState:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/OperationalState'
+                    administrativeState:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
+                    controlLoopLifeCyclePhase:
+                      $ref: '#/components/schemas/ControlLoopLifeCyclePhase'
+                    aCCLDisallowedList:
+                      $ref: '#/components/schemas/ACCLDisallowedAttributes'
+            AssuranceGoal:
+              $ref: '#/components/schemas/AssuranceGoal-Multiple'
+              networkSliceRef:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+              networkSliceSubnetRef:
+                $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+    AssuranceGoal-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    observationTime:
+                      $ref: '#/components/schemas/ObservationTime'
+                    assuranceTargetList:
+                      $ref: '#/components/schemas/AssuranceTargetList'
+                    assuranceScope:
+                      $ref: '#/components/schemas/AssuranceScope'
+                    serviceProfileId:
+                      type: string
+                    sliceProfileId:
+                      type: string
+ 
+    AssuranceReport-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    assuranceGoalStatusList:
+                      $ref: '#/components/schemas/AssuranceGoalStatusList'
+                      
+#-------- Definition of JSON arrays for name-contained IOCs ----------------------
+    SubNetwork-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/SubNetwork-Single'
+
+    ManagedElement-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/ManagedElement-Single'
+                                
+    AssuranceClosedControlLoop-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AssuranceClosedControlLoop-Single'                 
+               
+    AssuranceGoal-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AssuranceGoal-Single'   
+
+#------------ Definitions in TS 28.536 for TS 28.623 ----------------------------- 
+
+    resources-coslaNrm:
+      oneOf:
+       - $ref: '#/components/schemas/MnS'
+       - $ref: '#/components/schemas/AssuranceClosedControlLoop-Single'
+       - $ref: '#/components/schemas/AssuranceGoal-Single'    
+       - $ref: '#/components/schemas/AssuranceReport-Single'
+       - $ref: '#/components/schemas/SubNetwork-Single'
+       - $ref: '#/components/schemas/ManagedElement-Single'
