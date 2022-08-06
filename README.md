@@ -7,9 +7,9 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **March 2022**<br/>
+API version: **June 2022**<br/>
 Release status: **Frozen** <sup>&#x1F512;</sup><br/>
-Other releases: [Rel-17 (Open)](https://github.com/jdegre/5GC_APIs/tree/master), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
+Other releases: [Rel-18 (Open)](https://github.com/jdegre/5GC_APIs/tree/Rel-18), [Rel-17 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-17), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
 <br/><br/>
 
@@ -222,3 +222,22 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 * [Metrics Reporting](https://jdegre.github.io/loader.html?yaml=TS26512_M5_MetricsReporting.yaml)
 * [Dynamic Policies](https://jdegre.github.io/loader.html?yaml=TS26512_M5_DynamicPolicies.yaml)
 * [Network Assistance](https://jdegre.github.io/loader.html?yaml=TS26512_M5_NetworkAssistance.yaml)
+
+# 3GPP SA5 models and MnS OpenAPI definitions
+
+## Network Resource Models (NRM)
+* [Generic NRM (TS 28.623)](https://jdegre.github.io/loader.html?yaml=TS28623_GenericNrm.yaml)
+* [Common NRM definitions (TS 28.623)](https://jdegre.github.io/loader.html?yaml=TS28623_ComDefs.yaml)
+* [NR NRM (TS 28.541)](https://jdegre.github.io/loader.html?yaml=TS28541_NrNrm.yaml)
+* [5GC NRM (TS 28.541)](https://jdegre.github.io/tools/loader.html?yaml=TS28541_5GcNrm.yaml)
+* [Slice NRM (TS 28.541)](https://jdegre.github.io/loader.html?yaml=TS28541_SliceNrm.yaml)
+* [Communication Service Assurance NRM (TS 28.536)](https://jdegre.github.io/loader.html?yaml=TS28536_CoslaNrm.yaml)
+
+## Management Services (MnS)
+* [Provisioning MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_ProvMnS.yaml)
+* [Fault Supervision MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_FaultMnS.yaml)
+* [Performance Measurement Job Control MnS (28.550)](https://jdegre.github.io/loader.html?yaml=TS28550_PerfMeasJobCtrlMnS.yaml)
+* [Performance Data File Reporting MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_FileDataReportingMnS.yaml)
+* [Performance Threshold Monitoring MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_PerfMnS.yaml)
+* [Heartbeat Notifications(TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_HeartbeatNtf.yaml)
+* [Streaming Data Reporting MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_StreamingDataMnS.yaml)
