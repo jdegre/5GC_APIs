@@ -53,6 +53,10 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 ## MB-STF (Multicast/Broadcast Service Transport Function)
 * [MBS Distribution Session](https://jdegre.github.io/loader.html?yaml=TS29581_Nmbstf_DistSession.yaml)
 
+## MBSF (Multicast/Broadcast Service Function)
+* [MBS User Service](https://jdegre.github.io/loader.html?yaml=TS29580_Nmbsf_MBSUserService.yaml)
+* [MBS User Data Ingest Session](https://jdegre.github.io/loader.html?yaml=TS29580_Nmbsf_MBSUserDataIngestSession.yaml)
+
 ## UDM (Unified Data Management)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SDM.yaml)
 * [UE Context Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_UECM.yaml)
