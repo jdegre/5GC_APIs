@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: 1.0.1
   title: Nadrf_DataManagement
   description: |
     ADRF Data Management Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.575 V17.1.0; 5G System; Analytics Data Repository Services; Stage 3.
+  description: 3GPP TS 29.575 V17.2.0; 5G System; Analytics Data Repository Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.575/'
 #
 servers:
@@ -567,6 +567,7 @@ components:
       type: object
       required:
         - notifCorrId
+        - timeStamp
       oneOf:
         - required: [anaNotifications]
         - required: [dataNotif]
@@ -585,6 +586,13 @@ components:
           $ref: '#/components/schemas/DataNotification'
         fetchInstruct:
           $ref: 'TS29576_Nmfaf_3caDataManagement.yaml#/components/schemas/FetchInstruction'#
+        terminationReq:
+          type: boolean
+          description: >
+            It indicates the termination of the data management subscription that requested by the
+            ADRF.
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
     NadrfDataStoreSubscriptionRef:
       description: Contains a reference to a request for a Data or Analytics subscription.
       type: object
@@ -620,6 +628,8 @@ components:
         - required: [udmDataSub]
         - required: [nefDataSub]
         - required: [afDataSub]
+        - required: [nrfDataSub]
+        - required: [nsacfDataSub]
       properties:
         amfDataSub:
           $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventSubscription'
@@ -631,6 +641,10 @@ components:
           $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
         nefDataSub:
           $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEventExposureSubsc'
+        nrfDataSub:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/SubscriptionData'
+        nsacfDataSub:
+          $ref: 'TS29536_Nnsacf_SliceEventExposure.yaml#/components/schemas/SACEventSubscription'
 #
     DataNotification:
       description: Represents a Data Subscription Notification.
@@ -641,6 +655,8 @@ components:
         - required: [udmEventNotifs]
         - required: [nefEventNotifs]
         - required: [afEventNotifs]
+        - required: [nrfEventNotifs]
+        - required: [nsacfEventNotifs]
       properties:
         amfEventNotifs:
           type: array
@@ -672,4 +688,16 @@ components:
             $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureNotif'
           minItems: 1
           description: List of notifications of AF events.
+        nrfEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NotificationData'
+          minItems: 1
+          description: List of notifications of NRF events.
+        nsacfEventNotifs:
+          type: array
+          items:
+            $ref: 'TS29536_Nnsacf_SliceEventExposure.yaml#/components/schemas/SACEventReport'
+          minItems: 1
+          description: List of notifications of NSACF events.
 #

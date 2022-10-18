@@ -1,29 +1,37 @@
 openapi: 3.0.0
+
 info:
   title: SS_NetworkSliceAdaptation
   description: |
     API for SEAL Network Slice Adaptation.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.0.0"
+  version: "1.0.1"
+
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.5.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V17.6.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/ss-nsa/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+
 paths:
   /request:
     post:
       summary: request the network slice adaptation.
+      operationId: RequestNetworkSliceAdaptation
+      tags:
+        - Network Slice Adaptation Request
       requestBody:
         required: true
         content:
@@ -45,8 +53,13 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+
         '429':
           $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
@@ -55,6 +68,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -63,7 +77,8 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
-  schemas: 
+
+  schemas:
     NwSliceAdptInfo:
       description: The requested network slice adaptation with the underlying network.
       type: object
@@ -72,10 +87,8 @@ components:
           type: string
         valTgtUeIds:
           type: array
-          items: 
+          items:
             type: string
-        nwSliceAdptCause:
-          type: string
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         dnn:

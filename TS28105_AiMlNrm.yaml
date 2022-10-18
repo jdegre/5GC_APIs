@@ -7,7 +7,7 @@ info:
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 28.105; AI/ML Management
+  description: TS 28.105; AI/ML Management
   url: http://www.3gpp.org/ftp/Specs/archive/28_series/28.105/
 paths: {}
 components:
@@ -18,23 +18,30 @@ components:
     AIMLEntityList:
       type: array
       items:
-        $ref: '#/components/schemas/AIMLEntity'
+        $ref: '#/components/schemas/MLEntity'
 
-    AIMLEntity:
+    MLEntity:
       type: object
       properties:
-        aIMLEntityId:
+        mLEntityId:
           type: string
         inferenceType:
           type: string
         aIMLEntityVersion:
           type: string
         expectedRunTimeContext:
-          type: string
+          $ref: '#/components/schemas/AIMLContext'
         trainingContext:
-          type: string
+          $ref: '#/components/schemas/AIMLContext'
         runTimeContext:
-          type: string
+          $ref: '#/components/schemas/AIMLContext'
+    AIMLContext:
+      type: object
+      properties:
+        inferenceEntityRef:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+        dataProviderRef:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
 
     RequestStatus:
       type: string
@@ -66,10 +73,10 @@ components:
 
     TrainingProcessMonitor:
       description: >-
-        This data type is the "ProcessMonitor" data type defined in “genericNrm.yaml” with specialisations for usage in the "AIMLTrainingProcess".
+        This data type is the "ProcessMonitor" data type defined in "TS28623_GenericNrm.yaml" with specialisations for usage in the "MLTrainingProcess".
       type: object
       properties:
-        aIMLTrainingProcessId:
+        mLTrainingProcessId:
           type: string
         status:
           type: string
@@ -112,8 +119,8 @@ components:
               $ref: '#/components/schemas/SubNetwork-Multiple'
             ManagedElement:
               $ref: '#/components/schemas/ManagedElement-Multiple'
-            AIMLTrainingFunction:
-              $ref: '#/components/schemas/AIMLTrainingFunction-Multiple'
+            MLTrainingFunction:
+              $ref: '#/components/schemas/MLTrainingFunction-Multiple'
 
     ManagedElement-Single:
       allOf:
@@ -125,10 +132,10 @@ components:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedElement-ncO'
         - type: object
           properties:
-            AIMLTrainingFunction:
-              $ref: '#/components/schemas/AIMLTrainingFunction-Multiple'
+            MLTrainingFunction:
+              $ref: '#/components/schemas/MLTrainingFunction-Multiple'
 
-    AIMLTrainingFunction-Single:
+    MLTrainingFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
         - type: object
@@ -138,19 +145,19 @@ components:
                 - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
                 - type: object
                   properties:
-                    aIMLEntityList:
+                    mLEntityList:
                       $ref: '#/components/schemas/AIMLEntityList'
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
-            AIMLTrainingRequest:
-              $ref: '#/components/schemas/AIMLTrainingRequest-Multiple'
-            AIMLTrainingProcess:
-              $ref: '#/components/schemas/AIMLTrainingProcess-Multiple'
-            AIMLTrainingReport:
-              $ref: '#/components/schemas/AIMLTrainingReport-Multiple'
+            MLTrainingRequest:
+              $ref: '#/components/schemas/MLTrainingRequest-Multiple'
+            MLTrainingProcess:
+              $ref: '#/components/schemas/MLTrainingProcess-Multiple'
+            MLTrainingReport:
+              $ref: '#/components/schemas/MLTrainingReport-Multiple'
 
-    AIMLTrainingRequest-Single:
+    MLTrainingRequest-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
         - type: object
@@ -159,7 +166,7 @@ components:
               allOf:
                 - type: object
                   properties:
-                    aIMLEntityId:
+                    mLEntityId:
                       type: string
                     candidateTraingDataSource:
                       type: array
@@ -181,7 +188,7 @@ components:
                     suspendRequest:
                       type: boolean
 
-    AIMLTrainingProcess-Single:
+    MLTrainingProcess-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
         - type: object
@@ -190,7 +197,7 @@ components:
               allOf:
                 - type: object
                   properties:
-                    aIMLTrainingProcessId:
+                    mLTrainingProcessId:
                       type: string
                     priority:
                       type: integer
@@ -208,7 +215,7 @@ components:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
 
 
-    AIMLTrainingReport-Single:
+    MLTrainingReport-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
         - type: object
@@ -217,7 +224,7 @@ components:
               allOf:
                 - type: object
                   properties:
-                    aIMLEntityId:
+                    mLEntityId:
                       type: string
                     areConsumerTrainingDataUsed:
                       type: boolean
@@ -245,32 +252,32 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/ManagedElement-Single'
-    AIMLTrainingFunction-Multiple:
+    MLTrainingFunction-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/AIMLTrainingFunction-Single'
-    AIMLTrainingRequest-Multiple:
+        $ref: '#/components/schemas/MLTrainingFunction-Single'
+    MLTrainingRequest-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/AIMLTrainingRequest-Single'
-    AIMLTrainingProcess-Multiple:
+        $ref: '#/components/schemas/MLTrainingRequest-Single'
+    MLTrainingProcess-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/AIMLTrainingProcess-Single'
-    AIMLTrainingReport-Multiple:
+        $ref: '#/components/schemas/MLTrainingProcess-Single'
+    MLTrainingReport-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/AIMLTrainingReport-Single'
+        $ref: '#/components/schemas/MLTrainingReport-Single'
 
 
-#-------- Definitions in TS 28.104 for TS 28.532 ---------------------------------
+#-------- Definitions in 3GPP TS 28.104 for 3GPP TS 28.532 ---------------------------------
 
     resources-AiMlNrm:
       oneOf:
         - $ref: '#/components/schemas/SubNetwork-Single'
         - $ref: '#/components/schemas/ManagedElement-Single'
 
-        - $ref: '#/components/schemas/AIMLTrainingFunction-Single'
-        - $ref: '#/components/schemas/AIMLTrainingRequest-Single'
-        - $ref: '#/components/schemas/AIMLTrainingProcess-Single'
-        - $ref: '#/components/schemas/AIMLTrainingReport-Single'
+        - $ref: '#/components/schemas/MLTrainingFunction-Single'
+        - $ref: '#/components/schemas/MLTrainingRequest-Single'
+        - $ref: '#/components/schemas/MLTrainingProcess-Single'
+        - $ref: '#/components/schemas/MLTrainingReport-Single'

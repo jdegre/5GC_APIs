@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Ndcaf_DataReportingProvisioning
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Data Collection AF: Provisioning Sessions API
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -12,7 +12,7 @@ tags:
     description: 'Data Collection and Reporting: Application Service Provider Provisioning (R1) APIs'
 
 externalDocs:
-  description: 'TS 26.532 V17.0.0; Data Collection and Reporting; Protocols and Formats'
+  description: 'TS 26.532 V17.1.0; Data Collection and Reporting; Protocols and Formats'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.532/'
 
 servers:
@@ -282,7 +282,7 @@ paths:
         content:
           application/merge-patch+json:
             schema:
-              $ref: '#/components/schemas/DataReportingConfiguration'
+              $ref: '#/components/schemas/DataReportingConfigurationPatch'
       responses:
         '200':
           description: 'Data Reporting Configuration successfully replaced and updated resource representation is returned'
@@ -406,10 +406,24 @@ components:
         - dataCollectionClientType
         - dataAccessProfiles
 
+    DataReportingConfigurationPatch:
+      description: "A JSON patch for a Data Reporting Configuration."
+      type: object
+      properties:
+        authorizationURL:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+        dataAccessProfiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataAccessProfile'
+          minItems: 0
+
     DataAccessProfile:
       description: "A data access profile."
       type: object
       properties:
+        dataAccessProfileId:
+          type: string
         targetEventConsumerTypes:
           type: array
           items:
@@ -482,7 +496,8 @@ components:
             - locationAreas
             - aggregationFunctions
       required:
-        - targetEventConsumerType
+        - dataAccessProfileId
+        - targetEventConsumerTypes
         - parameters
 
     EventConsumerType:
@@ -500,7 +515,7 @@ components:
       description: "The type of data aggregation function."
       anyOf:
       - type: string
-        enum: [NULL, COUNT, MEAN, MAXIMUM, MINIMUM, SUM]
+        enum: ["NULL", COUNT, MEAN, MAXIMUM, MINIMUM, SUM]
       - type: string
         description: >
             This string provides forward-compatibility with future

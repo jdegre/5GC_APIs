@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nmbstf-distsession
-  version: 1.0.0
+  version: 1.0.1
   description: |
     MBSTF Distribution Session Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.581 V17.0.0; 5G System; MBSDistribution Service.
+  description: 3GPP TS 29.581 V17.1.0; 5G System; MBSDistribution Service.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.581/
 
 servers:
@@ -256,8 +256,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StatusSubscribeRspData'
-        '204':
-          description: Successful response without content in the response
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -311,6 +309,10 @@ paths:
                       description: Accept-Encoding, described in IETF RFC 7694
                       schema:
                         type: string
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
                 '400':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/400'
                 '401':
@@ -489,16 +491,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
         upTrafficFlowInfo:
           $ref: '#/components/schemas/UpTrafficFlowInfo'
-        mbsSessionId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
-        mbsServiceAreas:
-          description: A map (list of key-value pairs) where a AreaSessionId serves as key of MbsServiceArea
-          type: object
-          additionalProperties:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
-          minProperties: 1
-        5qi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
         mbr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         maxDelay:
@@ -508,7 +500,7 @@ components:
         pktDistributionData:
           $ref: '#/components/schemas/PktDistributionData'
         fecInformation:
-          type: string
+          $ref: 'TS29580_Nmbsf_MBSUserDataIngestSession.yaml#/components/schemas/FECConfig'
         dscpMarking:
           type: string
         mbsSecurityContext:
@@ -533,8 +525,6 @@ components:
           $ref: '#/components/schemas/ObjDistributionOperatingMode'
         objAcquisitionMethod:
           $ref: '#/components/schemas/ObjAcquisitionMethod'
-        objPullFreq:
-          $ref: '#/components/schemas/ObjPullFreq'
         objAcquisitionIdsPull:
           type: array
           items:
@@ -545,6 +535,8 @@ components:
         objIngestBaseUrl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         objDistributionBaseUrl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        objRepairBaseUrl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - objDistributionOperatingMode
@@ -706,10 +698,10 @@ components:
       anyOf:
       - type: string
         enum:
-          - FILE
+          - SINGLE
           - COLLECTION
           - CAROUSEL
-          - REAL_TIME
+          - STREAMING
       - type: string
 
     ObjAcquisitionMethod:
@@ -726,8 +718,8 @@ components:
       anyOf:
       - type: string
         enum:
-          - PROXY
-          - FORWARD_ONLY
+          - PACKET_PROXY
+          - PACKET_FORWARD_ONLY
       - type: string
 
     DistSessionEventType:
@@ -736,10 +728,8 @@ components:
       - type: string
         enum:
           - DATA_INGEST_FAILURE
-          - SESSION_TERMINATED
-          - DELIVERY_STARTED_VIA_NMB9
-          - MTK_UPDATE
-          - MSK_REQUEST
+          - SESSION_DEACTIVATED
+          - SESSION_ACTIVATED
       - type: string
 
     PktIngestMethod:
@@ -749,13 +739,4 @@ components:
         enum:
           - MULTICAST
           - UNICAST
-      - type: string
-
-    ObjPullFreq:
-      description: Frequency of Object Pull
-      anyOf:
-      - type: string
-        enum:
-          - ONCE
-          - PERIODIC
       - type: string

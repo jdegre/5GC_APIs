@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Npcf_MBSPolicyAuthorization API
-  version: 1.0.0-alpha.2
+  version: 1.0.0
   description: |
     MBS Policy Authorization Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -9,7 +9,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.537 V1.0.1; 5G System; Multicast/Broadcast Policy Control Services.
+    3GPP TS 29.537 V17.0.0; 5G System; Multicast/Broadcast Policy Control Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.537/'
 
 security:
@@ -25,9 +25,9 @@ servers:
         description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
 
 paths:
-  /mbs-app-sessions:
+  / contexts:
     post:
-      summary: Request the creation of a new Individual MBS Application Session Context resource.
+      summary: Request the creation of a new MBS Application Session Context.
       operationId: CreateMBSAppSessionCtxt
       tags:
         - MBS Application Session Contexts (Collection)
@@ -59,9 +59,13 @@ paths:
         '401':
           $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          description: Forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/MbsExtProblemDetails'
         '404':
-          description: Not Found
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
@@ -77,26 +81,26 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  /mbs-app-sessions/{mbsAppSessionId}:
+  /contexts/{contextId}:
+    parameters:
+      - name: contextId
+        in: path
+        description: >
+          Contains the identifier of the Individual MBS Application Session Context resource.
+        required: true
+        schema:
+          type: string
+
     get:
       summary: Read an existing Individual MBS Application Session Context resource.
       operationId: GetMBSAppSessionCtxt
       tags:
         - Individual MBS Application Session Context (Document)
-      parameters:
-        - name: mbsAppSessionId
-          in: path
-          description: >
-            Contains the identifier of the targeted Individual MBS Application Session
-            Context.
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: >
-            OK. The requested Individual MBS Application Session Context resource is
-            successfully returned.
+            OK. The requested Individual MBS Application Session Context resource is successfully
+            returned.
           content:
             application/json:
               schema:
@@ -125,19 +129,10 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
     patch:
-      summary: Modify an existing Individual MBS Application Session Context resource.
+      summary: Request the modification of an existing Individual MBS Application Session Context resource.
       operationId: ModifyMBSAppSessionCtxt
       tags:
         - Individual MBS Application Session Context (Document)
-      parameters:
-        - name: mbsAppSessionId
-          in: path
-          description: >
-            Contains the identifier of the targeted Individual MBS Application Session
-            Context.
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -147,16 +142,15 @@ paths:
       responses:
         '200':
           description: >
-            OK. The requested Individual MBS Application Session Context resource is
-            successfully modified and a representation of the updated resource is
-            returned in the response body.
+            OK. The requested Individual MBS Application Session Context resource is successfully
+            modified and a representation of the updated resource is returned in the response body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MbsAppSessionCtxt'
         '204':
           description: >
-            No Content. The concerned Individual MBS Application Session Context resource is
+            No Content. The correspondingIndividual MBS Application Session Context resource is
             successfully modified and no content is returned in the response body.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
@@ -167,7 +161,11 @@ paths:
         '401':
           $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          description: Forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/MbsExtProblemDetails'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '406':
@@ -182,23 +180,14 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Delete an existing Individual MBS Application Session Context resource.
+      summary: Request the deletion of an existing Individual MBS Application Session Context resource.
       operationId: DeleteMBSAppSessionCtxt
       tags:
         - Individual MBS Application Session Context (Document)
-      parameters:
-        - name: mbsAppSessionId
-          in: path
-          description: >
-            Contains the identifier of the targeted Individual MBS Application Session
-            Context.
-          required: true
-          schema:
-            type: string
       responses:
         '204':
           description: >
-            No Content. The concerned Individual MBS Application Session Context resource is
+            No Content. The correspondingIndividual MBS Application Session Context resource is
             successfully deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
@@ -236,15 +225,20 @@ components:
   schemas:
     MbsAppSessionCtxt:
       description: >
-        Identifies the service requirements of an Individual MBS Application Session Context.
+        Represents the parameter of an MBS Application Session Context.
       type: object
       properties:
         mbsSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        mbsServInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceInfo'
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        contactPcfInd:
+          type: boolean
+          default: false
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -252,7 +246,30 @@ components:
 
     MbsAppSessionCtxtPatch:
       description: >
-        Describes the modifications to an existing Individual MBS Application Session
-        Context resource.
-      type: string
-# Editor’s Note: The definition of the MbsAppSessionCtxtPatch data type is FFS.
+        Represents the modifications to an existing MBS Application Session Context resource.
+      type: object
+      properties:
+        mbsServInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceInfo'
+
+    MbsExtProblemDetails:
+      description: Identifies the MBS related extensions to the ProblemDetails data structure.
+      allOf:
+        - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        - $ref: '#/components/schemas/AcceptableMbsServInfo'
+
+    AcceptableMbsServInfo:
+      description: >
+        Contains the MBS Service Information that can be accepted by the PCF.
+      type: object
+      properties:
+        accMbsServInfo:
+          type: object
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsMediaComp'
+          minProperties: 1
+        accMaxMbsBw:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+      oneOf:
+        - required: [accMbsServInfo]
+        - required: [accMaxMbsBw]

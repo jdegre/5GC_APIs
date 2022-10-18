@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Eees_ACREvents
-  version: "1.0.0"
+  version: "1.0.1"
   description: |
     API for ACR events subscription and notification.
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 24.558 V17.0.0 Enabling Edge Applications; Protocol specification.
+    3GPP TS 24.558 V17.1.0 Enabling Edge Applications; Protocol specification.
   url: 'https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/'
 
 security:
@@ -286,7 +286,12 @@ components:
           items:
             type: string
           minItems: 1
-          description: The list of identifier of the EASs.
+          description: The list of application identifiers of the EASs.
+        acIds:
+          type: array
+          items:
+            type: string
+          description: List of AC identities
         eventIds:
           $ref: '#/components/schemas/ACREventIDs'
         notificationDestination:
@@ -316,14 +321,16 @@ components:
             Information notification is delivered.
         easId:
           type: string
-          description: Identifier of the EAS.
+          description: Application identifier of the EAS.
+        acId:
+          type: string
+          description: Identity of the AC.
         eventId:
           $ref: '#/components/schemas/ACREventIDs'
         trgtInfo:
           $ref: '#/components/schemas/TargetInfo'
-        acrRes:
-          type: boolean
-          description: Indicates whether the ACR is successful or failure.
+        acrStatus:
+          $ref: '#/components/schemas/ACRCompleteEventInfo'
         failReason :
           type: string
           description: Indicates the cause information for the failure.
@@ -353,7 +360,7 @@ components:
           items:
             type: string
           minItems: 1
-          description: The list of identifier of the EASs.
+          description: The list of application identifiers of the EASs.
         eventIds:
           $ref: '#/components/schemas/ACREventIDs'
         notificationDestination:
@@ -379,3 +386,15 @@ components:
       properties:
         implReg:
           $ref: 'TS29558_Eees_EECContextRelocation.yaml#/components/schemas/ImplicitRegDetails'
+    ACRCompleteEventInfo:
+      description: Indicates the completed ACR result and target EAS endpoint info.
+      type: object
+      properties:
+        acrRes:
+          type: boolean
+          description: Indicates whether the ACR is successful or failure.
+        tEasEndpoint:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
+      required:
+        - acrRes
+        - tEasEndpoint

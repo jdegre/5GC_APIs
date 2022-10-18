@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: 3gpp-service-parameter
-  version: 1.1.0
+  version: 1.1.1
   description: |
     API for AF service paramter  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 29.522 V17.6.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V17.7.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -31,6 +31,7 @@ paths:
           type: string
     get:
       summary: read all of the active subscriptions for the AF
+      operationId: ReadAllSubscriptions
       tags:
         - Service Parameter Subscriptions
       parameters:
@@ -104,6 +105,7 @@ paths:
 
     post:
       summary: Creates a new subscription resource 
+      operationId: CreateAnSubscription
       tags:
         - Service Parameter Subscriptions
       requestBody:
@@ -211,6 +213,7 @@ paths:
           type: string
     get:
       summary: read an active subscriptions for the SCS/AS and the subscription Id
+      operationId: ReadAnSubscription
       tags:
         - Individual Service Parameter Subscription
       responses:
@@ -244,7 +247,8 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Updates/replaces an existing subscription resource
+      summary: Fully updates/replaces an existing subscription resource
+      operationId: FullyUpdateAnSubscription
       tags:
         - Individual Service Parameter Subscription
       requestBody:
@@ -289,7 +293,8 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     patch:
-      summary: Updates/replaces an existing subscription resource
+      summary: Partial updates/replaces an existing subscription resource
+      operationId: PartialUpdateAnSubscription
       tags:
         - Individual Service Parameter Subscription
       requestBody:
@@ -334,6 +339,7 @@ paths:
 
     delete:
       summary: Deletes an already existing subscription
+      operationId: DeleteAnSubscription
       tags:
         - Individual Service Parameter Subscription
       responses:
@@ -528,6 +534,8 @@ components:
       properties:
         trafficDesc:
           $ref: '#/components/schemas/TrafficDescriptorComponents'
+        relatPrecedence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         routeSelParamSets:
           type: array
           items:
@@ -677,6 +685,7 @@ components:
           - UNSPECIFIED
           - UE_NOT_REACHABLE
           - UNKNOWN
+          - UE_TEMP_UNREACHABLE
       - type: string
         description: >
           This string represents the failure reason for the unsuccessful result. May be
@@ -686,6 +695,7 @@ components:
         - UNSPECIFIED: Indicates the PCF received the UE sent UE policy delivery service cause #111 (Protocol error, unspecified).
         - UE_NOT_REACHABLE: Indicates the PCF received the notification from the AMF that the UE is not reachable.
         - UNKNOWN: Indicates unknown reasons upon no response from the UE, e.g. UPDS message type is not defined or not implemented by the UE, or not compatible with the UPDS state, in which the UE shall ignore the UPDS message.
+        - UE_TEMP_UNREACHABLE: Indicates the PCF received the notification from the AMF that the UE is not reachable but the PCF will retry again.
     ConnectionCapabilities:
       anyOf:
       - type: string

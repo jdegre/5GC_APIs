@@ -60,13 +60,6 @@ components:
         - SHARED
         - NON-SHARED
 
-    ServiceType:
-      type: string
-      enum:
-        - eMBB
-        - RLLC
-        - MIoT
-        - V2X
     SliceSimultaneousUse:
       type: string
       enum:
@@ -321,7 +314,7 @@ components:
         maxNumberOfPDUSessions:
           type: integer
         coverageAreaTAList:
-          type: integer
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
         resourceSharingLevel:
           $ref: '#/components/schemas/SharingLevel'
         dLMaxPktSize:
@@ -352,7 +345,7 @@ components:
       type: object
       properties:
         coverageAreaTAList:
-          type: integer
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
         dLLatency:
           type: number
         uLLatency:
@@ -377,8 +370,8 @@ components:
           type: integer
         reliability:
           type: number
-        serviceType:
-          $ref: '#/components/schemas/ServiceType'
+        sST:
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/Sst'
         dLMaxPktSize:
           type: integer
         uLMaxPktSize:
@@ -443,7 +436,7 @@ components:
         activityFactor:
           type: integer
         coverageAreaTAList:
-          type: integer
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
         resourceSharingLevel:
           $ref: '#/components/schemas/SharingLevel'
         uEMobilityLevel:
@@ -452,14 +445,20 @@ components:
           type: integer
         reliability:
           type: number
-        serviceType:
-          $ref: '#/components/schemas/ServiceType'
+        sST:
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/Sst'
         dLDeterministicComm:
           $ref: '#/components/schemas/DeterministicComm'
         uLDeterministicComm:
           $ref: '#/components/schemas/DeterministicComm'
         survivalTime:
           type: number
+        nssaaSupport:
+          $ref: '#/components/schemas/NSSAASupport'
+        n6Protection:
+          $ref: '#/components/schemas/N6Protection'
+
+
 
     ServiceProfile:
       type: object
@@ -531,9 +530,9 @@ components:
           reliability:
             type: number
           maxDLDataVolume:
-            type: string
+            type: number
           maxULDataVolume:
-            type: string
+            type: number
           sliceSimultaneousUse:
             $ref: '#/components/schemas/SliceSimultaneousUse'
           energyEfficiency:
@@ -583,30 +582,34 @@ components:
       items:
         $ref: '#/components/schemas/SliceProfile'
     FeasibilityResult:
-      description: ->
-        An attribute which specifies the feasibility check result for the feasibility check job.
+      description: >-
+        An attribute which specifies the feasibility check result for the feasibility check and reservation job.
       type: string
       enum:
         - FEASIBLE
         - INFEASIBLE
     InFeasibleReason:
-      description: ->
+      description: >-
         An attribute that specifies the additional reason information if the feasibility check result is infeasible.The detailed ENUM value is FFS. 
       type: string
+    RecommendationRequest:
+      description: >-
+        An attribute represents MnS consumer's request for recommended network slice related requirements.
+      type: boolean
     RecommendedRequirements:
-      description: ->
-        An attribute that specifies the recommended network slicing related requirements (i.e. ServiceProfile and SliceProfile information) which can be supported by the MnS producer.. 
+      description: >-
+        An attribute that specifies the recommended network slicing related requirements (i.e. ServiceProfile and SliceProfile information) which can be supported by the MnS producer.
       type: string
     ResourceReservation:
-      description: ->
+      description: >-
         An attribute represents MnS consumer's requirements for resource reservation.
       type: boolean
     RequestedReservationExpiration:
-      description: ->
+      description: >-
         An attribute which specifes MnS consuner's requirements for the validity period of the resource reservation.
       type: string
     ResourceReservationStatus:
-      description: ->
+      description: >-
         An attribute which specifies the resource reservation result for the feasibility check job.
       type: string
       enum:
@@ -614,11 +617,11 @@ components:
         - UNRESERVED
         - USED
     ReservationExpiration:
-      description: ->
-        An attribute which specifes the actual validity period of the resource reservation..
+      description: >-
+        An attribute which specifes the actual validity period of the resource reservation.
       type: string
     ReservationFailureReason:
-      description: ->
+      description: >-
         An attribute that specifies the additional reason information if the reservation is failed. 
       type: string
 
@@ -659,7 +662,7 @@ components:
             NetworkSliceSubnetProviderCapabilities:
               $ref: '#/components/schemas/NetworkSliceSubnetProviderCapabilities-Multiple'
             FeasibilityCheckJob:
-              $ref: '#/components/schemas/FeasibilityCheckJob-Multiple'
+              $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Multiple'
 
 
     NetworkSlice-Single:
@@ -747,11 +750,9 @@ components:
                   $ref: '#/components/schemas/XLThpt'
                 uLThptPerSliceSubnet:
                   $ref: '#/components/schemas/XLThpt'
-                coverageAreaTAIList:
-                  type: array
-                  items:
-                    type: string
-    FeasibilityCheckJob-Single:
+                coverageAreaTAList:
+                  $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
+    FeasibilityCheckAndReservationJob-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'     
         - type: object
@@ -765,6 +766,8 @@ components:
                     - $ref: '#/components/schemas/ServiceProfile'
                 resourceReservation:
                   $ref: '#/components/schemas/ResourceReservation'
+                recommendationRequest:
+                  $ref: '#/components/schemas/RecommendationRequest'
                 requestedReservationExpiration:
                   $ref: '#/components/schemas/RequestedReservationExpiration'
                 processMonitor:
@@ -777,7 +780,6 @@ components:
                   $ref: '#/components/schemas/ResourceReservationStatus'
                 reservationFailureReason:
                   $ref: '#/components/schemas/ReservationFailureReason'
-
                 reservationExpiration:
                   $ref: '#/components/schemas/ReservationExpiration'
                 recommendedRequirements:
@@ -808,10 +810,10 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/NetworkSliceSubnetProviderCapabilities-Single'
-    FeasibilityCheckJob-Multiple:
+    FeasibilityCheckAndReservationJob-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/FeasibilityCheckJob-Single'   
+        $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Single'   
         
 #------------ Definitions in TS 28.541 for TS 28.532 -----------------------------
 
@@ -824,4 +826,4 @@ components:
        - $ref: '#/components/schemas/NetworkSliceSubnet-Single'
        - $ref: '#/components/schemas/EP_Transport-Single'
        - $ref: '#/components/schemas/NetworkSliceSubnetProviderCapabilities-Single'
-       - $ref: '#/components/schemas/FeasibilityCheckJob-Single'       
+       - $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Single'       

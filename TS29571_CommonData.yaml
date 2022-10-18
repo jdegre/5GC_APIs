@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0'
+  version: '1.4.0'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.  
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 17.6.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 17.7.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -1412,6 +1412,12 @@ components:
       description: >
         Relay Service Code to identify a connectivity service provided by the UE-to-Network relay.
 
+    5GPrukId:
+      type: string
+      description: >
+        The 5GPRUK ID is string in NAI format as specified in clause 28.7.19 of 3GPP TS 23.003.
+      pattern: '^rid[0-9]{1,4}\.pid[0-9a-fA-F]+\@prose-cp\.5gc\.mnc[0-9]{2,3}\.mcc[0-9]{3}\.3gppnetwork\.org$'
+
     NsagId:
       type: integer
       description: >
@@ -1433,7 +1439,7 @@ components:
       enum:
         - 3GPP_ACCESS
         - NON_3GPP_ACCESS
-      description: Indicates wether the access is  via 3GPP or via non-3GPP.
+      description: Indicates whether the access is  via 3GPP or via non-3GPP.
 
     AccessTypeRm:
       anyOf:
@@ -1571,7 +1577,7 @@ components:
           - LATE
       - type: string
         description: >
-          This string provides forward-compatibility with future  extensions to the enumeration
+          This string provides forward-compatibility with future extensions to the enumeration
           but is not used to encode  content defined in the present version of this API. 
 
       description: |
@@ -3133,7 +3139,9 @@ components:
         OpenAPI 'nullable: true' property. 
 
     TwapId:
-      description: Contain the TWAP Identifier as defined in clause 4.2.8.5.3 of 3GPP TS 23.501.
+      description: >
+        Contain the TWAP Identifier as defined in clause 4.2.8.5.3 of 3GPP TS 23.501
+        or the WLAN location information as defined in clause 4.5.7.2.8 of 3GPP TS 23.402.
       type: object
       required:
         - ssId
@@ -3231,6 +3239,11 @@ components:
           items:
             $ref: '#/components/schemas/IpAddr'
           minItems: 1
+        ecsUriList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Uri'
+          minItems: 1
         ecsProviderId:
           type: string
 
@@ -3305,6 +3318,8 @@ components:
           items:
             $ref: '#/components/schemas/Mcc'
           minItems: 1
+        geographicalServiceArea:
+          $ref: '#/components/schemas/GeoServiceArea'
 
     SpatialValidityCondRm:
       description: Contains the Spatial Validity Condition or the null value.
@@ -3397,6 +3412,20 @@ components:
         accessAllowed:
           type: boolean
 
+    GeoServiceArea:
+      description: List of geographic area or list of civic address info
+      type: object
+      properties:
+        geographicAreaList:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+          minItems: 1
+        civicAddressList:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
+          minItems: 1
 
 #
 # Data types describing alternative data types or combinations of data types
@@ -4878,6 +4907,8 @@ components:
           $ref: '#/components/schemas/DateTime'
         terminationTime:
           $ref: '#/components/schemas/DateTime'
+        mbsServInfo:
+          $ref: '#/components/schemas/MbsServiceInfo'
         mbsSessionSubsc:
           $ref: '#/components/schemas/MbsSessionSubscription'
         activityStatus:
@@ -5040,6 +5071,87 @@ components:
         - areaSessionId
         - mbsServiceArea
 
+    MbsServiceInfo:
+      description: Represent MBS Service Information.
+      type: object
+      properties:
+        mbsMediaComps:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MbsMediaCompRm'
+          minProperties: 1
+        mbsSdfResPrio:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ReservPriority'
+        afAppId:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AfAppId'
+        mbsSessionAmbr:
+          $ref: '#/components/schemas/BitRate'
+      required:
+        - mbsMediaComps
+
+    MbsMediaComp:
+      description: Represents an MBS Media Component.
+      type: object
+      properties:
+        mbsMedCompNum:
+          type: integer
+        mbsFlowDescs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
+          minItems: 1
+        mbsSdfResPrio:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ReservPriority'
+        mbsMediaInfo:
+          $ref: '#/components/schemas/MbsMediaInfo'
+        qosRef:
+          type: string
+        mbsQoSReq:
+          $ref: '#/components/schemas/MbsQoSReq'
+      required:
+        - mbsMedCompNum
+
+    MbsMediaCompRm:
+      description: >
+        This data type is defined in the same way as the MbsMediaComp data type, but with the
+        OpenAPI nullable property set to true.
+      anyOf:
+        - $ref: '#/components/schemas/MbsMediaComp'
+        - $ref: '#/components/schemas/NullValue'
+
+    MbsQoSReq:
+      description: Represent MBS QoS requirements.
+      type: object
+      properties:
+        5qi:
+          $ref: '#/components/schemas/5Qi'
+        guarBitRate:
+          $ref: '#/components/schemas/BitRate'
+        maxBitRate:
+          $ref: '#/components/schemas/BitRate'
+        averWindow:
+          $ref: '#/components/schemas/AverWindow'
+        reqMbsArp:
+          $ref: '#/components/schemas/Arp'
+      required:
+        - 5qi
+
+    MbsMediaInfo:
+      description: Represent MBS Media Information.
+      type: object
+      properties:
+        mbsMedType:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/MediaType'
+        maxReqMbsBwDl:
+          $ref: '#/components/schemas/BitRate'
+        minReqMbsBwDl:
+          $ref: '#/components/schemas/BitRate'
+        codecs:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/CodecData'
+          minItems: 1
+          maxItems: 2
 
 #
 # HTTP responses

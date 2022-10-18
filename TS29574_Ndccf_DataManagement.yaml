@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: 1.0.1
   title: Ndccf_DataManagement
   description: |
     DCCF Data Management Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.574 V17.1.0; 5G System; Data Collection Coordination Services; Stage 3.
+  description: 3GPP TS 29.574 V17.2.0; 5G System; Data Collection Coordination Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.574/'
 #
 servers:
@@ -114,7 +114,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
               callbacks:
                 Fetch:
-                  '{request.body#/fetchUri}':
+                  '{request.body#/fetchInstruct/fetchUri}':
                     post:
                       requestBody:
                         required: true
@@ -347,7 +347,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
               callbacks:
                 Fetch:
-                  '{request.body#/fetchUri}':
+                  '{request.body#/fetchInstruct/fetchUri}':
                     post:
                       requestBody:
                         required: true
@@ -529,10 +529,22 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         targetNfSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        adrfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        ardfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         timePeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        dataCollectPurposes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataCollectionPurpose'
+          minItems: 1
+          description: >
+            The purposes of data collection. This attribute may only be provided if the consumer has
+            checked user consent.
 
 #
     NdccfDataSubscription:
@@ -562,16 +574,30 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         targetNfSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        adrfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        ardfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
         timePeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        dataCollectPurposes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataCollectionPurpose'
+          minItems: 1
+          description: >
+            The purposes of data collection. This attribute may only be provided if the consumer has
+            checked user consent.
+
 #
     NdccfAnalyticsSubscriptionNotification:
       description: Represents a notification for a DCCF analytics subscription.
       type: object
       required:
         - anaNotifCorrId
+        - timeStamp
       oneOf:
         - required: [anaNotifications]
         - required: [anaReports]
@@ -596,12 +622,20 @@ components:
             has received from NWDAF.
         fetchInstruct:
           $ref: 'TS29576_Nmfaf_3caDataManagement.yaml#/components/schemas/FetchInstruction'
+        terminationReq:
+          type: boolean
+          description: >
+            It indicates the termination of the data management subscription that requested by the
+            DCCF.
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 #
     NdccfDataSubscriptionNotification:
       description: Represents a notification for a DCCF data subscription.
       type: object
       required:
         - dataNotifCorrId
+        - timeStamp
       oneOf:
         - required: [dataNotif]
         - required: [dataReports]
@@ -622,6 +656,13 @@ components:
             producer.
         fetchInstruct:
           $ref: 'TS29576_Nmfaf_3caDataManagement.yaml#/components/schemas/FetchInstruction'
+        terminationReq:
+          type: boolean
+          description: >
+            It indicates the termination of the data management subscription that requested by the
+            DCCF.
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 #
     FormattingInstruction:
       description: Contains data or analytics formatting instructions.
@@ -655,6 +696,10 @@ components:
           description: >
             Notifications for the present subscription are sent only upon occurrence of events of the
             subscription with identifier that matches this attribute.
+        minClubbedNotif:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        maxClubbedNotif:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
 #
     ProcessingInstruction:
       description: Contains instructions related to the processing of notifications.
@@ -664,10 +709,7 @@ components:
        - procInterval
       properties:
         eventId:
-          type: string
-          description: >
-            Identifies the (event exposure or analytics) event that the processing instructions shall
-            apply to.
+          $ref: '#/components/schemas/DccfEvent'
         procInterval:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         paramProcInstructs:
@@ -678,6 +720,38 @@ components:
           description: >
             List of event parameter names, and for each event parameter name, respective event
             parameter values and sets of the attributes to be used in the summarized reports.
+#
+    DccfEvent:
+      description: >
+        Identifies the (event exposure or analytics) event that the processing instructions 
+        shall apply to. Contains all event IDs related to DCCF.
+      type: object
+      oneOf:
+        - required: [nwdafEvent]
+        - required: [smfEvent]
+        - required: [amfEvent]
+        - required: [nefEvent]
+        - required: [afEvent]
+        - required: [sacEvent]
+        - required: [nrfEvent]
+        - required: [udmEvent]
+      properties:
+        nwdafEvent:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NwdafEvent'
+        smfEvent:
+          $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/SmfEvent'
+        amfEvent:
+          $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/AmfEventType'
+        nefEvent:
+          $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/NefEvent'
+        udmEvent:
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/EventType'
+        afEvent:
+          $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEvent'
+        sacEvent:
+          $ref: 'TS29536_Nnsacf_SliceEventExposure.yaml#/components/schemas/SACEvent'
+        nrfEvent:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NotificationEventType'
 #
     ParameterProcessingInstruction:
       description: >
@@ -705,6 +779,20 @@ components:
             $ref: '#/components/schemas/SummarizationAttribute'
           minItems: 1
           description: Attributes requested to be used in the summarized reports.
+        aggrLevel:
+          $ref: '#/components/schemas/AggregationLevel'
+        supis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+          description: Indicates the UEs for which processed reports are requested.
+        areas:
+          type: array
+          items:
+            $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+          minItems: 1
+          description: Indicates the Areas of Interest for which processed reports are requested.
 #
     NotifSummaryReport:
       description: Represents summarized notifications based on processing instructions.
@@ -715,9 +803,7 @@ components:
        - eventReports
       properties:
         eventId:
-          type: string
-          description: >
-            Identifies the (event exposure or analytics) event that this report applies to.
+          $ref: '#/components/schemas/DccfEvent'
         procInterval:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         eventReports:
@@ -739,16 +825,21 @@ components:
           description: The name of the reported parameter.
         values:
           type: array
-          items:
-            type: string
+          items: {}
           minItems: 1
           description: The list of values of the reported parameter.
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        area:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         spacing:
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NumberAverage'
         duration:
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NumberAverage'
         avgAndVar:
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NumberAverage'
+        mostFreqVal: {}
+        leastFreqVal: {}
         count:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         minValue:
@@ -766,13 +857,48 @@ components:
           - DURATION
           - OCCURRENCES
           - AVG_VAR
+          - FREQ_VAL
           - MIN_MAX
       - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
         - SPACING: Average and variance of the time interval separating two consecutive occurrences of the same event and parameter value, or periodicity for periodic reporting.
         - DURATION: Average and variance of the time for which the parameter value applies.
         - OCCURRENCES: Number of countable occurrences for the parameter.
         - AVG_VAR: Average and variance of the parameter.
+        - FREQ_VAL: Most and least frequent values.
         - MIN_MAX: Maximum and minimum parameter values.
 #
+    AggregationLevel:
+      anyOf:
+      - type: string
+        enum:
+          - UE
+          - AOI
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - UE: Indicates that the summarized reports shall be provided per UE.
+        - AOI: Indicates that the summarized reports shall be provided per Area of Interest.
+#
+    DataCollectionPurpose:
+      anyOf:
+      - type: string
+        enum:
+          - ANALYTICS_GENERATION
+          - MODEL_TRAINING
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - ANALYTICS_GENERATION: The data is collected for generating the analytics.
+        - MODEL_TRAINING: The data is collected for ML model training.

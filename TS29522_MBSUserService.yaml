@@ -1,48 +1,47 @@
 openapi: 3.0.0
+
 info:
-  title: 3gpp-iptvconfiguration
-  version: 1.1.1
+  title: 3gpp-mbs-us
+  version: 1.0.0
   description: |
-    API for IPTV configuration.  
+    API for MBS User Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
   description: >
     3GPP TS 29.522 V17.7.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
-security:
-  - {}
-  - oAuth2ClientCredentials: []
+
 servers:
-  - url: '{apiRoot}/3gpp-iptvconfiguration/v1'
+  - url: '{apiRoot}/3gpp-mbs-us/v1'
     variables:
       apiRoot:
         default: https://example.com
-        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122.
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
 paths:
-  /{afId}/configurations:
+  /mbs-user-services:
     get:
-      summary: read all of the active configurations for the AF
-      operationId: ReadAllSubscriptions
+      summary: Retrieve all the active MBS User Service resources managed by the NEF.
       tags:
-        - IPTV Configurations
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
+        - MBS User Services
+      operationId: RetrieveMBSUserServices
       responses:
         '200':
-          description: OK (Successful get all of the active configurations for the AF)
+          description: >
+            OK. All the active MBS User Services managed by the NEF are returned.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IptvConfigData'
-                minItems: 0
+                  $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
+                minItems: 1
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -67,34 +66,32 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Creates a new configuration resource
-      operationId: CreateNewSubscription
+      summary: Request the creation of a new Individual MBS User Service resource.
       tags:
-        - IPTV Configurations
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
+        - MBS User Services
+      operationId: CreateMBSUserService
       requestBody:
-        description: new configuration creation
+        description: >
+          Contains the parameters to request the creation of a new MBS User Service at the NEF.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IptvConfigData'
+              $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
       responses:
         '201':
-          description: Created (Successful creation of configuration)
+          description: >
+            Created. A new MBS User Service is successfully created and a representation of the
+            created Individual MBS User Service resource is returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
           headers:
             Location:
-              description: Contains the URI of the newly created resource.
+              description: >
+                Contains the URI of the newly created resource, according to the structure
+                {apiRoot}/3gpp-mbs-us/v1/mbs-user-services/{mbsUserServId}
               required: true
               schema:
                 type: string
@@ -121,32 +118,29 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-  /{afId}/configurations/{configurationId}:
+
+  /mbs-user-services/{mbsUserServId}:
+    parameters:
+      - name: mbsUserServId
+        in: path
+        description: Identifier of the Individual MBS User Service resource.
+        required: true
+        schema:
+          type: string
+
     get:
-      summary: read an active configuration for the AF and the configuration Id
-      operationId: ReadAnSubscription
+      summary: Retrieve an existing Individual MBS User Service resource.
       tags:
-        - Individual IPTV Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: configurationId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
+        - Individual MBS User Service
+      operationId: RetrieveIndivMBSUserService
       responses:
         '200':
-          description: OK (Successful get the active configuration)
+          description: >
+            OK. The requested Individual MBS User Service resource is successfully returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -171,41 +165,30 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Fully updates/replaces an existing configuration resource
-      operationId: FullyUpdateAnSubscription
+      summary: Request the update of an existing Individual MBS User Service resource.
       tags:
-        - Individual IPTV Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: configurationId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
+        - Individual MBS User Service
+      operationId: UpdateIndivMBSUserService
       requestBody:
-        description: Parameters to update/replace the existing configuration
+        description: >
+          Contains the updated representation of the Individual MBS User Service resource.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IptvConfigData'
+              $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
       responses:
         '200':
-          description: OK (Successful deletion of the existing configuration)
+          description: >
+            OK. The concerned Individual MBS User Service resource is successfully updated and a
+            representation of the updated resource is returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
         '204':
           description: >
-            Successful case. The resource has been successfully updated and no additional
-            content is to be sent in the response message.
+            No Content. The concerned Individual MBS User Service resource is successfully updated.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -234,40 +217,31 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     patch:
-      summary: Partial updates an existing configuration resource
-      operationId: PartialUpdateAnSubscription
+      summary: Request the modification of an existing Individual MBS User Service resource.
       tags:
-        - Individual IPTV Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: configurationId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
+        - Individual MBS User Service
+      operationId: ModifyIndivMBSUserService
       requestBody:
+        description: >
+          Contains the parameters to request the modification of the Individual MBS User
+          Service resource.
         required: true
         content:
           application/merge-patch+json:
             schema:
-              $ref: '#/components/schemas/IptvConfigDataPatch'
+              $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserServicePatch'
       responses:
         '200':
-          description: OK. The configuration was modified successfully.
+          description: >
+            OK. The concerned Individual MBS User Service resource is successfully modified and a
+            representation of the updated resource is returned.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IptvConfigData'
+                $ref: 'TS29580_Nmbsf_MBSUserService.yaml#/components/schemas/MBSUserService'
         '204':
           description: >
-            Successful case. The resource has been successfully updated and no additional
-            content is to be sent in the response message.
+            No Content. The concerned Individual MBS User Service resource is successfully modified.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -296,26 +270,14 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an already existing configuration
-      operationId: DeleteAnSubscription
+      summary: Deletes an existing Individual MBS User Service resource.
       tags:
-        - Individual IPTV Configuration
-      parameters:
-        - name: afId
-          in: path
-          description: Identifier of the AF
-          required: true
-          schema:
-            type: string
-        - name: configurationId
-          in: path
-          description: Identifier of the configuration resource
-          required: true
-          schema:
-            type: string
+        - Individual MBS User Service
+      operationId: DeleteIndivMBSUserService
       responses:
         '204':
-          description: No Content (Successful deletion of the existing configuration)
+          description: >
+            No Content. The Individual MBS User Service resource is successfully deleted.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -336,6 +298,8 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -344,81 +308,14 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
-  schemas: 
-    IptvConfigData:
-      description: Represents an individual IPTV Configuration resource.
-      type: object
-      properties:
-        self:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
-        gpsi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
-        exterGroupId:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
-        afAppId:
-          type: string
-        dnn:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
-        snssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MulticastAccessControl'
-          minProperties: 1
-          description: >
-            Identifies a list of multicast address access control information.
-            Any string value can be used as a key of the map.
-        mtcProviderId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
-        suppFeat:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-      required:
-        - afAppId
-        - multiAccCtrls
-        - suppFeat
-    IptvConfigDataPatch:
-      description: >
-        Represents the parameters to request the modification of an IPTV Configuration resource.
-      type: object
-      properties:
-        multiAccCtrls:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MulticastAccessControl'
-          minProperties: 1
-          description: >
-            Identifies a list of multicast address access control information.
-            Any string value can be used as a key of the map.
-    MulticastAccessControl:
-      description: Represents multicast address access control information.
-      type: object
-      properties:
-        srcIpv4Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-        srcIpv6Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        multicastV4Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
-        multicastV6Addr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
-        accStatus:
-          $ref: '#/components/schemas/AccessRightStatus'
-      required:
-        - accStatus
-    AccessRightStatus:
-      anyOf:
-        - type: string
-          enum:
-            - FULLY_ALLOWED
-            - PREVIEW_ALLOWED
-            - NO_ALLOWED
-        - type: string
-          description: >
-            This string provides forward-compatibility with future extensions to the enumeration but
-            is not used to encode content defined in the present version of this API.
-      description: |
-        Possible values are:
-        - FULLY_ALLOWED: The User is fully allowed to access to the channel.
-        - PREVIEW_ALLOWED: The User is preview allowed to access to the channel.
-        - NO_ALLOWED: The User is not allowed to access to the channel.
+
+#
+# STRUCTURED DATA TYPES
+#
+
+# SIMPLE DATA TYPES
+#
+
+#
+# ENUMERATIONS
+#
