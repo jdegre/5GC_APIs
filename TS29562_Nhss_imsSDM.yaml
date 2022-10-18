@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.5'
+  version: '1.0.6'
   title: 'Nhss_imsSDM'
   description: |
-    Nhss Subscriber Data Management Service for IMS.
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    Nhss Subscriber Data Management Service for IMS.  
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 16.7.0
+  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 16.8.0
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.562/'
 
 servers:
@@ -74,7 +74,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  /{imsUeId}/ims-data/profile-data/profile-data:
+  /{imsUeId}/ims-data/profile-data:
     get:
       summary: Retrieve the complete IMS profile for a given IMS public identity (and public identities in the same IRS)
       operationId: GetProfileData
@@ -1899,8 +1899,10 @@ paths:
         - name: call-reference-info
           in: query
           description: Indicates Call-Reference Number and AS-Number
-          schema:
-            $ref: '#/components/schemas/CallReferenceInfo'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallReferenceInfo'
       responses:
         '200':
           description: Expected response to a valid request
@@ -2801,8 +2803,10 @@ components:
           $ref: '#/components/schemas/CsgInformation'
         timeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
-        ratType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        eUtranCgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        tai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
 
     CsgInformation:
       type: object
@@ -3128,8 +3132,15 @@ components:
         callRefNumber:
           type: string
           format: byte
+          description: >
+            The content is according to CallReferenceNumber type described in 3GPP TS 29.002 [30].
+            Base64 encoded according to IETF RFC 2045 [28]
         asNumber:
           type: string
+          format: byte
+          description: >
+            The content is according to ISDN-AddressString type described in 3GPP TS 29.002 [30].
+            Base64 encoded according to IETF RFC 2045 [28]
 
     DataSetNames:
       type: array
