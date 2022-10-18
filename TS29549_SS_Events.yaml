@@ -1,29 +1,37 @@
 openapi: 3.0.0
+
 info:
   title: SS_Events
   description: |
     API for SEAL Events management.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0"
+  version: "1.1.1"
+
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.5.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V17.6.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/ss-events/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+
 paths:
   /subscriptions:
     post:
       description: Creates a new individual SEAL Event Subscription.
+      operationId: CreateSealEventSubsc
+      tags:
+        - SEAL Events Subscriptions (Collection)
       requestBody:
         required: true
         content:
@@ -108,6 +116,9 @@ paths:
   /subscriptions/{subscriptionId}:
     delete:
       description: Deletes an individual SEAL Event Subscription.
+      operationId: DeleteIndSealEventSubsc
+      tags:
+        - Individual SEAL Events Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -141,6 +152,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     patch:
       description: Modify an existing SEAL Event Subscription.
+      operationId: ModifyIndSealEventSubsc
+      tags:
+        - Individual SEAL Events Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -193,6 +207,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     put:
       description: Replace an existing SEAl event subscription.
+      operationId: UpdateIndSealEventSubsc
+      tags:
+        - Individual SEAL Events Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -242,6 +259,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -250,6 +268,7 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
     SEALEventSubscription:
       description: Represents an individual SEAL Event Subscription resource.
@@ -438,7 +457,7 @@ components:
             type: string
           minItems: 1
           description: >
-            VAL group identifiers that event subscriber wants to know in the interested event. 
+            VAL group identifiers that event subscriber wants to know in the interested event.
       required:
         - valGrpIds
 
@@ -465,11 +484,11 @@ components:
       description: Represents the location information for a VAL User ID or a VAL UE ID.
       type: object
       properties:
-        valTgtUe:  
+        valTgtUe:
             $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
-        locInfo:  
+        locInfo:
           $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/LocationInfo'
-        timeStamp:  
+        timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         valSvcId:
           type: string
@@ -668,6 +687,9 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
         refUe:
           $ref: '#/components/schemas/ReferenceUEDetail'
+      oneOf:
+        - required: [geoArea]
+        - required: [refUe]
 
     ReferenceUEDetail:
       description: Reference UE details, where the UEs moving in and out to be monitored.
@@ -677,6 +699,8 @@ components:
           $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
         proxRange:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        proxRangeFrac:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
       required:
         - valTgtUe
         - proxRange
@@ -716,6 +740,8 @@ components:
           description: >
             List of identities of VAL UEs who moved out of the given location area
             since previous notification.
+
+# Simple data types and Enumerations
 
     SEALEvent:
       anyOf:

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0'
+  version: '1.2.1'
   title: 'NRF NFManagement Service'
   description: |
     NRF NFManagement Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.6.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V17.7.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -1516,6 +1516,7 @@ components:
             - SMS_IWMSC
             - MBSF
             - MBSTF
+            - PANF
         - type: string
 
     NefId:
@@ -1578,7 +1579,7 @@ components:
         reqSnssais:
           type: array
           items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
           minItems: 1
         reqPerPlmnSnssais:
           type: array
@@ -2057,8 +2058,12 @@ components:
         smfOnboardingCapability:
           type: boolean
           default: false
+          deprecated: true
         ismfSupportInd:
           type: boolean
+        smfUPRPCapability:
+          type: boolean
+          default: false
 
     SnssaiSmfInfoItem:
       description: Set of parameters supported by SMF for a given S-NSSAI
@@ -2068,7 +2073,7 @@ components:
         - dnnSmfInfoList
       properties:
         sNssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
         dnnSmfInfoList:
           type: array
           items:
@@ -2167,7 +2172,7 @@ components:
         - dnnUpfInfoList
       properties:
         sNssai:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
         dnnUpfInfoList:
           type: array
           items:
@@ -2204,6 +2209,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Ipv6PrefixRange'
+          minItems: 1
+        ipv4IndexList:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpIndex'
+          minItems: 1
+        ipv6IndexList:
+          type: array
+          items:
+            $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpIndex'
           minItems: 1
         dnaiNwInstanceList:
           description: >
@@ -2438,6 +2453,14 @@ components:
           type: string
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        serviceInfoList:
+          description: >
+            A map of service specific information. The name of the corresponding service (as
+            specified in ServiceName data type) is the key.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DefSubServiceInfo'
+          minProperties: 1
 
     NfSetCond:
       description: Subscription to a set of NFs based on their Set Id
@@ -2727,6 +2750,7 @@ components:
             - nudm-niddau
             - nudm-mt
             - nudm-ssau
+            - nudm-rsds
             - namf-comm
             - namf-evts
             - namf-mt
@@ -2833,6 +2857,7 @@ components:
             - nmbsf-mbsuserserv
             - nmbsf-mbsuserdataing
             - nmbstf-distsession
+            - npanf-prosekey
         - type: string
 
     N2InterfaceAmfInfo:
@@ -3804,6 +3829,8 @@ components:
       description: Information of a SEPP Instance
       type: object
       properties:
+        seppPrefix:
+          type: string
         seppPorts:
           description: >
             Port numbers for HTTP and HTTPS. The key of the map shall be "http" or "https".
@@ -4479,3 +4506,15 @@ components:
           minItems: 1
       required:
         - msisdnRanges
+
+    DefSubServiceInfo:
+      description: Service Specific information for Default Notification Subscription.
+      type: object
+      properties:
+        versions:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'

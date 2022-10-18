@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: 3gpp-eas-deployment
-  version: 1.0.0
+  version: 1.0.1
   description: |
     API for AF provisioned EAS Deployment.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 29.522 V17.6.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V17.7.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 security:
   - {}
@@ -22,7 +22,10 @@ servers:
 paths:
   /{afId}/eas-deployment-info:
     get:
-      summary: read all EAS Deployment information for a given AF
+      summary: Read all EAS Deployment information for a given AF
+      operationId: ReadAllDeployment
+      tags:
+        - EAS Deployment Information (Collection)
       parameters:
         - name: afId
           in: path
@@ -65,6 +68,9 @@ paths:
 
     post:
       summary: Create a new Individual EAS Deployment information resource.
+      operationId: CreateAnDeployment
+      tags:
+        - EAS Deployment Information (Collection)
       parameters:
         - name: afId
           in: path
@@ -117,7 +123,10 @@ paths:
 
   /{afId}/eas-deployment-info/{easDeployInfoId}:
     get:
-      summary: read an active Individual EAS Deployment Information resource for the AF
+      summary: Read an active Individual EAS Deployment Information resource for the AF
+      operationId: ReadAnDeployment
+      tags:
+        - Individual EAS Deployment Information
       parameters:
         - name: afId
           in: path
@@ -162,7 +171,10 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     put:
-      summary: Updates/replaces an existing resource
+      summary: Fully updates/replaces an existing resource
+      operationId: FullyUpdateAnDeployment
+      tags:
+        - Individual EAS Deployment Information
       parameters:
         - name: afId
           in: path
@@ -221,6 +233,9 @@ paths:
 
     delete:
       summary: Deletes an already existing EAS Deployment information resource
+      operationId: DeleteAnDeployment
+      tags:
+        - Individual EAS Deployment Information
       parameters:
         - name: afId
           in: path
@@ -257,6 +272,45 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /remove-edis:
+    post:
+      summary: Remove EAS Deployment Information based on given criteria.
+      operationId: DeleteEDIs
+      tags:
+        - EAS Deployment Information removal
+      requestBody:
+        description: Criteria to be used for deleting EAS Deployment Information that match them.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdiDeleteCriteria'
+        required: true
+      responses:
+        '204':
+          description: No Content. The EDIs matching the provided criteria have been successfully deleted.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -329,3 +383,15 @@ components:
       required:
         - dnsServIpAddr
         - portNumber
+
+    EdiDeleteCriteria:
+      description: Contains criteria to be used for deleting EAS Deployment Information entries that match them.
+      type: object
+      properties:
+        afId:
+          $ref: 'TS29522_AKMA.yaml#/components/schemas/AfId'
+        dnnSnssai:
+          $ref: 'TS29522_AMInfluence.yaml#/components/schemas/DnnSnssaiInformation'
+      anyOf:
+        - required: [afId]
+        - required: [dnnSnssai]

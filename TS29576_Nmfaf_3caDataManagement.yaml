@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: 1.0.1
   title: Nmfaf_3caDataManagement
   description: |
     MFAF 3GPP Consumer Adaptor (3CA) Data Management Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.576 V17.1.0; 5G System; Messaging Framework Adaptor Services; Stage 3.
+  description: 3GPP TS 29.576 V17.2.0; 5G System; Messaging Framework Adaptor Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.576/'
 servers:
   - url: '{apiRoot}/nmfaf-3cadatamanagement/v1'
@@ -77,7 +77,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
               callbacks:
                 Fetch:
-                  '{request.body#/fetchUri}':
+                  '{request.body#/fetchInstruction/fetchUri}':
                     post:
                       requestBody:
                         required: true
@@ -139,16 +139,16 @@ components:
       type: object
       required:
         - correId
-      anyOf:
+      oneOf:
         - required: [dataAnaNotif]
         - required: [fetchInstruction]
       properties:
         correId:
           type: string
           description: >
-            If the configuration is used for mapping analytics or data collection,
-            represents the Analytics Consumer Notification Correlation ID
-            or Data Consumer Notification Correlation ID.
+            Represents the Analytics Consumer Notification Correlation ID
+            or Data Consumer Notification Correlation ID. It shall be set to the same
+            value as the "correId" attribute of MessageConfiguration data type.
         dataAnaNotif:
           $ref: '#/components/schemas/NmfafDataAnaNotification'
         fetchInstruction:
@@ -170,6 +170,8 @@ components:
             type: string
           minItems: 1
           description: The fetch correlation identifier(s) of the MFAF Data or Analytics.
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
     NmfafDataAnaNotification:
       description: MFAF data or analytics.
       type: object

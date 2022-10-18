@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Npcf_SMPolicyControl API
-  version: 1.2.0
+  version: 1.2.1
   description: |
     Session Management Policy Control Service  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.512 V17.7.0; 5G System; Session Management Policy Control Service.
+  description: 3GPP TS 29.512 V17.8.0; 5G System; Session Management Policy Control Service.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.512/'
 security:
   - {}
@@ -739,6 +739,8 @@ components:
         disUeNotif:
           type: boolean
           nullable: true
+        packFiltAllPrec:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - pccRuleId
       nullable: true
@@ -2156,6 +2158,8 @@ components:
           - DNAI_STEERING_ERROR
           - AN_GW_FAILE
           - MAX_NR_PACKET_FILTERS_EXCEEDED
+          - PACKET_FILTER_TFT_ALLOCATION_EXCEEDED
+          - MUTE_CHG_NOT_ALLOWED
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2190,6 +2194,9 @@ components:
         - TRAFFIC_STEERING_ERROR: Indicates that enforcement of the steering of traffic to the N6-LAN or 5G-LAN failed; or the dynamic PCC rule could not be successfully installed or modified at the NF service consumer because there are invalid traffic steering policy identifier(s) within the provided Traffic Control Data policy decision to which the PCC rule refers.
         - DNAI_STEERING_ERROR: Indicates that the enforcement of the steering of traffic to the indicated DNAI failed; or the dynamic PCC rule could not be successfully installed or modified at the NF service consumer because there is invalid route information for a DNAI(s) (e.g. routing profile id is not configured) within the provided Traffic Control Data policy decision to which the PCC rule refers.
         - AN_GW_FAILED: This value is used to indicate that the AN-Gateway has failed and that the PCF should refrain from sending policy decisions to the SMF until it is informed that the S-GW has been recovered. This value shall not be used if the SM Policy association modification procedure is initiated for PCC rule removal only.
+        - MAX_NR_PACKET_FILTERS_EXCEEDED: This value is used to indicate that the PCC rule could not be successfully installed, modified or enforced at the NF service consumer because the number of supported packet filters for signalled QoS rules for the PDU session has been reached.
+        - PACKET_FILTER_TFT_ALLOCATION_EXCEEDED: This value is used to indicate that the PCC rule is removed at 5GS to EPS mobility because TFT allocation was not possible since the number of active packet filters in the EPC bearer is exceeded.
+        - MUTE_CHG_NOT_ALLOWED: Indicates that the PCC rule could not be successfully modified because the mute condition for application detection report cannot be changed. Applicable when the functionality introduced with the ADC feature applies.
     AfSigProtocol:
       anyOf:
       - type: string

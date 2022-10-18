@@ -1,29 +1,37 @@
 openapi: 3.0.0
+
 info:
   title: SS_GroupManagement
   description: |
     API for SEAL Group management.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0"
+  version: "1.1.1"
+
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.5.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V17.6.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/ss-gm/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+
 paths:
   /group-documents:
     post:
       description: Creates a new VAL group document.
+      operationId: CreateValGroupDoc
+      tags:
+        - VAL Group Documents (Collection)
       requestBody:
         required: true
         content:
@@ -67,6 +75,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     get:
       description: Retrieves VAL group documents satisfying filter criteria
+      operationId: RetrieveValGroupDocs
+      tags:
+        - VAL Group Documents (Collection)
       parameters:
         - name: val-group-id
           in: query
@@ -101,7 +112,7 @@ paths:
         '404':
           $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
         '429':
           $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
@@ -114,6 +125,9 @@ paths:
   /group-documents/{groupDocId}:
     get:
       description: Retrieves VAL group information satisfying filter criteria.
+      operationId: RetrieveIndValGroupDoc
+      tags:
+        - Individual VAL Group Document (Document)
       parameters:
         - name: groupDocId
           in: path
@@ -139,7 +153,7 @@ paths:
         '200':
           description: >
             The VAL group information based on the request from the VAL server. Includes
-            VAL group members list if group-members flag is set to true in the request, 
+            VAL group members list if group-members flag is set to true in the request,
             VAL group configuration information if the group-configuration flag is set to
             true in the request, VAL group identifier, whole VAL group document resource
             if both group-members and group-configuration flags are omitted/set to false
@@ -161,7 +175,7 @@ paths:
         '404':
           $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
         '429':
           $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
@@ -173,6 +187,9 @@ paths:
 
     put:
       description: Updates an individual VAL group document.
+      operationId: UpdateIndValGroupDoc
+      tags:
+        - Individual VAL Group Document (Document)
       parameters:
         - name: groupDocId
           in: path
@@ -224,6 +241,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     delete:
       description: Deletes a VAL Group.
+      operationId: DeleteIndValGroupDoc
+      tags:
+        - Individual VAL Group Document (Document)
       parameters:
         - name: groupDocId
           in: path
@@ -256,6 +276,9 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     patch:
       description: Modify an existing VAL Group document.
+      operationId: ModifyIndValGroupDoc
+      tags:
+        - Individual VAL Group Document (Document)
       parameters:
         - name: groupDocId
           in: path
@@ -306,6 +329,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -314,6 +338,7 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
     VALGroupDocument:
       description: Represents details of the VAL group document information.

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.1.0'
+  version: '1.1.1'
   title: 'Nhss_imsSDM'
   description: |
     Nhss Subscriber Data Management Service for IMS.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 17.5.0
+  description: 3GPP TS 29.562 HSS Services for interworking with IMS, version 17.6.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.562/'
 
 servers:
@@ -74,7 +74,7 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
-  /{imsUeId}/ims-data/profile-data/profile-data:
+  /{imsUeId}/ims-data/profile-data:
     get:
       summary: >
         Retrieve the complete IMS profile for a given IMS public identity
@@ -781,6 +781,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '405':
@@ -1925,8 +1927,10 @@ paths:
         - name: call-reference-info
           in: query
           description: Indicates Call-Reference Number and AS-Number
-          schema:
-            $ref: '#/components/schemas/CallReferenceInfo'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallReferenceInfo'
       responses:
         '200':
           description: Expected response to a valid request
@@ -2464,6 +2468,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '405':
@@ -2697,6 +2703,10 @@ components:
             $ref: '#/components/schemas/NameSpacePriority'
           minItems: 1
           uniqueItems: true
+        servicePriorityLevel:
+          type: integer
+          minimum: 0
+          maximum: 4
 
     Ifcs:
       description: List of IFCs associated to the IMS public Identity
@@ -2954,8 +2964,10 @@ components:
           $ref: '#/components/schemas/CsgInformation'
         timeZone:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
-        ratType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        eUtranCgi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ecgi'
+        tai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
 
     CsgInformation:
       description: Information about a Closed Subscriber Group (CSG)
@@ -3032,6 +3044,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         maxAllowedSimulReg:
           type: integer
+        servicePriorityLevel:
+          type: integer
+          minimum: 0
+          maximum: 4
 
     ImsServiceProfile:
       description: >
@@ -3047,6 +3063,16 @@ components:
             $ref: '#/components/schemas/PublicIdentifier'
         ifcs:
           $ref: '#/components/schemas/Ifcs'
+        cnServiceAuthorization:
+          $ref: '#/components/schemas/CoreNetworkServiceAuthorization'
+
+    CoreNetworkServiceAuthorization:
+      description: >
+        Core Network Service Authorization
+      type: object
+      properties:
+        subscribedMediaProfileId:
+          type: integer
 
     PublicIdentifier:
       description: >
@@ -3220,6 +3246,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
         ipSmGwDiaRealm:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        ipSmGwSbiSupInd:
+          type: boolean
+          default: false
 
     DsaiTagInformation:
       description: >
@@ -3292,8 +3321,15 @@ components:
         callRefNumber:
           type: string
           format: byte
+          description: >
+            The content is according to CallReferenceNumber type described in 3GPP TS 29.002 [30].
+            Base64 encoded according to IETF RFC 2045 [28]
         asNumber:
           type: string
+          format: byte
+          description: >
+            The content is according to ISDN-AddressString type described in 3GPP TS 29.002 [30].
+            Base64 encoded according to IETF RFC 2045 [28]
 
     DataSetNames:
       description: Contains the data sets to be retrieved from the IMS User Profile

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.2.0
+  version: 1.2.1
   title: Namf_Communication
   description: |
     AMF Communication Service.  
@@ -14,7 +14,7 @@ security:
       - namf-comm
 
 externalDocs:
-  description: 3GPP TS 29.518 V17.6.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V17.7.0; 5G System; Access and Mobility Management Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 
 servers:
@@ -416,8 +416,17 @@ paths:
           description: UE context successfully created.
           headers:
             Location:
-              description: 'Contains the URI of the newly created resource, according to the structure: {apiRoot}/namf-comm/<apiVersion>/ue-contexts/{ueContextId}'
+              description: > 
+                Contains the URI of the newly created resource, according to the structure: 
+                {apiRoot}/namf-comm/<apiVersion>/ue-contexts/{ueContextId}
               required: true
+              schema:
+                type: string
+            3gpp-Sbi-Producer-Id:
+              description: >
+                Indicating the AMF serving the UE Context. This header shall be included when the 
+                UE Context is created in a target AMF other than the initial AMF sending the 
+                response.
               schema:
                 type: string
           content:
@@ -2576,6 +2585,8 @@ components:
           items:
             $ref: '#/components/schemas/PduSessionContext'
           minItems: 1
+        epsInterworkingInfo:
+          $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/EpsInterworkingInfo'
         traceData:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TraceData'
         serviceGapExpiryTime:
@@ -2682,6 +2693,12 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceMbr'
           minProperties: 1
           description: A map(list of key-value pairs) where Snssai serves as key.
+        smsfSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        smsfServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+        smsfBindingInfo:
+          type: string
 
 
     N2SmInformation:
@@ -2971,6 +2988,16 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         interPlmnApiRoot:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        pgwFqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+        pgwIpAddr:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpAddress'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        anchorSmfSupportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        anchorSmfOauth2Required:
+          type: boolean
       required:
         - pduSessionId
         - smContextRef
@@ -3146,6 +3173,9 @@ components:
       properties:
         ueContext:
           $ref: '#/components/schemas/UeContext'
+      required:
+        - ueContext
+
     UeContextCancelRelocateData:
       description: Data structure used for cancellation of UE Context Relocation
       type: object

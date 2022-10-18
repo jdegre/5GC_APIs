@@ -1,30 +1,31 @@
 openapi: 3.0.0
+
 info:
-  title: 'Niwmsc_SMService'
-  version: '1.0.1'
+  title: Nnef_SMService
+  version: 1.0.0
   description: |
-    SMS-IWMSC Short Message Service.  
+    Nnef SMService Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.579 V17.1.0; 5G System; SMS Services; Stage 3.
-  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.579/
+  description: 3GPP TS 29.541 V17.4.0; 5G System; Session Management Services for Non-IP Data Delivery (NIDD).
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.541/
 
 servers:
-  - url: '{apiRoot}/niwmsc-smservice/v1'
+  - url: '{apiRoot}/nnef-smservice/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 
 security:
-  - oAuth2ClientCredentials:
-    - niwmsc-smservice
   - {}
+  - oAuth2ClientCredentials:
+    - nnef-smservice
 
 paths:
-  /mo-sm-infos/{supi}/sendsms:
+  /sm-contexts/{supi}/sendsms:
     post:
       summary: Send SMS payload for a given UE
       operationId: SendSMS
@@ -44,7 +45,7 @@ paths:
               type: object
               properties:
                 jsonData:
-                  $ref: '#/components/schemas/SmsData'
+                  $ref: 'TS29577_Nipsmgw_SMService.yaml#/components/schemas/SmsData'
                 binaryPayload:
                   type: string
                   format: binary
@@ -67,7 +68,7 @@ paths:
                 type: object
                 properties:
                   jsonData:
-                    $ref: '#/components/schemas/SmsDeliveryData'
+                    $ref: 'TS29577_Nipsmgw_SMService.yaml#/components/schemas/SmsDeliveryData'
                   binaryPayload:
                     type: string
                     format: binary
@@ -80,10 +81,6 @@ paths:
                     Content-Id:
                       schema:
                         type: string
-        '307':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '404':
@@ -94,7 +91,6 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
 components:
-
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
@@ -102,31 +98,9 @@ components:
         clientCredentials:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
-            niwmsc-smservice: Access to the niwmsc-smservice API
+            nnef-smcontext: Access to the Nnef_SMContext API
 
-  schemas:
-
-    SmsData:
-      description: >
-        Information within resquest message invoking MoForwardSm service operation,
-        for delivering MO SMS.
-      type: object
-      required:
-        - smsPayload
-      properties:
-        smsPayload:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
-
-    SmsDeliveryData:
-      description: >
-        Information within response message invoking MoForwardSm service operation,
-        for delivering MO SMS Delivery Report.
-      type: object
-      required:
-        - smsPayload
-      properties:
-        smsPayload:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/RefToBinaryData'
+# schemas:
 
 # COMPLEX TYPES:
 

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-as-session-with-qos
-  version: 1.2.0
+  version: 1.2.1
   description: |
     API for setting us an AS session with required QoS.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V17.6.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.7.0 T8 reference point for Northbound APIs
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -439,6 +439,14 @@ components:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
           minItems: 1
           description: Identifies Ethernet packet flows.
+        enEthFlowInfo:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/EthFlowInfo'
+          minItems: 1
+          description: >
+            Identifies the Ethernet flows which require QoS. Each Ethernet flow consists of a flow
+            idenifer and the corresponding UL and/or DL flows.
         qosReference:
           type: string
           description: Identifies a pre-defined QoS information
@@ -455,6 +463,11 @@ components:
           minItems: 1
           description: Identifies an ordered list of alternative service requirements that include individual QoS parameter sets. The lower the index of the array for a given entry, the higher the priority.
         disUeNotif:
+          description: >
+            Indicates whether the QoS flow parameters signalling to the UE when the SMF is notified
+            by the NG-RAN of changes in the fulfilled QoS situation is disabled (true) or
+            not (false). Default value is false. The fulfilled situation is either the QoS profile
+            or an Alternative QoS Profile.
           type: boolean
         ueIpv4Addr:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
@@ -472,6 +485,9 @@ components:
           $ref: '#/components/schemas/QosMonitoringInformation'
         directNotifInd:
           type: boolean
+          description: >
+            Indicates whether the direct event notification is requested (true) or not (false).
+            Default value is false.
         tscQosReq:
           $ref: '#/components/schemas/TscQosRequirement'
         requestTestNotification:
@@ -499,13 +515,21 @@ components:
           items:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
           minItems: 1
-          description: Describe the data flow which requires QoS.
+          description: Describe the IP data flow which requires QoS.
         ethFlowInfo:
           type: array
           items:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
           minItems: 1
           description: Identifies Ethernet packet flows.
+        enEthFlowInfo:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/EthFlowInfo'
+          minItems: 1
+          description: >
+            Identifies the Ethernet flows which require QoS. Each Ethernet flow consists of a flow
+            idenifer and the corresponding UL and/or DL flows.
         qosReference:
           type: string
           description: Pre-defined QoS reference
@@ -523,12 +547,19 @@ components:
           description: Identifies an ordered list of alternative service requirements that include individual QoS parameter sets. The lower the index of the array for a given entry, the higher the priority.
         disUeNotif:
           type: boolean
+          description: >
+            Indicates whether the QoS flow parameters signalling to the UE when the SMF is notified
+            by the NG-RAN of changes in the fulfilled QoS situation is disabled (true) or
+            not (false). The fulfilled situation is either the QoS profile or an Alternative QoS
+            Profile.
         usageThreshold:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
         qosMonInfo:
           $ref: '#/components/schemas/QosMonitoringInformationRm'
         directNotifInd:
           type: boolean
+          description: >
+            Indicates whether the direct event notification is requested (true) or not (false).
         notificationDestination:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         tscQosReq:
@@ -637,7 +668,9 @@ components:
           items:
             type: integer
           minItems: 1
-          description: Identifies the IP flows that were sent during event subscription
+          description: >
+            Identifies the affected flows that were sent during event subscription. It might be
+            omitted when the reported event applies to all the flows sent during the subscription.
         appliedQosRef:
           type: string
           description: The currently applied QoS reference. Applicable for event QOS_NOT_GUARANTEED or SUCCESSFUL_RESOURCES_ALLOCATION.
@@ -711,6 +744,8 @@ components:
           - QOS_NOT_GUARANTEED
           - QOS_MONITORING
           - SUCCESSFUL_RESOURCES_ALLOCATION
+          - ACCESS_TYPE_CHANGE
+          - PLMN_CHG
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -728,3 +763,5 @@ components:
         - QOS_NOT_GUARANTEED: The QoS targets of one or more SDFs are not being guaranteed.
         - QOS_MONITORING: Indicates a QoS monitoring event.
         - SUCCESSFUL_RESOURCES_ALLOCATION: Indicates the resource allocation is successful.
+        - ACCESS_TYPE_CHANGE: Indicates an Access type change.
+        - PLMN_CHG: Indicates a PLMN change.

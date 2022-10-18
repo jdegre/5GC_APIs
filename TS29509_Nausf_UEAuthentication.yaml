@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0
+  version: 1.2.1
   title: AUSF API
   description: |
     AUSF UE Authentication Service.  
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.509 V17.6.0; 5G System; 3GPP TS Authentication Server services.
+  description: 3GPP TS 29.509 V17.7.0; 5G System; 3GPP TS Authentication Server services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.509'
 
 servers:
@@ -299,6 +299,12 @@ paths:
               $ref: '#/components/schemas/ProSeAuthenticationInfo'
         required: true
       responses:
+        '200':
+          description: Successful authentication with 5GPRUK ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProSeAuthenticationResult'
         '201':
           description: ProSeAuthenticationCtx
           content:
@@ -539,6 +545,8 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ServerAddressingInfo'
           minItems: 1
+        msk:
+          $ref: '#/components/schemas/Msk'
       required:
         - eapPayload
 
@@ -601,6 +609,11 @@ components:
       type: string
       pattern: '[A-Fa-f0-9]{64}'
 
+    Msk:
+      description: Contains the Master Session Key.
+      type: string
+      pattern: '[A-Fa-f0-9]{128}'
+
     ResStar:
       description: Contains the RES*.
       type: string
@@ -629,11 +642,14 @@ components:
         - type: string
 
     ProSeAuthenticationInfo:
-      description: Contains the UE id (i.e. SUCI or SUPI) Relay Service Code and Nonce_1.
+      description: >
+        Contains the UE id (i.e. SUCI) or 5GPRUK ID, Relay Service Code and Nonce_1.
       type: object
       properties:
         supiOrSuci:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupiOrSuci'
+        5gPrukId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5GPrukId'
         relayServiceCode:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RelayServiceCode'
         nonce1:
@@ -641,7 +657,6 @@ components:
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
-        - supiOrSuci
         - relayServiceCode
         - nonce1
 
@@ -680,18 +695,29 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/LinksValueSchema'
         authResult:
           $ref: '#/components/schemas/AuthResult'
-        supi:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         nonce2:
           $ref: '#/components/schemas/Nonce2'
+        5gPrukId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5GPrukId'
       required:
         - eapPayload
 
     ProSeAuthData:
       oneOf:
         - $ref: '#/components/schemas/EapPayload'
+
+    ProSeAuthenticationResult:
+      description: Successful authentication for 5GPRUK ID.
+      type: object
+      properties:
+        knrProSe:
+          $ref: '#/components/schemas/KnrProSe'
+        nonce2:
+          $ref: '#/components/schemas/Nonce2'
+        supportedFeatures:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     KnrProSe:
       description: Contains the KNR_ProSe.

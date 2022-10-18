@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.0'
+  version: '1.2.1'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.6.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V17.7.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -135,7 +135,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
                 minItems: 1
         - name: plmn-specific-snssai-list
           in: query
@@ -162,6 +162,20 @@ paths:
           description: Dnn supported by the BSF, SMF or UPF
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        - name: ipv4-index
+          in: query
+          description: The IPv4 Index supported by the candidate UPF.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpIndex'
+        - name: ipv6-index
+          in: query
+          description: The IPv6 Index supported by the candidate UPF.
+          content:
+            application/json:
+              schema:
+                $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpIndex'
         - name: nsi-list
           in: query
           description: NSI IDs that are served by the services being discovered
@@ -860,6 +874,58 @@ paths:
           description: Resolution of the identity of the target PLMN based on the GPSI of the UE
           schema:
             type: boolean
+        - name: exclude-nfinst-list
+          in: query
+          description: NF Instance IDs to be excluded from the NF Discovery procedure
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+            minItems: 1
+          style: form
+          explode: false
+        - name: exclude-nfservinst-list
+          in: query
+          description: NF service instance IDs to be excluded from the NF Discovery procedure
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NfServiceInstance'
+                minItems: 1
+        - name: exclude-nfserviceset-list
+          in: query
+          description: NF Service Set IDs to be excluded from the NF Discovery procedure
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+            minItems: 1
+          style: form
+          explode: false
+        - name: exclude-nfset-list
+          in: query
+          description: NF Set IDs to be excluded from the NF Discovery procedure
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+            minItems: 1
+          style: form
+          explode: false
+        - name: preferred-analytics-delays
+          in: query
+          description: Preferred analytics delays supported by the NWDAF to be discovered
+          content:
+            application/json:
+              schema:
+                description: >
+                  A map (list of key-value pairs) where EventId or NwdafEvent serves as key
+                type: object
+                additionalProperties:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+                minProperties: 1
 
       responses:
         '200':
@@ -1346,6 +1412,8 @@ components:
           minProperties: 1
         alteredPriorityInd:
           type: boolean
+        noProfileMatchInfo:
+          $ref: '#/components/schemas/NoProfileMatchInfo'
 
     StoredSearchResult:
       description: >
@@ -1844,6 +1912,8 @@ components:
           default: false
         preferredPgwMatchInd:
           type: boolean
+        preferredAnalyticsDelaysInd:
+          type: boolean
 
     NfInstanceInfo:
       description: Contains information on an NF profile matching a discovery request
@@ -1919,3 +1989,67 @@ components:
         localInd:
           type: boolean
           default: false
+
+    NfServiceInstance:
+      description: NF service instance
+      type: object
+      oneOf:
+        - required: [ nfInstanceId ]
+        - required: [ nfServiceSetId ]
+      properties:
+        serviceInstanceId:
+          type: string
+        nfInstanceId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        nfServiceSetId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfServiceSetId'
+
+    NoProfileMatchInfo:
+      description: Provides the reason for not finding NF matching the search criteria
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          $ref: '#/components/schemas/NoProfileMatchReason'
+        queryParamCombinationList:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryParamCombination'
+          minItems: 1
+
+    QueryParamCombination:
+      description: Contains a list of Query Parameters
+      type: object
+      required:
+        - queryParams
+      properties:
+        queryParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryParameter'
+          minItems: 1
+
+    QueryParameter:
+      description: Contains the name and value of a query parameter
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+
+    NoProfileMatchReason:
+      description: No Profile Match Reason
+      anyOf:
+        - type: string
+          enum:
+            - REQUESTER_PLMN_NOT_ALLOWED
+            - TARGET_NF_SUSPENDED
+            - TARGET_NF_UNDISCOVERABLE
+            - QUERY_PARAMS_COMBINATION_NO_MATCH
+            - UNSPECIFIED
+        - type: string

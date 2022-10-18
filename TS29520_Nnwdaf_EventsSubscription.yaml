@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.2.0
+  version: 1.2.1
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V17.7.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V17.8.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 
 security:
@@ -146,11 +146,7 @@ paths:
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
-          description: The Individual NWDAF Event Subscription resource does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '429':
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
@@ -201,11 +197,7 @@ paths:
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
-          description: The Individual NWDAF Event Subscription resource does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
           $ref: 'TS29571_CommonData.yaml#/components/responses/411'
         '413':
@@ -813,6 +805,14 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         timePeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        resUsgThrCrossTimePeriod:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+          minItems: 1
+          description: >
+            Each element indicates the time elapsed between times each threshold is met or exceeded
+            or crossed.
         numOfUes:
           $ref: '#/components/schemas/NumberAverage'
         numOfPduSess:
@@ -1397,8 +1397,10 @@ components:
       type: object
       properties:
         number:
-          type: integer
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
         variance:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        skewness:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
       required:
         - number
@@ -1747,8 +1749,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         tsDuration:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        redTransExp:
-          type: string
+        obsvRedTransExp:
+          $ref: '#/components/schemas/ObservedRedundantTransExp'
+        redTransStatus:
+          type: boolean
+          description: >
+            Redundant Transmission Status. Set to "true" if redundant transmission was activated,
+            otherwise set to "false". Default value is "false" if omitted.
         ueRatio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         confidence:
@@ -1756,7 +1763,27 @@ components:
       required:
         - tsStart
         - tsDuration
-        - redTransExp
+        - obsvRedTransExp
+    ObservedRedundantTransExp:
+      description: Represents the observed redundant transmission experience related information.
+      type: object
+      properties:
+        avgPktDropRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        varPktDropRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgPktDropRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        varPktDropRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgPktDelayUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        varPktDelayUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgPktDelayDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        varPktDelayDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
 
     WlanPerformanceReq:
       description: Represents other WLAN performance analytics requirements.
@@ -1880,7 +1907,7 @@ components:
         sessInactiveTimer:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
       required:
-        - N4SessId
+        - n4SessId
         - sessInactiveTimer
 
     DnPerformanceReq:
@@ -2332,6 +2359,14 @@ components:
           - LIST_OF_HIGH_EXP_UE
           - LIST_OF_MEDIUM_EXP_UE
           - LIST_OF_LOW_EXP_UE
+          - AVG_UL_PKT_DROP_RATE
+          - VAR_UL_PKT_DROP_RATE
+          - AVG_DL_PKT_DROP_RATE
+          - VAR_DL_PKT_DROP_RATE
+          - AVG_UL_PKT_DELAY
+          - VAR_UL_PKT_DELAY
+          - AVG_DL_PKT_DELAY
+          - VAR_DL_PKT_DELAY
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2371,6 +2406,14 @@ components:
         - LIST_OF_HIGH_EXP_UE: Indicates list of high experienced UE. This value is only applicable to SM_CONGESTION event.
         - LIST_OF_MEDIUM_EXP_UE: Indicates list of medium experienced UE. This value is only applicable to SM_CONGESTION event.
         - LIST_OF_LOW_EXP_UE: Indicates list of low experienced UE. This value is only applicable to SM_CONGESTION event.
+        - AVG_UL_PKT_DROP_RATE: Indicates average uplink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_UL_PKT_DROP_RATE: Indicates variance of uplink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - AVG_DL_PKT_DROP_RATE: Indicates average downlink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_DL_PKT_DROP_RATE: Indicates variance of downlink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - AVG_UL_PKT_DELAY: Indicates average uplink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_UL_PKT_DELAY: Indicates variance uplink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - AVG_DL_PKT_DELAY: Indicates average downlink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_DL_PKT_DELAY: Indicates variance downlink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
 
     DispersionType:
       oneOf:

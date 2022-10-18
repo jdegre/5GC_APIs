@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 'UPF Event Exposure Service'
-  version: 1.0.0
+  version: 1.0.1
   description: |
     UPF Event Exposure Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.564 V17.1.0; 5G System; User Plane Function Services; Stage 3.
+  description: 3GPP TS 29.564 V17.2.0; 5G System; User Plane Function Services; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.564/
 servers:
   - url: '{apiRoot}/nupf-ee/v1'
@@ -80,6 +80,7 @@ components:
 # STRUCTURED DATA TYPES
 
     NotificationData:
+      description: the list of NotificationItems
       type: object
       required:
         - notificationItems
@@ -93,6 +94,7 @@ components:
           type: string
 
     NotificationItem:
+      description: represents a report on one subscribed event
       type: object
       required:
         - eventType
@@ -107,6 +109,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         ueIpv6Prefix:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Prefix'
+        ueMacAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
@@ -121,6 +125,7 @@ components:
           $ref: '#/components/schemas/QosMonitoringMeasurement'
 
     QosMonitoringMeasurement:
+      description: QoS Monitoring Measurement information
       type: object
       properties:
         dlPacketDelay:
@@ -129,10 +134,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         rtrPacketDelay:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        measureFailure:
+          type: boolean
+          enum:
+           - true
 
 # ENUMS
 
     EventType:
+      description: Event Type
       anyOf:
         - type: string
           enum:

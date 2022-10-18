@@ -1,30 +1,38 @@
 openapi: 3.0.0
+
 info:
   title: SS_UserProfileRetrieval
   description: |
     API for SEAL User Profile Retrieval.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0"
+  version: "1.1.1"
+
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.5.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V17.6.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/ss-upr/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+
 paths:
   /val-services:
     get:
       description: Retrieve VAL User or VAL UE profile information.
-      parameters: 
+      operationId: RetrieveValUserProfile
+      tags:
+        - VAL Services
+      parameters:
         - name: val-service-id
           in: query
           description: String identifying an individual VAL service
@@ -34,7 +42,7 @@ paths:
         - name: val-tgt-ue
           in: query
           description: Identifying a VAL target UE.
-          required: true 
+          required: true
           schema:
             $ref: '#/components/schemas/ValTargetUe'
       responses:
@@ -60,7 +68,7 @@ paths:
         '404':
           $ref: 'TS29122_CommonData.yaml#/components/responses/404'
         '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
         '429':
           $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
@@ -69,6 +77,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -77,6 +86,7 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
     ProfileDoc:
       description: Represents Profile information associated with a VAL user ID or a VAL UE ID.

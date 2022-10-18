@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: M1_EdgeResourcesProvisioning
-  version: 2.0.0
+  version: 2.1.0
   description: |
     5GMS AF M1 Edge Resources Provisioning API
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -10,7 +10,7 @@ tags:
   - name: M1_EdgeResourcesProvisioning
     description: '5G Media Streaming: Provisioning (M1) APIs: Edge Resources Provisioning'
 externalDocs:
-  description: 'TS 26.512 V17.1.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V17.2.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
   - url: '{apiRoot}/3gpp-m1/v2'
@@ -27,6 +27,39 @@ paths:
         schema: 
           $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
         description: 'The resource identifier of an existing Provisioning Session.'
+    post:
+      operationId: createEdgeResourcesConfiguration
+      summary: 'Create an Edge Resources Configuration within the scope of the specified Provisioning Session'
+      requestBody:
+        description: 'A JSON representation of an Edge Resources Configuration'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdgeResourcesConfiguration'
+      responses:
+        '201':
+          description: 'Edge Resources Configuration Created'
+          headers:
+            Location:
+              description: 'URL of the newly created Edge Resources Configuration.'
+              required: true
+              schema:
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+  /provisioning-sessions/{provisioningSessionId}/edge-resources-configurations/{edgeResourcesConfigurationId}:
+    parameters:
+      - name: provisioningSessionId
+        in: path
+        required: true
+        schema: 
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Provisioning Session.'
+      - name: edgeResourcesConfigurationId
+        in: path
+        required: true
+        schema:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
+        description: 'The resource identifier of an existing Edge Resources Configuration.'
     get:
       operationId: retrieveEdgeResourcesConfiguration
       summary: 'Retrieve the Edge Resources Configuration of the specified Provisioning Session'
@@ -86,6 +119,7 @@ components:
   schemas:    
     EdgeResourcesConfiguration:
       type: object
+      description: 'A representation of an Edge Resources Configuration resource.'
       required:
         - edgeResourcesConfigurationId
         - edgeManagementMode
@@ -104,6 +138,7 @@ components:
 
     M1EASRelocationRequirements:
       type: object
+      description: 'Relocation requirements of an EAS.'
       required:
         - tolerance
       properties:
@@ -116,6 +151,7 @@ components:
 
     EASRequirements:
         type: object
+        description: 'Requirements of an EAS.'
         required:
           - easProviderIds
           - easType
@@ -151,6 +187,7 @@ components:
               $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
 
     EdgeManagementMode:
+      description: 'The management mode of an EAS.'
       anyOf:
         - type: string
           enum: [EM_AF_DRIVEN, EM_APP_DRIVEN]
