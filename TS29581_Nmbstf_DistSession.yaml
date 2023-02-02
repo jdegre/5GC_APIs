@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nmbstf-distsession
-  version: 1.0.1
+  version: 1.0.2
   description: |
     MBSTF Distribution Session Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.581 V17.1.0; 5G System; MBSDistribution Service.
+  description: 3GPP TS 29.581 V17.2.0; 5G System; MBSDistribution Service.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.581/
 
 servers:
@@ -488,13 +488,25 @@ components:
         distSessionState:
           $ref: '#/components/schemas/DistSessionState'
         mbUpfTunAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
+        mbmsGwTunAddr: 
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
         upTrafficFlowInfo:
-          $ref: '#/components/schemas/UpTrafficFlowInfo'
+          writeOnly: true
+          allOf:
+            - $ref: '#/components/schemas/UpTrafficFlowInfo'
         mbr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         maxDelay:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
         objDistributionData:
           $ref: '#/components/schemas/ObjDistributionData'
         pktDistributionData:
@@ -503,6 +515,7 @@ components:
           $ref: 'TS29580_Nmbsf_MBSUserDataIngestSession.yaml#/components/schemas/FECConfig'
         dscpMarking:
           type: string
+          writeOnly: true
         mbsSecurityContext:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSecurityContext'
       required:
@@ -592,20 +605,27 @@ components:
       type: object
       properties:
         nfcInstanceId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         eventList:
           type: array
           items:
             $ref: '#/components/schemas/DistSessionEventType'
           minItems: 1
         notifyUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         notifyCorrelationId:
           type: string
+          writeOnly: true
         expiryTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         distSessionSubscUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          readOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - eventList
         - notifyUri
@@ -647,19 +667,28 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - destIpAddr
+        - portNumber
 
     MbStfIngestAddr:
       description: MBSTF Ingest Addresses
       type: object
       properties:
         afEgressTunAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
+          writeOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
         mbStfIngressTunAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
+          readOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
         afSsm:
-          $ref: '#/components/schemas/ExtSsm'
+          writeOnly: true
+          allOf:
+            - $ref: '#/components/schemas/ExtSsm'
         mbStfListenAddr:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
+          readOnly: true
+          allOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/TunnelAddress'
 
     ExtSsm:
       description: SSM and Port Number

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nnwdaf_DataManagement
-  version: 1.0.1
+  version: 1.0.2
   description: |
     Nnwdaf_DataManagement API Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.520 V17.8.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V17.9.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 servers:
   - url: '{apiRoot}/nnwdaf-datamanagement/v1'
@@ -272,8 +272,9 @@ components:
             $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/DataCollectionPurpose'
           minItems: 1
           description: >
-            The purposes of data collection. This attribute may only be provided if the consumer has
-            checked user consent.
+            The purposes of data collection. This attribute may only be provided if user consent
+            is reqiured depending on local policy and regulations and the consumer has
+            not checked user consent.
         dataSub:
           $ref: 'TS29575_Nadrf_DataManagement.yaml#/components/schemas/DataSubscription'
         formatInstruct:
@@ -304,14 +305,20 @@ components:
       properties:
         dataNotification:
           $ref: 'TS29575_Nadrf_DataManagement.yaml#/components/schemas/DataNotification'
+        dataReports:
+          type: array
+          items:
+            $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/NotifSummaryReport'
+          minItems: 1
+          description: List of summary reports of processed notifications.
         notifCorrId:
           type: string
           description: Notification correlation identifier.
         terminationReq:
           type: string
           description: >
-            It indicates the termination of the data management subscription that requested by the
-            NWDAF.
+            It indicates that the termination of the data management subscription
+            is requested by the NWDAF.
         fetchInstruct:
           $ref: 'TS29576_Nmfaf_3caDataManagement.yaml#/components/schemas/FetchInstruction'
         notifTimestamp:
@@ -321,4 +328,5 @@ components:
         - notifTimestamp
       oneOf:
         - required: [dataNotification]
+        - required: [dataReports]
         - required: [fetchInstruct]

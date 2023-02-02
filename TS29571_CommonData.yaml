@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.4.0'
+  version: '1.4.1'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.  
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 17.7.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 17.8.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -1415,7 +1415,8 @@ components:
     5GPrukId:
       type: string
       description: >
-        The 5GPRUK ID is string in NAI format as specified in clause 28.7.19 of 3GPP TS 23.003.
+        A string carrying the CP-PRUK ID of the remote UE. The CP-PRUK ID is a string in NAI
+        format as specified in clause 28.7.11 of 3GPP TS 23.003.
       pattern: '^rid[0-9]{1,4}\.pid[0-9a-fA-F]+\@prose-cp\.5gc\.mnc[0-9]{2,3}\.mcc[0-9]{3}\.3gppnetwork\.org$'
 
     NsagId:
@@ -4744,7 +4745,7 @@ components:
 #
 #
     MbsServiceType:
-      description: Indicates the type of an MBS session
+      description: Indicates the MBS service type of an MBS session
       anyOf:
         - type: string
           enum:
@@ -4776,7 +4777,7 @@ components:
       anyOf:
       - type: string
         enum:
-          - ACTIVATED
+          - STARTED
           - TERMINATED
       - type: string
 
@@ -4793,6 +4794,9 @@ components:
           $ref: '#/components/schemas/Ssm'
         nid:
           $ref: '#/components/schemas/Nid'
+      anyOf:
+        - required: [ tmgi ]
+        - required: [ ssm ]
 
     Tmgi:
       description: Temporary Mobile Group Identity
@@ -4836,6 +4840,9 @@ components:
             $ref: '#/components/schemas/Tai'
           minItems: 1
           description: List of tracking area Ids
+      anyOf:
+        - required: [ ncgiList ]
+        - required: [ taiList ]
 
     NcgiTai:
       description: List of NR cell ids, with their pertaining TAIs
@@ -4904,6 +4911,10 @@ components:
           $ref: '#/components/schemas/Snssai'
           writeOnly: true
         activationTime:
+          deprecated: true
+          format: date-time
+          type: string
+        startTime:
           $ref: '#/components/schemas/DateTime'
         terminationTime:
           $ref: '#/components/schemas/DateTime'

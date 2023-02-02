@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.2.1
+  version: 1.2.2
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V17.8.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V17.9.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 
 security:
@@ -606,11 +606,15 @@ components:
             Subscription ID which was allocated by the source NWDAF. This parameter shall be present
             if the notification is for informing the assignment of a new Subscription Id by the
             target NWDAF.
+        resourceUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
       required:
         - subscriptionId
       oneOf:
         - required: [eventNotifications]
-        - required: [oldSubscriptionId]
+        - allOf:
+          - required: [resourceUri]
+          - required: [oldSubscriptionId]
 
     EventNotification:
       description: Represents a notification on events that occurred.
@@ -812,7 +816,10 @@ components:
           minItems: 1
           description: >
             Each element indicates the time elapsed between times each threshold is met or exceeded
-            or crossed.
+            or crossed. The start time and end time are the exact time stamps of the resource usage
+            threshold is reached or exceeded. May be present if the "listOfAnaSubsets" attribute is
+             provided and the maximum number of instances shall not exceed the value provided in the
+             "numOfExceedLoadLevelThr" attribute.
         numOfUes:
           $ref: '#/components/schemas/NumberAverage'
         numOfPduSess:

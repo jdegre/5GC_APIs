@@ -322,6 +322,7 @@ components:
       oneOf:
         - $ref: 'TS28623_ComDefs.yaml#/components/schemas/Ipv4Addr'
         - $ref: 'TS28623_ComDefs.yaml#/components/schemas/Ipv6Addr'
+
     ManagementData:
       oneOf:
       - type: array
@@ -968,7 +969,7 @@ components:
     beamLevelMeasurement-Type:
       description: Determines whether beam level measurements shall be included in case of immediate MDT M1 measurement in NR. For additional details see 3GPP TS 32.422 clause 5.10.40.
       type: boolean
-
+    
     collectionPeriodRRMLTE-Type:
       description: See details in 3GPP TS 32.422 clause 5.10.20.
       type: string
@@ -1415,6 +1416,34 @@ components:
       description: See details in 3GPP TS 32.422 clause 5.10.11. Only TCE Id value may be sent over the air to the UE being configured for Logged MDT.
       type: integer
 
+    excessPacketDelayThresholds-Type:
+      description: Excess Packet Delay Threshold for NR MDT. See details in 3GPP TS 32.422 clause 4.1.1 and 4.1.2.
+      type: array
+      properties:
+        fiveQIValue:
+          type: integer
+        excessPacketDelayThresholdValue:
+          type: string
+          enum:
+            - 0.25ms
+            - 0.5ms
+            - 1ms
+            - 2ms
+            - 4ms
+            - 5ms
+            - 10ms
+            - 20ms
+            - 30ms
+            - 40ms
+            - 50ms
+            - 60ms
+            - 70ms
+            - 80ms
+            - 90ms
+            - 100ms
+            - 150ms
+            - 300ms
+            - 500ms
 
 #-------- end of Definition of types used in Trace control NRM fragment ----------
 
@@ -1530,10 +1559,10 @@ components:
           $ref: '#/components/schemas/NtfSubscriptionControl-Multiple'
         AlarmList:
           $ref: '#/components/schemas/AlarmList-Single'
-        Files:
-          $ref: '#/components/schemas/Files-Multiple'
         FileDownloadJob:
           $ref: '#/components/schemas/FileDownloadJob-Multiple'
+        Files:
+          $ref: '#/components/schemas/Files-Multiple'
         MnsRegistry:
           $ref: '#/components/schemas/MnsRegistry-Single'
     ManagedElement-ncO:
@@ -1581,7 +1610,6 @@ components:
           type: array
           items:
             type: string
-
     EP_RP-Attr:
       type: object
       properties:
@@ -1692,6 +1720,8 @@ components:
           $ref: '#/components/schemas/sensorInformation-Type'
         traceCollectionEntityId:
           $ref: '#/components/schemas/traceCollectionEntityId-Type'
+        excessPacketDelayThresholds:
+          $ref: '#/components/schemas/excessPacketDelayThresholds-Type'
 
     ManagedFunction-ncO:
       type: object
@@ -1911,7 +1941,7 @@ components:
                 collectionTimeWindow:
                   $ref: 'TS28623_ComDefs.yaml#/components/schemas/TimeWindow'
                 reportingCtrl:
-                  type: string
+                  $ref: '#/components/schemas/ReportingCtrl'
                 dataScope:
                   type: string
                   enum:
@@ -2034,6 +2064,7 @@ components:
           type: array
           items:
             $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
 #-------- Definition of YAML arrays for name-contained IOCs ----------------------
 
     VsDataContainer-Multiple:
@@ -2110,16 +2141,15 @@ components:
        - $ref: '#/components/schemas/ThresholdMonitor-Single'
        - $ref: '#/components/schemas/TraceJob-Single'
        - $ref: '#/components/schemas/ManagementDataCollection-Single'
-
+       
        - $ref: '#/components/schemas/NtfSubscriptionControl-Single'
        - $ref: '#/components/schemas/HeartbeatControl-Single'
 
        - $ref: '#/components/schemas/AlarmList-Single'
 
        - $ref: '#/components/schemas/FileDownloadJob-Single'
-
        - $ref: '#/components/schemas/Files-Single'
        - $ref: '#/components/schemas/File-Single'
-
+       
        - $ref: '#/components/schemas/MnsRegistry-Single'
        - $ref: '#/components/schemas/MnsInfo-Single'

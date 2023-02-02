@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: MDA NRM
-  version: 17.0.0
+  version: 17.2.0
   description: >-
     OAS 3.0.1 specification of the MDA NRM
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -43,11 +43,9 @@ components:
         filterValue:
           type: string
         threshold:
-          $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ThresholdInfo'
+          $ref: '#/components/schemas/ThresholdInfo'
         analyticsPeriod:
-          type: array
-          items:
-            $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+          $ref: '#/components/schemas/AnalyticsSchedule'
         timeOut:
           $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
 
@@ -61,7 +59,7 @@ components:
     ReportingTarget:
       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Uri'
 
-    AnalyticsScope:
+    AnalyticsScopeType:
       oneOf:
         - type: object
           properties:
@@ -70,32 +68,43 @@ components:
         - type: object
           properties:
             areaScope:
-              $ref: '#/components/schemas/GeoAreaList'
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/GeoArea'
 
-    GeoAreaList:
-      type: array
-      items:
-        $ref: '#/components/schemas/GeoArea'
+    AnalyticsSchedule:
+      oneOf:
+        - type: object
+          properties:
+            timeDurations:
+              type: array
+              items:
+                $ref: 'TS28104_MdaReport.yaml#/components/schemas/TimeWindow'
+        - type: object
+          properties:
+            granularityPeriod:
+              type: integer
 
-    GeoArea:
+    ThresholdInfo:
       type: object
       properties:
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/Coordinate'
-        altitude:
-          type: number
-          format: float
-
-    Coordinate:
-      type: object
-      properties:
-        latitude:
-          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Latitude'
-        longitude:
-          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Longitude'
-
+        monitoredMDAOutputIE:          
+          type: string
+        thresholdDirection:
+          type: string
+          enum:
+            - UP
+            - DOWN
+            - UP_AND_DOWN
+        thresholdValue:
+          oneOf:
+            - type: integer
+            - $ref: 'TS28623_ComDefs.yaml#/components/schemas/Float'
+        hysteresis:
+          oneOf:
+            - type: integer
+              minimum: 0
+            - type: number
+              format: float
+              minimum: 0
 
 #-------- Definition of abstract IOCs --------------------------------------------
 
@@ -170,7 +179,7 @@ components:
                     reportingTarget:
                       $ref: '#/components/schemas/ReportingTarget'
                     analyticsScope:
-                      $ref: '#/components/schemas/AnalyticsScope'
+                      $ref: '#/components/schemas/AnalyticsScopeType'
                     startTime:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
                     stopTime:

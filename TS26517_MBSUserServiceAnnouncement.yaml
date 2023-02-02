@@ -1,0 +1,236 @@
+openapi: 3.0.0
+
+info:
+  title: 'MBS User Service Announcement Element units’ definition'
+  version: 1.1.0
+  description: |
+    MBS User Service Announcement Element units.
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    All rights reserved.
+
+externalDocs:
+  description: 3GPP TS 26.517 V17.1.0; 5G System; 5G MBSF; Stage 3.
+  url: http://www.3gpp.org/ftp/Specs/archive/26_series/26.517/
+paths: {}
+components:
+  schemas:
+    BundleDescription:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserServiceDescription'
+      minItems: 1
+
+    UserServiceDescription:
+      type: object
+      properties:
+        name:
+          type: array
+          items:
+            type: string
+        serviceLanguage:
+          type: array
+          items: 
+            type: string
+        serviceId:
+          type: string
+        distributionSessionDescription:
+          $ref: '#/components/schemas/DistributionSessionDescription'
+        appServiceDescription:
+          $ref: '#/components/schemas/AppServiceDescription'
+        scheduleDescription:
+          $ref: '#/components/schemas/ScheduleDescription'
+        availabilityInfo:
+          $ref: '#/components/schemas/AvailabilityInformation'
+      required:
+       - distributionMethod
+       - serviceId
+
+    DistributionSessionDescription:
+      type: object
+      properties:
+        conformanceProfile:
+          type: string
+        sessionDescriptionURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        objectRepairParameters:
+          $ref: '#/components/schemas/AssociatedProcedureDescription'
+        dataNetworkName:
+          type: string
+        mbsAppService:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationService'
+        unicastAppServices:
+          type: array
+          items:
+            type: object
+            properties:
+              unicastAppService:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationService'
+      required:
+        - sessionDescriptionURI
+
+    AppServiceDescription:
+      type: object
+      properties: 
+        mediaManifestDescriptionURI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        mimeType:
+          type: string
+        identicalContents:
+          type: array
+          items:
+            type: object
+            properties:
+              unicastAppService:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationService'
+                minItems: 2
+        alternativeContents:
+          type: array
+          items:
+              type: array
+              items:
+                  $ref: '#/components/schemas/ApplicationService'
+
+    ApplicationService:
+      type: object
+      properties:
+        basePattern:
+          type: string
+      required:
+        - basePattern
+
+    AvailabilityInformation:
+      type: array
+      items:
+        $ref: '#/components/schemas/AvailabilityInformationBinding'
+
+    AvailabilityInformationBinding:
+      type: object
+      properties:
+        mbsServiceArea:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        mbsFSAId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsFsaId'
+        radioFrequency:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+
+    AssociatedProcedureDescription:
+      type: object
+      properties:
+        postObjectRepair:
+          $ref: '#/components/schemas/PostObjectRepair'
+        mbsObjectRepair:
+          $ref: '#/components/schemas/MbsObjectRepair'
+
+    PostObjectRepair:
+      type: object
+      properties:
+        serviceURIs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        offsetTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        randomTimePeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+
+    MbsObjectRepair:
+      type: object
+      properties:
+        sessionDescriptionURI:
+           type: string
+
+    ScheduleDescription:
+      type: array
+      items:
+        $ref: '#/components/schemas/ServiceSchedule'
+
+    ServiceSchedule:
+      type: object
+      properties:
+        sessionSchedule:
+          $ref: '#/components/schemas/SessionSchedule'
+        sessionScheduleOverride:
+          $ref: '#/components/schemas/SessionScheduleOverride'
+        objectSchedule:
+          $ref: '#/components/schemas/ObjectSchedule'
+        serviceId:
+          type: string
+        serviceClass:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+      required:
+       - serviceId
+       - serviceClass
+       - serviceSchedule
+
+    SessionSchedule:
+      type: array
+      items:
+        type: object
+        properties:
+           start:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+           stop:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+           reoccurencePattern:
+             type: string
+           numberOfTimes:
+             type: integer
+             minimum: 1
+           reoccurenceStopTime:
+             type: string
+           index:
+             type: integer
+           FDTInstanceURI:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        required:
+          - start
+          - stop
+    SessionScheduleOverride:
+      type: array
+      items: 
+        type: object
+        properties:
+          start:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+          stop:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+          index:
+            type: integer
+          cancelled:
+            type: boolean
+          sessionDescriptionURI:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+         
+    ObjectSchedule:
+      type: array
+      items:
+        type: object
+        properties: 
+          objectURI:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          sessionId:
+            type: string
+          objectEtag:
+            type: string
+          unicastOnly:
+            type: boolean
+          deliveryInfo:
+            type: array
+            items:
+              type: object
+              properties:
+                start:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+                stop:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
