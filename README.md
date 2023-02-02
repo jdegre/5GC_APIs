@@ -7,7 +7,7 @@ The files in this repository have been created by 3GPP, and the master source ca
 © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **September 2022**<br/>
+API version: **December 2022**<br/>
 Release status: **Open** <sup>&#x2705;</sup><br/>
 Other releases: [Rel-17 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-17), [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16), [Rel-15 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-15)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
@@ -50,12 +50,15 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [MBS Session](https://jdegre.github.io/loader.html?yaml=TS29532_Nmbsmf_MBSSession.yaml)
 * [MBS TMGI](https://jdegre.github.io/loader.html?yaml=TS29532_Nmbsmf_TMGI.yaml)
 
-## MB-STF (Multicast/Broadcast Service Transport Function)
-* [MBS Distribution Session](https://jdegre.github.io/loader.html?yaml=TS29581_Nmbstf_DistSession.yaml)
-
 ## MBSF (Multicast/Broadcast Service Function)
 * [MBS User Service](https://jdegre.github.io/loader.html?yaml=TS29580_Nmbsf_MBSUserService.yaml)
 * [MBS User Data Ingest Session](https://jdegre.github.io/loader.html?yaml=TS29580_Nmbsf_MBSUserDataIngestSession.yaml)
+
+## MBSTF (Multicast/Broadcast Service Transport Function)
+* [MBS Distribution Session](https://jdegre.github.io/loader.html?yaml=TS29581_Nmbstf_DistSession.yaml)
+
+## MB (Multicast/Broadcast) User Services
+* [MBS Service User Announcement](https://jdegre.github.io/loader.html?yaml=TS26517_MBSUserServiceAnnouncement.yaml)
 
 ## UDM (Unified Data Management)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SDM.yaml)
