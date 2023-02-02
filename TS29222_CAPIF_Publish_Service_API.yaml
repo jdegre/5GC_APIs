@@ -1,24 +1,26 @@
 openapi: 3.0.0
+
 info:
   title: CAPIF_Publish_Service_API
   description: |
     API for publishing service APIs.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.2.1"
+  version: "1.3.0-alpha.1"
+
 externalDocs:
-  description: 3GPP TS 29.222 V17.6.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V18.0.0 Common API Framework for 3GPP Northbound APIs
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
+
 servers:
   - url: '{apiRoot}/published-apis/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 7.5 of 3GPP TS 29.222.
+
 paths:
-
 # APF published API
-
   /{apfId}/service-apis:
     post:
       description: Publish a new API.
@@ -115,7 +117,6 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 # Individual APF published API
-
   /{apfId}/service-apis/{serviceApiId}:
     get:
       description: Retrieve a published service API.
@@ -364,8 +365,14 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
         ipv6Addr:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        fqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         port:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
+        apiPrefix:
+          type: string
+          description: >
+            A string representing a sequence of path segments that starts with the slash character.
         securityMethods:
           type: array
           items:
@@ -377,6 +384,7 @@ components:
       oneOf:
         - required: [ipv4Addr]
         - required: [ipv6Addr]
+        - required: [fqdn]
 
     AefProfile:
       type: object
@@ -438,6 +446,13 @@ components:
           description: >
             it is set as {custOpName} part of the URI structure for a custom operation
             associated with a resource as defined in clause 5.2.4 of 3GPP TS 29.122.
+        custOperations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomOperation'
+          minItems: 1
+          description: >
+            Custom operations associated with this resource.
         operations:
           type: array
           items:
@@ -539,7 +554,7 @@ components:
 
     AefLocation:
       description: >
-        The location information (e.g. civic address, GPS coordinates, data center ID)
+        Represents the location information (e.g. civic address, GPS coordinates, data center ID)
         where the AEF providing the service API is located.
       type: object
       properties:

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.0.0
+  version: 1.1.0-alpha.1
   title: Namf_MBSCommunication
   description: |
     AMF Communication Service for MBS.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.518 V17.6.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V18.0.0; 5G System; Access and Mobility Management Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 
 servers:
@@ -52,6 +52,43 @@ paths:
                     schema:
                       type: string
         required: true
+      callbacks:
+        notification:
+          '{$request.body#/notifyUri}':
+            post:
+              requestBody:  
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/Notification'
+              responses:
+                '204':
+                  description: successful notification
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '502':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
       responses:
         '200':
           description: MBS N2 Message Transfer successfully initiated
@@ -65,6 +102,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
@@ -83,6 +122,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -116,6 +157,15 @@ components:
           $ref: '#/components/schemas/N2MbsSmInfo'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        ranNodeIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+          minItems: 1
+        notifyUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifyCorrelationId:
+          type: string
       required:
         - mbsSessionId
         - n2MbsSmInfo
@@ -130,6 +180,11 @@ components:
           $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N2InformationTransferResult'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        failureList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RanFailure'
+          minItems: 1
       required:
         - result
 
@@ -148,6 +203,41 @@ components:
         - ngapIeType
         - ngapData
 
+    Notification:
+      description: Data within Notify Request
+      type: object
+      properties:
+        mbsSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        areaSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaSessionId'
+        failureList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RanFailure'
+          minItems: 1
+        notifyCorrelationId:
+          type: string
+      required:
+        - mbsSessionId
+        - failureList
+
+    RanFailure:
+      description: Description of an MBS related N2 procedure failure
+      type: object
+      properties:
+        ranId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+        ranFailureCause:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NgApCause'
+        ranFailureIndication:
+          $ref: '#/components/schemas/RanFailureIndication'
+      required:
+        - ranId
+      oneOf:
+        - required: [ ranFailureCause ]
+        - required: [ ranFailureIndication ]
+
 #
 # SIMPLE DATA TYPES
 #
@@ -165,4 +255,13 @@ components:
           - MBS_SES_ACT_REQ
           - MBS_SES_DEACT_REQ
           - MBS_SES_UPD_REQ
+      - type: string
+
+    RanFailureIndication:
+      description: Indicates a NG-RAN failure event
+      anyOf:
+      - type: string
+        enum:
+          - NG_RAN_FAILURE_WITHOUT_RESTART
+          - NG_RAN_NOT_REACHABLE
       - type: string

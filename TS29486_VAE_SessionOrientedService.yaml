@@ -1,14 +1,17 @@
 openapi: 3.0.0
+
 info:
-  version: 1.0.0
+  version: 1.1.0-alpha.1
   title: VAE_SessionOrientedService
   description: |
     API for VAE_SessionOrientedService  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
-  description: 3GPP TS 29.486 V17.5.0 V2X Application Enabler (VAE) Services
+  description: 3GPP TS 29.486 V18.0.0 V2X Application Enabler (VAE) Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
+
 security:
   - {}
   - oAuth2ClientCredentials: []
@@ -18,6 +21,7 @@ servers:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
 paths:
   /subscriptions:
     post:
@@ -235,6 +239,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -243,9 +248,11 @@ components:
         clientCredentials: 
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
     SessionOrientedData:
-      description: Represents an Individual Session Oriented Service Subscription resource.
+      description: >
+        Represents data to trigger establishment or update of session-oriented service.
       type: object
       properties:
         ueId:
@@ -272,8 +279,10 @@ components:
         - notifUri
         - serviceId
         - appSerId
+
     Notification:
-      description: Represents a notificaton of result of Session Oriented Service.
+      description: >
+        Represents the result of the establishment or update of the session-oriented service.
       type: object
       properties:
         resourceUri:
@@ -286,6 +295,7 @@ components:
         - resourceUri
         - action
         - result
+
     AppplicationQosRequirement:
       description: Represents application layer QoS requirement.
       type: object
@@ -304,6 +314,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AverWindow'
         maxDataBurstVol:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtMaxDataBurstVol'
+
+# Simple data types and Enumerations
     Action:
       description: Indicate the action to the session-oriented service.
       anyOf:
@@ -312,3 +324,7 @@ components:
           - ESTABLISHMENT
           - UPDATE
       - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.

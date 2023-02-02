@@ -5,10 +5,10 @@ info:
     API for EES Session with Qos service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.0.0
+  version: 1.1.0-alpha.1
 externalDocs:
   description: >
-    3GPP TS 29.558 V17.0.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.0.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 security:
@@ -24,7 +24,12 @@ servers:
 paths:
   /sessions:
     post:
-      description: Create a new individual Session with QoS resource.
+      summary: Create a new Individual Session with QoS resource
+      operationId: CreateIndSessionWithQoS
+      tags:
+        - Sessions with QoS (Collection)
+      description: >
+        Request reservation of resources for a data session between AC and EAS with a specific QoS.
       requestBody:
         required: true
         content:
@@ -107,6 +112,10 @@ paths:
                   $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     get:
+      summary: Read all Sessions with QoS resource
+      operationId: ReadAllSessionsWithQoS
+      tags:
+        - Sessions with QoS (Collection)
       description: Retrieve all the Session With QoS information.
       parameters:
         - name: eas-id
@@ -152,6 +161,10 @@ paths:
 
   /sessions/{sessionId}:
     put:
+      summary: Update an Individual Session with QoS resource
+      operationId: UpdateIndSessionWithQoS
+      tags:
+        - Individual Session with QoS (Document)
       description: >
         Fully replace an existing Individual Session with QoS resource identified by a sessionId.
       parameters:
@@ -204,7 +217,12 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     patch:
+      summary: Modify an Individual Session with QoS resource
+      operationId: ModifyIndSessionWithQoS
+      tags:
+        - Individual Session with QoS (Document)
       parameters:
         - name: sessionId
           in: path
@@ -257,7 +275,12 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     delete:
+      summary: Delete an Individual Session with QoS resource
+      operationId: DeleteIndSessionWithQoS
+      tags:
+        - Individual Session with QoS (Document)
       description: Remove an Individual Session with QoS resource identified by a sessionId.
       parameters:
         - name: sessionId
@@ -291,6 +314,10 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
     get:
+      summary: Read Individual Session with QoS resource
+      operationId: ReadIndSessionWithQoS
+      tags:
+        - Individual Session with QoS (Document)
       description: Read a subscription resource for a sessionId.
       parameters:
         - name: sessionId
@@ -400,11 +427,17 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         disUeNotif:
           type: boolean
+          description: >
+            Indicates to disable QoS flow parameters signalling to the UE when the SMF is notified
+            by the NG-RAN of changes in the fulfilled QoS situation when it is included and set to
+            "true". The fulfilled situation is either the QoS profile or an Alternative QoS Profile.
+            The default value "false" shall apply, if the attribute is not present and has not been
+            supplied previously.
         requestTestNotification:
           type: boolean
           description: >
             Set to true by Subscriber to request the EES to send a test notification
-            as defined in 3GPP TS 29.122 [6]. Set to false or omitted otherwise.
+            as defined in 3GPP TS 29.122. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         suppFeat:

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.0.1'
+  version: '1.1.0-alpha.1'
   title: 'Nudm_SSAU'
   description: |
     Nudm Service Specific Authorization Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.8.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 18.0.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -58,18 +58,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceSpecificAuthorizationData'
-        '204':
-          description: Successful response
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
           $ref: 'TS29571_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
         '501':
           $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -87,6 +97,86 @@ paths:
               responses:
                 '204':
                   description: Expected response to a valid request
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '502':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
+
+  /{ueIdentity}/{serviceType}/remove:
+    post:
+      summary: Remove the authorization of specific service's configuration.
+      operationId: ServiceSpecificAuthorizationRemoval
+      tags:
+        - Service specific authorization remove
+      parameters:
+        - name: ueIdentity
+          in: path
+          description: Represents the scope of the UE for which the Service Specific configuration authorization to be removed. Contains the GPSI of the user or the external group ID.
+          required: true
+          schema:
+            type: string
+            pattern: '^(msisdn-[0-9]{5,15}|.+|extid-[^@]+@[^@]+|extgroupid-[^@]+@[^@]+)$'
+        - name: serviceType
+          in: path
+          description: Represents the specific service for which the Service Specific configuration authorization to be removed.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ServiceType'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceSpecificAuthorizationRemoveData'
+        required: true
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '501':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/501'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
 
 
 components:
@@ -121,6 +211,10 @@ components:
           items:
             $ref: '#/components/schemas/AuthUpdateInfo'
           minItems: 1
+        mtcProviderInformation:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        afId:
+          type: string
 
     AuthUpdateInfo:
       description: Represents authorization update information.
@@ -132,6 +226,9 @@ components:
           $ref: '#/components/schemas/ServiceSpecificAuthorizationData'
         invalidityInd:
           type: boolean
+        invalidCause:
+          $ref: '#/components/schemas/InvalidCause'
+
 
     ServiceSpecificAuthorizationInfo:
       description: Authorization information for a specific service
@@ -158,8 +255,10 @@ components:
           $ref: '#/components/schemas/AuthorizationUeId'
         extGroupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
-        validityTime:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        intGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        authId:
+          type: string
 
     AuthorizationUeId:
       description: UE Id of the Authorization Data.
@@ -171,6 +270,15 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+
+    ServiceSpecificAuthorizationRemoveData:
+      description: Information for Authorization removal of a specific service.
+      type: object
+      required:
+        - authId
+      properties:
+        authId:
+          type: string
 
 
 
@@ -193,3 +301,23 @@ components:
       description: >
         Possible values are
         - AF_GUIDANCE_FOR_URSP
+
+    InvalidCause:
+      anyOf:
+        - type: string
+          enum:
+          - SUBSRIPTION_WITHDRAWAL
+          - DNN_REMOVED
+          - SLICE_REMOVED
+          - AUTHORIZATION_REVOKED
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+      description: >
+        Possible values are
+        - SUBSRIPTION_WITHDRAWAL
+        - DNN_REMOVED
+        - SLICE_REMOVED
+        - AUTHORIZATION_REVOKED

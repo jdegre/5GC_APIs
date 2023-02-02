@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.1'
+  version: '1.3.0-alpha.2'
   title: 'NRF NFManagement Service'
   description: |
     NRF NFManagement Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V18.0.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V18.1.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -584,6 +584,13 @@ paths:
       operationId: CreateSubscription
       tags:
         - Subscriptions (Collection)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nnrf-nfm
+        - oAuth2ClientCredentials:
+          - nnrf-nfm
+          - nnrf-nfm:subscriptions:subs-complete-profile
       parameters:
         - name: Content-Encoding
           in: header
@@ -927,6 +934,8 @@ components:
             nnrf-nfm: Access to the Nnrf_NFManagement API
             nnrf-nfm:nf-instances:read: >
               Access to read the nf-instances resource, or an individual NF Instance ID resource
+            nnrf-nfm:subscriptions:subs-complete-profile: >
+              Access to subscribe to the complete profile of NF instances
 
   schemas:
 
@@ -1329,6 +1338,8 @@ components:
           $ref: '#/components/schemas/IwmscInfo'
         mnpfInfo:
           $ref: '#/components/schemas/MnpfInfo'
+        smsfInfo:
+          $ref: '#/components/schemas/SmsfInfo'
 
     NFService:
       description: >
@@ -1539,6 +1550,8 @@ components:
         IP addressing information of a given NFService;
         it consists on, e.g. IP address, TCP port, transport protocol...
       type: object
+      not:
+        required: [ ipv4Address, ipv6Address ]
       properties:
         ipv4Address:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
@@ -1642,6 +1655,10 @@ components:
               $ref: '#/components/schemas/LocalityDescription' 
             minItems: 1
           minProperties: 1
+        completeProfileSubscription:
+          type: boolean
+          default: false
+          writeOnly: true
 
     SubscrCond:
       description: >
@@ -1870,6 +1887,9 @@ components:
         A range of SUPIs (subscriber identities), either based on a numeric range,
         or based on regular-expression matching
       type: object
+      oneOf:
+        - required: [ start, end ]
+        - required: [ pattern ]
       properties:
         start:
           type: string
@@ -1885,6 +1905,9 @@ components:
         A range of GPSIs (subscriber identities), either based on a numeric range,
         or based on regular-expression matching
       type: object
+      oneOf:
+        - required: [ start, end ]
+        - required: [ pattern ]
       properties:
         start:
           type: string
@@ -1900,6 +1923,9 @@ components:
         A range of Group IDs (internal group identities), either based on a numeric range,
         or based on regular-expression matching
       type: object
+      oneOf:
+        - required: [ start, end ]
+        - required: [ pattern ]
       properties:
         start:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
@@ -2146,6 +2172,8 @@ components:
         iwkEpsInd:
           type: boolean
           default: false
+        sxaInd:
+          type: boolean
         pduSessionTypes:
           type: array
           items:
@@ -2244,6 +2272,10 @@ components:
           items:
             $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/IpIndex'
           minItems: 1
+        networkInstance:
+          description: >
+            The N6 Network Instance associated with the S-NSSAI and DNN.
+          type: string
         dnaiNwInstanceList:
           description: >
             Map of network instance per DNAI for the DNN, where the key of the map is the DNAI.
@@ -2253,12 +2285,18 @@ components:
           additionalProperties:
             type: string
           minProperties: 1
+      not:
+        required: [ networkInstance, dnaiNwInstanceList ]
 
     InterfaceUpfInfoItem:
       description: Information of a given IP interface of an UPF
       type: object
       required:
         - interfaceType
+      anyOf:
+        - required: [ endpointFqdn ]
+        - required: [ ipv4EndpointAddresses ]
+        - required: [ ipv6EndpointAddresses ]
       properties:
         interfaceType:
           $ref: '#/components/schemas/UPInterfaceType'
@@ -2295,6 +2333,10 @@ components:
     WAgfInfo:
       description: Information of the W-AGF end-points
       type: object
+      anyOf:
+        - required: [ endpointFqdn ]
+        - required: [ ipv4EndpointAddresses ]
+        - required: [ ipv6EndpointAddresses ]
       properties:
         ipv4EndpointAddresses:
           type: array
@@ -2312,6 +2354,10 @@ components:
     TngfInfo:
       description: Infomation of the TNGF endpoints
       type: object
+      anyOf:
+        - required: [ endpointFqdn ]
+        - required: [ ipv4EndpointAddresses ]
+        - required: [ ipv6EndpointAddresses ]
       properties:
         ipv4EndpointAddresses:
           type: array
@@ -2633,6 +2679,7 @@ components:
             - MATCH_INFO_NOTIFICATION
             - DATA_RESTORATION_NOTIFICATION
             - TSCTS_NOTIFICATION
+            - LCS_KEY_DELIVERY_NOTIFICATION
         - type: string
 
     TransportProtocol:
@@ -2662,7 +2709,7 @@ components:
       allOf:
         #
         # Condition: If 'event' takes value 'NF_PROFILE_CHANGED',
-        # then either 'nfProfile' or 'profileChanges' (but not both) must be present
+        # then one of 'nfProfile', 'profileChanges' or 'completeNfProfile' must be present
         #
         - anyOf:
           - not:
@@ -2674,9 +2721,10 @@ components:
           - oneOf:
               - required: [ nfProfile ]
               - required: [ profileChanges ]
+              - required: [ completeNfProfile ]
         #
         # Condition: If 'event' takes value 'NF_REGISTERED',
-        # then 'nfProfile' must be present
+        # then one of 'nfProfile' or 'completeNfProfile' must be present
         #
         - anyOf:
           - not:
@@ -2685,7 +2733,9 @@ components:
                   type: string
                   enum:
                     - NF_REGISTERED
-          - required: [ nfProfile ]
+          - oneOf:
+            - required: [ nfProfile ]
+            - required: [ completeNfProfile ]
       properties:
         event:
           $ref: '#/components/schemas/NotificationEventType'
@@ -2733,6 +2783,8 @@ components:
           $ref: '#/components/schemas/ConditionEventType'
         subscriptionContext:
           $ref: '#/components/schemas/SubscriptionContext'
+        completeNfProfile:
+          $ref: '#/components/schemas/NFProfile'
 
     NFStatus:
       description: Status of a given NF Instance stored in NRF
@@ -2887,6 +2939,9 @@ components:
     N2InterfaceAmfInfo:
       description: AMF N2 interface information
       type: object
+      anyOf:
+        - required: [ ipv4EndpointAddress ]
+        - required: [ ipv6EndpointAddress ]
       properties:
         ipv4EndpointAddress:
           type: array
@@ -2931,6 +2986,9 @@ components:
     TacRange:
       description: Range of TACs (Tracking Area Codes)
       type: object
+      oneOf:
+        - required: [ start, end ]
+        - required: [ pattern ]
       properties:
         start:
           type: string
@@ -2944,6 +3002,9 @@ components:
     PlmnRange:
       description: Range of PLMN IDs
       type: object
+      oneOf:
+        - required: [ start, end ]
+        - required: [ pattern ]
       properties:
         start:
           type: string
@@ -3633,6 +3694,9 @@ components:
         A range of IMSIs (subscriber identities), either based on a numeric range,
         or based on regular-expression matching
       type: object
+      oneOf:
+        - required: [ start, end ]
+        - required: [ pattern ]
       properties:
         start:
           type: string
@@ -3646,6 +3710,10 @@ components:
     TwifInfo:
       description: Addressing information (IP addresses, FQDN) of the TWIF
       type: object
+      anyOf:
+        - required: [ endpointFqdn ]
+        - required: [ ipv4EndpointAddresses ]
+        - required: [ ipv6EndpointAddresses ]
       properties:
         ipv4EndpointAddresses:
           type: array
@@ -3878,6 +3946,12 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+          minItems: 1
+        n32Purposes:
+          description: N32 purposes supported by the SEPP
+          type: array
+          items:
+            $ref: 'TS29573_N32_Handshake.yaml#/components/schemas/N32Purpose'
           minItems: 1
 
     IpReachability:
@@ -4595,3 +4669,15 @@ components:
             - PREFECTURE
             - COUNTRY
         - type: string
+
+    SmsfInfo:
+      description: Specific Data for SMSF
+      type: object
+      properties:
+        roamingUeInd:
+          type: boolean
+        remotePlmnRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlmnRange'
+          minItems: 1

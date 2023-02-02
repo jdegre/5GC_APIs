@@ -1,19 +1,23 @@
 openapi: 3.0.0
+
 info:
   title: EES ACR Management Event_API
   description: |
     API for EES ACR Management Event.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.0.1
+  version: 1.1.0-alpha.1
+
 externalDocs:
   description: >
-    3GPP TS 29.558 V17.1.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.0.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/eees-acrmgntevent/v1'
     variables:
@@ -24,6 +28,10 @@ servers:
 paths:
   /subscriptions:
     post:
+      summary: Creates a new Individual ACR Management Events Subscription
+      operationId: CreateACRMngEventSubscr
+      tags:
+        - ACR Management Events Subscriptions (Collection)
       description: Create an Individual ACR Management Event Subscription resource.
       requestBody:
         required: true
@@ -149,6 +157,10 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     get:
+      summary: Read all ACR Management Events Subscriptions
+      operationId: GetACRMngEventSubscrs
+      tags:
+        - ACR Management Events Subscriptions (Collection)
       description: Retrieve all the ACR Management Events Subscriptions information.
       parameters:
         - name: supp-feat
@@ -193,6 +205,10 @@ paths:
 
   /subscriptions/{subscriptionId}:
     get:
+      summary: Read an Individual ACR Management Events Subscription
+      operationId: GetIndACRMngEventSubscr
+      tags:
+        - Individual ACR Management Events Subscription (Document)
       description: Retrieve an Individual ACR Management Events Subscription.
       parameters:
         - name: subscriptionId
@@ -236,7 +252,12 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     put:
+      summary: Update an Individual ACR Management Events Subscription
+      operationId: UpdateIndACRMngEventSubscr
+      tags:
+        - Individual ACR Management Events Subscription (Document)
       description: Fully replace an existing Individual ACR Management Events Subscription.
       parameters:
         - name: subscriptionId
@@ -286,7 +307,12 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     patch:
+      summary: Modify an Individual ACR Management Events Subscription
+      operationId: ModifyIndACRMngEventSubscr
+      tags:
+        - Individual ACR Management Events Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
@@ -338,7 +364,12 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     delete:
+      summary: Delete an Individual ACR Management Events Subscription
+      operationId: DeleteIndACRMngEventSubscr
+      tags:
+        - Individual ACR Management Events Subscription (Document)
       description: Delete an existing Individual ACR Management Events Subscription.
       parameters:
         - name: subscriptionId
@@ -383,6 +414,7 @@ components:
           scopes: {}
 
   schemas:
+
     AcrMgntEventsSubscription:
       type: object
       description: Represents an Individual ACR Management Events Subscription.
@@ -446,6 +478,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DnaiChangeType'
         easAckInd:
           type: boolean
+          description: >
+            Identifies whether EAS acknowledgement of UP path change event notifications is to be
+            expected. Set to "true" if the EAS acknowledgement is expected. Default value is
+            "false". This attribute may be provided only if the "event" attribute is set to
+            "UP_PATH_CHG".
         easChars:
           type: array
           items:
@@ -601,7 +638,8 @@ components:
           - ACT_START_STOP
       - type: string
         description: >
-          This string represents the ACR management.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
         - UP_PATH_CHG: User plane path change event.
@@ -617,11 +655,13 @@ components:
           - INTER_EDN_MOBILITY
       - type: string
         description: >
-          This string represents the ACR Management Event filter.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
         - INTRA_EDN_MOBILITY: Indicates that the ACR Management Event filter is intra-EDN mobility.
         - INTER_EDN_MOBILITY: Indicates that the ACR Management Event filter is inter-EDN mobility.
+
     ActStatus:
       anyOf:
       - type: string
@@ -630,7 +670,8 @@ components:
           - ACT_STOP
       - type: string
         description: >
-          This string represents the ACT status, i.e. ACT start or stop.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
         - ACT_START: Indicates ACT start.
@@ -644,11 +685,16 @@ components:
           - OTHER_REASONS
       - type: string
         description: >
-          This string represents the reason for ACR Management subscription failure for an event.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
-        - 3GPP_UP_PATH_CHANGE_MON_NOT_AVAILABLE: Indicates that the ACR Management Event Subscription failed because user plane path management event notifications from the 3GPP network is NOT available. This value is only applicable for the "UP_PATH_CHG", "ACR_MONITORING" and "ACR_FACILITATION" events.
-        - OTHER_REASONS: Indicates that the ACR Management Event Subscription failed for other reasons. This value is applicable for all events.
+        - 3GPP_UP_PATH_CHANGE_MON_NOT_AVAILABLE: Indicates that the ACR Management Event
+          Subscription failed because user plane path management event notifications from the 3GPP
+          network is NOT available. This value is only applicable for the "UP_PATH_CHG", 
+          "ACR_MONITORING" and "ACR_FACILITATION" events.
+        - OTHER_REASONS: Indicates that the ACR Management Event Subscription failed for other 
+          reasons. This value is applicable for all events.
 
     AvailabilityStatus:
       anyOf:
@@ -658,7 +704,8 @@ components:
           - NOT_AVAILABLE
       - type: string
         description: >
-          This string represents the availability status.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
         - AVAILABLE: Indicates availability.

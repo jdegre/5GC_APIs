@@ -1,24 +1,29 @@
 openapi: 3.0.0
+
 info:
-  version: 1.2.0
+  version: 1.3.0-alpha.1
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
-  description: 3GPP TS 29.508 V17.7.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V18.0.0; 5G System; Session Management Event Exposure Service.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
+
 servers:
   - url: '{apiRoot}/nsmf-event-exposure/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
 security:
   - {}
   - oAuth2ClientCredentials:
     - nsmf-event-exposure
+
 paths:
   /subscriptions:
     post:
@@ -65,6 +70,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -104,6 +111,8 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/429'
                 '500':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '502':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/502'
                 '503':
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
@@ -143,10 +152,13 @@ paths:
                           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
                         '500':
                           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                        '502':
+                          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
                         '503':
                           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                         default:
                           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /subscriptions/{subId}:
     get:
       operationId: GetIndividualSubcription
@@ -185,6 +197,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -238,6 +252,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -273,11 +289,15 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
+
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
@@ -286,7 +306,9 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nsmf-event-exposure: Access to the Nsmf_EventExposure API
+
   schemas:
+
     NsmfEventExposure:
       description: >
         Represents an Individual SMF Notification Subscription resource. The serviveName property
@@ -300,8 +322,8 @@ components:
         anyUeInd:
           type: boolean
           description: >
-            Any UE indication. This IE shall be present if the event subscription is applicable to any
-            UE. Default value "false" is used, if not present.
+            Any UE indication. This IE shall be present if the event subscription is applicable to 
+            any UE. Default value "false" is used, if not present.
         groupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         pduSeId:
@@ -378,6 +400,7 @@ components:
         - notifId
         - notifUri
         - eventSubs
+
     NsmfEventExposureNotification:
       description: Represents notifications on events that occurred.
       type: object
@@ -396,6 +419,7 @@ components:
       required:
         - notifId
         - eventNotifs
+
     EventSubscription:
       description: Represents a subscription to a single event.
       type: object
@@ -436,6 +460,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
       required:
         - event
+
     EventNotification:
       description: Represents a notification related to a single event that occurred.
       type: object
@@ -601,6 +626,7 @@ components:
       required:
         - event
         - timeStamp
+
     SubId:
       type: string
       format: SubId
@@ -609,6 +635,7 @@ components:
         part of a URI, the string shall only contain characters allowed according to the
         "lower-with-hyphen" naming convention defined in 3GPP TS 29.501. In an OpenAPI schema, the
         format shall be designated as "SubId".
+
     AckOfNotify:
       description: Represents an acknowledgement information of an event notification.
       type: object
@@ -624,6 +651,7 @@ components:
       required:
         - notifId
         - ackResult
+
     SmNasFromUe:
       description: >
         Represents information on the SM NAS messages that SMF receives from UE for PDU Session.
@@ -636,10 +664,11 @@ components:
       required:
         - smNasType
         - timeStamp
+
     SmNasFromSmf:
       description: >
-        Represents information on the SM congestion control applied SM NAS messages that SMF sends to
-        UE for PDU Session.
+        Represents information on the SM congestion control applied SM NAS messages that SMF sends 
+        to UE for PDU Session.
       type: object
       properties:
         smNasType:
@@ -655,6 +684,7 @@ components:
         - timeStamp
         - backoffTimer
         - appliedSmccType
+
     TransactionInfo:
       description: Represents SMF Transaction Information.
       type: object
@@ -675,6 +705,7 @@ components:
           minItems: 1
       required:
         - transaction
+
     PduSessionInformation:
       description: Represents the PDU session related information.
       type: object
@@ -683,16 +714,19 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         sessInfo:
           $ref: '#/components/schemas/PduSessionInfo'
+
     PduSessionInfo:
       description: Represents session information.
       type: object
       properties:
         n4SessId:
           type: string
+          description: The identifier of the N4 session for the reported PDU Session.
         sessInactiveTimer:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         pduSessStatus:
           $ref: '#/components/schemas/PduSessionStatus'
+
     UpfInformation:
       description: Represents the ID/address/FQDN of the UPF.
       type: object
@@ -722,10 +756,11 @@ components:
           - RED_TRANS_EXP
           - WLAN_INFO
           - UPF_INFO
+          - UP_STATUS_INFO
       - type: string
         description: >
           This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
+          extensions to the enumeration and is not used to encode
           content defined in the present version of this API.
       description: |
         Possible values are:
@@ -746,6 +781,8 @@ components:
         - WLAN_INFO: WLAN information on PDU session for which Access Type is NON_3GPP_ACCESS and
           RAT Type is TRUSTED_WLAN
         - UPF_INFO: The UPF information, including the UPF ID/address/FQDN information.
+        - UP_STATUS_INFO: The User Plane status information.
+
     NotificationMethod:
       anyOf:
       - type: string
@@ -756,13 +793,14 @@ components:
       - type: string
         description: >
           This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
+          extensions to the enumeration and is not used to encode
           content defined in the present version of this API.
       description: |
         Possible values are:
         - PERIODIC
         - ONE_TIME
         - ON_EVENT_DETECTION
+
     AppliedSmccType:
       anyOf:
       - type: string
@@ -774,12 +812,13 @@ components:
       - type: string
         description: >
           This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
+          extensions to the enumeration and is not used to encode
           content defined in the present version of this API.
       description: |
         Possible values are:
         - DNN_CC: Indicates the DNN based congestion control.
         - SNSSAI_CC: Indicates the S-NSSAI based congestion control.
+
     TransactionMetric:
       anyOf:
       - type: string
@@ -790,13 +829,16 @@ components:
           - PDU_SES_REL
       - type: string
         description: >
-          This string Indicates Session Management Transaction metrics.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
+          
       description: |
         Possible values are:
         - PDU_SES_EST: PDU Session Establishment
         - PDU_SES_AUTH: PDU Session Authentication
         - PDU_SES_MODIF: PDU Session Modification
         - PDU_SES_REL: PDU Session Release
+
     PduSessionStatus:
       anyOf:
       - type: string
@@ -805,7 +847,9 @@ components:
           - DEACTIVATED
       - type: string
         description: >
-          This string Indicates the status of the PDU Session.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
+          
       description: |
         Possible values are:
         - ACTIVATED: PDU Session status is activated.

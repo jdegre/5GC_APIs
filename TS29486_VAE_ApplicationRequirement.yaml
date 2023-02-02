@@ -1,23 +1,28 @@
 openapi: 3.0.0
+
 info:
-  version: 1.1.0
+  version: 1.2.0-alpha.1
   title: VAE_ApplicationRequirement
   description: |
     API for VAE Application Requirement Service  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
-  description: 3GPP TS 29.486 V17.5.0 V2X Application Enabler (VAE) Services
+  description: 3GPP TS 29.486 V18.0.0 V2X Application Enabler (VAE) Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.486/'
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/vae-app-req/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
 paths:
   /application-requirements:
     post:
@@ -182,6 +187,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -190,9 +196,11 @@ components:
         clientCredentials: 
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
     ApplicationRequirementData:
-      description: Represents an individual Application Requirement resource for a V2X UE ID or a V2X group ID.
+      description: >
+        Represents an individual Application Requirement resource for a V2X UE ID or a V2X group ID.
       type: object
       properties:
         ueId:
@@ -220,12 +228,14 @@ components:
         - serviceId
         - appRequirement
         - notifUri
+
     ApplicationRequirement:
       description: Represents the requirements for application change.
       type: object
       properties:
         serviceLevel:
           $ref: '#/components/schemas/ServiceLevel'
+
     AppReqNotification:
       description: >
         Represents a notificaton of the result of the network resource adaptation corresponding to
@@ -239,6 +249,8 @@ components:
       required:
         - resourceUri
         - result
+
+# Simple data types and Enumerations
     ServiceLevel:
       description: Indicates a service level for application service.
       anyOf:
@@ -248,11 +260,22 @@ components:
           - MEDIUM
           - LOW
       - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
+
     ReservationResult:
-      description: Represents the result of the network resource adaptation corresponding to the V2X application requirement.
+      description: >
+        Represents the result of the network resource adaptation corresponding to the V2X 
+        application requirement.
       anyOf:
       - type: string
         enum:
           - SUCCESSFUL
           - FAILURE
       - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Npcf_MBSPolicyAuthorization API
-  version: 1.0.0
+  version: 1.1.0-alpha.1
   description: |
     MBS Policy Authorization Service.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -9,7 +9,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.537 V17.0.0; 5G System; Multicast/Broadcast Policy Control Services.
+    3GPP TS 29.537 V18.0.0; 5G System; Multicast/Broadcast Policy Control Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.537/'
 
 security:
@@ -25,9 +25,9 @@ servers:
         description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501.
 
 paths:
-  / contexts:
+  /contexts:
     post:
-      summary: Request the creation of a new MBS Application Session Context.
+      summary: Request the creation of a new Individual MBS Application Session Context resource.
       operationId: CreateMBSAppSessionCtxt
       tags:
         - MBS Application Session Contexts (Collection)
@@ -40,8 +40,8 @@ paths:
       responses:
         '201':
           description: >
-            Created. An Individual MBS Application Session Context resource is successfully
-            created and a representation of the created resource is returned.
+            Created. An Individual MBS Application Session Context resource is successfully created
+            and a representation of the created resource is returned.
           content:
             application/json:
               schema:
@@ -49,8 +49,8 @@ paths:
           headers:
             Location:
               description: >
-                Contains the URI of the newly created Individual MBS Application Session
-                Context resource.
+                Contains the URI of the newly created Individual MBS Application Session Context
+                resource.
               required: true
               schema:
                 type: string
@@ -76,6 +76,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -123,6 +125,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -150,7 +154,7 @@ paths:
                 $ref: '#/components/schemas/MbsAppSessionCtxt'
         '204':
           description: >
-            No Content. The correspondingIndividual MBS Application Session Context resource is
+            No Content. The corresponding Individual MBS Application Session Context resource is
             successfully modified and no content is returned in the response body.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
@@ -174,6 +178,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -187,7 +193,7 @@ paths:
       responses:
         '204':
           description: >
-            No Content. The correspondingIndividual MBS Application Session Context resource is
+            No Content. The corresponding Individual MBS Application Session Context resource is
             successfully deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
@@ -207,6 +213,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -252,12 +260,6 @@ components:
         mbsServInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceInfo'
 
-    MbsExtProblemDetails:
-      description: Identifies the MBS related extensions to the ProblemDetails data structure.
-      allOf:
-        - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
-        - $ref: '#/components/schemas/AcceptableMbsServInfo'
-
     AcceptableMbsServInfo:
       description: >
         Contains the MBS Service Information that can be accepted by the PCF.
@@ -273,3 +275,11 @@ components:
       oneOf:
         - required: [accMbsServInfo]
         - required: [accMaxMbsBw]
+
+# Data types describing alternative data types or combinations of data types:
+
+    MbsExtProblemDetails:
+      description: Identifies the MBS related extensions to the ProblemDetails data structure.
+      allOf:
+        - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+        - $ref: '#/components/schemas/AcceptableMbsServInfo'

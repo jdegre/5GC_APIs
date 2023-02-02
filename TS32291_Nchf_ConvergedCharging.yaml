@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.1.1
+  version: 3.2.0-alpha.1
   description: |
     ConvergedCharging Service    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V17.4.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V18.0.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -314,6 +314,8 @@ components:
           $ref: '#/components/schemas/NEFChargingInformation'
         proSeChargingInformation:
           $ref: '#/components/schemas/ProseChargingInformation'
+        mMSChargingInformation:
+          $ref: '#/components/schemas/MMSChargingInformation'
       required:
         - nfConsumerIdentification 
         - invocationTimeStamp
@@ -1595,7 +1597,104 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         lCMEndTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-
+    MMSChargingInformation:
+      type: object
+      properties:
+        mmOriginatorInfo:
+          $ref: '#/components/schemas/MMOriginatorInfo'
+        mmRecipientInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MMRecipientInfo'
+          minItems: 0
+        userLocationinfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        uetimeZone:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/TimeZone'
+        rATType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        correlationInformation:
+          type: string
+        submissionTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        mmContentType:
+          $ref: '#/components/schemas/MMContentType'
+        mmPriority:
+          $ref: '#/components/schemas/SMPriority'
+        messageID:
+          type: string
+        messageType:
+          type: string
+        messageSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        messageClass:
+          type: string
+        deliveryReportRequested:
+          type: boolean
+        readReplyReportRequested:
+          type: boolean
+        applicID:
+          type: string
+        replyApplicID:
+          type: string
+        auxApplicInfo:
+          type: string
+        contentClass:
+          type: string
+        dRMContent:
+          type: boolean
+        adaptations:
+          type: boolean
+        vasID:
+          type: string
+        vaspID:
+          type: string
+    MMOriginatorInfo:
+      type: object
+      properties:
+        originatorSUPI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        originatorGPSI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        originatorOtherAddress:
+          type: array
+          items:
+            $ref: '#/components/schemas/SMAddressInfo'
+          minItems: 0
+    MMRecipientInfo:
+      type: object
+      properties:
+        recipientSUPI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        recipientGPSI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        recipientOtherAddress:
+          type: array
+          items:
+            $ref: '#/components/schemas/SMAddressInfo'
+    MMContentType:
+      type: object
+      properties:
+        typeNumber:
+          type: string
+        addtypeInfo:
+          type: string
+        contentSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        mmAddContentInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/MMAddContentInfo'
+    MMAddContentInfo:
+      type: object
+      properties:
+        typeNumber:
+          type: string
+        addtypeInfo:
+          type: string
+        contentSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+    
     PC5ContainerInformation:
       type: object
       properties:
@@ -1998,7 +2097,8 @@ components:
           enum:
             - AMF
             - SMF
-            - SMS
+            - SMS # Included for backwards compatibility, shall not be used
+            - SMSF
             - PGW_C_SMF
             - NEFF # Included for backwards compatibility, shall not be used
             - SGW
@@ -2009,7 +2109,10 @@ components:
             - MnS_Producer
             - SGSN
             - V_SMF
+            - 5G_DDNMF
             - IMS_Node
+            - MMS_Node
+            - EES
         - type: string
     ChargingCharacteristicsSelectionMode:
       anyOf:
@@ -2130,7 +2233,7 @@ components:
             - QUOTA_MANAGEMENT_NOT_APPLICABLE
             - QUOTA_LIMIT_REACHED
             - END_USER_SERVICE_REJECTED
-            - USER_UNKNOWN
+            - USER_UNKNOWN  #Included for backwards compatibility, shall not be used
             - RATING_FAILED
             - QUOTA_MANAGEMENT
         - type: string
@@ -2285,9 +2388,12 @@ components:
       anyOf:
         - type: string
           enum:
-            - CreateMOI
-            - ModifyMOIAttributes
-            - DeleteMOI
+            - CreateMOI       #Included for backwards compatibility, shall not be used
+            - ModifyMOIAttributes #Included for backwards compatibility, shall not be used
+            - DeleteMOI       #Included for backwards compatibility, shall not be used
+            - CREATE_MOI
+            - MODIFY_MOI_ATTR
+            - DELETE_MOI
         - type: string
     ManagementOperationStatus:
       anyOf:

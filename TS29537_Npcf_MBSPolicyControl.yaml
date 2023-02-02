@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Npcf_MBSPolicyControl API
-  version: 1.0.0
+  version: 1.1.0-alpha.1
   description: |
     MBS Policy Control Service  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -9,7 +9,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.537 V17.0.0; 5G System; Multicast/Broadcast Policy Control Services.
+    3GPP TS 29.537 V18.0.0; 5G System; Multicast/Broadcast Policy Control Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.537/'
 
 security:
@@ -30,7 +30,7 @@ paths:
       summary: Request the creation of a new MBS Policy Association.
       operationId: CreateMBSPolicy
       tags:
-        - MBS Policy Associations (Collection)
+        - MBS Policies (Collection)
       requestBody:
         required: true
         content:
@@ -44,14 +44,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MbsPolicyDecision'
+                $ref: '#/components/schemas/MbsPolicyData'
           headers:
             Location:
               description: >
-                Contains the URI of the newly created Individual MBS Policy Association resource.
+                Contains the URI of the newly created Individual MBS Policy resource.
               required: true
               schema:
                 type: string
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -74,6 +76,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -84,20 +88,20 @@ paths:
       - name: mbsPolicyId
         in: path
         description: >
-          Contains the identifier of the concerned Individual MBS Policy Association.
+          Contains the identifier of the concerned Individual MBS Policy resource.
         required: true
         schema:
           type: string
 
     get:
-      summary: Read an Individual MBS Policy.
+      summary: Read an Individual MBS Policy resource.
       operationId: GetIndMBSPolicy
       tags:
-        - Individual MBS Policy Association (Document)
+        - Individual MBS Policy (Document)
       responses:
         '200':
           description: >
-            OK. The requested Individual MBS Policy Association resource is successfully returned.
+            OK. The requested Individual MBS Policy resource is successfully returned.
           content:
             application/json:
               schema:
@@ -120,6 +124,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -129,20 +135,19 @@ paths:
       summary: Deletes an existing Individual MBS Policy resource.
       operationId: DeleteIndMBSPolicy
       tags:
-        - Individual MBS Policy Association (Document)
+        - Individual MBS Policy  (Document)
       parameters:
         - name: mbsPolicyId
           in: path
           description: >
-            Contains the identifier of the concerned Individual MBS Policy Association.
+            Contains the identifier of the concerned Individual MBS Policy resource.
           required: true
           schema:
             type: string
       responses:
         '204':
           description: >
-            No Content. The concerned Individual MBS Policy Association resource is successfully
-            deleted.
+            No Content. The concerned Individual MBS Policy resource is successfully deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -161,21 +166,24 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /mbs-policies/{mbsPolicyId}/update:
     post:
       summary: Request the update of an existing MBS Policy Association.
       operationId: UpdateIndMBSPolicy
       tags:
-        - Individual MBS POlicy Association (Document)
+        - Individual MBS Policy  (Document)
       parameters:
         - name: mbsPolicyId
           in: path
           description: >
-            Contains the identifier of the concerned Individual MBS Policy Association.
+            Contains the identifier of the concerned Individual MBS Policy resource.
           required: true
           schema:
             type: string
@@ -188,7 +196,7 @@ paths:
       responses:
         '200':
           description: >
-            OK. The targeted Individual MBS Policy Association resource is successfully updated.
+            OK. The targeted Individual MBS Policy resource is successfully updated.
           content:
             application/json:
               schema:
@@ -219,6 +227,8 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/429'
         '500':
           $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
         '503':
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
@@ -249,27 +259,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         mbsServInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceInfo'
-        notificationUri:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - mbsSessionId
-
-    MbsPolicyData:
-      description: >
-        Contains the MBS policy data provisioned as part of an MBS Policy Association.
-      type: object
-      properties:
-        mbsPolicyCtxtData:
-          $ref: '#/components/schemas/MbsPolicyCtxtData'
-        mbsPolicies:
-          $ref: '#/components/schemas/MbsPolicyDecision'
-        suppFeat:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-      required:
-        - mbsPolicyCtxtData
-
 
     MbsPolicyDecision:
       description: >
@@ -292,9 +285,9 @@ components:
             $ref: '#/components/schemas/MbsQosDec'
           minProperties: 1
           description: >
-            A map of MBS QoS Decision(s) with each map entry containing the MbsQosDecdata data
-            structure.The key of the map for each entry is the mbsQosId attribute of the corresponding
-            to the MbsQosDec data structure.
+            A map of MBS QoS Decision(s) with each map entry containing the MbsQosDec data structure.
+            The key of the map for each entry is the mbsQosId attribute of the corresponding
+            MbsQosDec data structure.
         mbsQosChars:
           type: object
           additionalProperties:
@@ -302,8 +295,8 @@ components:
           minProperties: 1
           description: >
             A map of MBS QoS Characteristics set(s) with each map entry containing the MbsQosChar data
-            structure. The key of the map for each entry is the 5QI attribute of the
-            corresponding MbsQosDec data structure.
+            structure. The key of the map for each entry is the 5QI attribute of the corresponding
+            MbsQosDec data structure.
         authMbsSessAmbr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         mbsPcrts:
@@ -312,6 +305,20 @@ components:
             $ref: '#/components/schemas/MbsPcrt'
           minItems: 1
           nullable: true
+
+    MbsPolicyData:
+      description: >
+        Contains the MBS policy data provisioned as part of an MBS Policy Association.
+      type: object
+      properties:
+        mbsPolicyCtxtData:
+          $ref: '#/components/schemas/MbsPolicyCtxtData'
+        mbsPolicies:
+          $ref: '#/components/schemas/MbsPolicyDecision'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbsPolicyCtxtData
 
     MbsPccRule:
       description: Represents the parameters constituting an MBS PCC rule.
@@ -359,7 +366,8 @@ components:
         - mbsQosId
 
     MbsQosChar:
-      description: Represents the parameters constituting a set of explicitly signalled QoS characteristics.
+      description: >
+        Represents the parameters constituting a set of explicitly signalled QoS characteristics.
       type: object
       properties:
         5qi:
@@ -383,12 +391,6 @@ components:
         - packetDelayBudget
         - packetErrorRate
         - mbsMaxDataBurstVol
-
-    MbsMaxDataBurstVol:
-      type: integer
-      minimum: 1
-      maximum: 2000000
-      description: Represents MBS Maximum Data Burst Volume, expressed in Bytes.
 
     MbsPolicyCtxtDataUpdate:
       description: >
@@ -433,6 +435,14 @@ components:
         failureCode:
           $ref: '#/components/schemas/MbsFailureCode'
 
+# Simple data types:
+
+    MbsMaxDataBurstVol:
+      description: Represents the MBS Maximum Data Burst Volume expressed in Bytes.
+      type: integer
+      minimum: 1
+      maximum: 2000000
+
 # ENUMS:
 
     MbsPcrt:
@@ -442,9 +452,10 @@ components:
           - MBS_SESSION_UPDATE
       - type: string
         description: >
-          Represents MBS Policy Control Request Triggers.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
-        Possible values are
+        Possible values are:
         - MBS_SESSION_UPDATE: Indicates the MBS Session Update policy control request trigger.
 
     MbsPccRuleStatus:
@@ -455,9 +466,10 @@ components:
           - INACTIVE
       - type: string
         description: >
-          Represents the MBS PCC rule status.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
-        Possible values are
+        Possible values are:
         - ACTIVE: Indicates that the MBS PCC rule(s) are successfully installed.
         - INACTIVE: Indicates that the MBS PCC rule(s) are removed.
 
@@ -474,12 +486,12 @@ components:
           - MBS_POLICY_PARAM_ERROR
       - type: string
         description: >
-          Represents the reason for the MBS Policy Decision(s) enforcement failure or the MBS PCC
-          rule(s) installation failure.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:
         - NF_MALFUNCTION: Indicates that the MBS PCC rule could not be successfully installed due to MB-SMF/MB-UPF malfunction.
-        - NF_RESOURCES_UNAVAILABLE: Indicates that the MBS PCC rule could not be successfully installed due to resources unavailable at MB-SMF/MB-UPF.
+        - NF_RESOURCES_UNAVAILABLE: Indicates that the MBS PCC rule could not be successfully installed due to resources unavailable at the MB-SMF/MB-UPF.
         - RESOURCE_ALLOCATION_FAILURE: Indicates that the MBS PCC rule could not be successfully installed or maintained since the associated MBS QoS flow establishment/modification failed or the associated MBS QoS flow was released.
         - MBS_QOS_VALIDATION_FAILURE: Indicates that MBS QoS validation has failed.
         - NO_MBS_QOS_FLOW: Indicates that there is no MBS QoS flow to which the MB-SMF can bind the MBS PCC rule(s).

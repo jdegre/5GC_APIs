@@ -5,10 +5,10 @@ info:
     API for SEAL Network Resource Monitoring.  
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.0.1"
+  version: "1.1.0-alpha.1"
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.6.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V18.0.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 security:
@@ -175,6 +175,121 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MonitoringSubscription'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    put:
+      summary: >
+        Update an individual unicast monitoring subscription identified by the subscriptionId.
+      operationId: UpdateUnicastMonitoring
+      tags:
+        - Individual Unicast Monitoring Subscription (Document)
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: >
+            Represents the identifier of an individual unicast monitoring subscription resource.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated details of the unicast QoS monitoring subscription.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitoringSubscription'
+      responses:
+        '200':
+          description: >
+            The subscription is updated successfully, and the updated subscription
+            information returned in the response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringSubscription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    patch:
+      summary: >
+        Modify an individual unicast monitoring subscription identified
+        by the subscriptionId.
+      operationId: ModifyUnicastMonitoring
+      tags:
+        - Individual Unicast Monitoring Subscription (Document)
+      parameters:
+        - name: subscriptionId
+          in: path
+          description: >
+            Represents the identifier of an individual unicast monitoring subscription resource.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/MonitoringSubscriptionPatch'
+      responses:
+        '200':
+          description: >
+            Individual individual unicast QoS monitoring subscription resource is modified
+            successfully and representation of the modified individual unicast QoS monitoring
+            subscription resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringSubscription'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -412,6 +527,17 @@ components:
         - measThrValues
         - thrDirection
 
+    MonitoringSubscriptionPatch:
+      description: Represents the monitoring subscription modification request.
+      type: object
+      properties:
+        measReqs:
+          $ref: '#/components/schemas/MeasurementRequirements'
+        reportReqs:
+          $ref: '#/components/schemas/ReportingRequirements'
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+
 # Simple data types and Enumerations
     MeasurementDataType:
       anyOf:
@@ -427,7 +553,9 @@ components:
            - AVG_UL_TRAFFIC_VOLUME
       - type: string
         description: >
-          Indicates the type of measurement data.
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
       description: |
         Possible values are:
         - DL_DELAY: Downlink packet delay.
@@ -449,7 +577,9 @@ components:
            - USER_TRIGGERED
       - type: string
         description: >
-          Indicates the termination mode
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
       description: |
         Possible values are:
         - TIME_TRIGGERED: Time-triggered termination mode.
@@ -467,7 +597,9 @@ components:
            - OTHER_REASON
       - type: string
         description: >
-          Represents the failure reason.
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
       description: |
         Possible values are:
         - USER_NOT_FOUND: The user is not found.
@@ -483,7 +615,9 @@ components:
            - ANY_REACHED
       - type: string
         description: >
-          Indicates the multi-parameter threshold handling mode.
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
       description: |
         Possible values are:
         - ALL_REACHED: The decision criterion is met when all the provided thresholds are reached.
