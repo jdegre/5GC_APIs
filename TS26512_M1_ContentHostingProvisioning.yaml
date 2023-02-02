@@ -1,16 +1,16 @@
 openapi: 3.0.0
 info:
   title: M1_ContentHostingProvisioning
-  version: 1.1.0
+  version: 1.2.0
   description: |
     5GMS AF M1 Content Hosting Provisioning API
-    © 2021, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 tags:
   - name: M1_ContentHostingProvisioning
     description: '5G Media Streaming: Provisioning (M1) APIs: Content Hosting Provisioning'
 externalDocs:
-  description: 'TS 26.512 V16.7.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V16.8.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
   - url: '{apiRoot}/3gpp-m1/v1'
@@ -137,35 +137,34 @@ components:
       type: object
       description: 'A configuration for content ingest.'
       properties:
-        path:
-          type: string
         pull:
           type: boolean
         protocol:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-        entryPoint:
+        baseURL:
           $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
     PathRewriteRule:
       type: object
       description: 'A rule to manipulate URL paths.'
       required:
-        - requestPattern
+        - requestPathPattern
         - mappedPath
       properties:
-        requestPattern:
+        requestPathPattern:
           type: string
         mappedPath:
           type: string
     CachingConfiguration:
       type: object
       description: 'A content caching configuration.'
+      required:
+        - urlPatternFilter
       properties:
         urlPatternFilter:
           type: string
         cachingDirectives:
           type: object
           required:
-            - urlPatternFilter
             - noCache
           properties:
             statusCodeFilters:
@@ -180,9 +179,6 @@ components:
     DistributionConfiguration:
       type: object
       description: 'A content distribution configuration.'
-      required:
-        - canonicalDomainName
-        - domainNameAlias
       properties:
         contentPreparationTemplateId:
           $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
@@ -190,6 +186,8 @@ components:
           type: string
         domainNameAlias:
           type: string
+        baseURL:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
         pathRewriteRules:
           type: array
           items:
@@ -249,6 +247,8 @@ components:
       properties:
         name:
           type: string
+        entryPointPath:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
         ingestConfiguration:
           $ref: '#/components/schemas/IngestConfiguration'
         distributionConfigurations:

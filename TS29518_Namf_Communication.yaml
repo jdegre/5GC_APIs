@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.1.9
+  version: 1.1.10
   title: Namf_Communication
   description: |
     AMF Communication Service
@@ -11,7 +11,7 @@ security:
   - oAuth2ClientCredentials:
       - namf-comm
 externalDocs:
-  description: 3GPP TS 29.518 V16.13.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V16.14.0; 5G System; Access and Mobility Management Services
   url: 'http://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 servers:
   - url: '{apiRoot}/namf-comm/v1'
@@ -3249,6 +3249,13 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
         eventSyncInd:
           type: boolean
+        aoiStateList:
+          description: >
+            Map of subscribed Area of Interest (AoI) Event State in the old AMF. The JSON pointer to
+            an AmfEventArea element in the areaList IE of the AmfEvent data type shall be the key of
+            the map.
+          additionalProperties:
+            $ref: '#/components/schemas/AreaOfInterestEventState'
 
     UeDifferentiationInfo:
       type: object
@@ -3311,6 +3318,20 @@ components:
       required:
         - updpNotifySubscriptionId
         - updpNotifyCallbackUri
+
+    AreaOfInterestEventState:
+      description: Event State of AoI event in old AMF
+      type: object
+      required:
+        - presence
+      properties:
+        presence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceState'
+        individualPraIdList:
+          type: array
+          items:
+            type: string
+          minItems: 1
 
 #
 # SIMPLE DATA TYPES

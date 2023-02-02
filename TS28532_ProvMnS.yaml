@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Provisioning MnS
-  version: 16.11.0
+  version: 16.12.0
   description: >-
     OAS 3.0.1 definition of the Provisioning MnS
     © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -234,6 +234,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Resource'
+            application/vnd.3gpp.object-tree-hierarchical+json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+            application/vnd.3gpp.object-tree-flat+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
         default:
           description: Error case.
           content:
@@ -266,12 +274,12 @@ paths:
             schema:
               type: array
               items:
-                type: object
+                $ref: '#/components/schemas/PatchItem'
           application/3gpp-json-patch+json:
             schema:
               type: array
               items:
-                type: object
+                $ref: '#/components/schemas/PatchItem'
       responses:
         '200':
           description: >-
@@ -298,52 +306,16 @@ paths:
               schema:
                 $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
     delete:
-      summary: Deletes one or multiple resources
+      summary: Deletes one resource
       description: >-
-        With HTTP DELETE resources are deleted. The resources to be deleted are
+        With HTTP DELETE one resource is deleted. The resources to be deleted is
         identified with the target URI.
-      parameters:
-        - name: scope
-          in: query
-          description: >-
-            This parameter extends the set of targeted resources beyond the base
-            resource identified with the path component of the URI. No scoping
-            mechanism is specified in the present document.
-          required: false
-          schema:
-            $ref: '#/components/schemas/Scope'
-          style: form
-          explode: true
-        - name: filter
-          in: query
-          description: >-
-            This parameter reduces the targeted set of resources by applying a
-            filter to the scoped set of resource representations. Only resources
-            representations for which the filter construct evaluates to "true"
-            are returned. No filter language is specified in the present
-            document.
-          required: false
-          schema:
-            $ref: 'TS28623_ComDefs.yaml#/components/schemas/Filter'
       responses:
         '200':
           description: >-
             Success case ("200 OK").
-            This status code shall be returned, when query parameters are present in
-            the request and one or multiple resources are deleted.
-            The URIs of the deleted resources are returned in the response message body.
-        '204':
-          description: >-
-            Success case ("204 No Content").
-            This status code shall be returned, when no query parameters are present in
-            the request and only one resource is deleted.
-            The message body is empty.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/Uri'
+            This status code is returned, when the resource has been successfully deleted.
+            The response body is empty.
         default:
           description: Error case.
           content:
@@ -352,18 +324,6 @@ paths:
                 $ref: 'TS28623_ComDefs.yaml#/components/schemas/ErrorResponse'
 components:
   schemas:
-    CorrelatedNotification:
-      type: object
-      properties:
-        source:
-          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
-        notificationIds:
-          type: array
-          items:
-            $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationId'
-      required:
-        - source
-        - notificationIds
     CmNotificationTypes:
       type: string
       enum:
@@ -378,12 +338,6 @@ components:
         - MANAGEMENT_OPERATION
         - SON_OPERATION
         - UNKNOWN
-    Operation:
-      type: string
-      enum:
-        - CREATE
-        - DELETE
-        - REPLACE
     ScopeType:
       type: string
       enum:
@@ -391,14 +345,21 @@ components:
         - BASE_NTH_LEVEL
         - BASE_SUBTREE
         - BASE_ALL
-    Scope:
-      type: object
-      properties:
-        scopeType:
-          $ref: '#/components/schemas/ScopeType'
-        scopeLevel:
-          type: integer
-
+    Operation:
+      type: string
+      enum:
+        - CREATE
+        - DELETE
+        - REPLACE
+    PatchOperation:
+      type: string
+      enum:
+        - add
+        - replace
+        - remove
+        - copy
+        - move
+        - test
 
     Resource:
       oneOf:
@@ -423,8 +384,26 @@ components:
             - $ref: 'TS28541_NrNrm.yaml#/components/schemas/resources-nrNrm'
             - $ref: 'TS28541_5GcNrm.yaml#/components/schemas/resources-5gcNrm'
             - $ref: 'TS28541_SliceNrm.yaml#/components/schemas/resources-sliceNrm'
-            - $ref: 'TS28536_CoslaNrm.yaml#/components/schemas/resources-coslaNrm'
-
+            - $ref: 'TS28536_CoslaNrm.yaml#/components/schemas/resources-coslaNrm'            
+    Scope:
+      type: object
+      properties:
+        scopeType:
+          $ref: '#/components/schemas/ScopeType'
+        scopeLevel:
+          type: integer
+    CorrelatedNotification:
+      type: object
+      properties:
+        source:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        notificationIds:
+          type: array
+          items:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationId'
+      required:
+        - source
+        - notificationIds
 
     MoiChange:
       type: object
@@ -447,7 +426,6 @@ components:
           oneOf:
             - $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeNameValuePairSet'
             - $ref: 'TS28623_ComDefs.yaml#/components/schemas/AttributeValueChangeSet'
-
     NotifyMoiCreation:
       allOf:
         - $ref: 'TS28623_ComDefs.yaml#/components/schemas/NotificationHeader'
@@ -506,3 +484,13 @@ components:
                 $ref: '#/components/schemas/MoiChange'
           required:
             - moiChanges
+    PatchItem:
+      type: object
+      properties:
+        op:
+          $ref: '#/components/schemas/PatchOperation'
+        from:
+          type: string
+        path:
+          type: string
+        value: {}
