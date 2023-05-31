@@ -1,24 +1,29 @@
 openapi: 3.0.0
+
 info:
   title: Nnwdaf_MLModelProvision
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   description: |
     Nnwdaf_MLModelProvision API Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
-  description: 3GPP TS 29.520 V18.0.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.1.0; 5G System; Network Data Analytics Services.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/
+
 servers:
   - url: '{apiRoot}/nnwdaf-mlmodelprovision/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
 security:
   - {}
   - oAuth2ClientCredentials:
     - nnwdaf-mlmodelprovision
+
 paths:
   /subscriptions:
     post:
@@ -213,6 +218,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -222,6 +228,7 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nnwdaf-mlmodelprovision: Access to the Nnwdaf_MLModelProvision API
+
   schemas:
     NwdafMLModelProvSubsc:
       description: Represents NWDAF Event Subscription resources.
@@ -240,6 +247,10 @@ components:
           items:
             $ref: '#/components/schemas/MLEventNotif'
           minItems: 1
+          description: >
+            Notifications about Individual Events.Shall only be present if the immediate reporting
+            indication in the "immRep" attribute within the "eventReq" attribute sets to true in the
+            event subscription, and the reports are available.
         suppFeats:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         notifCorreId:
@@ -251,9 +262,13 @@ components:
           items:
             $ref: '#/components/schemas/FailureEventInfoForMLModel'
           minItems: 1
+          description: >
+            Supplied by the NWDAF containing MTLF when available, shall contain the event(s) that
+            the subscription is not successful including the failure reason(s).
       required:
         - mLEventSubscs
         - notifUri
+
     MLEventSubscription:
       description: Represents a subscription to a single event.
       type: object
@@ -306,7 +321,7 @@ components:
         - mLFileAddr
     FailureEventInfoForMLModel:
       description: >
-        Represents the event(s) that the subscription is not successful including the failure 
+        Represents the event(s) that the subscription is not successful including the failure
         reason(s).
       type: object
       properties:
@@ -343,6 +358,7 @@ components:
         description: >
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Represents the failure code.  
+        Possible values are:
         - UNAVAILABLE_ML_MODEL: Indicates the requested ML model for the event is unavailable.

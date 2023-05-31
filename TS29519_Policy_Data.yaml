@@ -5,12 +5,12 @@ info:
   title: Unified Data Repository Service API file for policy data
   description: |
     The API version is defined in 3GPP TS 29.504  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.0.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -105,6 +105,13 @@ paths:
           - nudr-dr
           - nudr-dr:policy-data
           - nudr-dr:policy-data:ues:am-data:read
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: >
@@ -670,6 +677,13 @@ paths:
           - nudr-dr
           - nudr-dr:policy-data
           - nudr-dr:policy-data:sponsor-connectivity-data:read
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: >
@@ -980,6 +994,76 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
   /policy-data/subs-to-notify:
+    get:
+      summary: Retrieves the list of Individual Policy Data Subscription resources
+      operationId: ReadPolicyDataSubscriptions
+      tags:
+        - PolicyDataSubscriptions (Collection)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:subs-to-notify:read
+      parameters:
+        - name: mon-resources
+          in: query
+          style: form
+          explode: false
+          description: List of monitored resources whose subscriptions are requested.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              description: Contains the apiSpecificResourceUriPart of the resource URI.
+            minItems: 1
+        - name: ue-id
+          in: query
+          description: Represents the Subscription Identifier SUPI or GPSI.
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: >
+            Upon success, a response body containing a list of Individual Policy Data
+            Subscription resources shall be returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDataSubscription'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     post:
       summary: Create a subscription to receive notification of policy data changes
       operationId: CreateIndividualPolicyDataSubscription
@@ -1089,6 +1173,52 @@ paths:
        required: true
        schema:
          type: string
+    get:
+      summary: Retrieves Individual Policy Subscription data
+      operationId: ReadIndividualPolicySubscriptionData
+      tags:
+        - IndividualPolicySubscriptionData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:subs-to-notify:read
+      responses:
+        '200':
+          description: >
+            Upon success, a response body containing Policy Data Subscription shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDataSubscription'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414' 
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
     put:
       summary: Modify a subscription to receive notification of policy data changes
       operationId: ReplaceIndividualPolicyDataSubscription
@@ -1458,6 +1588,13 @@ paths:
           - nudr-dr
           - nudr-dr:policy-data
           - nudr-dr:policy-data:plmns:ue-policy-set:read
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       responses:
         '200':
           description: Upon success, a response body containing UE policies shall be returned.
@@ -1692,6 +1829,8 @@ components:
           description: >
             Contains Operator Specific Data resource data. The key of the map is operator
             specific data element name and the value is the operator specific data of the UE.
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     AmPolicyData:
       description: Contains the AM policy data for a given subscriber.
@@ -1710,6 +1849,8 @@ components:
           items:
             type: string
           minItems: 1
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
     UePolicySet:
       description: Contains the UE policy data for a given subscriber.
@@ -1751,6 +1892,8 @@ components:
             The serving PLMN identifier is the key of the map.
         andspInd:
           type: boolean
+        epsUrspInd:
+          type: boolean
         pei:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
         osIds:
@@ -1784,6 +1927,8 @@ components:
             type: string
           minItems: 1
         andspInd:
+          type: boolean
+        epsUrspInd:
           type: boolean
         pei:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
@@ -1934,6 +2079,8 @@ components:
           nullable: true
         locRoutNotAllowed:
           type: boolean
+        sfcNotAllowed:
+          type: boolean
       required:
         - dnn
 
@@ -2046,6 +2193,8 @@ components:
           type: array
           items:
             type: string
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - aspIds
 
@@ -2126,6 +2275,8 @@ components:
           items:
             type: string
           minItems: 1
+        subsId:
+          type: string
       required:
         - notificationUri
         - monitoredResourceUris

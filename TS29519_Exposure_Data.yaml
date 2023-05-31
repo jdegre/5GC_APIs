@@ -1,14 +1,16 @@
 openapi: 3.0.0
+
 info:
   version: '-'
   title: Unified Data Repository Service API file for structured data for exposure
   description: |
     The API version is defined in 3GPP TS 29.504  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.0.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -67,7 +69,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccessAndMobilityData'
         '204':
-          description: Successful case. The resource has been successfully updated and no additional content is to be sent in the response message.
+          description: >
+            Successful case. The resource has been successfully updated and no additional content
+            is to be sent in the response message.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -480,6 +484,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /exposure-data/subs-to-notify:
     post:
       summary: Create a subscription to receive notification of exposure data changes
@@ -580,6 +585,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /exposure-data/subs-to-notify/{subId}:
     put:
       summary: updates a subscription to receive notifications of exposure data changes
@@ -689,6 +695,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   schemas:
     AccessAndMobilityData:
@@ -749,6 +756,7 @@ components:
           items:
             type: string
           minItems: 1
+
     PduSessionManagementData:
       description: Represents Session management data for a UE and a PDU session.
       type: object
@@ -795,6 +803,7 @@ components:
           items:
             type: string
           minItems: 1
+
     ExposureDataSubscription:
       description: Represents a Subscription to Notifications about Exposure Data.
       type: object
@@ -815,9 +824,21 @@ components:
           items:
             type: string
           minItems: 1
+        immRep:
+          type: boolean
+          description: >
+            If provided and set to true, it indicates that existing entries that
+            match this subscription shall be immediately reported in the response.
+        immReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExposureDataChangeNotification'
+          minItems: 1
+          description: Immediate report with existing UDR entries.
       required:
         - notificationUri
         - monitoredResourceUris
+
     ExposureDataChangeNotification:
       description: Represents changed exposure data for one UE for which Notification was requested.
       type: object
@@ -836,6 +857,7 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
           minItems: 1
+
     PduSessionStatus:
       anyOf:
       - type: string
@@ -847,7 +869,8 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
+      description: |
+        Represents the state of the PDU session.  
         Possible values are
-        - "ACTIVE"
-        - "RELEASED"
+        - "ACTIVE": the PDU session is active.
+        - "RELEASED": the PDU session released.

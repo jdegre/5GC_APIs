@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.1
+  version: 1.3.0-alpha.2
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V18.0.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.1.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 
 security:
@@ -229,6 +229,13 @@ paths:
       operationId: CreateNWDAFEventSubscriptionTransfer
       tags:
         - NWDAF Event Subscription Transfers (Collection)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nnwdaf-eventssubscription
+        - oAuth2ClientCredentials:
+          - nnwdaf-eventssubscription
+          - nnwdaf-eventssubscription:transfer
       requestBody:
         required: true
         content:
@@ -282,6 +289,13 @@ paths:
       operationId: DeleteNWDAFEventSubscriptionTransfer
       tags:
         - Individual NWDAF Event Subscription Transfer (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nnwdaf-eventssubscription
+        - oAuth2ClientCredentials:
+          - nnwdaf-eventssubscription
+          - nnwdaf-eventssubscription:transfer
       parameters:
         - name: transferId
           in: path
@@ -325,6 +339,13 @@ paths:
       operationId: UpdateNWDAFEventSubscriptionTransfer
       tags:
         - Individual NWDAF Event Subscription Transfer (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nnwdaf-eventssubscription
+        - oAuth2ClientCredentials:
+          - nnwdaf-eventssubscription
+          - nnwdaf-eventssubscription:transfer
       requestBody:
         required: true
         content:
@@ -385,6 +406,8 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             nnwdaf-eventssubscription: Access to the Nnwdaf_EventsSubscription API
+            nnwdaf-eventssubscription:transfer: >
+              Access to service operations applying to NWDAF event subscription transfer.
 
   schemas:
 
@@ -436,6 +459,11 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
           minItems: 1
           description: Identification(s) of application to which the subscription applies.
+        deviations:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minItems: 1
         dnns:
           type: array
           items:
@@ -544,6 +572,18 @@ components:
           items:
             $ref: '#/components/schemas/NetworkPerfRequirement'
           minItems: 1
+        ueCommReqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeCommReq'
+          minItems: 1
+        ueMobilityReqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeMobilityReq'
+          minItems: 1
+        userDataConOrderCri:
+          $ref: '#/components/schemas/UserDataConOrderCrit'
         bwRequs:
           type: array
           items:
@@ -624,6 +664,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         termCause:
           $ref: '#/components/schemas/TermCause'
+        transEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/NwdafEvent'
+          minItems: 1
       required:
         - subscriptionId
       oneOf:
@@ -805,7 +850,7 @@ components:
 
     NsiLoadLevelInfo:
       description: >
-            Represents the network slice and optionally the associated network slice instance and the 
+        Represents the network slice and optionally the associated network slice instance and the 
             load level information.
       type: object
       properties:
@@ -821,6 +866,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         exceedLoadLevelThrInd:
           type: boolean
+          description: >
+            Indicates whether the Load Level Threshold is met or exceeded by the statistics value.
+            Set to "true" if the Load Level Threshold is met or exceeded, otherwise set to "false".
+            Shall be present if one of the element in the "listOfAnaSubsets" attribute was set to
+            EXCEED_LOAD_LEVEL_THR_IND.
         networkArea:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         timePeriod:
@@ -883,10 +933,11 @@ components:
         offsetPeriod:
           type: integer
           description: >
-            Offset period in units of seconds to the reporting time, if the value is negative means 
-            statistics in the past offset period, otherwise a positive value means prediction in the 
-            future offset period. May be present if the "repPeriod" attribute is included within the 
-            "evtReq" attribute.
+            Offset period in units of seconds to the reporting time, if the value is negative means
+            statistics in the past offset period, otherwise a positive value means prediction in the
+            future offset period. May be present if the "repPeriod" attribute is included within the
+            "evtReq" attribute or the "repetitionPeriod" attribute is included within the 
+            EventSubscription type.
         sampRatio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         maxObjectNbr:
@@ -902,6 +953,8 @@ components:
           minItems: 1
         anaMetaInd:
           $ref: '#/components/schemas/AnalyticsMetadataIndication'
+        histAnaTimePeriod:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
 
     TargetUeInformation:
       description: Identifies the target UE information.
@@ -909,6 +962,8 @@ components:
       properties:
         anyUe:
           type: boolean
+          description: >
+            Identifies any UE when setting to "true". Default value is "false" if omitted.
         supis:
           type: array
           items:
@@ -985,6 +1040,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         perioCommInd:
           type: boolean
+          description: >
+            This attribute indicates whether the UE communicates periodically or not. Set to "true"
+            to indicate the UE communicates periodically, otherwise set to "false" or omitted.
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         anaOfAppList:
@@ -1118,6 +1176,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
         per:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
+        deviceSpeed:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
+        deviceType:
+          $ref: '#/components/schemas/DeviceType'
       oneOf:
         - required: [5qi]
         - required: [resType]
@@ -1205,12 +1267,12 @@ components:
     AnySlice:
       type: boolean
       description: >
-        FALSE represents not applicable for all slices. TRUE represents applicable for all slices.
+        "false" represents not applicable for all slices. "true" represents applicable for all slices.
 
     LoadLevelInformation:
       type: integer
       description: >
-        Load level information of the network slice and the optionally associated network slice 
+        Load level information of the network slice and the optionally associated network slice
         instance.
 
     AbnormalBehaviour:
@@ -1230,6 +1292,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         ratio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+        amount:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         addtMeasInfo:
@@ -1342,6 +1406,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         absoluteNum:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        orderCriterion:
+          $ref: '#/components/schemas/NetworkPerfOrderCriterion'
       required:
         - nwPerfType
 
@@ -1353,6 +1419,8 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         nwPerfType:
           $ref: '#/components/schemas/NetworkPerfType'
+        anaPeriod:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         relativeRatio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         absoluteNum:
@@ -1437,6 +1505,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SubscriptionTransferInfo'
+          minItems: 1
+        failTransEventReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/NwdafEvent'
           minItems: 1
       required:
         - subsTransInfos
@@ -1524,7 +1597,7 @@ components:
             $ref: '#/components/schemas/UeAnalyticsContextDescriptor'
           minItems: 1
           description: >
-            List of objects that indicate for which SUPI and analytics types combinations analytics 
+            List of objects that indicate for which SUPI and analytics types combinations analytics
             context can be retrieved.
       allOf:
         - anyOf:
@@ -1628,7 +1701,7 @@ components:
 
     ClassCriterion:
       description: >
-        Indicates the dispersion class criterion for fixed, camper and/or traveller UE, and/or the 
+        Indicates the dispersion class criterion for fixed, camper and/or traveller UE, and/or the
         top-heavy UE dispersion class criterion.
       type: object
       properties:
@@ -1748,7 +1821,7 @@ components:
 
     RedundantTransmissionExpInfo:
       description: >
-        The redundant transmission experience related information. When subscribed event is 
+        The redundant transmission experience related information. When subscribed event is
         "RED_TRANS_EXP", the "redTransInfos" attribute shall be included.
       type: object
       properties:
@@ -1954,14 +2027,14 @@ components:
         allFreq:
           type: boolean
           description: >
-            Set to "true" to indicate to handle all the frequencies the NWDAF received, otherwise 
-            set to "false" or omit. The "allFreq" attribute and the "freq" attribute are mutually 
+            Set to "true" to indicate to handle all the frequencies the NWDAF received, otherwise
+            set to "false" or omit. The "allFreq" attribute and the "freq" attribute are mutually
             exclusive.
         allRat:
           type: boolean
           description: >
-            Set to "true" to indicate to handle all the RAT Types the NWDAF received, otherwise 
-            set to "false" or omit. The "allRat" attribute and the "ratType" attribute are mutually 
+            Set to "true" to indicate to handle all the RAT Types the NWDAF received, otherwise
+            set to "false" or omit. The "allRat" attribute and the "ratType" attribute are mutually
             exclusive.
         freq:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ArfcnValueNR'
@@ -2001,7 +2074,7 @@ components:
 
     ResourceUsage:
       description: >
-        The current usage of the virtual resources assigned to the NF instances belonging to a 
+        The current usage of the virtual resources assigned to the NF instances belonging to a
         particular network slice instance.
       type: object
       properties:
@@ -2030,6 +2103,22 @@ components:
           - required: [nfId]
           - required: [nfSetId]
         - required: [taiList]
+    UeCommReq:
+      description: UE communication analytics requirement.
+      type: object
+      properties:
+        orderCriterion:
+          $ref: '#/components/schemas/UeCommOrderCriterion'
+        orderDirection:
+          $ref: '#/components/schemas/MatchingDirection'
+    UeMobilityReq:
+      description: UE mobility analytics requirement.
+      type: object
+      properties:
+        orderCriterion:
+          $ref: '#/components/schemas/UeMobilityOrderCriterion'
+        orderDirection:
+          $ref: '#/components/schemas/MatchingDirection'
 
 #
 # ENUMERATIONS DATA TYPES
@@ -2046,8 +2135,11 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the notification methods for the subscribed events.  
         Possible values are:
-        - PERIODIC: The subscribe of NWDAF Event is periodically. The periodic of the notification is identified by repetitionPeriod defined in clause 5.1.6.2.3.  
+        - PERIODIC: The notification of the subscribed NWDAF Event is periodical. The period
+          between the notifications is identified by repetitionPeriod and represents time in
+          seconds.
         - THRESHOLD: The subscribe of NWDAF Event is upon threshold exceeded.
 
     NwdafEvent:
@@ -2075,38 +2167,50 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Describes the NWDAF Events.  
         Possible values are:
-        - SLICE_LOAD_LEVEL: Indicates that the event subscribed is load level information of Network Slice  
-        - NETWORK_PERFORMANCE: Indicates that the event subscribed is network performance information.  
-        - NF_LOAD: Indicates that the event subscribed is load level and status of one or several Network Functions.  
-        - SERVICE_EXPERIENCE: Indicates that the event subscribed is service experience.  
-        - UE_MOBILITY: Indicates that the event subscribed is UE mobility information.  
-        - UE_COMMUNICATION: Indicates that the event subscribed is UE communication information.  
-        - QOS_SUSTAINABILITY: Indicates that the event subscribed is QoS sustainability.  
-        - ABNORMAL_BEHAVIOUR: Indicates that the event subscribed is abnormal behaviour.  
-        - USER_DATA_CONGESTION: Indicates that the event subscribed is user data congestion information.  
-        - NSI_LOAD_LEVEL: Indicates that the event subscribed is load level information of Network Slice and the optionally associated Network Slice Instance  
-        - DN_PERFORMANCE: Indicates that the event subscribed is DN performance information.  
-        - DISPERSION: Indicates that the event subscribed is dispersion information.  
-        - RED_TRANS_EXP: Indicates that the event subscribed is redundant transmission experience.  
-        - WLAN_PERFORMANCE: Indicates that the event subscribed is WLAN performance.  
-        - SM_CONGESTION: Indicates the Session Management Congestion Control Experience information for specific DNN and/or S-NSSAI.
+        - SLICE_LOAD_LEVEL: Indicates that the event subscribed is load level information of Network
+          Slice.
+        - NETWORK_PERFORMANCE: Indicates that the event subscribed is network performance
+          information.
+        - NF_LOAD: Indicates that the event subscribed is load level and status of one or several
+          Network Functions.
+        - SERVICE_EXPERIENCE: Indicates that the event subscribed is service experience.
+        - UE_MOBILITY: Indicates that the event subscribed is UE mobility information.
+        - UE_COMMUNICATION: Indicates that the event subscribed is UE communication information.
+        - QOS_SUSTAINABILITY: Indicates that the event subscribed is QoS sustainability.
+        - ABNORMAL_BEHAVIOUR: Indicates that the event subscribed is abnormal behaviour.
+        - USER_DATA_CONGESTION: Indicates that the event subscribed is user data congestion
+          information.
+        - NSI_LOAD_LEVEL: Indicates that the event subscribed is load level information of Network
+          Slice and the optionally associated Network Slice Instance.
+        - DN_PERFORMANCE: Indicates that the event subscribed is DN performance information.
+        - DISPERSION: Indicates that the event subscribed is dispersion information.
+        - RED_TRANS_EXP: Indicates that the event subscribed is redundant transmission experience.
+        - WLAN_PERFORMANCE: Indicates that the event subscribed is WLAN performance.
+        - SM_CONGESTION: Indicates the Session Management Congestion Control Experience information
+          for specific DNN and/or S-NSSAI.
 
     Accuracy:
       anyOf:
       - type: string
         enum:
           - LOW
+          - MEDIUM
           - HIGH
+          - HIGHEST
       - type: string
         description: >
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the preferred level of accuracy of the analytics.  
         Possible values are:
-        - LOW: Low accuracy.  
+        - LOW: Low accuracy.
+        - MEDIUM: Medium accuracy.
         - HIGH: High accuracy.
+        - HIGHEST: Highest accuracy.
 
     CongestionType:
       anyOf:
@@ -2121,8 +2225,9 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Indicates the congestion analytics type.  
         Possible values are:
-        - USER_PLANE: The congestion analytics type is User Plane. 
+        - USER_PLANE: The congestion analytics type is User Plane.
         - CONTROL_PLANE: The congestion analytics type is Control Plane.
         - USER_AND_CONTROL_PLANE: The congestion analytics type is User Plane and Control Plane.
 
@@ -2145,16 +2250,17 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Describes the Exception Id.  
         Possible values are:
-        - UNEXPECTED_UE_LOCATION: Unexpected UE location
-        - UNEXPECTED_LONG_LIVE_FLOW: Unexpected long-live rate flows
-        - UNEXPECTED_LARGE_RATE_FLOW: Unexpected large rate flows
-        - UNEXPECTED_WAKEUP: Unexpected wakeup
-        - SUSPICION_OF_DDOS_ATTACK: Suspicion of DDoS attack
-        - WRONG_DESTINATION_ADDRESS: Wrong destination address
-        - TOO_FREQUENT_SERVICE_ACCESS: Too frequent Service Access
-        - UNEXPECTED_RADIO_LINK_FAILURES: Unexpected radio link failures
-        - PING_PONG_ACROSS_CELLS: Ping-ponging across neighbouring cells
+        - UNEXPECTED_UE_LOCATION: Unexpected UE location.
+        - UNEXPECTED_LONG_LIVE_FLOW: Unexpected long-live rate flows.
+        - UNEXPECTED_LARGE_RATE_FLOW: Unexpected large rate flows.
+        - UNEXPECTED_WAKEUP: Unexpected wakeup.
+        - SUSPICION_OF_DDOS_ATTACK: Suspicion of DDoS attack.
+        - WRONG_DESTINATION_ADDRESS: Wrong destination address.
+        - TOO_FREQUENT_SERVICE_ACCESS: Too frequent Service Access.
+        - UNEXPECTED_RADIO_LINK_FAILURES: Unexpected radio link failures.
+        - PING_PONG_ACROSS_CELLS: Ping-ponging across neighbouring cells.
 
     ExceptionTrend:
       anyOf:
@@ -2170,6 +2276,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the Exception Trend.  
         Possible values are:
         - UP: Up trend of the exception level.
         - DOWN: Down trend of the exception level.
@@ -2189,6 +2296,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the unit for the session active time.  
         Possible values are:
         - MINUTE: Time unit is per minute.
         - HOUR: Time unit is per hour.
@@ -2211,14 +2319,18 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the network performance types.  
         Possible values are:
-        - GNB_ACTIVE_RATIO: Indicates that the network performance requirement is gNodeB active (i.e. up and running) rate. Indicates the ratio of gNB active (i.e. up and running) number to the total number of gNB
+        - GNB_ACTIVE_RATIO: Indicates that the network performance requirement is gNodeB active
+          (i.e. up and running) rate. Indicates the ratio of gNB active (i.e. up and running) number
+          to the total number of gNB.
         - GNB_COMPUTING_USAGE: Indicates gNodeB computing resource usage.
         - GNB_MEMORY_USAGE: Indicates gNodeB memory usage.
         - GNB_DISK_USAGE: Indicates gNodeB disk usage.
         - NUM_OF_UE: Indicates number of UEs.
-        - SESS_SUCC_RATIO: Indicates ratio of successful setup of PDU sessions to total PDU session setup attempts.
-        - HO_SUCC_RATIO: Indicates Ratio of successful handovers to the total handover attempts. 
+        - SESS_SUCC_RATIO: Indicates ratio of successful setup of PDU sessions to total PDU
+          session setup attempts.
+        - HO_SUCC_RATIO: Indicates Ratio of successful handovers to the total handover attempts.
 
     ExpectedAnalyticsType:
       anyOf:
@@ -2233,10 +2345,12 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the expected UE analytics type.  
         Possible values are:
         - MOBILITY: Mobility related abnormal behaviour analytics is expected by the consumer.
         - COMMUN: Communication related abnormal behaviour analytics is expected by the consumer.
-        - MOBILITY_AND_COMMUN: Both mobility and communication related abnormal behaviour analytics is expected by the consumer.
+        - MOBILITY_AND_COMMUN: Both mobility and communication related abnormal behaviour analytics
+          is expected by the consumer.
 
     MatchingDirection:
       anyOf:
@@ -2251,6 +2365,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the matching direction when crossing a threshold.  
         Possible values are:
         - ASCENDING: Threshold is crossed in ascending direction.
         - DESCENDING: Threshold is crossed in descending direction.
@@ -2270,11 +2385,18 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the failure reason.  
         Possible values are:
-        - UNAVAILABLE_DATA: Indicates the requested statistics information for the event is rejected since necessary data to perform the service is unavailable.
-        - BOTH_STAT_PRED_NOT_ALLOWED: Indicates the requested analysis information for the event is rejected since the start time is in the past and the end time is in the future, which means the NF service consumer requested both statistics and prediction for the analytics.
-        - UNSATISFIED_REQUESTED_ANALYTICS_TIME: Indicates that the requested event is rejected since the analytics information is not ready when the time indicated by the "timeAnaNeeded" attribute (as provided during the creation or modification of subscription) is reached.
-        - OTHER: Indicates the requested analysis information for the event is rejected due to other reasons. 
+        - UNAVAILABLE_DATA: Indicates the requested statistics information for the event is rejected
+          since necessary data to perform the service is unavailable.
+        - BOTH_STAT_PRED_NOT_ALLOWED: Indicates the requested analysis information for the event is
+          rejected since the start time is in the past and the end time is in the future, which
+          means the NF service consumer requested both statistics and prediction for the analytics.
+        - UNSATISFIED_REQUESTED_ANALYTICS_TIME: Indicates that the requested event is rejected since
+          the analytics information is not ready when the time indicated by the "timeAnaNeeded"
+          attribute (as provided during the creation or modification of subscription) is reached.
+        - OTHER: Indicates the requested analysis information for the event is rejected due to other
+          reasons.
 
     AnalyticsMetadata:
       anyOf:
@@ -2291,10 +2413,12 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the types of analytics metadata information that can be requested.  
         Possible values are:
         - NUM_OF_SAMPLES: Number of data samples used for the generation of the output analytics.
         - DATA_WINDOW: Data time window of the data samples.
-        - DATA_STAT_PROPS: Dataset statistical properties of the data used to generate the analytics.
+        - DATA_STAT_PROPS: Dataset statistical properties of the data used to generate the
+          analytics.
         - STRATEGY: Output strategy used for the reporting of the analytics.
         - ACCURACY: Level of accuracy reached for the analytics.
 
@@ -2310,9 +2434,12 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the dataset statistical properties.  
         Possible values are:
-        - UNIFORM_DIST_DATA: Indicates the use of data samples that are uniformly distributed according to the different aspects of the requested analytics.
-        - NO_OUTLIERS: Indicates that the data samples shall disregard data samples that are at the extreme boundaries of the value range.
+        - UNIFORM_DIST_DATA: Indicates the use of data samples that are uniformly distributed
+          according to the different aspects of the requested analytics.
+        - NO_OUTLIERS: Indicates that the data samples shall disregard data samples that are at
+          the extreme boundaries of the value range.
 
     OutputStrategy:
       anyOf:
@@ -2326,9 +2453,12 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the output strategy used for the analytics reporting.  
         Possible values are:
-        - BINARY: Indicates that the analytics shall only be reported when the requested level of accuracy is reached within a cycle of periodic notification.
-        - GRADIENT: Indicates that the analytics shall be reported according with the periodicity irrespective of whether the requested level of accuracy has been reached or not.
+        - BINARY: Indicates that the analytics shall only be reported when the requested level
+          of accuracy is reached within a cycle of periodic notification.
+        - GRADIENT: Indicates that the analytics shall be reported according with the periodicity
+          irrespective of whether the requested level of accuracy has been reached or not.
 
     TransferRequestType:
       anyOf:
@@ -2342,6 +2472,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the request type for the analytics subscription transfer.  
         Possible values are:
         - PREPARE: Indicates that the request is for analytics subscription transfer preparation.
         - TRANSFER: Indicates that the request is for analytics subscription transfer execution.
@@ -2396,47 +2527,94 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the analytics subset.  
         Possible values are:
-        - NUM_OF_UE_REG: The number of UE registered. This value is only applicable to NSI_LOAD_LEVEL event.
-        - NUM_OF_PDU_SESS_ESTBL: The number of PDU sessions established. This value is only applicable to NSI_LOAD_LEVEL event.
-        - RES_USAGE: The current usage of the virtual resources assigned to the NF instances belonging to a particular network slice instance. This value is only applicable to NSI_LOAD_LEVEL event.
-        - NUM_OF_EXCEED_RES_USAGE_LOAD_LEVEL_THR: The number of times the resource usage threshold of the network slice instance is reached or exceeded if a threshold value is provided by the consumer. This value is only applicable to NSI_LOAD_LEVEL event.
-        - PERIOD_OF_EXCEED_RES_USAGE_LOAD_LEVEL_THR: The time interval between each time the threshold being met or exceeded on the network slice (instance). This value is only applicable to NSI_LOAD_LEVEL event.
-        - EXCEED_LOAD_LEVEL_THR_IND: Whether the Load Level Threshold is met or exceeded by the statistics value. This value is only applicable to NSI_LOAD_LEVEL event.
-        - LIST_OF_TOP_APP_UL: The list of applications that contribute the most to the traffic in the UL direction. This value is only applicable to USER_DATA_CONGESTION event.
-        - LIST_OF_TOP_APP_DL: The list of applications that contribute the most to the traffic in the DL direction. This value is only applicable to USER_DATA_CONGESTION event.
-        - NF_STATUS: The availability status of the NF on the Analytics target period, expressed as a percentage of time per status value (registered, suspended, undiscoverable). This value is only applicable to NF_LOAD event.
-        - NF_RESOURCE_USAGE: The average usage of assigned resources (CPU, memory, storage). This value is only applicable to NF_LOAD event.
-        - NF_LOAD: The average load of the NF instance over the Analytics target period. This value is only applicable to NF_LOAD event.
-        - NF_PEAK_LOAD: The maximum load of the NF instance over the Analytics target period. This value is only applicable to NF_LOAD event.
-        - NF_LOAD_AVG_IN_AOI: The average load of the NF instances over the area of interest. This value is only applicable to NF_LOAD event.
-        - DISPER_AMOUNT: Indicates the dispersion amount of the reported data volume or transaction dispersion type. This value is only applicable to DISPERSION event.
-        - DISPER_CLASS: Indicates the dispersion mobility class: fixed, camper, traveller upon set its usage threshold, and/or the top-heavy class upon set its percentile rating threshold. This value is only applicable to DISPERSION event.
-        - RANKING: Data/transaction usage ranking high (i.e.value 1), medium (2) or low (3). This value is only applicable to DISPERSION event.
-        - PERCENTILE_RANKING: Percentile ranking of the target UE in the Cumulative Distribution Function of data usage for the population of all UEs. This value is only applicable to DISPERSION event.
-        - RSSI: Indicated the RSSI in the unit of dBm. This value is only applicable to WLAN_PERFORMANCE event.
-        - RTT: Indicates the RTT in the unit of millisecond. This value is only applicable to WLAN_PERFORMANCE event.
-        - TRAFFIC_INFO: Traffic information including UL/DL data rate and/or Traffic volume. This value is only applicable to WLAN_PERFORMANCE event.
-        - NUMBER_OF_UES: Number of UEs observed for the SSID. This value is only applicable to WLAN_PERFORMANCE event.
-        - APP_LIST_FOR_UE_COMM: The analytics of the application list used by UE. This value is only applicable to UE_COMM event.
-        - N4_SESS_INACT_TIMER_FOR_UE_COMM: The N4 Session inactivity timer. This value is only applicable to UE_COMM event.
-        - AVG_TRAFFIC_RATE: Indicates average traffic rate. This value is only applicable to DN_PERFORMANCE event.
-        - MAX_TRAFFIC_RATE: Indicates maximum traffic rate. This value is only applicable to DN_PERFORMANCE event.
-        - AVG_PACKET_DELAY: Indicates average Packet Delay. This value is only applicable to DN_PERFORMANCE event.
-        - MAX_PACKET_DELAY: Indicates maximum Packet Delay. This value is only applicable to DN_PERFORMANCE event.
-        - AVG_PACKET_LOSS_RATE: Indicates average Loss Rate. This value is only applicable to DN_PERFORMANCE event.
-        - UE_LOCATION: Indicates UE location information. This value is only applicable to SERVICE_EXPERIENCE event.
-        - LIST_OF_HIGH_EXP_UE: Indicates list of high experienced UE. This value is only applicable to SM_CONGESTION event.
-        - LIST_OF_MEDIUM_EXP_UE: Indicates list of medium experienced UE. This value is only applicable to SM_CONGESTION event.
-        - LIST_OF_LOW_EXP_UE: Indicates list of low experienced UE. This value is only applicable to SM_CONGESTION event.
-        - AVG_UL_PKT_DROP_RATE: Indicates average uplink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - VAR_UL_PKT_DROP_RATE: Indicates variance of uplink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - AVG_DL_PKT_DROP_RATE: Indicates average downlink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - VAR_DL_PKT_DROP_RATE: Indicates variance of downlink packet drop rate on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - AVG_UL_PKT_DELAY: Indicates average uplink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - VAR_UL_PKT_DELAY: Indicates variance uplink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - AVG_DL_PKT_DELAY: Indicates average downlink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
-        - VAR_DL_PKT_DELAY: Indicates variance downlink packet delay round trip on GTP-U path on N3. This value is only applicable to RED_TRANS_EXP event.
+        - NUM_OF_UE_REG: The number of UE registered. This value is only applicable to
+          NSI_LOAD_LEVEL event.
+        - NUM_OF_PDU_SESS_ESTBL: The number of PDU sessions established. This value is only
+          applicable to NSI_LOAD_LEVEL event.
+        - RES_USAGE: The current usage of the virtual resources assigned to the NF instances
+          belonging to a particular network slice instance. This value is only applicable to
+          NSI_LOAD_LEVEL event.
+        - NUM_OF_EXCEED_RES_USAGE_LOAD_LEVEL_THR: The number of times the resource usage threshold
+          of the network slice instance is reached or exceeded if a threshold value is provided by
+          the consumer. This value is only applicable to NSI_LOAD_LEVEL event.
+        - PERIOD_OF_EXCEED_RES_USAGE_LOAD_LEVEL_THR: The time interval between each time the
+          threshold being met or exceeded on the network slice (instance). This value is only
+          applicable to NSI_LOAD_LEVEL event.
+        - EXCEED_LOAD_LEVEL_THR_IND: Whether the Load Level Threshold is met or exceeded by the
+          statistics value. This value is only applicable to NSI_LOAD_LEVEL event.
+        - LIST_OF_TOP_APP_UL: The list of applications that contribute the most to the traffic in
+          the UL direction. This value is only applicable to USER_DATA_CONGESTION event.
+        - LIST_OF_TOP_APP_DL: The list of applications that contribute the most to the traffic in
+          the DL direction. This value is only applicable to USER_DATA_CONGESTION event.
+        - NF_STATUS: The availability status of the NF on the Analytics target period, expressed
+          as a percentage of time per status value (registered, suspended, undiscoverable). This
+          value is only applicable to NF_LOAD event.
+        - NF_RESOURCE_USAGE: The average usage of assigned resources (CPU, memory, storage). This
+          value is only applicable to NF_LOAD event.
+        - NF_LOAD: The average load of the NF instance over the Analytics target period. This value
+          is only applicable to NF_LOAD event.
+        - NF_PEAK_LOAD: The maximum load of the NF instance over the Analytics target period. This
+          value is only applicable to NF_LOAD event.
+        - NF_LOAD_AVG_IN_AOI: The average load of the NF instances over the area of interest. This
+          value is only applicable to NF_LOAD event.
+        - DISPER_AMOUNT: Indicates the dispersion amount of the reported data volume or transaction
+          dispersion type. This value is only applicable to DISPERSION event.
+        - DISPER_CLASS: Indicates the dispersion mobility class: fixed, camper, traveller upon set
+          its usage threshold, and/or the top-heavy class upon set its percentile rating threshold.
+          This value is only applicable to DISPERSION event.
+        - RANKING: Data/transaction usage ranking high (i.e.value 1), medium (2) or low (3). This
+          value is only applicable to DISPERSION event.
+        - PERCENTILE_RANKING: Percentile ranking of the target UE in the Cumulative Distribution
+          Function of data usage for the population of all UEs. This value is only applicable to
+          DISPERSION event.
+        - RSSI: Indicated the RSSI in the unit of dBm. This value is only applicable to
+          WLAN_PERFORMANCE event.
+        - RTT: Indicates the RTT in the unit of millisecond. This value is only applicable to
+          WLAN_PERFORMANCE event.
+        - TRAFFIC_INFO: Traffic information including UL/DL data rate and/or Traffic volume. This
+          value is only applicable to WLAN_PERFORMANCE event.
+        - NUMBER_OF_UES: Number of UEs observed for the SSID. This value is only applicable to
+          WLAN_PERFORMANCE event.
+        - APP_LIST_FOR_UE_COMM: The analytics of the application list used by UE. This value is only
+          applicable to UE_COMM event.
+        - N4_SESS_INACT_TIMER_FOR_UE_COMM: The N4 Session inactivity timer. This value is only
+          applicable to UE_COMM event.
+        - AVG_TRAFFIC_RATE: Indicates average traffic rate. This value is only applicable to
+          DN_PERFORMANCE event.
+        - MAX_TRAFFIC_RATE: Indicates maximum traffic rate. This value is only applicable to
+          DN_PERFORMANCE event.
+        - AVG_PACKET_DELAY: Indicates average Packet Delay. This value is only applicable to
+          DN_PERFORMANCE event.
+        - MAX_PACKET_DELAY: Indicates maximum Packet Delay. This value is only applicable to
+          DN_PERFORMANCE event.
+        - AVG_PACKET_LOSS_RATE: Indicates average Loss Rate. This value is only applicable to
+          DN_PERFORMANCE event.
+        - UE_LOCATION: Indicates UE location information. This value is only applicable to
+          SERVICE_EXPERIENCE event.
+        - LIST_OF_HIGH_EXP_UE: Indicates list of high experienced UE. This value is only applicable
+          to SM_CONGESTION event.
+        - LIST_OF_MEDIUM_EXP_UE: Indicates list of medium experienced UE. This value is only
+          applicable to SM_CONGESTION event.
+        - LIST_OF_LOW_EXP_UE: Indicates list of low experienced UE. This value is only applicable to
+          SM_CONGESTION event.
+        - AVG_UL_PKT_DROP_RATE: Indicates average uplink packet drop rate on GTP-U path on N3. This
+          value is only applicable to RED_TRANS_EXP event.
+        - VAR_UL_PKT_DROP_RATE: Indicates variance of uplink packet drop rate on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
+        - AVG_DL_PKT_DROP_RATE: Indicates average downlink packet drop rate on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
+        - VAR_DL_PKT_DROP_RATE: Indicates variance of downlink packet drop rate on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
+        - AVG_UL_PKT_DELAY: Indicates average uplink packet delay round trip on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
+        - VAR_UL_PKT_DELAY: Indicates variance uplink packet delay round trip on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
+        - AVG_DL_PKT_DELAY: Indicates average downlink packet delay round trip on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
+        - VAR_DL_PKT_DELAY: Indicates variance downlink packet delay round trip on GTP-U path on N3.
+          This value is only applicable to RED_TRANS_EXP event.
 
     DispersionType:
       oneOf:
@@ -2451,6 +2629,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the dispersion type.  
         Possible values are:
           - DVDA: Data Volume Dispersion Analytics.
           - TDA: Transactions Dispersion Analytics.
@@ -2470,11 +2649,19 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the dispersion class.  
         Possible values are:
-        - FIXED: Dispersion class as fixed UE its data or transaction usage at a location or a slice, is higher than its class threshold set for its all data or transaction usage.
-        - CAMPER: Dispersion class as camper UE, its data or transaction usage at a location or a slice, is higher than its class threshold and lower than the fixed class threshold set for its all data or transaction usage..
-        - TRAVELLER: Dispersion class as traveller UE, its data or transaction usage at a location or a slice, is lower than the camper class threshold set for its all data or transaction usage.
-        - TOP_HEAVY: Dispersion class as Top_Heavy UE, who's dispersion percentile rating at a location or a slice, is higher than its class threshold.
+        - FIXED: Dispersion class as fixed UE its data or transaction usage at a location or
+          a slice, is higher than its class threshold set for its all data or transaction usage.
+        - CAMPER: Dispersion class as camper UE, its data or transaction usage at a location or
+          a slice, is higher than its class threshold and lower than the fixed class threshold set
+          for its all data or transaction usage.
+        - TRAVELLER: Dispersion class as traveller UE, its data or transaction usage at a location
+          or a slice, is lower than the camper class threshold set for its all data or transaction
+          usage.
+        - TOP_HEAVY: Dispersion class as Top_Heavy UE, who's dispersion percentile rating at a
+          location or a slice, is higher than its class threshold.
+
 
     DispersionOrderingCriterion:
       anyOf:
@@ -2491,12 +2678,44 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the order criterion for the list of dispersion.  
         Possible values are:
         - TIME_SLOT_START: Indicates the order of time slot start.
         - DISPERSION: Indicates the order of data/transaction dispersion.
         - CLASSIFICATION: Indicates the order of data/transaction classification.
         - RANKING: Indicates the order of data/transaction ranking.
         - PERCENTILE_RANKING: Indicates the order of data/transaction percentile ranking.
+
+    DeviceType:
+      anyOf:
+      - type: string
+        enum:
+          - MOBILE_PHONE
+          - SMART_PHONE
+          - TABLET
+          - DONGLE
+          - MODEM
+          - WLAN_ROUTER
+          - IOT_DEVICE
+          - WEARABLE
+          - MOBILE_TEST_PLATFORM
+          - UNDEFINED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - MOBILE_PHONE: Mobile Phone.
+          - SMART_PHONE: Smartphone.
+          - TABLET: Tablet.
+          - DONGLE: Dongle.
+          - MODEM: Modem.
+          - WLAN_ROUTER: WLAN Router.
+          - IOT_DEVICE: IoT Device.
+          - WEARABLE: Wearable.
+          - MOBILE_TEST_PLATFORM: Mobile Test Platform.
+          - UNDEFINED: Undefined.
 
     RedTransExpOrderingCriterion:
       anyOf:
@@ -2510,6 +2729,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the order criterion for the list of Redundant Transmission Experience.  
         Possible values are:
         - TIME_SLOT_START: Indicates the order of time slot start.
         - RED_TRANS_EXP: Indicates the order of Redundant Transmission Experience.
@@ -2529,6 +2749,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the order criterion for the list of WLAN performance information.  
         Possible values are:
         - TIME_SLOT_START: Indicates the order of time slot start.
         - NUMBER_OF_UES: Indicates the order of number of UEs.
@@ -2545,9 +2766,11 @@ components:
           - OTHER
       - type: string
         description: >
-          This string provides forward-compatibility with future extensions to the enumeration but is not used to encode content defined in the present version of this API.
+          This string provides forward-compatibility with future extensions to the enumeration
+          but is not used to encode content defined in the present version of this API.
       description: |
-        Possible values are:
+        Represents the type of the service experience analytics.  
+        Possible values are:  
         - VOICE: Indicates that the service experience analytics is for voice service.
         - VIDEO: Indicates that the service experience analytics is for video service.
         - OTHER: Indicates that the service experience analytics is for other service.
@@ -2566,6 +2789,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the order criterion for the list of DN performance analytics.  
         Possible values are:  
         - AVERAGE_TRAFFIC_RATE: Indicates the average traffic rate.  
         - MAXIMUM_TRAFFIC_RATE: Indicates the maximum traffic rate.  
@@ -2585,7 +2809,67 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the cause for the analytics subscription termination request.  
         Possible values are:  
           - USER_CONSENT_REVOKED: The user consent has been revoked.
           - NWDAF_OVERLOAD: The NWDAF is overloaded.
           - UE_LEFT_AREA: The UE has moved out of the NWDAF serving area.
+    UserDataConOrderCrit:
+      anyOf:
+      - type: string
+        enum:
+          - APPLICABLE_TIME_WINDOW
+          - NETWORK_STATUS_INDICATION
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - APPLICABLE_TIME_WINDOW: The ordering criterion is the Applicable Time Window.
+          - NETWORK_STATUS_INDICATION: The ordering criterion is the network status indication.
+
+    UeMobilityOrderCriterion:
+      anyOf:
+      - type: string
+        enum:
+          - TIME_SLOT
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - TIME_SLOT: The ordering criterion is the time slot.
+
+    UeCommOrderCriterion:
+      anyOf:
+      - type: string
+        enum:
+          - START_TIME
+          - DURATION
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - START_TIME: The ordering criterion of the analytics is the start time.
+          - DURATION: The ordering criterion of the analytics is the duration of the communication.
+
+    NetworkPerfOrderCriterion:
+      anyOf:
+      - type: string
+        enum:
+          - NUMBER_OF_UES
+          - COMMUNICATION_PERF
+          - MOBILITY_PERF
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - NUMBER_OF_UES: The ordering criterion of the analytics is the number of UEs.
+          - COMMUNICATION_PERF: The ordering criterion of the analytics is the communication performance.
+          - MOBILITY_PERF: The ordering criterion of the analytics is themobility performance.

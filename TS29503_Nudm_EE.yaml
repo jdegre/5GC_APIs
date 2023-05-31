@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.1'
+  version: '1.3.0-alpha.2'
   title: 'Nudm_EE'
   description: |
     Nudm Event Exposure Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 18.0.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 18.1.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -423,7 +423,9 @@ components:
           minItems: 1
         dataRestorationCallbackUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-
+        udrRestartInd:
+          type: boolean
+          default: false
 
     MonitoringConfiguration:
       type: object
@@ -466,6 +468,22 @@ components:
         idleStatusInd:
           type: boolean
           default: false
+        monitoringSuspension:
+          $ref: '#/components/schemas/MonitoringSuspension'
+
+    MonitoringSuspension:
+      type: object
+      properties:
+        suspendedInsidePlmnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+          minItems: 1
+        suspendedOutsidePlmnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+          minItems: 1
 
     LossConnectivityCfg:
       type: object
@@ -536,6 +554,7 @@ components:
         - $ref: '#/components/schemas/LossConnectivityReport'
         - $ref: '#/components/schemas/LocationReport'
         - $ref: '#/components/schemas/PdnConnectivityStatReport'
+        - $ref: '#/components/schemas/GroupMembListChanges'
 
     ReachabilityForSmsReport:
       type: object
@@ -718,6 +737,24 @@ components:
         pduSessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
 
+    GroupMembListChanges:
+      description: Represents information on the change(s) to a group's members list.
+      type: object
+      properties:
+        addedUEs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+        removedUEs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+      anyOf:
+      - required: [addedUEs]
+      - required: [removedUEs]
+
 
 # SIMPLE TYPES:
 
@@ -731,14 +768,21 @@ components:
 # ENUMS:
 
     ReachabilityForSmsConfiguration:
+      description: >
+        Indicates the configuration for report of reachability status for SMS.
       anyOf:
         - type: string
           enum:
           - REACHABILITY_FOR_SMS_OVER_NAS
           - REACHABILITY_FOR_SMS_OVER_IP
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     EventType:
+      description: Indicates the event type of UDM Event Exposure service.
       anyOf:
         - type: string
           enum:
@@ -762,9 +806,15 @@ components:
           - PDU_SES_REL
           - PDU_SES_EST
           - UE_MEMORY_AVAILABLE_FOR_SMS
+          - GROUP_MEMBER_LIST_CHANGE
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     LocationAccuracy:
+      description: Indicates the location accuracy level.
       anyOf:
         - type: string
           enum:
@@ -775,8 +825,13 @@ components:
           - UE_IP
           - UE_PORT
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     CnType:
+      description: Indicates the core network type.
       anyOf:
         - type: string
           enum:
@@ -784,32 +839,56 @@ components:
           - SINGLE_5G
           - DUAL_4G5G
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     AssociationType:
+      description: >
+        Indicates association type to be included to identify 
+        whether it is IMSI-IMEI or IMSI-IMEISV.
       anyOf:
         - type: string
           enum:
           - IMEI_CHANGE
           - IMEISV_CHANGE
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     EventReportMode:
+      description: Event report mode.
       anyOf:
         - type: string
           enum:
           - PERIODIC
           - ON_EVENT_DETECTION
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     ReachabilityForDataReportConfig:
+      description: >
+        Indicates the configuration for report of
+        reachability status for data.
       anyOf:
         - type: string
           enum:
           - DIRECT_REPORT
           - INDIRECT_REPORT
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     RevokedCause:
+      description: Revocation Cause for the monitoring event.
       anyOf:
         - type: string
           enum:
@@ -817,8 +896,15 @@ components:
           - EXCLUDED_FROM_GROUP
           - GPSI_REMOVED
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     FailedCause:
+      description: >
+        Contains the Failed cause of the failed monitoring configuration in the EE subscription.
+        event monitoring.
       anyOf:
         - type: string
           enum:
@@ -829,12 +915,20 @@ components:
           - UNSUPPORTED_MONITORING_REPORT_OPTIONS
           - UNSPECIFIED
         - type: string
-      description: Indicates the Failed cause of the failed Monitoring Configuration in the EE subscription
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
 
     PdnConnectivityStatus:
+      description: PDN Connectivity Status.
       anyOf:
         - type: string
           enum:
           - ESTABLISHED
           - RELEASED
         - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.

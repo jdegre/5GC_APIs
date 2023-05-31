@@ -4,13 +4,13 @@ info:
   title: SS_Events
   description: |
     API for SEAL Events management.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.1"
+  version: "1.2.0-alpha.1"
 
 externalDocs:
   description: >
-    3GPP TS 29.549 V17.6.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V18.1.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 
@@ -385,6 +385,8 @@ components:
           description: >
             Each element represents the location area monitoring details to monitor the
             VA UEs moving in and out of the provided location area.
+        partialFailRep:
+          $ref: '#/components/schemas/PartialEventSubscFailRep'
       required:
         - eventId
 
@@ -741,6 +743,28 @@ components:
             List of identities of VAL UEs who moved out of the given location area
             since previous notification.
 
+    PartialEventSubscFailRep:
+      description: Represents the partial failure report during the subscription creation or update.
+      type: object
+      properties:
+        valTgtUes:
+          type: array
+          items:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+          minItems: 1
+          description: >
+            List of VAL user(s) / VAL UE(s) whose identifier(s) is not found.
+        valGrpIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: >
+            List of VAL group(s) whose identifier(s) is not found.
+      oneOf:
+        - required: [valTgtUes]
+        - required: [valGrpIds]
+
 # Simple data types and Enumerations
 
     SEALEvent:
@@ -761,15 +785,24 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the type of SEAL events that can be subscribed.  
         Possible values are:
-        - LM_LOCATION_INFO_CHANGE: Events related to the location information of VAL Users or VAL UEs from the Location Management Server.
-        - GM_GROUP_INFO_CHANGE: Events related to the modification of VAL group membership and configuration information from the Group Management Server.
-        - CM_USER_PROFILE_CHANGE: Events related to update of user profile information from the Configuration Management Server.
-        - GM_GROUP_CREATE: Events related to creation of new VAL groups from the Group Mananagement Server.
-        - NRM_MONITOR_UE_USER_EVENTS: Monitoring and analytic events related to VAL UEs, users or VAL group, from the Network Resource Management Server.
-        - LM_LOCATION_DEVIATION_MONITOR: Events from Location Management server, related to the deviation of the VAL User(s) / UE(s) location from an area of interest.
-        - GM_TEMP_GROUP_FORMATION: Events related to the formation of new temporary VAL groups from the Group Management Server.
-        - LM_LOCATION_AREA_MONITOR: Events from Location Management server, related to the list of UEs moving in or moving out of the specific location.
+        - LM_LOCATION_INFO_CHANGE: Events related to the location information of VAL Users or
+          VAL UEs from the Location Management Server.
+        - GM_GROUP_INFO_CHANGE: Events related to the modification of VAL group membership
+          and configuration information from the Group Management Server.
+        - CM_USER_PROFILE_CHANGE: Events related to update of user profile information from
+          the Configuration Management Server.
+        - GM_GROUP_CREATE: Events related to creation of new VAL groups from the Group
+          Mananagement Server.
+        - NRM_MONITOR_UE_USER_EVENTS: Monitoring and analytic events related to VAL UEs, 
+          users or VAL group, from the Network Resource Management Server.
+        - LM_LOCATION_DEVIATION_MONITOR: Events from Location Management server,
+          related to the deviation of the VAL User(s) / UE(s) location from an area of interest.
+        - GM_TEMP_GROUP_FORMATION: Events related to the formation of new temporary VAL groups
+          from the Group Management Server.
+        - LM_LOCATION_AREA_MONITOR: Events from Location Management server, related to the list
+          of UEs moving in or moving out of the specific location.
 
     LocDevNotification:
       anyOf:
@@ -784,10 +817,14 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
-        Possible values are:
-        - NOTIFY_MISMATCH_LOCATION: This value indicates that the location information of the VAL UE(s) from the SEAL LM client and the core network are not matching.
-        - NOTIFY_ABSENCE: This value indicates that the current location information of the VAL UE(s)is deviating from the VAL server's area of interest.
-        - NOTIFY_PRESENCE: This value indicates that the current location information of the VAL UE(s) is within the VAL server's area of interest.
+        Possible values are: 
+        Enumeration of location deviation notification reports.  
+        - NOTIFY_MISMATCH_LOCATION: This value indicates that the location information of
+          the VAL UE(s) from the SEAL LM client and the core network are not matching.
+        - NOTIFY_ABSENCE: This value indicates that the current location information of
+          the VAL UE(s)is deviating from the VAL server's area of interest.
+        - NOTIFY_PRESENCE: This value indicates that the current location information of
+          the VAL UE(s) is within the VAL server's area of interest.
 
     MonLocTriggerEvent:
       anyOf:
@@ -800,5 +837,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Identifies the triggering event in the location area monitor filtering.  
         Possible values are:
-        - DISTANCE_TRAVELLED: This value indicates the trigger event for the location area monitoring based on the distance travelled by the reference UE.
+        - DISTANCE_TRAVELLED: This value indicates the trigger event for the location area
+          monitoring based on the distance travelled by the reference UE.

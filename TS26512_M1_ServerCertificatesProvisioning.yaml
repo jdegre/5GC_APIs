@@ -1,16 +1,16 @@
 openapi: 3.0.0
 info:
   title: M1_ServerCertificatesProvisioning
-  version: 2.0.0
+  version: 2.1.0
   description: |
     5GMS AF M1 Server Certificates Provisioning API
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 tags:
   - name: M1_ServerCertificatesProvisioning
     description: '5G Media Streaming: Provisioning (M1) APIs: Server Certificates Provisioning'
 externalDocs:
-  description: 'TS 26.512 V17.2.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V17.4.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
   - url: '{apiRoot}/3gpp-m1/v2'
@@ -45,7 +45,7 @@ paths:
               description: 'URL of the newly created Server Certificate resource'
               required: true
               schema:
-                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/AbsoluteUrl'
           content:
             'application/x-pem-file':
               schema:
@@ -95,5 +95,22 @@ paths:
       operationId: destroyServerCertificate
       summary: 'Destroy an existing Server Certificate resource'
       responses:
-        '204':
+        '200':
+          # OK
           description: 'Server Certificate Destroyed'
+          content:
+            'application/x-pem-file':
+              schema:
+                type: string
+        '204':
+          # No Content
+          description: 'Server Certificate Destroyed'
+        '404':
+          # Not Found
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '409':
+          # Conflict
+          $ref: 'TS29571_CommonData.yaml#/components/responses/409'
+        '410':
+          # Gone
+          $ref: 'TS29571_CommonData.yaml#/components/responses/410'

@@ -7,7 +7,7 @@ info:
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V18.0.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V18.1.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -806,7 +806,8 @@ components:
           items:
             $ref: '#/components/schemas/MultipleQFIcontainer'
           minItems: 0
-        uPFID:
+        uPFID: # Included for backwards compatibility and
+               # can be included based on operators requirement
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         roamingChargingProfile:
           $ref: '#/components/schemas/RoamingChargingProfile'
@@ -1053,6 +1054,8 @@ components:
       properties:
         externalIndividualIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        internalIndividualIdentifier:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         externalGroupIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
         groupIdentifier:
@@ -1067,6 +1070,8 @@ components:
           type: string
         aPIReference:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        aPIOperation:
+          $ref: '#/components/schemas/APIOperation'
         aPIContent:
           type: string
       required:
@@ -1590,9 +1595,8 @@ components:
     EASDeploymentChargingInformation:
       type: object
       properties:
-# To be introduced once the reference to EdgeNrm.yaml is resolved
-#       eEASDeploymentRequirements:
-#         $ref: '#/components/schemas/EASRequirements'
+        eEASDeploymentRequirements:
+          $ref: '#/components/schemas/EASRequirements'
         lCMStartTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         lCMEndTime:
@@ -1672,29 +1676,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SMAddressInfo'
-    MMContentType:
-      type: object
-      properties:
-        typeNumber:
-          type: string
-        addtypeInfo:
-          type: string
-        contentSize:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
-        mmAddContentInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/MMAddContentInfo'
-    MMAddContentInfo:
-      type: object
-      properties:
-        typeNumber:
-          type: string
-        addtypeInfo:
-          type: string
-        contentSize:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
-    
+
     PC5ContainerInformation:
       type: object
       properties:
@@ -2084,6 +2066,36 @@ components:
           type: boolean
         virtualResource:
           $ref: 'TS28538_EdgeNrm.yaml#/components/schemas/VirtualResource'
+    MMContentType:
+      type: object
+      properties:
+        typeNumber:
+          type: string
+        addtypeInfo:
+          type: string
+        contentSize:
+          type: integer
+        mmAddContentInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/MMAddContentInfo'
+          minItems: 0
+    MMAddContentInfo:
+      type: object
+      properties:
+        typeNumber:
+          type: string
+        addtypeInfo:
+          type: string
+        contentSize:
+          type: integer
+    APIOperation:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
     NotificationType:
       anyOf:
         - type: string

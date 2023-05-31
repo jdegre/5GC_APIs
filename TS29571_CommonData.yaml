@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.5.0-alpha.1'
+  version: '1.5.0-alpha.2'
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.  
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.0.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.1.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -1431,8 +1431,13 @@ components:
       type: integer
       nullable: true
       description: >
-        This data type is defined in the same way as the "NsagId" data type, but with the OpenAPI "nullable: true" property
+        This data type is defined in the same way as the "NsagId" data type, but with the OpenAPI
+        "nullable: true" property
 
+    GeoSatelliteId:
+      type: string
+      description: >
+        A string carrying the GEO Satellite ID.
 
 #
 # ENUMERATED DATA TYPES
@@ -1888,6 +1893,10 @@ components:
             - MEO
             - LEO
             - OTHER_SAT
+            - DYNAMIC_GEO
+            - DYNAMIC_MEO
+            - DYNAMIC_LEO
+            - DYNAMIC_OTHER_SAT
             - NON_SATELLITE
         - type: string
       description: Indicates the satellite backhaul used.
@@ -1899,6 +1908,29 @@ components:
       description: >
         Provides information about the satellite backhaul but with the OpenAPI
         'nullable: true' property. 
+
+    BufferedNotificationsAction:
+      anyOf:
+        - type: string
+          enum:
+            - SEND_ALL
+            - DISCARD_ALL
+            - DROP_OLD
+        - type: string
+      description: >
+        Indicates the required action by the event producer NF on the buffered Notifications.
+
+    SubscriptionAction:
+      anyOf:
+        - type: string
+          enum:
+            - CLOSE
+            - CONTINUE_WITH_MUTING
+            - CONTINUE_WITHOUT_MUTING
+        - type: string
+      description: >
+        Indicates the required action by the event producer NF on the event subscription if an
+        exception occurs while the event is muted.
 
 
 
@@ -3218,13 +3250,20 @@ components:
 
     ProseServiceAuth:
       description: >
-        Indicates whether the UE is authorized to use ProSe Direct Discovery, ProSe Direct
-        Communication, or both.
+        Indicates whether the UE is authorized to use related services.
       type: object
       properties:
         proseDirectDiscoveryAuth:
           $ref: '#/components/schemas/UeAuth'
         proseDirectCommunicationAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL2RelayAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL3RelayAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL2RemoteAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL3RemoteAuth:
           $ref: '#/components/schemas/UeAuth'
 
     EcsServerAddr:
@@ -3324,6 +3363,11 @@ components:
           minItems: 1
         geographicalServiceArea:
           $ref: '#/components/schemas/GeoServiceArea'
+        plmnIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlmnId'
+          minItems: 1
 
     SpatialValidityCondRm:
       description: Contains the Spatial Validity Condition or the null value.
@@ -3374,6 +3418,7 @@ components:
 
     PduSessionInfo:
       description: indicates the DNN and S-NSSAI combination of a PDU session.
+      type: object
       properties:
         snssai:
           $ref: '#/components/schemas/Snssai'
@@ -3430,6 +3475,27 @@ components:
           items:
             $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
           minItems: 1
+
+    MutingExceptionInstructions:
+      description: >
+        Indicates to an Event producer NF instructions for the subscription and stored events when
+        an exception (e.g. full buffer) occurs at the Event producer NF while the event is muted.
+      type: object
+      properties:
+        bufferedNotifs:
+          $ref: '#/components/schemas/BufferedNotificationsAction'
+        subscription:
+          $ref: '#/components/schemas/SubscriptionAction'
+
+    MutingNotificationsSettings:
+      description: >
+        Indicates the Event producer NF settings to the Event consumer NF
+      type: object
+      properties:
+        maxNoOfNotif:
+          type: integer
+        durationBufferedNotif:
+          $ref: '#/components/schemas/DurationSec'
 
 #
 # Data types describing alternative data types or combinations of data types
@@ -3678,6 +3744,14 @@ components:
       description: >
         This data type is defined in the same way as the 'ExtPacketDelBudget' data type, but
         with the OpenAPI 'nullable: true' property. "
+
+    Metadata:
+      format: byte
+      type: string
+      nullable: true
+      description: >
+        A String which is transparently passed to the UPF to be applied for traffic to SFC.
+
 
 #
 # ENUMERATED DATA TYPES
@@ -4874,19 +4948,23 @@ components:
           default: false
           writeOnly: true
         tmgi:
-          $ref: '#/components/schemas/Tmgi'
+          allOf:
+            - $ref: '#/components/schemas/Tmgi'
           readOnly: true
         expirationTime:
-          $ref: '#/components/schemas/DateTime'
+          allOf:
+            - $ref: '#/components/schemas/DateTime'
           readOnly: true
         serviceType:
-          $ref: '#/components/schemas/MbsServiceType'
+          allOf:
+            - $ref: '#/components/schemas/MbsServiceType'
           writeOnly: true
         locationDependent:
           type: boolean
           default: false
         areaSessionId:
-          $ref: '#/components/schemas/AreaSessionId'
+          allOf:
+            - $ref: '#/components/schemas/AreaSessionId'
           readOnly: true
         ingressTunAddrReq:
           type: boolean
@@ -4899,19 +4977,24 @@ components:
           minItems: 1
           readOnly: true
         ssm:
-          $ref: '#/components/schemas/Ssm'
+          allOf:
+            - $ref: '#/components/schemas/Ssm'
           writeOnly: true
         mbsServiceArea:
-          $ref: '#/components/schemas/MbsServiceArea'
+          allOf:
+            - $ref: '#/components/schemas/MbsServiceArea'
           writeOnly: true
         extMbsServiceArea:
-          $ref: '#/components/schemas/ExternalMbsServiceArea'
+          allOf:
+            - $ref: '#/components/schemas/ExternalMbsServiceArea'
           writeOnly: true
         dnn:
-          $ref: '#/components/schemas/Dnn'
+          allOf:
+            - $ref: '#/components/schemas/Dnn'
           writeOnly: true
         snssai:
-          $ref: '#/components/schemas/Snssai'
+          allOf:
+            - $ref: '#/components/schemas/Snssai'
           writeOnly: true
         activationTime:
           deprecated: true
@@ -4936,6 +5019,8 @@ components:
           items:
             $ref: '#/components/schemas/MbsFsaId'
           minItems: 1
+        associatedSessionId:
+          $ref: '#/components/schemas/AssociatedSessionId'
       required:
         - serviceType
       anyOf:
@@ -5166,6 +5251,12 @@ components:
             $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/CodecData'
           minItems: 1
           maxItems: 2
+
+    AssociatedSessionId:
+      description: an associated Session Id used in MOCN
+      anyOf:
+        - $ref: '#/components/schemas/Ssm'
+        - type: string
 
 #
 # HTTP responses

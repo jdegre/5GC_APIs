@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.2'
+  version: '1.3.0-alpha.3'
   title: 'NRF NFManagement Service'
   description: |
     NRF NFManagement Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V18.1.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V18.2.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -963,7 +963,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CollocatedNfInstance'
-          minimum: 1
+          minItems: 1
         heartBeatTimer:
           type: integer
           minimum: 1
@@ -2060,6 +2060,8 @@ components:
         amfOnboardingCapability:
           type: boolean
           default: false
+        highLatencyCom:
+          type: boolean
 
     SmfInfo:
       description: Information of an SMF NF Instance
@@ -2215,6 +2217,11 @@ components:
           default: false
         supportedPfcpFeatures:
           type: string
+        upfEvents:
+          type: array
+          items:
+            $ref: 'TS29564_Nupf_EventExposure.yaml#/components/schemas/EventType'
+          minItems: 1
 
     SnssaiUpfInfoItem:
       description: Set of parameters supported by UPF for a given S-NSSAI
@@ -2258,6 +2265,16 @@ components:
             $ref: '#/components/schemas/Ipv4AddressRange'
           minItems: 1
         ipv6PrefixRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6PrefixRange'
+          minItems: 1
+        natedIpv4AddressRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4AddressRange'
+          minItems: 1
+        natedIpv6PrefixRanges:
           type: array
           items:
             $ref: '#/components/schemas/Ipv6PrefixRange'
@@ -2774,6 +2791,23 @@ components:
                           required: [ allowedNfDomains ]
                       - not:
                           required: [ allowedNssais ]
+                nfServiceList:
+                  type: object
+                  additionalProperties:
+                    allOf:
+                      - $ref: '#/components/schemas/NFService'
+                      - not:
+                          required: [ interPlmnFqdn ]
+                      - not:
+                          required: [ allowedPlmns ]
+                      - not:
+                          required: [ allowedSnpns ]
+                      - not:
+                          required: [ allowedNfTypes ]
+                      - not:
+                          required: [ allowedNfDomains ]
+                      - not:
+                          required: [ allowedNssais ]
         profileChanges:
           type: array
           items:
@@ -2827,6 +2861,7 @@ components:
             - nudm-mt
             - nudm-ssau
             - nudm-rsds
+            - nudm-ueid
             - namf-comm
             - namf-evts
             - namf-mt
@@ -2934,6 +2969,7 @@ components:
             - nmbsf-mbsuserdataing
             - nmbstf-distsession
             - npanf-prosekey
+            - nupf-ee
         - type: string
 
     N2InterfaceAmfInfo:

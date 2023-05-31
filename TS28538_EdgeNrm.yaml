@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: 3GPP Edge NRM
-  version: 17.1.0
+  version: 18.2.0
   description: >-
     OAS 3.0.1 specification of the Edge NRM
     © 2020, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -31,7 +31,7 @@ components:
         trackingAreaIdList:
           $ref: 'TS28541_NrNrm.yaml#/components/schemas/TaiList'
         servingPLMN:
-          $ref: 'TS28541_NrNrm.yaml#/components/schemas/PlmnId'
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
     GeoLoc:
       type: object
       properties:
@@ -42,7 +42,7 @@ components:
     GeographicalCoordinates:
       type: object
       properties:
-        latitude:
+        lattitude:
           type: integer
         longitude:
           type: integer
@@ -61,7 +61,9 @@ components:
           items:
             type: string
         antiAffinityEAS:
-          type: string
+          type: array
+          items:
+            type: string
     VirtualResource:
       type: object
       properties:
@@ -69,7 +71,7 @@ components:
           type: integer
         virtualDisk:
           type: integer
-        virtualCPU:
+        virutalCPU:
           type: string
     SoftwareImageInfo:
       type: object
@@ -84,16 +86,33 @@ components:
           type: string
         swImageRef:
           type: string
-          description: indicates the reference to the actual software image that is represented by URL (see clause 7.1.6.5 in ETSI NFV IFA-011 [7]).   
-    RegistrationInfo:
+    Duration:
       type: object
       properties:
-        registrationExpiry:
-          type: string
-        registrationID:
-          type: string
-        secCredential:
-          type: string
+        startTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime' 
+        endTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+    EASServicePermission:
+      type: string
+      description: any of enumrated value
+      enum:
+        - TRIAL
+        - SILVER
+        - GOLD
+    EASFeature:
+      type: string
+      description: any of enumrated value
+      enum:
+        - SINGLE
+        - MULTIPLE
+    EASStatus:
+      type: string
+      description: any of enumrated value
+      enum:
+        - ENABLED
+        - DISABLED
+
 
 #-------- Definition of concrete IOCs --------------------------------------------
     MnS:
@@ -129,7 +148,7 @@ components:
             ednIdentifier:
               type: string
             eDNConnectionInfo:
-              $ref: '#/components/schemas/EDNConnectionInfo'
+              $ref: '#/components/schemas/EDNConnectionInfo'         
         - type: object
           properties:
             EASFunction:
@@ -159,9 +178,36 @@ components:
                       type: array
                       items:
                         type: string
-                    registrationInfo:
-                      $ref: '#/components/schemas/RegistrationInfo'  
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+    EASProfile-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            aCID:
+              type: string
+            eASProvider:
+              type: string
+            eASdescription:
+              type: string
+            eASSchedule:
+              $ref: '#/components/schemas/Duration'
+            eASGeographicalServiceArea:
+              $ref: '#/components/schemas/GeoLoc'
+            eASTopologicalServiceArea:
+              $ref: '#/components/schemas/TopologicalServiceArea'
+            eASServicePermissionLevel:
+              $ref: '#/components/schemas/EASServicePermission'
+            eASFeature:
+              $ref: '#/components/schemas/EASFeature'
+            eASServiceContinuitySupport:
+              type: boolean
+            eASDNAI:
+              type: string
+            eASAvailabilityReportingPeriod:
+              type: integer
+            eASStatus:
+              $ref: '#/components/schemas/EASStatus'
     EESFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -187,9 +233,7 @@ components:
                     serviceContinuitySupport:
                       type: boolean
                     eASFunctonRef:
-                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
-                    registrationInfo:
-                      $ref: '#/components/schemas/RegistrationInfo'
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'  
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
 
     ECSFunction-Single:
@@ -220,7 +264,7 @@ components:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Mcc'
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
 
-    EASRequirements:
+    EASRequirements-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
         - type: object
@@ -235,6 +279,11 @@ components:
               $ref: '#/components/schemas/VirtualResource'
             softwareImageInfo:
               $ref: '#/components/schemas/SoftwareImageInfo'
+            eASSchedule:
+              $ref: '#/components/schemas/Duration'
+            eASFeature:
+              $ref: '#/components/schemas/EASFeature'
+
 
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------                               
           
@@ -258,6 +307,10 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/EdgeDataNetwork-Single'
+    EASProfile-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EASProfile-Single'
         
 #--------------------------------- Definition ------------------------------------                          
 
@@ -269,4 +322,5 @@ components:
         - $ref: '#/components/schemas/ECSFunction-Single'
         - $ref: '#/components/schemas/EESFunction-Single'
         - $ref: '#/components/schemas/EdgeDataNetwork-Single'
-        - $ref: '#/components/schemas/EASRequirements'
+        - $ref: '#/components/schemas/EASRequirements-Single'
+        - $ref: '#/components/schemas/EASProfile-Single'

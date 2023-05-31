@@ -2,15 +2,15 @@ openapi: 3.0.0
 
 info:
   title: Ntsctsf_QoSandTSCAssistance Service API
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   description: |
     TSCTSF QoS and TSC Assistance Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
   description: >
-    3GPP TS 29.565 V18.0.0; 5G System; Time Sensitive Communication and Time Synchronization function 
+    3GPP TS 29.565 V18.1.0; 5G System; Time Sensitive Communication and Time Synchronization function 
     Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
 
@@ -63,7 +63,20 @@ paths:
         '401':
           $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsTsctsfQosTscac'
+          headers:
+            Retry-After:
+              description: >
+                Indicates the time the AF has to wait before making a new request. It can be a
+                non-negative integer (decimal number) indicating the number of seconds the AF
+                has to wait before making a new request or an HTTP-date after which the AF can
+                retry a new request.
+              schema:
+                type: string
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
@@ -249,7 +262,20 @@ paths:
         '401':
           $ref: 'TS29571_CommonData.yaml#/components/responses/401'
         '403':
-          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsTsctsfQosTscac'
+          headers:
+            Retry-After:
+              description: >
+                Indicates the time the AF has to wait before making a new request. It can be a
+                non-negative integer (decimal number) indicating the number of seconds the AF
+                has to wait before making a new request or an HTTP-date after which the AF can
+                retry a new request.
+              schema:
+                type: string
         '404':
           $ref: 'TS29571_CommonData.yaml#/components/responses/404'
         '411':
@@ -763,6 +789,19 @@ components:
             The currently applied alternative QoS requirement referring to an alternative QoS
             reference or a requested alternative QoS parameter set. Applicable for
             event QOS_NOT_GUARANTEED or SUCCESSFUL_RESOURCES_ALLOCATION.
+        altQosNotSuppInd:
+          type: boolean
+          description: >
+            When present and set to true it indicates that the Alternative QoS profiles are not 
+            supported by NG-RAN. Applicable for
+            event QOS_NOT_GUARANTEED or SUCCESSFUL_RESOURCES_ALLOCATION.
+
+    AdditionInfoTsctsfQosTscac:
+      description: Describes additional error information specific for this API.
+      type: object
+      properties:
+        acceptableServInfo:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AcceptableServiceInfo'
 
 #
 # ENUMERATIONS DATA TYPES
@@ -782,3 +821,11 @@ components:
         description: >
           This string provides forward-compatibility with future extensions to the enumeration
           and is not used to encode content defined in the present version of this API.
+#
+# ALTERNATIVE DATA TYPES OR COMBINATIONS OF DATA TYPES
+#
+    ProblemDetailsTsctsfQosTscac:
+      description: Extends ProblemDetails to also include the acceptable service info.
+      allOf:
+      - $ref: 'TS29571_CommonData.yaml#/components/schemas/ProblemDetails'
+      - $ref: '#/components/schemas/AdditionInfoTsctsfQosTscac'

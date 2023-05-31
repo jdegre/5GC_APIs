@@ -2,15 +2,15 @@ openapi: 3.0.0
 
 info:
   title: nmbsf-mbs-ud-ingest
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   description: |
     API for MBS User Data Ingest Session Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
   description: >
-    3GPP TS 29.580 V18.0.0; 5G System; Multicast/Broadcast Service Function Services.
+    3GPP TS 29.580 V18.1.0; 5G System; Multicast/Broadcast Service Function Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.580/'
 
 servers:
@@ -665,8 +665,10 @@ components:
           tokenUrl: '{tokenUrl}'
           scopes: {}
       description: >
-        For trusted MBSF, the 'nmbsf-mbs-ud-ingest' shall be used as 'scopes' and
-        '{nrfApiRoot}/oauth2/token' shall be used as 'tokenUri'.
+        When the Nmbsf_MBSUserDataIngestSession is consumed by a trusted or internal AF, then
+        'nmbsf-mbs-ud-ingest' shall be used as the scope (i.e. with the 'scopes' property) and
+        '{nrfApiRoot}/oauth2/token' shall be used as the URI to retrieve the token
+        (i.e. 'tokenUri').
 
 #
 # STRUCTURED DATA TYPES
@@ -683,6 +685,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MBSDistributionSessionInfo'
           minProperties: 1
+          nullable: true
           description: >
             Represents one or more MBS Distribution Session(s) composing the MBS User Data Ingest 
             Session. The key of the map shall be set to the value ofthe "mbsDistSessionId" attribute 
@@ -694,6 +697,10 @@ components:
           minItems: 1
         mbsUserServAnmt:
           $ref: '#/components/schemas/MBSUserServAnmt'
+        mbsUserServiceAnmt:
+          $ref: 'TS26517_MBSUserServiceAnnouncement.yaml#/components/schemas/UserServiceDescription'
+        mbsUserServiceAnmtUrl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -706,6 +713,8 @@ components:
       properties:
         mbsDistSessionId:
           type: string
+        mbsDistSessState:
+          $ref: 'TS29581_Nmbstf_DistSession.yaml#/components/schemas/DistSessionState'
         mbsSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
         mbsServInfo:
@@ -724,8 +733,6 @@ components:
           $ref: '#/components/schemas/PacketDistrMethInfo'
         trafficMarkingInfo:
           type: string
-        mbsDistSessState:
-          $ref: 'TS29581_Nmbstf_DistSession.yaml#/components/schemas/DistSessionState'
         tgtServAreas:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
         extTgtServAreas:
@@ -775,6 +782,7 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/MBSDistributionSessionInfo'
           minProperties: 1
+          nullable: true
           description: >
             Contains the requested modifications to one or more MBS Distribution Session(s) 
             composing the MBS User Data Ingest Session.
@@ -897,6 +905,8 @@ components:
           $ref: '#/components/schemas/Event'
         mbsDisSessionId:
           type: string
+        mbsSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
         statusAddInfo:
           type: string
         timeStamp:
@@ -906,6 +916,7 @@ components:
         - timeStamp
 
     MBSUserServAnmt:
+      deprecated: true
       description: >
         Represents the MBS User Service Announcement currently associated with the MBS User Data 
         Ingest Session.
@@ -1022,6 +1033,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration
           and is not used to encode content defined in the present version of this API.
       description: |
+        Represents the MBS Distribution method.  
         Possible values are:
         - OBJECT: Indicates the Object Distribution Method.
         - PACKET: Indicates the Packet Distribution Method.
@@ -1046,6 +1058,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration
           and is not used to encode content defined in the present version of this API.
       description: |
+        Represents the MBS User Data Ingest Session Status events.  
         Possible values are:
         - USER_DATA_ING_SESS_STARTING: >
             Indicates that the MBS User Data Ingest Session is starting. This is an "MBS User Data

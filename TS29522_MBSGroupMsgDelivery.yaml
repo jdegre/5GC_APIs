@@ -1,10 +1,10 @@
 openapi: 3.0.0
 
 info:
-  title: 3gpp-ms-event-exposure
-  version: 1.1.0-alpha.1
+  title: 3gpp-mbs-group-msg
+  version: 1.0.0-alpha.1
   description: |
-    API for Media Streaming Event Exposure.  
+    API for MBS Group Message Delivery.
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
@@ -13,36 +13,34 @@ externalDocs:
     3GPP TS 29.522 V18.1.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
-servers:
-  - url: '{apiRoot}/3gpp-ms-event-exposure/v1'
-    variables:
-      apiRoot:
-        default: https://example.com
-        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122
-
 security:
   - {}
   - oAuth2ClientCredentials: []
 
+servers:
+  - url: '{apiRoot}/3gpp-mbs-group-msg/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122.
+
 paths:
-  /subscriptions:
+  /deliveries:
     get:
-      summary: Retrieve all the active Media Streaming Event Exposure Subscription resources managed by the NEF.
+      summary: Retrieve all the active MBS Group Message Deliveries.
+      operationId: GetMbsGroupMsgDeliveries
       tags:
-        - Media Streaming Event Exposure Subscriptions (Collection)
-      operationId: RetrieveMSEventExposureSubscs
+        - MBS Group Message Deliveries
       responses:
         '200':
           description: >
-            OK. All the active Media Streaming Event Exposure Subscriptions managed by the NEF are 
-            returned.
+            OK. All the active MBS Group Message Deliveries managed by the NEF are returned.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
-                minItems: 0
+                  $ref: '#/components/schemas/MbsGroupMsgDelData'
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -67,34 +65,28 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     post:
-      summary: Request the creation of a new Individual Media Streaming Event Exposure Subscription resource.
+      summary: Request the creation of an MBS Group Message Delivery.
+      operationId: CreateMbsGroupMsgDelivery
       tags:
-        - Media Streaming Event Exposure Subscriptions (Collection)
-      operationId: CreateMSEventExposureSubsc
+        - MBS Group Message Deliveries
       requestBody:
-        description: >
-          Contains the parameters to request the creation of a new Media Streaming Event Exposure 
-          Subscriptionat the NEF.
         required: true
         content:
           application/json:
             schema:
-              $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
+              $ref: '#/components/schemas/MbsGroupMsgDelReq'
       responses:
         '201':
           description: >
-            Created. Successful creation of a new Individual Media Streaming Event Exposure 
-            Subscription resource.
+            Created. Successful case. An MBS Group Message Delivery is created.
           content:
             application/json:
               schema:
-                $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
-          headers:
-            Location:
-              description: Contains the URI of the newly created resource.
-              required: true
-              schema:
-                type: string
+                $ref: '#/components/schemas/MbsGroupMsgDelResp'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -118,18 +110,20 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
       callbacks:
-        msEventExposureNotif:
-          '{request.body#/notifUri}':
+        MbsGroupMsgDelStatusNotif:
+          '{$request.body#/notifUri}':
             post:
               requestBody:
+                description: >
+                  Represents the status of MBS Group Message Delivery.
                 required: true
                 content:
                   application/json:
                     schema:
-                      $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureNotif'
+                      $ref: '#/components/schemas/MbsGroupMsgDelStatusNotif'
               responses:
                 '204':
-                  description: No Content. Successful reception of the notification.
+                  description: No content. The notification is successfully received.
                 '307':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/307'
                 '308':
@@ -158,82 +152,37 @@ paths:
                   $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 
-  /subscriptions/{subscriptionId}:
+  /deliveries/{delRef}:
     parameters:
-      - name: subscriptionId
+      - name: delRef
         in: path
         description: >
-          Identifier of the Individual Media Streaming Event Exposure Subscription resource.
+          Identifier of the Individual MBS Group Message Delivery resource.
         required: true
         schema:
           type: string
 
-    get:
-      summary: Retrieve an existing Individual Media Streaming Event Exposure Subscription resource.
-      tags:
-        - Individual Media Streaming Event Exposure Subscription (Document)
-      operationId: RetrieveIndivMSEventExposureSubsc
-      responses:
-        '200':
-          description: >
-            OK. The requested Individual Media Streaming Event Exposure Subscription resource is
-            successfully returned.
-          content:
-            application/json:
-              schema:
-                $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
-        '400':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
-        '401':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
-        '403':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
-        '404':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
-        '406':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
-        '429':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
-        '500':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
-        '503':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
-        default:
-          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
-
     put:
-      summary: Request the update of an existing Individual Media Streaming Event Exposure Subscription resource.
+      summary: Request the modification of an existing MBS Group Message Delivery.
+      operationId: ModifyMbsGroupMsgDelivery
       tags:
-        - Individual Media Streaming Event Exposure Subscription (Document)
-      operationId: UpdateIndivMSEventExposureSubsc
+        - Individual MBS Group Message Delivery
       requestBody:
-        description: >
-          Contains the updated representation of the Individual Media Streaming Event Exposure 
-          Subscription resource.
-          resource.
         required: true
         content:
-          application/json:
+          application/json-patch+json:
             schema:
-              $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
+              $ref: '#/components/schemas/MbsGroupMsgDelPatch'
       responses:
         '200':
           description: >
-            OK. The concerned Individual Media Streaming Event Exposure Subscription resource is 
-            successfully updated and a representation of the updated resource is returned in the
-            response body.
+            OK. Successful case. The MBS Group Message Delivery is modified.
           content:
             application/json:
               schema:
-                $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AfEventExposureSubsc'
+                $ref: '#/components/schemas/MbsGroupMsgDelResp'
         '204':
-          description: >
-            No Content. The concerned Individual Media Streaming Event Exposure Subscription 
-            resource was successfully updated and no content is returned in the response body.
+          description: No Content. Successful case, the requested group message delivery is      successfully updated.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -262,15 +211,14 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Request the deletion of an existing Individual Media Streaming Event Exposure Subscription resource.
+      summary: Deletes an existing Individual MBS Group Message Delivery resource.
+      operationId: DeleteMbsGroupMsgDelivery
       tags:
-        - Individual Media Streaming Event Exposure Subscription (Document)
-      operationId: DeleteIndivMSEventExposureSubsc
+        - Individual MBS Group Message Delivery
       responses:
         '204':
           description: >
-            No Content. The Individual Media Streaming Event Exposure Subscription resource is 
-            successfully deleted.
+            No Content. The targeted MBS Group Message Delivery is successfully deleted.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -292,7 +240,6 @@ paths:
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
-
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -302,13 +249,86 @@ components:
           tokenUrl: '{tokenUrl}'
           scopes: {}
 
-#
+  schemas: 
+
 # STRUCTURED DATA TYPES
-#
+
+    MbsGroupMsgDelReq:
+      description: >
+        Represents the full set of parameters to initiate an MBS group message delivery request.
+      type: object
+      properties:
+        mbsGroupMsgDelData:
+          $ref: '#/components/schemas/MbsGroupMsgDelData'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbsGroupMsgDelData
+
+    MbsGroupMsgDelData:
+      description: Represents MBS Group Message Delivery data.
+      type: object
+      properties:
+        externalGroupId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+        mbsServArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        extMbsServArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalMbsServiceArea'
+        startTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        stopTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+      required:
+        - externalGroupId
+        - startTime
+        - stopTime
+
+    MbsGroupMsgDelResp:
+      description: >
+        Represents a response to a requested group message delivery.
+      type: object
+      properties:
+        mbsGroupMsgDelData:
+          $ref: '#/components/schemas/MbsGroupMsgDelData'
+        delStatus:
+          type: boolean
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbsGroupMsgDelData
+        - delStatus
+
+    MbsGroupMsgDelPatch:
+      description: Represents the requested modifications to an existing MBS Group Message Delivery.
+      type: object
+      properties:
+        externalGroupId:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
+        mbsServArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
+        extMbsServArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalMbsServiceArea'
+        startTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        stopTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+
+    MbsGroupMsgDelStatusNotif:
+      description: Represents status notification information for an MBS group message delivery.
+      type: object
+      properties:
+        delStatus:
+          type: boolean
+      required:
+        - delStatus
 
 # SIMPLE DATA TYPES
 #
 
 #
 # ENUMERATIONS
-#

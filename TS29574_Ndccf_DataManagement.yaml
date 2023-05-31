@@ -1,13 +1,15 @@
 openapi: 3.0.0
+
 info:
-  version: 1.1.0-alpha.1
+  version: 1.1.0-alpha.2
   title: Ndccf_DataManagement
   description: |
     DCCF Data Management Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
-  description: 3GPP TS 29.574 V18.0.0; 5G System; Data Collection Coordination Services; Stage 3.
+  description: 3GPP TS 29.574 V18.1.0; 5G System; Data Collection Coordination Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.574/'
 #
 servers:
@@ -265,6 +267,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /data-subscriptions:
     post:
       summary: Creates a new Individual DCCF Data Subscription resource.
@@ -406,6 +409,7 @@ paths:
                           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                         default:
                           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /data-subscriptions/{subscriptionId}:
     delete:
       summary: Deletes an existing Individual DCCF Data Subscription resource.
@@ -533,6 +537,12 @@ components:
         anaNotifCorrId:
           type: string
           description: Notification correlation identifier.
+        notifEndpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotifyEndpoint'
+          minItems: 1
+          description: The information of notification endpoints.
         formatInstruct:
           $ref: '#/components/schemas/FormattingInstruction'
         procInstructs:
@@ -549,6 +559,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         ardfSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        storeInd:
+          type: boolean
+          description: >
+            The indication for analytics storage. This attribute shall be provided and set to "true"
+            if the consumer requests to store the analytics in an ADRF but both the "adrfId" and
+            "adrfSetId" attributes are not provided. The default value is "false".
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         timePeriod:
@@ -582,6 +598,12 @@ components:
         dataNotifCorrId:
           type: string
           description: Notification correlation identifier.
+        notifEndpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotifyEndpoint'
+          minItems: 1
+          description: The information of notification endpoints.
         formatInstruct:
           $ref: '#/components/schemas/FormattingInstruction'
         procInstructs:
@@ -598,6 +620,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         ardfSetId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+        storeInd:
+          type: boolean
+          description: >
+            The indication for analytics storage. This attribute shall be provided and set to "true"
+            if the consumer requests to store the analytics in an ADRF but both the "adrfId" and
+            "adrfSetId" attributes are not provided. The default value is "false".
         timePeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         suppFeat:
@@ -748,6 +776,18 @@ components:
           description: >
             List of event parameter names, and for each event parameter name, respective event
             parameter values and sets of the attributes to be used in the summarized reports.
+    NotifyEndpoint:
+      description: The information of notification endpoint.
+      type: object
+      required:
+       - notifUri
+      properties:
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifCorrId:
+          type: string
+          description: Notification correlation identifier.
+
 #
     DccfEvent:
       description: >
@@ -815,6 +855,11 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
           minItems: 1
           description: Indicates the UEs for which processed reports are requested.
+        temporalAggrLevel:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        anonymizeRule:
+          type: string
+          description: The anonymization rule.
         areas:
           type: array
           items:
@@ -892,8 +937,10 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the attribute in the summarized report.  
         Possible values are:
-        - SPACING: Average and variance of the time interval separating two consecutive occurrences of the same event and parameter value, or periodicity for periodic reporting.
+        - SPACING: Average and variance of the time interval separating two consecutive occurrences
+          of the same event and parameter value, or periodicity for periodic reporting.
         - DURATION: Average and variance of the time for which the parameter value applies.
         - OCCURRENCES: Number of countable occurrences for the parameter.
         - AVG_VAR: Average and variance of the parameter.
@@ -912,6 +959,7 @@ components:
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
       description: |
+        Represents the aggregation level for processing instructions.  
         Possible values are:
         - UE: Indicates that the summarized reports shall be provided per UE.
         - AOI: Indicates that the summarized reports shall be provided per Area of Interest.
@@ -927,6 +975,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the purpose for data collection.  
         Possible values are:
         - ANALYTICS_GENERATION: The data is collected for generating the analytics.
         - MODEL_TRAINING: The data is collected for ML model training.

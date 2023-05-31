@@ -1,23 +1,28 @@
 openapi: 3.0.0
+
 info:
   title: 3gpp-device-triggering
-  version: 1.2.0
+  version: 1.3.0-alpha.1
   description: |
     API for device trigger.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
-  description: 3GPP TS 29.122 V17.6.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V18.1.0 T8 reference point for Northbound APIs
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
+
 security:
   - {}
   - oAuth2ClientCredentials: []
+
 servers:
   - url: '{apiRoot}/3gpp-device-triggering/v1'
     variables:
       apiRoot:
         default: https://example.com
         description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122.
+
 paths:
   /{scsAsId}/transactions:
     get:
@@ -34,7 +39,8 @@ paths:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/ScsAsId'
       responses:
         '200':
-          description: OK (Successful get all of the active device triggering transactions for the SCS/AS)
+          description: >
+            OK (Successful get all of the active device triggering transactions for the SCS/AS)
           content:
             application/json:
               schema:
@@ -297,13 +303,19 @@ paths:
               $ref: '#/components/schemas/DeviceTriggeringPatch'
       responses:
         '200':
-          description: OK. The Individual Device Triggering Transaction resource was successfully modified and a representation of the modified Individual Device Triggering Transaction resource within the DeviceTriggering data structure including the "deliveryResult" attribute is returned by the SCEF.
+          description: >
+            OK. The Individual Device Triggering Transaction resource was successfully modified
+            and a representation of the modified Individual Device Triggering Transaction resource
+            within the DeviceTriggering data structure including the "deliveryResult" attribute is
+            returned by the SCEF.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceTriggering'
         '204':
-          description: No Content. The Individual Device Triggering Transaction resource was successfully modified no content is returned in the response message body.
+          description: >
+            No Content. The Individual Device Triggering Transaction resource was successfully
+            modified no content is returned in the response message body.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -377,6 +389,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
 components:
   securitySchemes:
     oAuth2ClientCredentials:
@@ -385,6 +398,7 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas: 
     DeviceTriggering:
       description: Represents device triggering related information.
@@ -412,7 +426,9 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         requestTestNotification:
           type: boolean
-          description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in clause 5.2.5.3. Set to false or omitted otherwise.
+          description: >
+            Set to true by the SCS/AS to request the SCEF to send a test notification as defined in
+            clause 5.2.5.3. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         deliveryResult:
@@ -426,6 +442,7 @@ components:
       oneOf:
         - required: [externalId]
         - required: [msisdn]
+
     DeviceTriggeringDeliveryReportNotification:
       description: Represents a device triggering delivery report notification.
       type: object
@@ -437,6 +454,7 @@ components:
       required:
         - transaction
         - result
+
     DeviceTriggeringPatch:
       description: Represents device triggering related information.
       type: object
@@ -455,9 +473,12 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         requestTestNotification:
           type: boolean
-          description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in clause 5.2.5.3. Set to false or omitted otherwise.
+          description: >
+            Set to true by the SCS/AS to request the SCEF to send a test notification as defined
+            in clause 5.2.5.3. Set to false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+
     DeliveryResult:
       anyOf:
       - type: string
@@ -475,17 +496,24 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Represents the result of the delivery of a device triggering request.  
+        Possible values are:
         - SUCCESS: This value indicates that the device action request was successfully completed.
         - UNKNOWN: This value indicates any unspecified errors.
-        - FAILURE: This value indicates that this trigger encountered a delivery error and is deemed permanently undeliverable.
+        - FAILURE: This value indicates that this trigger encountered a delivery error and is deemed
+          permanently undeliverable.
         - TRIGGERED: This value indicates that device triggering request is accepted by the SCEF.
-        - EXPIRED: This value indicates that the validity period expired before the trigger could be delivered.
-        - UNCONFIRMED: This value indicates that the delivery of the device action request is not confirmed.
-        - REPLACED: This value indicates that the device triggering replacement request is accepted by the SCEF.
-        - TERMINATE: This value indicates that the delivery of the device action request is terminated by the SCS/AS.
+        - EXPIRED: This value indicates that the validity period expired before the trigger could
+          be delivered.
+        - UNCONFIRMED: This value indicates that the delivery of the device action request is not
+          confirmed.
+        - REPLACED: This value indicates that the device triggering replacement request is accepted
+          by the SCEF.
+        - TERMINATE: This value indicates that the delivery of the device action request is
+          terminated by the SCS/AS.
       readOnly: true
+
     Priority:
       anyOf:
       - type: string
@@ -497,7 +525,8 @@ components:
           This string provides forward-compatibility with future
           extensions to the enumeration but is not used to encode
           content defined in the present version of this API.
-      description: >
-        Possible values are
+      description: |
+        Represents the priority indication for a trigger payload.  
+        Possible values are:
         - NO_PRIORITY: This value indicates that the device trigger has no priority.
         - PRIORITY: This value indicates that the device trigger has priority.

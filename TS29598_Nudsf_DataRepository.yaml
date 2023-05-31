@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Nudsf_DataRepository
-  version: 1.2.0-alpha.1
+  version: 1.2.0-alpha.2
   description: |
     Nudsf Data Repository Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.598 UDSF Services, V18.0.0.
+  description: 3GPP TS 29.598 UDSF Services, V18.1.0.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.598/'
 
 servers:
@@ -83,6 +83,11 @@ paths:
           description: Indicates the number of kilo octets the consumer is prepared to receive
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        - name: tag-count-filter
+          in: query
+          description: Indicates the parameters for advanced counting feature
+          schema:
+            $ref: '#/components/schemas/CountExpression'
       responses:
         '200':
           description: Successful case. Response contains result of the search.
@@ -1878,6 +1883,12 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/Record'
           minProperties: 1
+        tagCountResult:
+          description: A map of TagCount (list of key-value pairs with unique indentifier as key)
+          type: object
+          items:
+            $ref: '#/components/schemas/TagCount'
+          example: {"advancedTagCount1" : {"tag1" : 1}, "advancedTagCount2" : {"tag2" : 2}}
       required:
         - count
     RecordMeta:
@@ -2065,6 +2076,53 @@ components:
             # Less Than or Equal
             - LTE
         - type: string
+
+    CountExpression:
+      description: A map containing parameters for advanced counting feature with unique key for each request
+      type: object
+      properties:
+        tag:
+          type: string
+        countType:
+          $ref: '#/components/schemas/TagCountType'
+        filter:
+          $ref: '#/components/schemas/SearchExpression'
+      required:
+        - countType
+      example:
+        {"advancedTagCount1":{"tag" : "tag1", countType : UNIQUE_COUNT , "filter" : NULL}, "advancedTagCount2":{"tag" : "tag2", countType : AGGREGATE_COUNT, "filter" : NULL}}
+
+    TagCountType:
+      description: Indicate mode of tag count operations
+      anyOf:
+      - type: string
+        enum:
+          - UNIQUE_COUNT
+          - AGGREGATE_COUNT
+          - TOTAL_COUNT
+      - type: string
+
+    TagCount:
+      description: The TagCount result of a_Advanced Count request
+      type: object
+      properties:
+        tag:
+          type: string
+        count:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        valueCount:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueCount'
+
+    ValueCount:
+      description: The AggregateCount map
+      type: object
+      properties:
+        value:
+          type: string
+        count:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
 
     SearchExpression:
       description: A logical expression element
