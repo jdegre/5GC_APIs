@@ -4,10 +4,10 @@
 
 The files in this repository have been created by 3GPP, and the master source can be found in the [3GPP site](http://www.3gpp.org/DynaReport/29-series.htm), as part of the official 3GPP Technical Specifications.
 ```
-© 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+© 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 All rights reserved.
 ```
-API version: **December 2022**<br/>
+API version: **March 2023**<br/>
 Release status: **Frozen** <sup>&#x1F512;</sup><br/>
 Other releases: [Rel-18 (Open)](https://github.com/jdegre/5GC_APIs/tree/Rel-18), [Rel-17 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-17), [Rel-16 (Frozen)](https://github.com/jdegre/5GC_APIs/tree/Rel-16)<br/>
 - [Info about 3GPP Releases and their status](https://www.3gpp.org/specifications/67-releases)
