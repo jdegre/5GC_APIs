@@ -1,16 +1,16 @@
 openapi: 3.0.0
 info:
   title: M1_ContentPreparationTemplatesProvisioning
-  version: 2.0.0
+  version: 2.1.0
   description: |
     5GMS AF M1 Content Preparation Templates Provisioning API
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 tags:
   - name: M1_ContentPreparationTemplatesProvisioning
     description: '5G Media Streaming: Provisioning (M1) APIs: Content Preparation Templates Provisioning'
 externalDocs:
-  description: 'TS 26.512 V17.2.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V17.4.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
   - url: '{apiRoot}/3gpp-m1/v2'
@@ -45,7 +45,7 @@ paths:
               description: 'URL of the newly created Content Preparation Template.'
               required: true
               schema:
-                $ref: 'TS26512_CommonData.yaml#/components/schemas/Url'
+                $ref: 'TS26512_CommonData.yaml#/components/schemas/AbsoluteUrl'
   /provisioning-sessions/{provisioningSessionId}/content-preparation-templates/{contentPreparationTemplateId}:
     parameters:
       - name: provisioningSessionId
@@ -111,7 +111,22 @@ paths:
       operationId: destroyContentPreparationTemplate
       summary: 'Destroy the specified Content Preparation Template of the specified Provisioning Session'
       responses:
+        '200':
+          # OK
+          description: 'Content Preparation Template Destroyed'
+          content:
+            '*/*':
+              schema:
+                type: string
         '204':
-          description: 'Destroyed Content Preparation Template'
+          # No Content
+          description: 'Content Preparation Template Destroyed'
         '404':
-          description: 'Not Found'
+          # Not Found
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '409':
+          # Conflict
+          $ref: 'TS29571_CommonData.yaml#/components/responses/409'
+        '410':
+          # Gone
+          $ref: 'TS29571_CommonData.yaml#/components/responses/410'

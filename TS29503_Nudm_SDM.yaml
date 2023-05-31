@@ -1,15 +1,15 @@
 openapi: 3.0.0
 
 info:
-  version: '2.2.2'
+  version: '2.2.3'
   title: 'Nudm_SDM'
   description: |
     Nudm Subscriber Data Management Service.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 17.9.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 17.10.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -1255,6 +1255,35 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   description: Unexpected error
+        dataRestorationNotification:
+          '{request.body#/dataRestorationCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/DataRestorationNotification'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '409':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/409'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
+
   /{ueId}/sdm-subscriptions/{subscriptionId}:
     delete:
       summary: unsubscribe from notifications
@@ -2209,10 +2238,12 @@ components:
         aerialUeSubInfo:
           $ref: '#/components/schemas/AerialUeSubscriptionInfo'
         roamingRestrictions:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/RoamingRestrictions'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RoamingRestrictions'
         remoteProvInd:
           type: boolean
           default: false
+        3gppChargingCharacteristics:
+          $ref: '#/components/schemas/3GppChargingCharacteristics'
 
     PcfSelectionAssistanceInfo:
       type: object
@@ -2774,6 +2805,11 @@ components:
           minItems: 1
         ueConSmfDataSubFilter:
           $ref: '#/components/schemas/UeContextInSmfDataSubFilter'
+        dataRestorationCallbackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        udrRestartInd:
+          type: boolean
+          default: false
 
     SdmSubsModification:
       type: object
@@ -3277,6 +3313,9 @@ components:
         ptwValue:
           type: string
           pattern: '^([0-1]{4})$'
+        extendedPtwValue:
+          type: string
+          pattern: '^([0-1]{8})$'
 
     UeId:
       type: object
@@ -3615,6 +3654,7 @@ components:
           - NB_S1
           - WB_N1
           - NB_N1
+          - NR_N1
         - type: string
 
     SorUpdateIndicator:
