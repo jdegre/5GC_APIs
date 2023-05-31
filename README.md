@@ -70,6 +70,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [MT](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_MT.yaml)
 * [Service-Specific Authorization](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SSAU.yaml)
 * [RSDS (Report SM Delivery Status)](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_RSDS.yaml)
+* [UEID (UE Identifier)](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_UEID.yaml)
 
 ## UDR (Unified Data Repository)
 * [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DR.yaml)
@@ -136,6 +137,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## UPF (User-Plane Function)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29564_Nupf_EventExposure.yaml)
+* [Get Private UE IP Address](https://jdegre.github.io/loader.html?yaml=TS29564_Nupf_GetPrivateUEIPaddr.yaml)
 
 ## HSS (Home Subscriber Server)
 * [UE Authentication](https://jdegre.github.io/loader.html?yaml=TS29563_Nhss_UEAU.yaml)
@@ -288,9 +290,10 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [Data Reporting](https://jdegre.github.io/loader.html?yaml=TS29522_DataReporting.yaml)
 * [Data Reporting Provisioning](https://jdegre.github.io/loader.html?yaml=TS29522_DataReportingProvisioning.yaml)
 * [UE Identifier](https://jdegre.github.io/loader.html?yaml=TS29522_UEId.yaml)
-* [MBS User Data Ingest Session](https://jdegre.github.io/loader.html?yaml=TS29522_MBSUserDataIngestSession.yaml)
 * [MBS User Service](https://jdegre.github.io/loader.html?yaml=TS29522_MBSUserService.yaml)
+* [MBS User Data Ingest Session](https://jdegre.github.io/loader.html?yaml=TS29522_MBSUserDataIngestSession.yaml)
 * [Media Streaming Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29522_MSEventExposure.yaml)
+* [MBS Group Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29522_MBSGroupMsgDelivery.yaml)
 
 ## VAE (V2X Application Enabler)
 * [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_MessageDelivery.yaml)
