@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   title: Eees_EECRegistration
-  version: "1.0.1"
+  version: "1.0.2"
   description: |
     API for EEC registration.
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 24.558 V17.1.0 Enabling Edge Applications; Protocol specification.
+    3GPP TS 24.558 V17.4.0 Enabling Edge Applications; Protocol specification.
   url: 'https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/'
 
 security:
@@ -165,7 +165,7 @@ paths:
         description: Parameters to replace the existing registration
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/EECRegistrationPatch'
       responses:
@@ -244,8 +244,18 @@ components:
           description: Identifier of the EES that provided EEC context ID.
         endPt:
           $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint' 
+        unfulfillAcProfs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnfulfilledAcProfile'
+          minItems: 1
+          description: >
+            A list of ACIDs of the AC Profile(s) sent from EES, for which the requirements
+            indicated in the AC profile(s) cannot be fulfilled.
         unfulfilledAcProfs:
           $ref: '#/components/schemas/UnfulfilledAcProfile'
+      not:
+        required: [ unfulfilledAcProfs, unfulfillAcProfs ]
       required:
         - eecId
     ACProfile:
@@ -328,8 +338,6 @@ components:
           description: Profiles of ACs for which the EEC provides edge enabling services.
         expTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
-        unfulfilledAcProfs:
-          $ref: '#/components/schemas/UnfulfilledAcProfile'
     UnfulfilledAcProfile:
       description: Desrcibes AC Profile ID and reason sent by EES in EEC Register response.
       type: object

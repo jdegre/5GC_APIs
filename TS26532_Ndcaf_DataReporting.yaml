@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
   title: Ndcaf_DataReporting
-  version: 1.1.0
+  version: 1.2.0
   description: |
     Data Collection AF: Data Collection and Reporting Configuration API and Data Reporting API
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 tags:
@@ -12,7 +12,7 @@ tags:
     description: 'Data Collection and Reporting: Client Configuration and Data Reporting (R2/R3/R4) APIs'
 
 externalDocs:
-  description: 'TS 26.532 V17.1.0; Data Collection and Reporting; Protocols and Formats'
+  description: 'TS 26.532 V17.2.0; Data Collection and Reporting; Protocols and Formats'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.532/'
 
 servers:
@@ -223,19 +223,55 @@ components:
           items:
             $ref: '#/components/schemas/DataDomain'
           minItems: 0
+        samplingRules:
+          type: array
+          items:
+            type: object
+            required:
+              - dataDomain
+              - rules
+            properties:
+              dataDomain:
+                $ref: '#/components/schemas/DataDomain'
+              rules:
+                type: array
+                items:
+                  $ref: 'TS26532_CommonData.yaml#/components/schemas/DataSamplingRule'
+                minItems: 0
         reportingConditions:
-          type: object
-          # Check that the following is the correct syntax to constrain the type of the dictionary keys
-          properties:
-            default:
-              $ref: '#/components/schemas/DataDomain'
-          required:
-            - default
-          additionalProperties:
-            $ref: '#/components/schemas/ReportingCondition'
+          type: array
+          items:
+            type: object
+            required:
+              - dataDomain
+              - conditions
+            properties:
+              dataDomain:
+                $ref: '#/components/schemas/DataDomain'
+              conditions:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportingCondition'
+                minItems: 0
+        reportingRules:
+          type: array
+          items:
+            type: object
+            required:
+              - dataDomain
+              - rules
+            properties:
+              dataDomain:
+                $ref: '#/components/schemas/DataDomain'
+              rules:
+                type: array
+                items:
+                  $ref: 'TS26532_CommonData.yaml#/components/schemas/DataReportingRule'
+                minItems: 0
       required:
         - externalApplicationId
         - supportedDomains
+        - reportingConditions
 
     ReportingCondition:
       description: "A condition that triggers data reporting by a data collection client to the Data Collection AF."
@@ -342,6 +378,7 @@ components:
             content defined in the present version of this API.
 
     BaseRecord:
+      description: "Abstract base data type for UE data reporting records."
       type: object
       properties:
         timestamp:
@@ -350,16 +387,20 @@ components:
         - timestamp
 
     ServiceExperienceRecord:
+      description: "A data reporting record for UE service experience."
       allOf:
         - $ref: '#/components/schemas/BaseRecord'
         - type: object
           properties:
             serviceExperienceInfos:
-              $ref: '#/components/schemas/PerFlowServiceExperienceInfo'
+              type: array
+              items:
+                $ref: '#/components/schemas/PerFlowServiceExperienceInfo'
           required:
             - serviceExperienceInfos
  
     PerFlowServiceExperienceInfo:
+      description: "Information about the service experience of a single flow."
       type: object
       properties:
         serviceExperience:
@@ -374,6 +415,7 @@ components:
         - remoteEndpoint
 
     LocationRecord:
+      description: "A data reporting record for UE location."
       allOf:
         - $ref: '#/components/schemas/BaseRecord'
         - type: object
@@ -384,6 +426,7 @@ components:
             - location
     
     CommunicationRecord:
+      description: "A data reporting record for UE communication."
       allOf:
         - $ref: '#/components/schemas/BaseRecord'
         - type: object
@@ -398,6 +441,7 @@ components:
             - timeInterval
     
     PerformanceDataRecord:
+      description: "A data reporting record for UE performance."
       allOf:
         - $ref: '#/components/schemas/BaseRecord'
         - type: object
@@ -420,6 +464,7 @@ components:
             - timeInterval
     
     ApplicationSpecificRecord:
+      description: "A typed application-specific UE data reporting record."
       allOf:
         - $ref: '#/components/schemas/BaseRecord'
         - type: object
@@ -434,6 +479,7 @@ components:
             - recordContainer
     
     TripPlanRecord:
+      description: "A data reporting record for UE performance."
       allOf:
         - $ref: '#/components/schemas/BaseRecord'
         - type: object

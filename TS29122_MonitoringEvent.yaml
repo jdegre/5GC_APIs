@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: 3gpp-monitoring-event
-  version: 1.2.1
+  version: 1.2.2
   description: |
     API for Monitoring Event.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.122 V17.7.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V17.10.0 T8 reference point for Northbound APIs
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 security:
   - {}
@@ -516,7 +516,10 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         requestTestNotification:
           type: boolean
-          description: Set to true by the SCS/AS to request the SCEF to send a test notification as defined in clause 5.2.5.3. Set to false or omitted otherwise.
+          description: >
+            Set to true by the SCS/AS to request the SCEF to send a test notification as defined in
+            clause 5.2.5.3. Set to false by the SCS/AS indicates not request SCEF to send a test
+            notification, default false if omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
         monitoringType:
@@ -545,7 +548,11 @@ components:
           description: If "monitoringType" is "UE_REACHABILITY", this parameter may be included to identify the number of packets that the serving gateway shall buffer in case that the UE is not reachable.
         idleStatusIndication:
           type: boolean
-          description: If "monitoringType" is set to "UE_REACHABILITY" or "AVAILABILITY_AFTER_DDN_FAILURE", this parameter may be included to indicate the notification of when a UE, for which PSM is enabled, transitions into idle mode. "true"  indicates enabling of notification; "false"  indicate no need to notify. Default value is "false".
+          description: >
+            If "monitoringType" is set to "UE_REACHABILITY" or "AVAILABILITY_AFTER_DDN_FAILURE",
+            this parameter may be included to indicate the notification of when a UE, for which PSM
+            is enabled, transitions into idle mode. "true"  indicates enabling of notification;
+            "false"  indicate no need to notify. Default value is "false" if omitted.
         locationType:
           $ref: '#/components/schemas/LocationType'
         accuracy:
@@ -558,7 +565,13 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
         reportingLocEstInd:
           type: boolean
-          description: Indicates whether to request the location estimate for event reporting.
+          description: >
+            Indicates whether to request the location estimate for event reporting. If
+            "monitoringType" is "LOCATION_REPORTING", this parameter may be included to indicate
+            whether event reporting requires the location information. If set to true, the location
+            estimation information shall be included in event reporting. Set to "false", indicates
+            the location estimation information shall not be included in event reporting.
+            Default "false" if omitted.
         linearDistance:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LinearDistance'
         locQoS:
@@ -583,7 +596,10 @@ components:
           $ref: '#/components/schemas/AssociationType'
         plmnIndication:
           type: boolean
-          description: If "monitoringType" is "ROAMING_STATUS", this parameter may be included to indicate the notification of UE's Serving PLMN ID. Value "true" indicates enabling of notification; "false" indicates disabling of notification. Default value is "false".
+          description: >
+            If "monitoringType" is "ROAMING_STATUS", this parameter may be included to indicate the
+            notification of UE's Serving PLMN ID. Value "true" indicates enabling of notification;
+            "false" indicates disabling of notification. Default value is "false" if omitted.
         locationArea:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea'
         locationArea5G:
@@ -615,11 +631,19 @@ components:
           type: string
         immediateRep:
           type: boolean
+          description: >
+            Indicates whether an immediate reporting is requested or not.
+            "true" indicate an immediate reporting is requested.
+            "false" indicate an immediate reporting is not requested.
+            Default value "false" if omitted.
         uavPolicy:
           $ref: '#/components/schemas/UavPolicy'
         sesEstInd:
           type: boolean
-          description: Set to true by the SCS/AS so that only UAV's with "PDU session established for DNN(s) subject to aerial service" are to be listed in the Event report. Set to false or omitted otherwise.
+          description: >
+            Set to true by the SCS/AS so that only UAV's with "PDU session established for DNN(s)
+            subject to aerial service" are to be listed in the Event report. Set to false or default
+            false if omitted otherwise.
         subType:
           $ref: '#/components/schemas/SubType'
         addnMonTypes:

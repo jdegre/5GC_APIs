@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.3'
+  version: '1.2.4'
   title: 'NRF NFManagement Service'
   description: |
     NRF NFManagement Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V17.9.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V17.10.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -762,7 +762,7 @@ paths:
           description: Unique ID of the subscription to update
           schema:
             type: string
-            pattern: '^([0-9]{5,6}-)?[^-]+$'
+            pattern: '^([0-9]{5,6}-(x3Lf57A:nid=[A-Fa-f0-9]{11}:)?)?[^-]+$'
         - name: Content-Encoding
           in: header
           description: Content-Encoding, described in IETF RFC 7231
@@ -862,7 +862,7 @@ paths:
           description: Unique ID of the subscription to remove
           schema:
             type: string
-            pattern: '^([0-9]{5,6}-)?[^-]+$'
+            pattern: '^([0-9]{5,6}-(x3Lf57A:nid=[A-Fa-f0-9]{11}:)?)?[^-]+$'
       responses:
         '204':
           description: Expected response to a successful subscription removal
@@ -1557,7 +1557,7 @@ components:
           $ref: '#/components/schemas/SubscrCond'
         subscriptionId:
           type: string
-          pattern: '^([0-9]{5,6}-)?[^-]+$'
+          pattern: '^([0-9]{5,6}-(x3Lf57A:nid=[A-Fa-f0-9]{11}:)?)?[^-]+$'
           readOnly: true
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
@@ -2440,6 +2440,8 @@ components:
           $ref: '#/components/schemas/NotificationType'
         callbackUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        interPlmnCallbackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         n1MessageClass:
           $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N1MessageClass'
         n2InformationClass:
@@ -2674,8 +2676,6 @@ components:
           allOf:
             - $ref: '#/components/schemas/NFProfile'
             - not:
-                required: [ interPlmnFqdn ]
-            - not:
                 required: [ allowedPlmns ]
             - not:
                 required: [ allowedSnpns ]
@@ -2691,8 +2691,6 @@ components:
                   items:
                     allOf:
                       - $ref: '#/components/schemas/NFService'
-                      - not:
-                          required: [ interPlmnFqdn ]
                       - not:
                           required: [ allowedPlmns ]
                       - not:
@@ -2856,12 +2854,14 @@ components:
             - ntsctsf-qos-tscai
             - ntsctsf-asti
             - npkmf-keyreq
+            - npkmf-userid
             - nmnpf-npstatus
             - niwmsc-smservice
             - nmbsf-mbsuserserv
             - nmbsf-mbsuserdataing
             - nmbstf-distsession
             - npanf-prosekey
+            - npanf-userid
         - type: string
 
     N2InterfaceAmfInfo:

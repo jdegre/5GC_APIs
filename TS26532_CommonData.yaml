@@ -1,16 +1,16 @@
 openapi: 3.0.0
 info:
   title: Data Collection and Reporting Common Data Types
-  version: 1.0.0
+  version: 1.0.1
   description: |
     Data Collection and Reporting Common Data Types
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 tags:
   - name: Data Collection and Reporting Common Data Types
     description: 'Data Collection and Reporting: Common Data Types'
 externalDocs:
-  description: 'TS 26.532 V17.0.0; Data Collection and Reporting; Protocols and Formats'
+  description: 'TS 26.532 V17.2.0; Data Collection and Reporting; Protocols and Formats'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.532/'
 paths: {}
 components:
@@ -23,11 +23,34 @@ components:
     # Clause 5.4.2: Structured data types
     #####################################
 
+    DataSamplingRule:
+      description: "Instructions on how UE data is to be sampled by the data collection client."
+      type: object
+      properties:
+        samplingPeriod:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        locationFilter:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+
+    DataReportingRule:
+      description: "Instructions on how collected UE data is to be reported by the data collection client to the Data Collection AF."
+      type: object
+      properties:
+        reportingProbability:
+          $ref: 'TS26512_CommonData.yaml#/components/schemas/Percentage'
+        reportingFormat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        dataPackagingStrategy:
+          type: string
+      required:
+        - reportingFormat
+
     #####################################
     # Clause 5.4.3: Enumerated data types
     #####################################
 
     DataCollectionClientType:
+      description: "Indicating a type of data collection client that reports UE data to the Data Collection AF."
       anyOf:
         - type: string
           enum: [DIRECT, INDIRECT, APPLICATION_SERVER]
