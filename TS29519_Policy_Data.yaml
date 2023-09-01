@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -1800,6 +1800,383 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /policy-data/pdtq-data:
+    get:
+      summary: Retrieves the PDTQ data collection
+      operationId: ReadPdtqData
+      tags:
+        - PdtqData (Store)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:pdtq-data:read
+      parameters:
+        - name: pdtq-ref-ids
+          in: query
+          description: List of the PDTQ reference identifiers.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29543_Npcf_PDTQPolicyControl.yaml#/components/schemas/PdtqReferenceId'
+            minItems: 1
+          style: form
+          explode: false
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Upon success, a response body containing the PDTQ data shall be returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PdtqData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /policy-data/pdtq-data/{pdtqReferenceId}:
+    parameters:
+     - name: pdtqReferenceId
+       in: path
+       required: true
+       schema:
+         type: string
+    get:
+      summary: Retrieves the PDTQ data information associated with a PDTQ reference Id
+      operationId: ReadIndividualPdtqData
+      tags:
+        - IndividualPdtqData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:pdtq-data:read
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Upon success, a response body containing the PDTQ data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdtqData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Creates a PDTQ data resource associated with a PDTQ reference Id
+      operationId: CreateIndividualPdtqData
+      tags:
+        - IndividualPdtqData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:pdtq-data:create
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdtqData'
+      responses:
+        '201':
+          description: Successful case. The resource has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdtqData'
+          headers:
+            Location:
+              description: 'Contains the URI of the newly created resource'
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modifies a PDTQ data resource associated with a PDTQ reference Id
+      operationId: UpdateIndividualPdtqData
+      tags:
+        - IndividualPdtqData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:pdtq-data:modify
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/PdtqDataPatch'
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdtqData'
+        '204':
+          description: >
+            Successful case. The resource has been successfully updated and no additional content
+            is to be sent in the response message.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Deletes a PDTQ data resource associated with a PDTQ reference Id
+      operationId: DeleteIndividualPdtqData
+      tags:
+        - IndividualPdtqData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:pdtq-data:modify
+      responses:
+        '204':
+          description: Successful case. The resource has been successfully deleted.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /policy-data/group-control-data/{intGroupId}:
+    parameters:
+     - name: intGroupId
+       in: path
+       required: true
+       schema:
+         $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+    get:
+      summary: Retrieves a group specific policy control subscription data resource
+      operationId: ReadGroupPolicyControlData
+      tags:
+        - GroupPolicyControlData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: >
+            Successful case. The group specific policy control subscription data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupPolicyData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modify a group specific policy control subscription data resource
+      operationId: ModifyGroupPolicyControlData
+      tags:
+        - GroupPolicyControlData (Document)
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/GroupPolicyDataPatch'
+      responses:
+        '200':
+          description: >
+            The resource has been successfully updated and a response body containing group specific
+            policy control subscription data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupPolicyData'
+        '204':
+          description: >
+            The resource has been successfully updated and no additional content is to be sent in
+            the response message.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
 
   schemas:
@@ -2336,6 +2713,14 @@ components:
           $ref: '#/components/schemas/SlicePolicyData'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        pdtqData:
+          $ref: '#/components/schemas/PdtqData'
+        pdtqRefId:
+          $ref: 'TS29543_Npcf_PDTQPolicyControl.yaml#/components/schemas/PdtqReferenceId'
+        groupPolicyData:
+          $ref: '#/components/schemas/GroupPolicyData'
+        intGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
 
     PlmnRouteSelectionDescriptor:
       description: >
@@ -2568,6 +2953,74 @@ components:
         - required: [mbsSessionId]
         - required: [afAppId]
 
+    PdtqData:
+      description: Contains the planned data transfer data with QoS requirements.
+      type: object
+      properties:
+        aspId:
+          type: string
+        pdtqPolicy:
+          $ref: 'TS29543_Npcf_PDTQPolicyControl.yaml#/components/schemas/PdtqPolicy'
+        pdtqRefId:
+          $ref: 'TS29543_Npcf_PDTQPolicyControl.yaml#/components/schemas/PdtqReferenceId'
+        nwAreaInfo:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        numOfUes:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        policyStatus:
+          $ref: '#/components/schemas/PolicyStatus'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        resetIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+      required:
+        - aspId
+        - pdtqPolicy
+
+    PdtqDataPatch:
+      description: Contains the modified planned data transfer data with QoS requirements.
+      type: object
+      properties:
+        pdtqPolicy:
+          $ref: 'TS29543_Npcf_PDTQPolicyControl.yaml#/components/schemas/PdtqPolicy'
+        policyStatus:
+          $ref: '#/components/schemas/PolicyStatus'
+
+    GroupPolicyData:
+      description: Contains the group specific policy control subscription information.
+      type: object
+      properties:
+        remainGroupMbrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        remainGroupMbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        resetIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+
+    GroupPolicyDataPatch:
+      description: Contains the modified group specific policy control subscription information.
+      type: object
+      properties:
+        remainGroupMbrUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        remainGroupMbrDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+      oneOf:
+        - required: [remainGroupMbrUl]
+        - required: [remainGroupMbrDl]
+
 # SIMPLE TYPES:
 
     IpIndex:
@@ -2640,3 +3093,15 @@ components:
           description: >
             This string provides forward-compatibility with future extensions to the enumeration
             and is not used to encode content defined in the present version of this API.
+
+    PolicyStatus:
+      description: Indicates the validation status of a negotiated PDTQ policy.
+      anyOf:
+      - type: string
+        enum:
+          - INVALID
+          - VALID
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.

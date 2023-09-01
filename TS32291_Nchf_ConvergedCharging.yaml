@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.2.0-alpha.1
+  version: 3.2.0-alpha.2
   description: |
-    ConvergedCharging Service    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    ConvergedCharging Service    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V18.1.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V18.2.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -686,6 +686,8 @@ components:
           type: boolean
         5GLANTypeService:
             $ref: '#/components/schemas/5GLANTypeService'
+        sNPNID:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
       required:
         - pduSessionID
         - dnnId
@@ -767,6 +769,8 @@ components:
       type: object
       properties:
         sNSSAI:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        hPlmnSNSSAI:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
         - sNSSAI
@@ -1133,6 +1137,8 @@ components:
           type: integer
         ranNodeId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GlobalRanNodeId'
+        sNPNID:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
       required:
         - registrationMessagetype
     PSCellInformation:
@@ -1197,6 +1203,11 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 0
+        nSSAIMapList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NSSAIMap'
           minItems: 0
         rrcEstCause:
           type: string
@@ -1597,6 +1608,8 @@ components:
       properties:
         eEASDeploymentRequirements:
           $ref: '#/components/schemas/EASRequirements'
+        lCMEventType:
+          $ref: '#/components/schemas/ManagementOperation'
         lCMStartTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         lCMEndTime:
@@ -1905,6 +1918,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         iSUPCauseDiagnostics:
           $ref: '#/components/schemas/OctetString'
+        enhancedDiagnostics:
+          $ref: '#/components/schemas/EnhancedDiagnostics5G'
     CalledIdentityChange:
       type: object
       properties:
@@ -2406,6 +2421,9 @@ components:
             - CREATE_MOI
             - MODIFY_MOI_ATTR
             - DELETE_MOI
+            - NOTIFY_MOI_CREATION
+            - NOTIFY_MOI_ATTR_CHANGE
+            - NOTIFY_MOI_DELETION
         - type: string
     ManagementOperationStatus:
       anyOf:

@@ -1,0 +1,333 @@
+openapi: 3.0.0
+
+info:
+  title: 3gpp-musa
+  version: 1.0.0-alpha.1
+  description: |
+    API for Member UE Selection Assistance.  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: >
+    3GPP TS 29.522 V18.1.0; 5G System; Network Exposure Function Northbound APIs.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
+
+servers:
+  - url: '{apiRoot}/3gpp-musa/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
+paths:
+  /{afId}/subscriptions:
+    parameters:
+      - name: afId
+        in: path
+        description: Identifier of the AF
+        required: true
+        schema:
+          type: string
+    get:
+      summary: read all of the active subscriptions for the AF
+      operationId: ReadAllSubscriptions
+      tags:
+        - Member UE Selection Assistance Subscription
+      responses:
+        '200':
+          description: OK. 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemUeSelectAssistSubsc'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    post:
+      summary: Create a new subscription to Member UE Selection Assistance.
+      operationId: CreateMemberUESelectionAssistanceSubcription
+      tags:
+        - Member UE Selection Assistance Subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemUeSelectAssistSubsc'
+      responses:
+        '201':
+          description: Create a new Individual Member UE Selection Assistance Subscription resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemUeSelectAssistSubsc'
+          headers:
+            Location:
+              description: >
+                Contains the URI of the newly created resource, according to the structure 
+                {apiRoot}/3gpp-musa/v1/{afId}/subscriptions/{subscriptionId}.
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      callbacks:
+        notificationDestination:
+          '{$request.body#/notifUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/MemUeSeletAssistNotif'
+                      minItems: 1
+              responses:
+                '204':
+                  description: No Content, Notification was succesfull
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+  /{afId}/subscriptions/{subscriptionId}:
+    parameters:
+      - name: afId
+        in: path
+        description: Identifier of the AF.
+        required: true
+        schema:
+          type: string
+      - name: subscriptionId
+        in: path
+        description: Identifier of the subscription resource.
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Read an active subscription identified by the subscriptionId.
+      tags:
+        - Individual Member UE Selection Assistance Subscription
+      responses:
+        '200':
+          description: OK (Successful get the active subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemUeSelectAssistSubsc'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Update/Replace an existing subscription resource.
+      tags:
+        - Individual Member UE Selection Assistance Subscription
+      requestBody:
+        description: Parameters to replace the existing subscription.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemUeSelectAssistSubsc'
+      responses:
+        '200':
+          description: OK (Successful update of the subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemUeSelectAssistSubsc'
+        '204':
+          description: No Content
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete an existing subscription.
+      tags:
+        - Individual Member UE Selection Assistance Subscription
+      responses:
+        '204':
+          description: No Content (Successful deletion of the existing subscription)
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes: {}
+  schemas:
+    MemUeSelectAssistSubsc:
+      description: Represents an Member UE Selection Assistance Subscription.
+      type: object
+      properties:
+        tgtUes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+          description: Identifies the list of UEs for Member Selection Assistance Reporting.
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        notifId:
+          type: string
+        filterCriters:
+          type: string
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        expTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        timeWins:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+        - tgtUes
+        - notifUri
+        - notifId
+        - filterCriters
+
+    MemUeSeletAssistNotif:
+      description: Represents a Member UE Selection Assistance notification.
+      type: object
+      properties:
+        notifId:
+          type: string
+        remdUes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+          description: Identifies the list of UEs for Member Selection Assistance Reporting.
+      required:
+        - notifId
+        - remdUes

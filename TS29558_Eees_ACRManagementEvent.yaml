@@ -6,11 +6,11 @@ info:
     API for EES ACR Management Event.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.1.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.2.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -489,6 +489,8 @@ components:
             $ref: 'TS24558_Eees_EASDiscovery.yaml#/components/schemas/EasCharacteristics'
           minItems: 1
           description: A list of EAS characteristics.
+        trafFilterInfo:
+          $ref: '#/components/schemas/TrafficFilterInfo'
       required:
         - event
 
@@ -541,8 +543,19 @@ components:
           $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
         actStatus:
           $ref: '#/components/schemas/ActStatus'
+        acrParams:
+          $ref: '#/components/schemas/ACRParameters'
+        acId:
+          type: string
       required:
         - event
+
+    ACRParameters:
+      type: object
+      description: Represents the ACR parameters.
+      properties:
+        predictExpTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
 
     FailureAcrMgntEventInfo:
       type: object
@@ -627,6 +640,39 @@ components:
         - required: [gpsi]
         - required: [externalId]
         - required: [ueIpAddr]
+
+    TrafficFilterInfo:
+      description: Represents the Traffic Filter Information.
+      type: object
+      properties:
+        ipFlows:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/FlowDescription'
+          minItems: 1
+          description: Contains the flow description for the Uplink and/or Downlink IP flows.
+        uris:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Indicates URI(s) matching criteria.
+        domainNames:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Indicates Domain Name matching criteria.
+        dnProtocol:
+          $ref: 'TS29122_PfdManagement.yaml#/components/schemas/DomainNameProtocol'
+      anyOf:
+        - required: [ipFlows]
+        - required: [uris]
+        - required: [domainNames]
+
+#
+# ENUMERATIONS DATA TYPES
+#
 
     AcrMgntEvent:
       anyOf:

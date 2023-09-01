@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.3'
+  version: '1.3.0-alpha.4'
   title: 'NRF NFManagement Service'
   description: |
     NRF NFManagement Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V18.2.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V18.3.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -769,7 +769,7 @@ paths:
           description: Unique ID of the subscription to update
           schema:
             type: string
-            pattern: '^([0-9]{5,6}-)?[^-]+$'
+            pattern: '^([0-9]{5,6}-(x3Lf57A:nid=[A-Fa-f0-9]{11}:)?)?[^-]+$'
         - name: Content-Encoding
           in: header
           description: Content-Encoding, described in IETF RFC 7231
@@ -869,7 +869,7 @@ paths:
           description: Unique ID of the subscription to remove
           schema:
             type: string
-            pattern: '^([0-9]{5,6}-)?[^-]+$'
+            pattern: '^([0-9]{5,6}-(x3Lf57A:nid=[A-Fa-f0-9]{11}:)?)?[^-]+$'
       responses:
         '204':
           description: Expected response to a successful subscription removal
@@ -1209,6 +1209,10 @@ components:
           type: boolean
           default: false
           writeOnly: true
+        nfProfilePartialUpdateChangesSupportInd:
+          type: boolean
+          default: false
+          writeOnly: true
         nfProfileChangesInd:
           type: boolean
           default: false
@@ -1340,6 +1344,38 @@ components:
           $ref: '#/components/schemas/MnpfInfo'
         smsfInfo:
           $ref: '#/components/schemas/SmsfInfo'
+        dcsfInfoList:
+          type: object
+          description: >
+            A map (list of key-value pairs) where a (unique) valid JSON string
+            serves as key of DcsfInfo
+          additionalProperties:
+            $ref: '#/components/schemas/DcsfInfo'
+          minProperties: 1
+        mrfInfoList:
+          type: object
+          description: >
+            A map (list of key-value pairs) where a (unique) valid JSON string
+            serves as key of MrfInfo
+          additionalProperties:
+            $ref: '#/components/schemas/MrfInfo'
+          minProperties: 1
+        mrfpInfoList:
+          type: object
+          description: >
+            A map (list of key-value pairs) where a (unique) valid JSON string
+            serves as key of MrfpInfo
+          additionalProperties:
+            $ref: '#/components/schemas/MrfpInfo'
+          minProperties: 1
+        dcmfInfoList:
+          type: object
+          description: >
+            A map (list of key-value pairs) where a (unique) valid JSON string
+            serves as key of DcmfInfo
+          additionalProperties:
+            $ref: '#/components/schemas/DcmfInfo'
+          minProperties: 1
 
     NFService:
       description: >
@@ -1539,6 +1575,10 @@ components:
             - MBSF
             - MBSTF
             - PANF
+            - DCSF
+            - MRF
+            - MRFP
+            - DCMF
         - type: string
 
     NefId:
@@ -1581,7 +1621,7 @@ components:
           $ref: '#/components/schemas/SubscrCond'
         subscriptionId:
           type: string
-          pattern: '^([0-9]{5,6}-)?[^-]+$'
+          pattern: '^([0-9]{5,6}-(x3Lf57A:nid=[A-Fa-f0-9]{11}:)?)?[^-]+$'
           readOnly: true
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
@@ -2525,6 +2565,8 @@ components:
           $ref: '#/components/schemas/NotificationType'
         callbackUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        interPlmnCallbackUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         n1MessageClass:
           $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N1MessageClass'
         n2InformationClass:
@@ -2762,8 +2804,6 @@ components:
           allOf:
             - $ref: '#/components/schemas/NFProfile'
             - not:
-                required: [ interPlmnFqdn ]
-            - not:
                 required: [ allowedPlmns ]
             - not:
                 required: [ allowedSnpns ]
@@ -2779,8 +2819,6 @@ components:
                   items:
                     allOf:
                       - $ref: '#/components/schemas/NFService'
-                      - not:
-                          required: [ interPlmnFqdn ]
                       - not:
                           required: [ allowedPlmns ]
                       - not:
@@ -2963,13 +3001,16 @@ components:
             - ntsctsf-qos-tscai
             - ntsctsf-asti
             - npkmf-keyreq
+            - npkmf-userid
             - nmnpf-npstatus
             - niwmsc-smservice
             - nmbsf-mbsuserserv
             - nmbsf-mbsuserdataing
             - nmbstf-distsession
             - npanf-prosekey
+            - npanf-userid
             - nupf-ee
+            - nupf-gueip
         - type: string
 
     N2InterfaceAmfInfo:
@@ -3591,6 +3632,8 @@ components:
           items:
             $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/SupportedGADShapes'
           minItems: 1
+        pruExistenceInfo:
+          $ref: '#/components/schemas/PruExistenceInfo'
 
     GmlcInfo:
       description: Information of a GMLC NF Instance
@@ -3628,6 +3671,16 @@ components:
           type: array
           items:
             type: string
+          minItems: 1
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
           minItems: 1
 
     PcscfInfo:
@@ -4077,6 +4130,12 @@ components:
         analyticsMetadataProvisioning:
           type: boolean
           default: false
+        mlModelAccuracyChecking:
+          type: boolean
+          default: false
+        analyticsAccuracyChecking:
+          type: boolean
+          default: false
 
     EasdfInfo:
       description: Information of an EASDF NF Instance
@@ -4255,6 +4314,12 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
           minItems: 1
+        mlModelInterInfo:
+          $ref: '#/components/schemas/MlModelInterInfo'
+        flCapabilityType:
+          $ref: '#/components/schemas/FlCapabilityType'
+        flTimeInterval:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
     MbSmfInfo:
       description: Information of an MB-SMF NF Instance
@@ -4483,6 +4548,16 @@ components:
         mappingInd:
           type: boolean
           default: false
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
 
     SnssaiInfoItem:
       description: >
@@ -4596,6 +4671,18 @@ components:
           type: boolean
           default: false
         proseL3RemoteUe:
+          type: boolean
+          default: false
+        proseL2UetoUeRelay:
+          type: boolean
+          default: false
+        proseL3UetoUeRelay:
+          type: boolean
+          default: false
+        proseL2EndUe:
+          type: boolean
+          default: false
+        proseL3EndUe:
           type: boolean
           default: false
 
@@ -4717,3 +4804,116 @@ components:
           items:
             $ref: '#/components/schemas/PlmnRange'
           minItems: 1
+
+    DcsfInfo:
+      description: Information of a DCSF NF Instance
+      type: object
+      properties:
+        imsDomianNameList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImsDomainName'
+        imsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImsiRange'
+          minItems: 1
+        imsPrivateIdentityRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        imsPublicIdentityRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        msisdnRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+
+    ImsDomainName:
+      description: IMS Domain Name
+      type: string
+
+    MlModelInterInfo:
+      description: ML Model Interoperability Information
+      type: object
+      properties:
+        vendorList:
+          type: array
+          items:
+            $ref: '#/components/schemas/VendorId'
+          minItems: 1
+    PruExistenceInfo:
+      description: PRU Existence Information
+      type: object
+      properties:
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
+
+    FlCapabilityType:
+      description: >
+        Type of Federated Learning Capability.
+      anyOf:
+        - type: string
+          enum:
+            - FL_SERVER
+            - FL_CLIENT
+            - FL_SERVER_AND_CLIENT
+        - type: string
+
+    MrfInfo:
+      description: Information of a Mrf NF Instance
+      type: object
+      properties:
+        mediaCapabilityList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaCapability'
+          minItems: 1
+
+    MrfpInfo:
+      description: Information of a Mrfp NF Instance
+      type: object
+      properties:
+        mediaCapabilityList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaCapability'
+          minItems: 1
+
+    DcmfInfo:
+      description: Information of a Dcmf NF Instance
+      type: object
+      properties:
+        mediaCapabilityList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaCapability'
+          minItems: 1
+
+    MediaCapability:
+      description: IMS media capability offered by NF instance
+      anyOf:
+        - type: string
+          enum:
+            - VIDEO_TRANSCODING
+            - DATA_CHANNEL_SERVICES
+            - VOICE_CONFERENCING
+            - IN_CALL_ANNOUNCEMENTS
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.

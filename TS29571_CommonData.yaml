@@ -1,7 +1,9 @@
 openapi: 3.0.0
 
 info:
-  version: '1.5.0-alpha.2'
+  version: '1.5.0-alpha.3'
+
+
   title: 'Common Data Types'
   description: |
     Common Data Types for Service Based Interfaces.  
@@ -9,7 +11,7 @@ info:
     All rights reserved.  
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.1.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.2.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -872,7 +874,42 @@ components:
       required:
         - matchingOperator
 
+    Ipv4AddressRange:
+      description: Range of IPv4 addresses
+      type: object
+      properties:
+        start:
+          $ref: '#/components/schemas/Ipv4Addr'
+        end:
+          $ref: '#/components/schemas/Ipv4Addr'
+      required:
+        - start
+        - end
 
+
+    Ipv6AddressRange:
+      description: Range of IPv6 addresses
+      type: object
+      properties:
+        start:
+          $ref: '#/components/schemas/Ipv6Addr'
+        end:
+          $ref: '#/components/schemas/Ipv6Addr'
+      required:
+        - start
+        - end
+
+    Ipv6PrefixRange:
+      description: Range of IPv6 prefixes
+      type: object
+      properties:
+        start:
+          $ref: '#/components/schemas/Ipv6Prefix'
+        end:
+          $ref: '#/components/schemas/Ipv6Prefix'
+      required:
+        - start
+        - end
 
 #
 # Data Types related to Subscription, Identification and Numbering as defined in clause 5.3
@@ -1932,7 +1969,14 @@ components:
         Indicates the required action by the event producer NF on the event subscription if an
         exception occurs while the event is muted.
 
-
+    SnssaiStatus:
+      anyOf:
+        - type: string
+          enum:
+            - AVAILABLE
+            - UNAVAILABLE
+        - type: string
+      description: Indicates the S-NSSAI availability.
 
 #
 # STRUCTURED DATA TYPES
@@ -3265,6 +3309,16 @@ components:
           $ref: '#/components/schemas/UeAuth'
         proseL3RemoteAuth:
           $ref: '#/components/schemas/UeAuth'
+        proseMultipathComL2RemoteAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL2UeRelayAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL3UeRelayAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL2EndAuth:
+          $ref: '#/components/schemas/UeAuth'
+        proseL3EndAuth:
+          $ref: '#/components/schemas/UeAuth'
 
     EcsServerAddr:
       description: >
@@ -3363,11 +3417,6 @@ components:
           minItems: 1
         geographicalServiceArea:
           $ref: '#/components/schemas/GeoServiceArea'
-        plmnIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlmnId'
-          minItems: 1
 
     SpatialValidityCondRm:
       description: Contains the Spatial Validity Condition or the null value.
@@ -3497,6 +3546,91 @@ components:
         durationBufferedNotif:
           $ref: '#/components/schemas/DurationSec'
 
+
+    VplmnOffloadingInfo:
+      description: VPLMN Specific Offloading Information 
+      type: object
+      properties:
+        vplmnId:
+          $ref: '#/components/schemas/PlmnId'
+        ipv4AddressRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4AddressRange'
+          minItems: 1
+        ipv4AddrMasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4AddrMask'
+          minItems: 1
+        Ipv6AddressRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6AddressRange'
+          minItems: 1
+        ipv6PrefixRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6PrefixRange'
+          minItems: 1
+        fqdnList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fqdn'
+          minItems: 1
+        fqdnPatterns:
+          type: array
+          items:
+            $ref: '#/components/schemas/FqdnPatternMatchingRule'
+          minItems: 1
+        sessionAmbr:
+          $ref: '#/components/schemas/Ambr'
+
+    PartiallyAllowedSnssai:
+      description: >
+        Indicates a S-NSSAI that is partially allowed in the Registration Area.
+      type: object
+      properties:
+        snssai:
+          $ref: '#/components/schemas/Snssai'
+        allowedTaiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tai'
+          minItems: 1
+      required:
+        - snssai
+        - allowedTaiList
+
+    VarRepPeriod:
+      description: >
+        Indicates the Variable reporting periodicity for event reporting
+      type: object
+      properties:
+        repPeriod:
+          $ref: '#/components/schemas/DurationSec'
+        percValueNfLoad:
+          allOf:
+            - $ref: '#/components/schemas/Uinteger'
+          minimum: 0
+          maximum: 100
+      required:
+        - repPeriod
+
+
+    RangingSlPosAuth:
+      description: >
+        Indicates whether the UE is authorized to use related services.
+      type: object
+      properties:
+        rgSlPosTargetAuth:
+          $ref: '#/components/schemas/UeAuth'
+        rgSlPosSlRefAuth:
+          $ref: '#/components/schemas/UeAuth'
+        rgSlPosLocAuth:
+          $ref: '#/components/schemas/UeAuth'
+
+
 #
 # Data types describing alternative data types or combinations of data types
 #
@@ -3509,6 +3643,20 @@ components:
         attributes is present,  the sd attribute shall also be present and it shall contain one Slice
         Differentiator value within the range of SD  (if the sdRanges attribute is present) or with
         any value (if the wildcardSd attribute is present).
+
+    SnssaiReplaceInfo:
+      description: Indicates the status of an S-NSSAI and optionally an alternative S-NSSAI.
+      type: object
+      properties:
+        snssai:
+          $ref: '#/components/schemas/Snssai'
+        status:
+          $ref: '#/components/schemas/SnssaiStatus'
+        altSnssai:
+          $ref: '#/components/schemas/Snssai'
+      required:
+        - snssai
+        - status
 
 #
 # Data Types related to 5G QoS as defined in clause 5.5
@@ -3564,6 +3712,36 @@ components:
       nullable: true
       description: >
         This data type is defined in the same way as the 'BitRate' data type, but with the OpenAPI 'nullable: true' property.
+
+    PacketRate:
+      type: string
+      pattern: '^\d+(\.\d+)? (pps|kpps|Mpps|Gpps|Tpps)$'
+      description: >
+        String representing a packet rate, i.e., packet per second; the prefixes follow the symbols
+        from The International System of Units, and represent x1000 multipliers.
+
+    PacketRateRm:
+      type: string
+      pattern: '^\d+(\.\d+)? (pps|kpps|Mpps|Gpps|Tpps)$'
+      nullable: true
+      description: >
+        This data type is defined in the same way as the 'PacketRate' data type, but with the
+        OpenAPI 'nullable: true' property.
+
+    TrafficVolume:
+      type: string
+      pattern: '^\d+(\.\d+)? (B|kB|MB|GB|TB)$'
+      description: >
+        String representing a Traffic Volume measured in bytes; the prefixes follow the symbols
+        from The International System of Units, and represent x1000 multipliers.
+
+    TrafficVolumeRm:
+      type: string
+      pattern: '^\d+(\.\d+)? (B|kB|MB|GB|TB)$'
+      nullable: true
+      description: >
+        This data type is defined in the same way as the 'TrafficVolume' data type, but with the
+        OpenAPI 'nullable: true' property.
 
     ArpPriorityLevelRm:
       type: integer
@@ -3752,6 +3930,35 @@ components:
       description: >
         A String which is transparently passed to the UPF to be applied for traffic to SFC.
 
+    PduSetDelayBudget:
+      type: integer
+      minimum: 1
+      description: >
+        Unsigned integer indicating PDU Set Delay Budget (PSDB) (see clause 5.7.7.2 of 3GPP
+        TS 23.501), expressed in 0.01 milliseconds.
+
+    PduSetDelayBudgetRm:
+      type: integer
+      minimum: 1
+      nullable: true
+      description: >
+        This data type is defined in the same way as the 'PduSetDelayBudget' data type, but with
+        the OpenAPI 'nullable: true' property.
+
+    PduSetErrRate:
+      type: string
+      pattern: '^([0-9]E-[0-9])$'
+      description: >
+        String representing PDU Set Error Rate (PSER) (see clause 5.7.7.3 3GPP TS 23.501 [8]) where
+        the scalar and the exponent k are each encoded as one decimal digit.
+
+    PduSetErrRateRm:
+      type: string
+      pattern: '^([0-9]E-[0-9])$'
+      nullable: true
+      description: >
+        This data type is defined in the same way as the 'PduSetErrRate' data type, but with the
+        OpenAPI 'nullable: true' property.
 
 #
 # ENUMERATED DATA TYPES
@@ -4017,6 +4224,25 @@ components:
 
       anyOf:
         - $ref: '#/components/schemas/SliceMbr'
+        - $ref: '#/components/schemas/NullValue'
+
+    PduSetQosPara:
+      description: Represents the PDU Set level QoS parameters.
+      type: object
+      properties:
+        pduSetDelayBudget:
+          $ref: '#/components/schemas/PduSetDelayBudget'
+        pduSetErrRate:
+          $ref: '#/components/schemas/PduSetErrRate'
+        pduSetHandlingInfo:
+          type: string
+# The data type of "pduSetHandlingInfo" attribute is FFS
+
+
+    PduSetQosParaRm:
+      description: "PduSetQosPara with nullable: true"
+      anyOf:
+        - $ref: '#/components/schemas/PduSetQosPara'
         - $ref: '#/components/schemas/NullValue'
 
 #
@@ -5050,7 +5276,8 @@ components:
         nfcInstanceId:
           $ref: '#/components/schemas/NfInstanceId'
         mbsSessionSubscUri:
-          $ref: '#/components/schemas/Uri'
+          allOf:
+            - $ref: '#/components/schemas/Uri'
           readOnly: true
       required:
         - eventList

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.2
+  version: 1.3.0-alpha.3
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.508 V18.1.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V18.2.0; 5G System; Session Management Event Exposure Service.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 
 servers:
@@ -332,6 +332,19 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        dnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        ssId:
+          type: string
+          description: SSID that the PDU session is related to.
+        bssId:
+          type: string
+          description: BSSID that the PDU session is related to.
+        upfId:
+          type: string
+          description: UPF identity.
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         subId:
           $ref: '#/components/schemas/SubId'
         notifId:
@@ -396,6 +409,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         notifFlag:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NotificationFlag'
+        notifFlagInstruct:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MutingExceptionInstructions'
+        mutingSetting:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MutingNotificationsSettings'
       required:
         - notifId
         - notifUri
@@ -458,6 +475,12 @@ components:
           minItems: 1
         ueIpAddr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        upfEvents:
+          type: array
+          items:
+            $ref: 'TS29564_Nupf_EventExposure.yaml#/components/schemas/UpfEvent'
+          description: Indicates UPF event exposure information.
+          minItems: 1
       required:
         - event
 
@@ -493,6 +516,19 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
           minItems: 1
           description: The candidate DNAI(s) for the PDU Session.
+        candDnaisPrioInd:
+          type: boolean
+          description: >
+            If provided and set to true, it indicates that the candidate DNAIs provided
+            in the candidateDnais attribute are in descending priority order, i.e.,
+            the lower the array index the higher the priority of the respective DNAI.
+            If omitted, the default value is false.
+        easRediscoverInd:
+          type: boolean
+          description: >
+            Indication of EAS re-discovery. If present and set to "true", it indicates the EAS
+            re-discovery is performed, e.g. due to change of common EAS. Default value is "false" if
+            omitted.
         sourceUeIpv4Addr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         sourceUeIpv6Prefix:
@@ -545,6 +581,8 @@ components:
           minItems: 1
         pduSessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+        sscMode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SscMode'
         qfi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
         appId:
@@ -632,8 +670,13 @@ components:
         pdmf:
           type: boolean
           description: Represents the packet delay measurement failure indicator.
+        satBackhaulCat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        targetAfId:
+          type: string
+          description: Identifier of the Application Function responsible for the target DNAI.
       required:
         - event
         - timeStamp
@@ -770,6 +813,8 @@ components:
           - WLAN_INFO
           - UPF_INFO
           - UP_STATUS_INFO
+          - SATB_CH
+          - 5QI_INFO
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -796,6 +841,8 @@ components:
           RAT Type is TRUSTED_WLAN.
         - UPF_INFO: The UPF information, including the UPF ID/address/FQDN information.
         - UP_STATUS_INFO: The User Plane status information.
+        - SATB_CH: Satellite backhaul category change.
+        - 5QI_INFO: Indicates that the event subscribed is related to 5QI.
 
     NotificationMethod:
       anyOf:

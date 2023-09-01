@@ -1,0 +1,750 @@
+; ----------------------------------------
+;   RFC 5234
+; ----------------------------------------
+
+HTAB   = %x09 ; horizontal tab
+
+LF     = %x0A ; linefeed
+
+CR     = %x0D ; carriage return
+
+SP     = %x20
+
+DQUOTE = %x22 ; " (Double Quote)
+
+DIGIT  = %x30-39 ; 0-9
+
+ALPHA  = %x41-5A / %x61-7A ; A-Z / a-z
+
+VCHAR  = %x21-7E ; visible (printing) characters
+
+WSP    = SP / HTAB ; white space
+
+CRLF   = CR LF ; Internet standard newline
+
+HEXDIG = DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
+
+
+
+; ----------------------------------------
+;   RFC 3986
+; ----------------------------------------
+
+unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+
+pct-encoded   = "%" HEXDIG HEXDIG
+
+sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+
+pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+
+segment       = *pchar
+
+segment-nz    = 1*pchar
+
+path-abempty  = *( "/" segment )
+
+path-absolute = "/" [ segment-nz *( "/" segment ) ]
+
+path-rootless = segment-nz *( "/" segment )
+
+path-empty    = 0pchar
+
+IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
+
+dec-octet     = "25" %x30-35 / "2" %x30-34 DIGIT / "1" 2DIGIT / %x31-39 DIGIT / DIGIT
+
+h16           = 1*4HEXDIG
+
+ls32          = ( h16 ":" h16 ) / Ipv4address
+
+Ipv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
+
+Ipv6address   = 6( h16 ":" ) ls32 
+              / "::" 5( h16 ":" ) ls32 
+              / [ h16 ] "::" 4( h16 ":" ) ls32 
+              / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32 
+              / [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
+              / [ *3( h16 ":" ) h16 ] "::" h16 ":" ls32
+              / [ *4( h16 ":" ) h16 ] "::" ls32
+              / [ *5( h16 ":" ) h16 ] "::" h16
+              / [ *6( h16 ":" ) h16 ] "::"
+
+IP-literal    = "[" ( Ipv6address / IpvFuture  ) "]"
+
+reg-name      = *( unreserved / pct-encoded / sub-delims )
+
+host          = IP-literal / Ipv4address / reg-name
+
+port          = *DIGIT
+
+scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+
+userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
+
+authority     = [ userinfo "@" ] host [ ":" port ]
+
+hier-part     = "//" authority path-abempty / path-absolute / path-rootless / path-empty
+
+query         = *( pchar / "/" / "?" )
+
+fragment      = *( pchar / "/" / "?" )
+
+URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+
+
+
+; ----------------------------------------
+;   RFC 5322
+; ----------------------------------------
+
+obs-FWS         = 1*WSP *( CRLF 1*WSP )
+
+FWS             = ( [ *WSP CRLF ] 1*WSP ) / obs-FWS
+
+obs-NO-WS-CTL   = %d1-8 / %d11 / %d12 / %d14-31 / %d127
+
+obs-ctext       = obs-NO-WS-CTL
+
+ctext           = %d33-39 / %d42-91 / %d93-126 / obs-ctext
+
+obs-qp          = "\" ( %d0 / obs-NO-WS-CTL / LF / CR )
+
+quoted-pair     = ( "\" ( VCHAR / WSP ) ) / obs-qp
+
+ccontent        = ctext / quoted-pair / comment
+
+comment         = "(" *( [ FWS ] ccontent ) [ FWS ] ")"
+
+CFWS            = ( 1*( [ FWS ] comment ) [ FWS ] ) / FWS
+
+day-name        = "Mon" / "Tue" / "Wed" / "Thu" / "Fri" / "Sat" / "Sun"
+
+obs-day-of-week = [ CFWS ] day-name [ CFWS ]
+
+day-of-week     = ( [ FWS ] day-name ) / obs-day-of-week
+
+obs-day         = [ CFWS ] 1*2DIGIT [ CFWS ]
+
+day             = ( [ FWS ] 1*2DIGIT FWS ) / obs-day
+
+month           = "Jan" / "Feb" / "Mar" / "Apr" / "May" / "Jun"
+                / "Jul" / "Aug" / "Sep" / "Oct" / "Nov" / "Dec"
+
+obs-year        = [ CFWS ] 2*DIGIT [ CFWS ]
+
+year            = ( FWS 4*DIGIT FWS ) / obs-year
+
+date            = day month year
+
+obs-hour        = [ CFWS ] 2DIGIT [ CFWS ]
+
+hour            = obs-hour / 2DIGIT
+
+obs-minute      = [ CFWS ] 2DIGIT [ CFWS ]
+
+minute          = obs-minute / 2DIGIT
+
+obs-second      = [ CFWS ] 2DIGIT [ CFWS ]
+
+second          = obs-second / 2DIGIT
+
+time-of-day     = hour ":" minute [ ":" second ]
+
+obs-zone        = "UT" / "GMT" / "EST" / "EDT" / "CST" / "CDT" / "MST" / "MDT"
+                / "PST" / "PDT" / %d65-73 / %d75-90 / %d97-105 / %d107-122
+
+zone            = ( FWS ( "+" / "-" ) 4DIGIT ) / obs-zone
+
+time            = time-of-day zone
+
+date-time       = [ day-of-week "," ] date time [ CFWS ]
+
+
+
+; ----------------------------------------
+;   RFC 6749
+; ----------------------------------------
+
+NQCHAR = %x21 / %x23-5B / %x5D-7E
+
+
+
+; ----------------------------------------
+;   RFC 7230
+; ----------------------------------------
+
+OWS            = *( SP / HTAB )
+
+RWS            = 1*( SP / HTAB )
+
+tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-"
+               / "." / "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA
+
+token          = 1*tchar
+
+BWS            = OWS
+
+quoted-string  = DQUOTE *( qdtext / quoted-pair ) DQUOTE
+
+qdtext         = HTAB / SP /%x21 / %x23-5B / %x5D-7E / obs-text
+
+obs-text       = %x80-FF
+
+
+
+; ----------------------------------------
+;   RFC 7231
+; ----------------------------------------
+
+date1          = day-rfc7231 SP month-rfc7231 SP year-rfc7231 ; e.g., 02 Jun 1982
+
+day-rfc7231    = 2DIGIT
+
+month-rfc7231  = %x4A.61.6E ; "Jan", case-sensitive
+               / %x46.65.62 ; "Feb", case-sensitive
+               / %x4D.61.72 ; "Mar", case-sensitive
+               / %x41.70.72 ; "Apr", case-sensitive
+               / %x4D.61.79 ; "May", case-sensitive
+               / %x4A.75.6E ; "Jun", case-sensitive
+               / %x4A.75.6C ; "Jul", case-sensitive
+               / %x41.75.67 ; "Aug", case-sensitive
+               / %x53.65.70 ; "Sep", case-sensitive
+               / %x4F.63.74 ; "Oct", case-sensitive
+               / %x4E.6F.76 ; "Nov", case-sensitive
+               / %x44.65.63 ; "Dec", case-sensitive
+
+year-rfc7231   = 4DIGIT
+
+codings        = content-coding / "identity" / "*"
+
+content-coding = token
+
+weight         = OWS ";" OWS "q=" qvalue
+
+qvalue         = ( "0" [ "." *3DIGIT ] ) / ( "1" [ "." *3"0" ] )
+
+
+
+; ----------------------------------------
+;   RFC 7235
+; ----------------------------------------
+
+credentials = auth-scheme [ 1*SP ( token68
+            / [ ( "," / auth-param ) *( OWS "," [ OWS auth-param ] ) ] ) ]
+
+auth-scheme = token
+
+auth-param  = token BWS "=" BWS ( token / quoted-string )
+
+token68     = 1*( ALPHA / DIGIT / "-" / "." / "_" / "~" / "+" / "/" ) *"="
+
+
+
+; ----------------------------------------
+;   3GPP TS 29.500
+;
+;   Version: 18.2.0 (June 2023)
+;
+;   (c) 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+; ----------------------------------------
+
+
+;
+; Header: 3gpp-Sbi-Message-Priority
+;
+
+Sbi-Message-Priority-Header = "3gpp-Sbi-Message-Priority:" OWS
+                              ( "3" %x30-31 / %x31-32 DIGIT / DIGIT ) OWS
+
+
+
+;
+; Header: 3gpp-Sbi-Callback
+;
+
+Sbi-Callback-Header = "3gpp-Sbi-Callback:" OWS cbtype *1( ";" OWS "apiversion=" majorversion ) OWS
+
+cbchar              = "-" / "_" / DIGIT / ALPHA
+
+cbtype              = 1*cbchar
+
+majorversion        = *DIGIT  
+
+
+
+;
+; Header: 3gpp-Sbi-Target-apiRoot
+;
+
+Sbi-Target-ApiRoot-Header = "3gpp-Sbi-Target-apiRoot:" OWS sbi-scheme "://" sbi-authority
+                            [ prefix ] OWS
+
+sbi-scheme                = "https" / "http"
+
+sbi-authority             = host [ ":" port ]
+
+prefix                    = path-absolute
+
+
+
+;
+; Header: 3gpp-Sbi-Routing-Binding
+;
+
+Sbi-Routing-Binding-Header = "3gpp-Sbi-Routing-Binding:" OWS "bl=" blvalue
+                             1*( ";" OWS parameter ) OWS
+
+blvalue                    = "nf-instance"
+                           / "nf-set"
+                           / "nfservice-instance"
+                           / "nfservice-set"
+
+parametername              = "nfinst"
+                           / "nfset"
+                           / "nfservinst"
+                           / "nfserviceset"
+                           / "servname"
+                           / "backupamfinst"
+                           / "backupnf"
+
+parameter                  = parametername "=" token
+
+
+
+;
+; Header: 3gpp-Sbi-Binding
+;
+
+Sbi-Binding-Header = "3gpp-Sbi-Binding:" OWS binding-element *( OWS "," OWS binding-element ) OWS
+
+binding-element    = "bl=" blvalue 1*( ";" OWS bh-parameter )
+                     [ ";" OWS recoverytime ]
+                     [ ";" OWS notif-receiver ]
+                     [ ";" OWS "group=" groupvalue ]
+                     [ 1*( ";" OWS groupparameter ) ]
+                     [ ";" OWS "no-redundancy=" no-red-value ]
+
+bh-parametername   = parametername / "scope"
+
+bh-parameter       = bh-parametername "=" token
+
+recoverytime       = "recoverytime=" OWS DQUOTE date-time DQUOTE
+
+notif-receiver     = "nr=" URI
+
+groupvalue         = "true" / "false"
+
+groupparametername = "oldgroupid"
+                   / "groupid"
+                   / "uribase"
+                   / "oldnfinst"
+                   / "oldservset"
+                   / "oldservinst"
+                   / "guami"
+
+groupparameter     = groupparametername "=" token
+
+no-red-value       = "true" 
+
+
+
+;
+; Header: 3gpp-Sbi-Producer-Id
+;
+
+Sbi-Producer-Id-Header = "3gpp-Sbi-Producer-Id:" OWS "nfinst=" nfinst
+                         [ OWS ";" OWS "nfservinst=" nfservinst ]
+                         [ OWS ";" OWS "nfset=" nfset ]
+                         [ OWS ";" OWS "nfserviceset=" nfserviceset ] OWS
+
+nfinst                 = 8HEXDIG "-" 4HEXDIG "-" 4HEXDIG "-" 4HEXDIG "-" 12HEXDIG
+
+nfservinst             = token
+
+nfset                  = token
+
+nfserviceset           = token
+
+
+
+;
+; Header: 3gpp-Sbi-Oci
+;
+
+Sbi-Oci-Header  = "3gpp-Sbi-Oci:" OWS oci-element *( OWS "," OWS oci-element ) OWS
+
+oci-element     = timestamp ";" RWS validityPeriod ";" RWS olcMetric ";" RWS olcScope
+
+timestamp       = "Timestamp:" RWS DQUOTE date-time DQUOTE
+
+validityPeriod  = "Period-of-Validity:" RWS 1*DIGIT "s"
+
+olcMetric       = "Overload-Reduction-Metric:" RWS ( "100" / %x31-39 DIGIT / DIGIT ) "%"
+
+olcScope        = nfProducerScope / nfConsumerScope / scpScope / seppScope
+
+nfProducerScope = ( ( "NF-Instance:" RWS nfinst ) 
+                  / ( "NF-Set:" RWS nfset ) 
+                  / ( "NF-Service-Instance:" RWS nfservinst [ ";" RWS "NF-Inst:" RWS nfinst ] )
+                  / ( "NF-Service-Set:" RWS nfserviceset )
+                  ) [ ";" RWS sNssaiList ";" RWS dnnList ]
+
+nfConsumerScope = ( "NFC-Instance:" RWS nfinst [ ";" RWS "Service-Name:" RWS servname ] )
+                / ( "NFC-Set:" RWS nfset [ ";" RWS "Service-Name:" RWS servname ])
+                / ( "NFC-Service-Instance:" RWS nfservinst [";" RWS "NF-Inst:" RWS nfinst ] )
+                / ( "NFC-Service-Set:" RWS nfserviceset )
+                / ( "Callback-Uri:" RWS URI *( RWS "&" RWS URI))
+
+servname        = token
+
+scpScope        = "SCP-FQDN:" RWS fqdn
+
+seppScope       = "SEPP-FQDN:" RWS fqdn
+
+fqdn            = token
+
+dnnList         = "DNN:" RWS 1*tchar *( RWS "&" RWS 1*tchar )
+
+sNssaiList      = "S-NSSAI:" RWS snssai *( RWS "&" RWS snssai )
+
+snssai          = 1*tchar
+
+
+
+;
+; Header: 3gpp-Sbi-Lci
+;
+
+Sbi-Lci-Header    = "3gpp-Sbi-Lci:" OWS lc-element *( OWS "," OWS lc-element ) OWS
+
+lc-element        = timestamp ";" RWS lcMetric ";" RWS lcScope
+
+lcMetric          = "Load-Metric:" RWS ( "100" / %x31-39 DIGIT / DIGIT ) "%"
+
+lcScope           = lcNfProducerScope / scpScope / seppScope
+
+lcNfProducerScope = ( ( "NF-Instance:" RWS nfinst )
+                    / ( "NF-Set:" RWS nfset)
+                    / ( "NF-Service-Instance:" RWS nfservinst [ ";" RWS "NF-Inst:" RWS nfinst ] )
+                    / ( "NF-Service-Set:" RWS nfserviceset)
+                    ) [ ";" RWS sNssaiList ";" RWS dnnList ";" RWS relativeCapacity ]
+
+relativeCapacity  = "Relative-Capacity:" RWS ( "100" / 1*2DIGIT ) "%"
+
+
+
+;
+; Header: 3gpp-Sbi-Client-Credentials
+;
+
+Sbi-Client-Credentials-Header = "3gpp-Sbi-Client-Credentials:" OWS jwt OWS
+
+jwt                           = 1*b64urlchar "." 1*b64urlchar "." 1*b64urlchar
+
+b64urlchar                    = ALPHA / DIGIT / "-" / "_"
+
+
+
+;
+; Header: 3gpp-Sbi-Nrf-Uri
+;
+
+Sbi-Nrf-Uri-Header = "3gpp-Sbi-Nrf-Uri:" OWS nrfUriParam *( OWS ";" OWS nrfUriParam ) OWS
+
+nrfUriParam        = nrfUriParamName ":" RWS ( nrfUriParamValue1 / nrfUriParamValue2 )
+
+nrfUriParamName    = "nnrf-disc" / "nnrf-nfm" / "nnrf-oauth2" / "oauth2-requested-services" / token
+
+nrfUriParamValue1  = DQUOTE URI DQUOTE
+
+nrfUriParamValue2  = ( nrfServiceName *( RWS "&" RWS nrfServiceName ) )
+
+nrfServiceName     = "nnrf-disc" / "nnrf-nfm"
+
+
+
+;
+; Header: 3gpp-Sbi-Target-Nf-Id
+;
+
+Sbi-Target-Nf-Id-Header = "3gpp-Sbi-Target-Nf-Id:" OWS "nfinst=" nfinst
+                          [ ";" OWS "nfservinst=" nfservinst ] OWS
+
+
+
+;
+; Header: 3gpp-Sbi-Max-Forward-Hops
+;
+
+Sbi-Max-Forward-Hops-Header = "3gpp-Sbi-Max-Forward-Hops:" OWS ( %x31-39 DIGIT / DIGIT )
+                              ";" OWS "nodetype=" nodetypevalue OWS
+
+nodetypevalue               = "scp"
+
+
+
+;
+; Header: 3gpp-Sbi-Originating-Network-Id
+;
+
+Sbi-Originating-Network-Id-Header = "3gpp-Sbi-Originating-Network-Id:" OWS 3DIGIT "-" 2*3DIGIT
+                                    [ "-" 11HEXDIG ] [ ";" OWS srcinfo ] OWS
+
+srcinfo                           = "src" ":" RWS srctype "-" srcfqdn
+
+srctype                           = "SCP" / "SEPP"
+
+srcfqdn                           = 4*( ALPHA / DIGIT / "-" / "." )
+
+
+
+;
+; Header: 3gpp-Sbi-Access-Scope
+;
+
+Sbi-Access-Scope-Header = "3gpp-Sbi-Access-Scope:" OWS scope-token *( SP scope-token ) OWS
+
+scope-token             = 1*NQCHAR
+
+
+
+;
+; Header: 3gpp-Sbi-Access-Token
+;
+
+Sbi-Access-Token-Header = "3gpp-Sbi-Access-Token:" OWS credentials OWS
+
+
+
+;
+; Header: 3gpp-Sbi-Target-Nf-Group-Id
+;
+
+Sbi-Target-Nf-Group-Id-Header = "3gpp-Sbi-Target-Nf-Group-Id:" OWS "nfgid=" nfGroupIdValue OWS
+
+nfGroupIdValue                = DQUOTE token DQUOTE
+
+
+
+;
+; Header: 3gpp-Sbi-Nrf-Uri-Callback
+;
+
+Sbi-Nrf-Uri-Callback-Header = "3gpp-Sbi-Nrf-Uri-Callback:" OWS
+                              nrfUriCallbackParam *( OWS ";" OWS nrfUriCallbackParam ) OWS
+
+nrfUriCallbackParam         = nrfUriCallbackParamName ":" RWS nrfUriCallbackParamValue
+
+nrfUriCallbackParamName     = "nnrf-disc" / "nnrf-nfm" / token
+
+nrfUriCallbackParamValue    = DQUOTE URI DQUOTE
+
+
+
+;
+; Header: 3gpp-Sbi-NF-Peer-Info
+;
+
+Sbi-NF-Peer-Info-Header = "3gpp-Sbi-NF-Peer-Info:" OWS peerinfo *( ";" OWS peerinfo ) OWS
+
+peerinfo                = peertype "=" token
+
+peertype                = "srcinst"
+                        / "srcservinst"
+                        / "srcscp"
+                        / "srcsepp"
+                        / "dstinst"
+                        / "dstservinst"
+                        / "dstscp"
+                        / "dstsepp"
+
+
+
+;
+; Header: 3gpp-Sbi-Sender-Timestamp
+;
+
+Sbi-Sender-Timestamp-Header = "3gpp-Sbi-Sender-Timestamp:" OWS
+                              day-name "," SP date1 SP time-of-day "." milliseconds SP "GMT" OWS
+
+milliseconds                = 3DIGIT
+
+
+
+;
+; Header: 3gpp-Sbi-Max-Rsp-Time
+;
+
+Sbi-Max-Rsp-Time-Header = "3gpp-Sbi-Max-Rsp-Time:" OWS 1*5DIGIT OWS
+
+
+
+;
+; Header: 3gpp-Sbi-Correlation-Info
+;
+
+Sbi-Correlation-Info-Header = "3gpp-Sbi-Correlation-Info:" OWS
+                              correlationinfo *( ";" OWS correlationinfo ) OWS
+
+correlationinfo             = ctype "-" cvalue
+
+ctype                       = "imsi" / "impi" / "suci" / "nai" / "gci" / "gli" / "impu"
+                            / "msisdn" / "extid" / "imeisv" / "imei" / "mac" / "eui" / token
+
+cvalue                      = 1*( tchar / "@" )
+
+
+
+;
+; Header: 3gpp-Sbi-Alternate-Chf-Id
+;
+
+Sbi-Alternate-Chf-Id-Header = "3gpp-Sbi-Alternate-Chf-Id:" OWS
+                              "nfinst=" nfinst ";" OWS ( "primary" / "secondary" ) OWS
+
+
+
+;
+; Header: 3gpp-Sbi-Notif-Accepted-Encoding
+;
+
+Sbi-Notif-Accepted-Encoding-Header = "3gpp-Sbi-Notif-Accepted-Encoding:" OWS
+                                     encoding-element *( OWS "," OWS encoding-element ) OWS
+
+encoding-element                   = codings [ weight ]
+
+
+
+;
+; Header: 3gpp-Sbi-Consumer-Info
+;
+
+Sbi-Consumer-Info-Header = "3gpp-Sbi-Consumer-Info:" OWS
+                           consumer-info-element *( OWS "," OWS consumer-info-element ) OWS
+
+consumer-info-element    = ( supportedService ";" OWS supportedVersions 
+                             [ ";" OWS supportedFeatures ]
+                             [ ";" OWS acceptEncoding ]
+                             [ ";" OWS callback-uri-prefix ]
+                           ) [ ";" OWS intraPlmnCallbackRoot ";" OWS interPlmnCallbackRoot ]
+
+supportedService         = "service=" servicename
+
+servicename              = 1*( "-" / %x61-7A )
+
+supportedVersions        = "apiversion=" "(" OWS
+                           [ apimajorversion *( RWS apimajorversion ) OWS ] ")"
+
+apimajorversion          = %x31-39 [ *DIGIT ]
+
+supportedFeatures        = "supportedfeatures=" features
+
+features                 = *HEXDIG
+
+acceptEncoding           = "acceptencoding=" %x22 encodingList %x22
+
+encodingList             = [ encoding-element *( OWS "," OWS encoding-element ) ]
+
+intraPlmnCallbackRoot    = "intraPlmnCallbackRoot="
+                           DQUOTE sbi-scheme "://" sbi-authority [ prefix ] DQUOTE
+
+interPlmnCallbackRoot    = "interPlmnCallbackRoot="
+                           DQUOTE sbi-scheme "://" sbi-authority [ prefix ] DQUOTE
+
+callback-uri-prefix      = "callback-uri-prefix=" DQUOTE prefix DQUOTE
+
+
+
+;
+; Header: 3gpp-Sbi-Response-Info
+;
+
+Sbi-Response-Info-Header = "3gpp-Sbi-Response-Info:" OWS
+                           resp-info-param *( OWS ";" OWS resp-info-param ) OWS
+
+resp-info-param          = resp-info-param-name "=" OWS resp-info-param-value
+
+resp-info-param-name     = "request-retransmitted"
+                         / "nfinst"
+                         / "nfset"
+                         / "nfservinst"
+                         / "nfserviceset"
+                         / "context-transferred"
+                         / "no-retry"
+                         / token
+
+resp-info-param-value    = token
+
+
+
+;
+; Header: 3gpp-Sbi-Selection-Info
+;
+
+Sbi-Selection-Info-Header = "3gpp-Sbi-Selection-Info:" OWS
+                            selection-info-element *( OWS "," OWS selection-info-element ) OWS
+
+selection-info-element    = ( "reselection=" reselectionvalue *( ";" OWS selection-criteria ) )
+                          / ( selection-criteria *( ";" OWS selection-criteria ) )
+
+reselectionvalue          = "true" / "false"
+
+selection-criteria        = selection-action "=" token
+
+selection-action          = "not-select-nfservinst"
+                          / "not-select-nfserviceset"
+                          / "not-select-nfinst"
+                          / "not-select-nfset"
+
+
+
+;
+; Header: 3gpp-Sbi-Interplmn-Purpose
+;
+
+Sbi-Interplmn-Purpose-Header = "3gpp-Sbi-Interplmn-Purpose:" OWS N32Purpose ":" OWS
+                               additional-info OWS
+
+N32Purpose                   = "ROAMING"
+                             / "INTER_PLMN_MOBILITY"
+                             / "SMS_INTERCONNECT"
+                             / "ROAMING_TEST"
+                             / "INTER_PLMN_MOBILITY_TEST"
+                             / "SMS_INTERCONNECT_TEST"
+                             / "SNPN_INTERCONNECT"
+                             / "SNPN_INTERCONNECT_TEST"
+                             / "DISASTER_ROAMING"
+                             / "DISASTER_ROAMING_TEST"
+                             / token
+
+additional-info              = token
+
+
+
+;
+; Header: 3gpp-Sbi-Request-Info
+;
+
+Sbi-Request-Info-Header = "3gpp-Sbi-Request-Info:" OWS req-param *( ";" OWS req-param ) OWS
+
+req-param               = req-param-name "=" OWS req-param-value
+
+req-param-name          = "retrans" 
+                        / "redirect"
+                        / "reason"
+                        / "idempotency-key"
+                        / "receivedrejectioncause"
+                        / token
+
+req-param-value         = token
+
+
+
+;
+; Header: 3gpp-Sbi-Retry-Info
+;
+
+Sbi-Retry-Info-Header = "3gpp-Sbi-Retry-Info:" OWS retriesindication OWS
+
+retriesindication     = "no-retries"

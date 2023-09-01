@@ -1,10 +1,10 @@
 openapi: 3.0.1
 info:
   title: Slice NRM
-  version: 18.3.0
+  version: 18.4.0
   description: >-
     OAS 3.0.1 specification of the Slice NRM
-    @ 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    @ 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: 3GPP TS 28.541; 5G NRM, Slice NRM
@@ -163,7 +163,9 @@ components:
         servAttrCom:
           $ref: '#/components/schemas/ServAttrCom'
         nROperatingBands:
-          type: string
+          type: array
+          items: 
+            type: string
     Synchronicity:
       type: object
       properties:
@@ -227,6 +229,8 @@ components:
         nsInstanceId:
           type: string
         nsName:
+          type: string
+        description:
           type: string
     EmbbEEPerfReq:
       type: object
@@ -379,7 +383,9 @@ components:
         uLMaxPktSize:
           type: integer
         nROperatingBands:
-          type: string
+          type: array
+          items: 
+            type: string
         delayTolerance:
           $ref: '#/components/schemas/DelayTolerance'
         positioning:
@@ -422,7 +428,9 @@ components:
         maxNumberOfPDUSessions:
           type: integer
         nROperatingBands:
-          type: string
+          type: array
+          items: 
+            type: string
         sliceSimultaneousUse:
           $ref: '#/components/schemas/SliceSimultaneousUse'
         energyEfficiency:
@@ -513,10 +521,8 @@ components:
             $ref: '#/components/schemas/UserMgmtOpen'
           v2XCommModels:
             $ref: '#/components/schemas/V2XCommModels'
-          coverageAreas:
-            type: array
-            items:
-              type: string
+          coverageArea:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/GeoArea'
           termDensity:
             $ref: '#/components/schemas/TermDensity'
           activityFactor:
@@ -544,7 +550,7 @@ components:
     SliceProfile:
       type: object
       properties:
-          serviceProfileId: 
+          sliceProfileId: 
             type: string
           plmnInfoList:
             $ref: 'TS28541_NrNrm.yaml#/components/schemas/PlmnInfoList'
@@ -571,6 +577,35 @@ components:
             - Segment
          logicalInterfaceId:
            type: string
+         systemName:
+           type: string
+         portName:
+           type: string
+         routingProtocol:
+           type: string
+           enum: 
+            - RIP
+            - IGMP
+            - OSPF
+            - EGP
+            - EIGRP
+            - BGP
+            - IS-IS
+
+    ConnectionPointInfo:
+      type: object
+      properties:
+         connectionPointId:
+           type: string
+         connectionPointIdType:
+           type: string
+           enum: 
+            - VLAN
+            - MPLS
+            - SEGMENT
+            - IPV4
+            - IPV6
+            - ATTACHMENT_CIRCUIT
 
     ServiceProfileList:
        type: array
@@ -663,6 +698,10 @@ components:
               $ref: '#/components/schemas/NetworkSliceSubnetProviderCapabilities-Multiple'
             FeasibilityCheckAndReservationJob:
               $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Multiple'
+            NetworkSliceController:
+              $ref: '#/components/schemas/NetworkSliceController-Multiple'
+            NetworkSliceSubnetController:
+              $ref: '#/components/schemas/NetworkSliceSubnetController-Multiple'
 
 
     NetworkSlice-Single:
@@ -682,6 +721,8 @@ components:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
                     serviceProfileList:
                       $ref: '#/components/schemas/ServiceProfileList'
+                    networkSliceControllerRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
 
     NetworkSliceSubnet-Single:
       allOf:
@@ -714,6 +755,8 @@ components:
                         - TOP_SLICESUBNET
                         - RAN_SLICESUBNET
                         - CN_SLICESUBNET
+                    networkSliceSubnetControllerRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
 
     EP_Transport-Single:
       allOf:
@@ -725,15 +768,17 @@ components:
               properties:
                 ipAddress:
                   $ref: '#/components/schemas/IpAddress'
-                logicalInterfaceInfo:
+                localLogicalInterfaceInfo:
                   $ref: '#/components/schemas/LogicalInterfaceInfo'
-                nextHopInfo:
-                  type: string 
                 qosProfile:
                   type: string 
                 epApplicationRefs:
                   $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
-    
+                connectionPointRefList:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ConnectionPointInfo'
+   
     NetworkSliceSubnetProviderCapabilities-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -786,6 +831,52 @@ components:
                 recommendedRequirements:
                   $ref: '#/components/schemas/RecommendedRequirements'
 
+    NetworkSliceController-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties: 
+            attributes:
+              type: object
+              properties:
+                inputServiceProfile:
+                  $ref: '#/components/schemas/ServiceProfile'
+                serviceProfileId: 
+                  type: string
+                operationalState:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/OperationalState'
+                administrativeState:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
+                availabilityStatus:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/AvailabilityStatus'
+                processMonitor:
+                  $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ProcessMonitor'
+                networkSliceRef:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+    NetworkSliceSubnetController-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties: 
+            attributes:
+              type: object
+              properties:
+                inputSliceProfile:
+                  $ref: '#/components/schemas/SliceProfile'
+                sliceProfileId: 
+                  type: string
+                operationalState:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/OperationalState'
+                administrativeState:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
+                availabilityStatus:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/AvailabilityStatus'
+                processMonitor:
+                  $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ProcessMonitor'
+                networkSliceSubnetRef:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------
     SubNetwork-Multiple:
       type: array
@@ -815,7 +906,17 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Single'   
-        
+
+    NetworkSliceController-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/NetworkSliceController-Single'   
+
+    NetworkSliceSubnetController-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/NetworkSliceSubnetController-Single'
+
 #------------ Definitions in TS 28.541 for TS 28.532 -----------------------------
 
     resources-sliceNrm:
@@ -827,4 +928,7 @@ components:
        - $ref: '#/components/schemas/NetworkSliceSubnet-Single'
        - $ref: '#/components/schemas/EP_Transport-Single'
        - $ref: '#/components/schemas/NetworkSliceSubnetProviderCapabilities-Single'
-       - $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Single'       
+       - $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Single'
+       - $ref: '#/components/schemas/NetworkSliceController-Single'
+       - $ref: '#/components/schemas/NetworkSliceSubnetController-Single'
+    

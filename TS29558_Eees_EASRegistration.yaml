@@ -6,11 +6,11 @@ info:
     API for EAS Registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.1.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.2.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -303,6 +303,11 @@ components:
           description: Identifier of the EAS.
         endPt:
           $ref: '#/components/schemas/EndPoint'
+        easBdlInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/EASBundleInfo'
+          minItems: 1
         acIds:
           type: array
           items:
@@ -396,6 +401,16 @@ components:
         connBand:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
 
+    EASBundleInfo:
+      type: object
+      description: Represents the EAS bundle information.
+      properties:
+        bdlId:
+          type: string
+          description: Indicates a bundle ID.
+      required:
+        - bdlId
+
     EndPoint:
       type: object
       description: The end point information to reach EAS.
@@ -449,6 +464,7 @@ components:
         enum:
           - UAS
           - V2X
+          - SEAL_SEALDD_SERVERS
           - OTHER
       - type: string
         description: >
@@ -458,15 +474,16 @@ components:
       description: |
         Indicates the category or type of the EAS.  
         Possible values are:
-        - UAS: Category of EAS is for Uncrewed Aerial Services.
+        - UAS: Indicates that the EAS category is for UAS services.
         - V2X: Category of EAS is for V2X Services.
+        - SEALDD: Indicates that the EAS category is SEALDD Server for SEALDD services.
         - OTHER: Any other type of EAS category.
 
     TransContSuppDetails:
       type: object
       description: >
-        Represents the detailed information about the seamless EAS transport layer
-        relocation support.
+        Represents the detailed information about the EAS (e.g. SEALDD Server) capability for
+        seamless transport layer service continuity.
       properties:
         transProtocs:
           type: array
@@ -474,8 +491,8 @@ components:
             $ref: '#/components/schemas/TransportProtocol'
           minItems: 1
           description: >
-            Indicates the transport layer protocols that are supported for
-            the seamless EAS transport layer relocation.
+            Indicates the transport layer protocols supported for EAS context transfer using
+            the seamless transport layer service continuity capability.
       required:
         - transProtocs
 
@@ -488,12 +505,12 @@ components:
           - TCP_TLS
       - type: string
         description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration and is not used to encode
-          content defined in the present version of this API.
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
       description: |
         Indicates the transport layer protocol.  
         Possible values are:
-        - QUIC: UDP-Based Multiplexed and Secure Transport (QUIC) protocol.
-        - TCP: Transmission Control Protocol.
-        - TCP_TLS: Transmission Control Protocol (TCP) with Transport Layer Security (TLS) Protocol.
+        - QUIC: Indicates the QUIC protocol.
+        - TCP: Indicates the Transmission Control (TCP) Protocol.
+        - TCP_TLS: Indicates the Transmission Control Protocol (TCP) with Transport Layer Security
+          (TLS) protocol.

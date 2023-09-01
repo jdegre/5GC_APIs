@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.1.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -759,6 +759,16 @@ paths:
             type: array
             items:
               type: string
+            minItems: 1
+        - name: roam-ue-plmn-ids
+          in: query
+          description: >
+            Each element identifies a PLMN. 
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
             minItems: 1
       responses:
         '200':
@@ -3182,6 +3192,8 @@ components:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverPc5'
         paramOverUu:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverUu'
+        a2xParamsPc5:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/A2xParamsPc5'
         paramForProSeDd:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeDd'
         paramForProSeDc:
@@ -3232,6 +3244,8 @@ components:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverPc5'
         paramOverUu:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverUu'
+        a2xParamsPc5:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/A2xParamsPc5'
         paramForProSeDd:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeDd'
         paramForProSeDc:
@@ -3278,6 +3292,14 @@ components:
         anyUeInd:
           type: boolean
           description: Indicates whether the data is applicable for any UE.
+        roamUePlmnIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          minItems: 1
+          description: >
+            Indicates a list of PLMNs representing the home PLMN for the inbound roaming
+            UEs in LBO roaming scenario.
         policyDuration:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
         evSubs:
@@ -3323,6 +3345,7 @@ components:
           - required: [supi]
           - required: [interGroupId]
           - required: [anyUeInd]
+          - required: [roamUePlmnIds]
 
     AmInfluDataPatch:
       description: Represents the AM Influence Data that can be updated.

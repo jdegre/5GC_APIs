@@ -1,6 +1,7 @@
 openapi: 3.0.0
+
 info:
-  version: 1.3.0-alpha.2
+  version: 1.3.0-alpha.3
   title: Naf_EventExposure
   description: |
     AF Event Exposure Service.  
@@ -9,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.517 V18.1.0; 5G System; Application Function Event Exposure Service; Stage 3.
+    3GPP TS 29.517 V18.2.0; 5G System; Application Function Event Exposure Service; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.517/
 
 servers:
@@ -116,6 +117,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/503'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /subscriptions/{subscriptionId}:
     get:
       summary: "Reads an existing Individual Application Event Subscription"
@@ -166,6 +168,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
     put:
       summary: "Modifies an existing Individual Application Event Subscription "
       operationId: PutAfEventExposureSubsc
@@ -221,6 +224,7 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
     delete:
       summary: "Cancels an existing Individual Application Event Subscription "
       operationId: DeleteAfEventExposureSubsc
@@ -288,6 +292,7 @@ components:
       required:
         - notifId
         - eventNotifs
+
     AfEventExposureSubsc:
       description: Represents an Individual Application Event Subscription resource.
       type: object
@@ -317,6 +322,7 @@ components:
         - eventsRepInfo
         - notifId
         - notifUri
+
     AfEventNotification:
       description: Represents information related to an event to be reported.
       type: object
@@ -390,9 +396,17 @@ components:
           items:
             $ref: '#/components/schemas/MSAccessActivityCollection'
           minItems: 1
+        gnssAssistDataInfo:
+            $ref: 'TS29591_Nnef_EventExposure.yaml#/components/schemas/GNSSAssistDataInfo'
+        datVolTransTimeInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatVolTransTimeCollection'
+          minItems: 1
       required:
         - event
         - timeStamp
+
     EventsSubs:
       description: Represents an event to be subscribed and the related event filter information.
       type: object
@@ -404,6 +418,7 @@ components:
       required:
         - event
         - eventFilter
+
     EventFilter:
       description: Represents event filter information for an event.
       type: object
@@ -448,6 +463,13 @@ components:
           items:
             $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/Exception'
           minItems: 1
+      oneOf:
+        - required: [gpsis]
+        - required: [supis]
+        - required: [exterGroupIds]
+        - required: [interGroupIds]
+        - required: [anyUeInd]
+        - required: [ueIpAddr]
 
     ServiceExperienceInfoPerApp:
       description: Contains service experience information associated with an application.
@@ -472,8 +494,14 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
           minItems: 1
+        contrWeights:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minItems: 1
       required:
         - svcExpPerFlows
+
     ServiceExperienceInfoPerFlow:
       description: Contains service experience information associated with a service flow.
       type: object
@@ -488,6 +516,7 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
         ethTrafficFilter:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EthFlowDescription'
+
     SvcExperience:
       description: Contains a mean opinion score with the customized range.
       type: object
@@ -498,6 +527,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
         lowerRange:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+
     UeMobilityCollection:
       description: >
         Contains UE mobility information associated with an application. If the allAppInd attribute 
@@ -529,6 +559,7 @@ components:
       required:
         - appId
         - ueTrajs
+
     UeCommunicationCollection:
       description: Contains UE communication information associated with an application.
       type: object
@@ -553,6 +584,7 @@ components:
       required:
         - appId
         - comms
+
     UeTrajectoryCollection:
       description: Contains UE trajectory information associated with an application.
       type: object
@@ -564,6 +596,7 @@ components:
       required:
         - ts
         - locArea
+
     CommunicationCollection:
       description: Contains communication information.
       type: object
@@ -581,6 +614,7 @@ components:
         - endTime
         - ulVol
         - dlVol
+
     ExceptionInfo:
       description: Represents the exceptions information provided by the AF.
       type: object
@@ -599,6 +633,7 @@ components:
       oneOf:
         - required: [ipTrafficFilter]
         - required: [ethTrafficFilter]
+
     UserDataCongestionCollection:
       description: Contains User Data Congestion Analytics related information collection.
       type: object
@@ -620,6 +655,7 @@ components:
       oneOf:
         - required: [appId]
         - required: [ipTrafficFilter]
+
     PerformanceDataCollection:
       description: Contains Performance Data Analytics related information collection.
       type: object
@@ -646,6 +682,7 @@ components:
       required:
         - perfData
         - timeStamp
+
     PerformanceData:
       description: Contains Performance Data.
       type: object
@@ -678,6 +715,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         minThrputDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+
     AddrFqdn:
       description: IP address and/or FQDN.
       type: object
@@ -687,6 +725,7 @@ components:
         fqdn:
           type: string
           description: Indicates an FQDN.
+
     DispersionCollection:
       description: Contains the dispersion information collected for an AF.
       type: object
@@ -716,6 +755,7 @@ components:
         - required: [gpsi]
         - required: [supi]
         - required: [ueAddr]
+
     CollectiveBehaviourFilter:
       description: Contains the collective behaviour filter information to be collected from UE.
       type: object
@@ -725,6 +765,16 @@ components:
         value:
           type: string
           description: Value of the parameter type as in the type attribute.
+        collBehAttr:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerUeAttribute'
+          minItems: 1
+          description: >
+            Contains the values of collective behaviour attributes at least one of which shall
+            match for an AF event to be sent.
+        dataProcType:
+          $ref: '#/components/schemas/DataProcessingType'
         listOfUeInd:
           type: boolean
           description: >
@@ -735,6 +785,7 @@ components:
       required:
         - type
         - value
+
     CollectiveBehaviourInfo:
       description: Contains the collective behaviour information to be reported to the subscriber.
       type: object
@@ -767,6 +818,7 @@ components:
       oneOf:
         - required: [extUeIds]
         - required: [ueIds]
+
     PerUeAttribute:
       description: UE application data collected per UE.
       type: object
@@ -779,6 +831,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         timeOfArrival:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+
     MsQoeMetricsCollection:
       description: >
         Contains the Media Streaming QoE metrics information collected for an UE Application via AF.
@@ -791,6 +844,7 @@ components:
           minItems: 1
       required:
         - msQoeMetrics
+
     MsConsumptionCollection:
       description: >
         Contains the Media Streaming Consumption information collected for an UE Application via AF.
@@ -806,6 +860,7 @@ components:
           minItems: 1
       required:
         - msConsumps
+
     MsNetAssInvocationCollection:
       description: >
         Contains the Media Streaming Network Assistance invocation collected for an UE Application 
@@ -819,6 +874,7 @@ components:
           minItems: 1
       required:
         - msNetAssInvocs
+
     MsDynPolicyInvocationCollection:
       description: >
         Contains the Media Streaming Dynamic Policy invocation collected for an UE
@@ -832,6 +888,7 @@ components:
           minItems: 1
       required:
         - msDynPlyInvocs
+
     MSAccessActivityCollection:
       description: Contains Media Streaming access activity collected for an UE Application via AF.
       type: object
@@ -844,10 +901,37 @@ components:
       required:
         - msAccActs
 
+    DatVolTransTimeCollection:
+      description: Contains the collective data volume transfer time information to be reported to the subscriber.
+      type: object
+      properties:
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        appServerInst:
+          $ref: '#/components/schemas/AddrFqdn'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        ulTransVol:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+        dlTransVol:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+        ulTransTimeDur:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        dlTransTimeDur:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+      anyOf:
+        - anyOf:
+          - required: [ulTransVol]
+          - required: [dlTransVol]
+        - anyOf:
+          - required: [ulTransTimeDur]
+          - required: [dlTransTimeDur]
+
 # Simple data types and Enumerations
 
     AfEvent:
-      description: Represents Application Events.
       anyOf:
       - type: string
         enum:
@@ -865,17 +949,62 @@ components:
           - MS_DYN_POLICY_INVOCATION
           - MS_ACCESS_ACTIVITY
           - GNSS_ASSISTANCE_DATA
+          - DATA_VOLUME_TRANSFER_TIME
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
+      description: |
+        Represents an application's event.  
+        Possible values are:
+        - SVC_EXPERIENCE: Indicates that the subscribed/notified event is service experience
+          information for an application.
+        - UE_MOBILITY: Indicates that the subscribed/notified event is UE mobility information.
+        - UE_COMM: Indicates that the subscribed/notified event is UE communication information.
+        - EXCEPTIONS: Indicates that the subscribed/notified event is exceptions information.
+        - USER_DATA_CONGESTION: Indicates that the subscribed/notified event is user data congestion
+          analytics related information.
+        - PERF_DATA: Indicates that the subscribed/notified event is performance data information.
+        - DISPERSION: Indicates that the subscribed/notified event is dispersion information.
+        - COLLECTIVE_BEHAVIOUR: Indicates that the subscribed/notified event is collective behaviour
+          information.
+        - MS_QOE_METRICS: Indicates that the subscribed/notified event is Media Streaming QoE
+          metrics.
+        - MS_CONSUMPTION: Indicates that the subscribed/notified event is Media Streaming
+          consumption reports.
+        - MS_NET_ASSIST_INVOCATION: Indicates that the subscribed/notified event is Media Streaming
+          network assistance invocation.
+        - MS_DYN_POLICY_INVOCATION: Indicates that the subscribed/notified event is Media Streaming
+          dynamic policy invocation.
+        - MS_ACCESS_ACTIVITY: Indicates that the subscribed/notified event is Media Streaming access
+          activity.
+        - GNSS_ASSISTANCE_DATA: Indicates that the subscribed/notified event is GNSS Assistance Data
+          Collection.
+
     CollectiveBehaviourFilterType:
-      description: Represents collective behaviour parameter type.
       anyOf:
       - type: string
         enum:
           - COLLECTIVE_ATTRIBUTE
           - DATA_PROCESSING
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the parameter type for collective behaviour information filtering.  
+        Possible values are:
+        - COLLECTIVE_ATTRIBUTE: Indicates that the parameter type is collective attributes.
+        - DATA_PROCESSING: Indicates that the parameter type is data processing.
+
+    DataProcessingType:
+      description: Represents a type of data processing.
+      anyOf:
+      - type: string
+        enum:
+          - AGGREGATION
+          - NORMALIZATION
+          - ANONYMIZATION
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration but

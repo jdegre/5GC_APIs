@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nnwdaf_DataManagement
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   description: |
     Nnwdaf_DataManagement API Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 externalDocs:
-  description: 3GPP TS 29.520 V18.1.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.2.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 servers:
   - url: '{apiRoot}/nnwdaf-datamanagement/v1'
@@ -82,6 +82,12 @@ paths:
                     schema:
                       $ref: '#/components/schemas/NnwdafDataManagementNotif'
               responses:
+                '200':
+                  description: The notification is acknowledged and a planned action is provided.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/NotifResponse'
                 '204':
                   description: No Content, Notification was succesfull
                 '307':
@@ -319,6 +325,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
         timePeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        immReport:
+          $ref: '#/components/schemas/NnwdafDataManagementNotif'
+        storeHandl:
+          $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/StorageHandlingInformation'
       required:
         - notifCorrId
         - notificURI
@@ -337,6 +347,8 @@ components:
             $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/NotifSummaryReport'
           minItems: 1
           description: List of summary reports of processed notifications.
+        delAlert:
+          $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/DeletionAlert'
         notifCorrId:
           type: string
           description: Notification correlation identifier.

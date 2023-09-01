@@ -5,10 +5,10 @@ info:
     API for EEC Context Relocation.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.1.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.2.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 security:
@@ -157,6 +157,13 @@ components:
         acId:
           type: string
           description: Identifier of the AC for which the service session information is provided.
+
+        acrList:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          minItems: 1
+          description: The list of selected ACR scenarios.
       required:
         - easId
         - endPt
@@ -170,6 +177,14 @@ components:
           description: Identifier of the S-EES pushing the EEC context information.
         eecCntx:
           $ref: '#/components/schemas/EECContext'
+        tgtEas:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
+        acrScenariosSelReq:
+          type: boolean
+          description: >
+            Set to true if the EEC indicates the T-EES to select the ACR scenarisos.
+            Set to false if the T-EES is not required to select the ACR scenarios.
+            The default value when omitted is false.
       required:
         - eesId
         - eecCntx
@@ -180,6 +195,12 @@ components:
       properties:
         implReg:
           $ref: '#/components/schemas/ImplicitRegDetails'
+        selAcrScenariosList:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          minItems: 1
+          description: The list of ACR scenarios selected by T-EES.
 
     ImplicitRegDetails:
       type: object
@@ -221,6 +242,33 @@ components:
           description: List AC profiles.
         sessCntxs:
             $ref: '#/components/schemas/SessionContexts'
+        eecSrvContSupp:
+            $ref: '#/components/schemas/EECSrvContinuitySupport'
+        ueMobSuppInd:
+          type: boolean
+          description: >
+            Set to true to indicate that UE Mobility support is required.
+            Set to false to indicate that UE mobility support is not required.
+            The default value when omitted is false.
       required:
         - eecId
         - cntxId
+
+    EECSrvContinuitySupport:
+      type: object
+      description: Represents the EEC service continuity support details.
+      properties:
+        srvContSupp:
+          type: boolean
+          description: >
+            Set to true if EEC supports service continuity.
+            Set to false if EEC does not supports service continuity.
+            The default value when omitted is false.
+        acrScenarios:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          minItems: 1
+          description: The list of ACR scenarios supported by EEC.
+      required:
+        - srvContSupp

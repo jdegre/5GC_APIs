@@ -6,11 +6,11 @@ info:
     API for EES Registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.1.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.2.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -306,6 +306,22 @@ components:
             type: string
           minItems: 1
           description: Application identifiers of EASs that are registered with EES.
+        easBdlInfos:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EASBundleInfo'
+            minItems: 1
+          minProperties: 1
+          description: >
+            The key used in this map for each entry is the EAS ID of the concerned EAS.
+        easInstInfo:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EASInstantiationInfo'
+          minProperties: 1
+          description: List of EAS(s) with the associated instantiation status and the criteria.
         provId:
           type: string
           description: Identifier of the ECSP that provides the EES provider.
@@ -376,9 +392,9 @@ components:
         plmnIds:
           type: array
           items:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/PlmnId'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
           minItems: 1
-          description: A list of PLMN identities.
+          description: A list of serving network identities.
 
     GeographicalServiceArea:
       type: object
@@ -396,6 +412,32 @@ components:
             $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/CivicAddress'
           minItems: 1
           description: A list of civic address information.
+
+    EASInstantiationInfo:
+      type: object
+      description: Represents the instantiation status and criteria information of a given EAS.
+      properties:
+        easId:
+          type: string
+          description: Identifier of the EAS.
+        status:
+          $ref: '#/components/schemas/InstantiationStatus'
+        instCrit:
+          $ref: '#/components/schemas/InstantiationCriteria'
+      required:
+        - easId
+        - status
+
+    InstantiationCriteria:
+      type: object
+      description: Represents the instantiation criteria for the instantiable EAS.
+      properties:
+        instantiationTime:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+          minItems: 1
+          description: A list of date time periods when the EAS is instiantiable.
 
     ACRScenario:
       anyOf:
@@ -423,3 +465,20 @@ components:
         - SOURCE_EES_EXECUTED: Represents the EEC ACR scenario where S-EES executes the ACR.
         - EEL_MANAGED_ACR: Represents the EEC ACR scenario where the ACR is managed by the
           Edge Enabler Layer.
+
+    InstantiationStatus:
+      anyOf:
+      - type: string
+        enum:
+          - INSTANTIATED
+          - INSTANTIABLE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents the instantiation status information of the EAS.  
+        Possible values are:
+        - INSTANTIATED: Indicates the EAS status as instantiated.
+        - INSTANTIABLE: Indicates the EAS status as instantiable, nut not to be instantiated yet.

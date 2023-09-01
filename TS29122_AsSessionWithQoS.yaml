@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-as-session-with-qos
-  version: 1.3.0-alpha.1
+  version: 1.3.0-alpha.2
   description: |
     API for setting us an AS session with required QoS.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.122 V18.1.0 T8 reference point for Northbound APIs
+  description: 3GPP TS 29.122 V18.2.0 T8 reference point for Northbound APIs
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.122/'
 
 security:
@@ -497,6 +497,8 @@ components:
             idenifer and the corresponding UL and/or DL flows.
         multiModalId:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/MultiModalId'
+        pduSetProtDesc:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ProtoDesc'
         qosReference:
           type: string
           description: Identifies a pre-defined QoS information
@@ -538,6 +540,14 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/SponsorInformation'
         qosMonInfo:
           $ref: '#/components/schemas/QosMonitoringInformation'
+        pdvReqMonParams:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RequestedQosMonitoringParameter'
+          minItems: 1
+          description: Contains the Packet Delay Variation to be monitored
+        pdvMon:
+          $ref: '#/components/schemas/QosMonitoringInformation'
         directNotifInd:
           type: boolean
           description: >
@@ -545,6 +555,8 @@ components:
             Default value is false.
         tscQosReq:
           $ref: '#/components/schemas/TscQosRequirement'
+        l4sInfo:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/UplinkDownlinkSupport'
         requestTestNotification:
           type: boolean
           description: >
@@ -559,6 +571,23 @@ components:
           items:
             $ref: '#/components/schemas/UserPlaneEvent'
           minItems: 1
+        multiModDatFlows:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AsSessionMediaComponent'
+          minProperties: 1
+          description: >
+            Contains media component data for a single-modal data flow(s).
+            The key of the map is the medCompN attribute.
+        pduSetQos:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSetQosPara'
+        rTLatencyInd:
+          type: boolean
+          description: >
+            Indicates the service data flow needs to meet the Round-Trip (RT) latency requirement of
+            the service, when it is included and set to "true".
+            The default value is "false" if omitted.        periodInfo:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/PeriodicityInfo'
       required:
         - notificationDestination
 
@@ -622,6 +651,14 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/UsageThresholdRm'
         qosMonInfo:
           $ref: '#/components/schemas/QosMonitoringInformationRm'
+        pdvReqMonParams:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/RequestedQosMonitoringParameter'
+          minItems: 1
+          description: Contains the Packet Delay Variation to be monitored
+        pdvMon:
+          $ref: '#/components/schemas/QosMonitoringInformationRm'
         directNotifInd:
           type: boolean
           description: >
@@ -630,6 +667,8 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
         tscQosReq:
           $ref: '#/components/schemas/TscQosRequirementRm'
+        l4sInfo:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/UplinkDownlinkSupport'
         events:
           description: >
             Represents the updated list of user plane event(s) to which the SCS/AS requests to
@@ -638,6 +677,26 @@ components:
           items:
             $ref: '#/components/schemas/UserPlaneEvent'
           minItems: 1
+        multiModDatFlows:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AsSessionMediaComponentRm'
+          minProperties: 1
+          description: >
+            Contains media component data for a single-modal data flow(s).
+            The key of the map is the medCompN attribute.
+        pduSetQos:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSetQosParaRm'
+        rTLatencyInd:
+          type: boolean
+          description: >
+            Indicates the service data flow needs to meet the Round-Trip (RT) latency requirement of
+            the service, when it is included and set to "true".
+            The default value is "false" if omitted.
+        pduSetProtDesc:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/ProtoDesc'
+        periodInfo:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/PeriodicityInfo'
 
     QosMonitoringInformation:
       description: Represents QoS monitoring information.
@@ -749,6 +808,16 @@ components:
           description: >
             Identifies the affected flows that were sent during event subscription. It might be
             omitted when the reported event applies to all the flows sent during the subscription.
+        multiModFlows:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultiModalFlows'
+          minItems: 1
+          description: >
+            Identifies the the flow filters for the single-modal data flows thatwere sent
+            during event subscription.
+            It may be omitted when the reported event applies to all the
+            single-modal data flows sent during the subscription.
         appliedQosRef:
           type: string
           description: >
@@ -767,8 +836,16 @@ components:
             $ref: '#/components/schemas/QosMonitoringReport'
           minItems: 1
           description: Contains the QoS Monitoring Reporting information
+        pdvMonReports:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/PdvMonitoringReport'
+          minItems: 1
+          description: Contains the PDV Monitoring Reporting information
         ratType: 
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        batOffsetInfo:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/BatOffsetInfo'
       required:
         - event
 
@@ -850,6 +927,153 @@ components:
       - $ref: 'TS29122_CommonData.yaml#/components/schemas/ProblemDetails'
       - $ref: '#/components/schemas/AdditionInfoAsSessionWithQos'
 
+    AsSessionMediaComponent:
+      description: >
+        Representmedia component data for a single-modal data flow of
+        a multimodal service.
+      type: object
+      required:
+        - medCompN
+      allOf:
+        - not: 
+            required: [altSerReqs,altSerReqsData]
+        - not: 
+            required: [qosReference,altSerReqsData]
+      properties:
+        flowInfos:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+          nullable: true
+          description: >
+            Contains the IP data flow(s) description for a single-modal data flow.
+        qosReference:
+          type: string
+        disUeNotif:
+          type: boolean
+        altSerReqs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        altSerReqsData:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AlternativeServiceRequirementsData'
+          minItems: 1
+          description: >
+            Contains alternative service requirements that include individual QoS parameter sets.
+        marBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        marBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        medCompN:
+          type: integer
+        medType:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/MediaType'
+        mirBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mirBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        tsnQos:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TsnQosContainer'
+        tscaiInputDl:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TscaiInputContainer'
+        tscaiInputUl:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TscaiInputContainer'
+        tscaiTimeDom:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        rTLatencyReq:
+          type: boolean
+          description: Round-Trip latency requirement of the service data flow.
+        pduSetQos:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSetQosPara'
+
+    AsSessionMediaComponentRm:
+      description: >
+        Represents the AsSessionMediaComponent data type with nullable information.
+      type: object
+      required:
+        - medCompN
+      not: 
+        required: [altSerReqs,altSerReqsData]
+      properties:
+        flowInfos:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+          nullable: true
+          description: >
+            Contains the IP data flow(s) description for a single-modal data flow.
+        qosReference:
+          type: string
+          nullable: true
+        altSerReqs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          nullable: true
+        altSerReqsData:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AlternativeServiceRequirementsData'
+          minItems: 1
+          description: >
+            Contains removable alternative service requirements that include individual QoS
+            parameter sets.
+          nullable: true
+        disUeNotif:
+          type: boolean
+          nullable: true
+        marBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        marBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        medCompN:
+          type: integer
+        medType:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/MediaType'
+        mirBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        mirBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        tsnQos:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TsnQosContainerRm'
+        tscaiInputDl:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TscaiInputContainer'
+        tscaiInputUl:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TscaiInputContainer'
+        rTLatencyReq:
+          type: boolean
+          description: Round-Trip latency requirement of the service data flow.
+        pduSetQos:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSetQosPara'
+      nullable: true
+
+    MultiModalFlows:
+      description: Represents a flow information within a single-modal data flow.
+      type: object
+      properties:
+        medCompN:
+          type: integer
+          description: >
+            It contains the ordinal number of the single-modal data flow. Identifies the
+            single-modal data flow.
+        flowIds:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+          description: >
+            Identifies the affected flow(s) within the single-modal data flow
+            (identified by the medCompN attribute).
+            It may be omitted when all flows are affected.
+      required:
+        - medCompN
+
     UserPlaneEvent:
       anyOf:
       - type: string
@@ -866,6 +1090,9 @@ components:
           - SUCCESSFUL_RESOURCES_ALLOCATION
           - ACCESS_TYPE_CHANGE
           - PLMN_CHG
+          - L4S_NOT_AVAILABLE
+          - L4S_AVAILABLE
+          - BAT_OFFSET_INFO
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -886,3 +1113,6 @@ components:
         - SUCCESSFUL_RESOURCES_ALLOCATION: Indicates the resource allocation is successful.
         - ACCESS_TYPE_CHANGE: Indicates an Access type change.
         - PLMN_CHG: Indicates a PLMN change.
+        - L4S_NOT_AVAILABLE: The ECN marking for L4S of one or more SDFs is not available.
+        - L4S_AVAILABLE: The ECN marking for L4S of one or more SDFs is available again.
+        - BAT_OFFSET_INFO: Indicates the network provided BAT offset and the optionally adjusted periodicity.

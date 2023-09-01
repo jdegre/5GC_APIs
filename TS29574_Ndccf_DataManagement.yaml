@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   title: Ndccf_DataManagement
   description: |
     DCCF Data Management Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.574 V18.1.0; 5G System; Data Collection Coordination Services; Stage 3.
+  description: 3GPP TS 29.574 V18.2.0; 5G System; Data Collection Coordination Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.574/'
 #
 servers:
@@ -88,6 +88,12 @@ paths:
                     schema:
                       $ref: '#/components/schemas/NdccfAnalyticsSubscriptionNotification'
               responses:
+                '200':
+                  description: The notification is acknowledged and a planned action is provided.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/NotifResponse'
                 '204':
                   description: The receipt of the notification is acknowledged.
                 '307':
@@ -330,6 +336,12 @@ paths:
                     schema:
                       $ref: '#/components/schemas/NdccfDataSubscriptionNotification'
               responses:
+                '200':
+                  description: The notification is acknowledged and a planned action is provided.
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/NotifResponse'
                 '204':
                   description: The receipt of the notification is acknowledged.
                 '307':
@@ -565,6 +577,8 @@ components:
             The indication for analytics storage. This attribute shall be provided and set to "true"
             if the consumer requests to store the analytics in an ADRF but both the "adrfId" and
             "adrfSetId" attributes are not provided. The default value is "false".
+        storeHandl:
+          $ref: '#/components/schemas/StorageHandlingInformation'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         timePeriod:
@@ -581,6 +595,8 @@ components:
         checkedConsentInd:
           type: boolean
           description: Indication that the NF service consumer has already checked the user consent.
+        immReport:
+          $ref: '#/components/schemas/NdccfAnalyticsSubscriptionNotification'
 
 #
     NdccfDataSubscription:
@@ -626,6 +642,8 @@ components:
             The indication for analytics storage. This attribute shall be provided and set to "true"
             if the consumer requests to store the analytics in an ADRF but both the "adrfId" and
             "adrfSetId" attributes are not provided. The default value is "false".
+        storeHandl:
+          $ref: '#/components/schemas/StorageHandlingInformation'
         timePeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         suppFeat:
@@ -642,6 +660,8 @@ components:
         checkedConsentInd:
           type: boolean
           description: Indication that the NF service consumer has already checked the user consent.
+        immReport:
+          $ref: '#/components/schemas/NdccfDataSubscriptionNotification'
 
 #
     NdccfAnalyticsSubscriptionNotification:
@@ -681,6 +701,16 @@ components:
             subscription that requested by the DCCF, i.e. no further notifications related to this
             subscription will be provided, apart from sending final report (if available).
             The default value is false.
+        delAlert:
+          $ref: '#/components/schemas/DeletionAlert'
+        termCause:
+          $ref: '#/components/schemas/TermCause'
+        reUserConsentPurs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataCollectionPurpose'
+          minItems: 1
+          description: The purposes of data collection for which the user consent is revoked.
         timeStamp:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 #
@@ -708,6 +738,8 @@ components:
           description: >
             List of reports with summarized data from multiple notifications received from data
             producer.
+        delAlert:
+          $ref: '#/components/schemas/DeletionAlert'
         fetchInstruct:
           $ref: 'TS29576_Nmfaf_3caDataManagement.yaml#/components/schemas/FetchInstruction'
         terminationReq:
@@ -857,9 +889,6 @@ components:
           description: Indicates the UEs for which processed reports are requested.
         temporalAggrLevel:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        anonymizeRule:
-          type: string
-          description: The anonymization rule.
         areas:
           type: array
           items:
@@ -922,6 +951,41 @@ components:
           type: string
           description: The maximum value of the parameter.
 #
+    StorageHandlingInformation:
+      description: Contains storage handling information about data or analytics.
+      type: object
+      properties:
+        lifetime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        delNotifInd:
+          type: boolean
+          description: Indicates if deletion alerts are requested.
+#
+    DeletionAlert:
+      description: Contains information about data or analytics that are about to be deleted.
+      type: object
+      properties:
+        alertStorTransId:
+          type: string
+          description: >
+            Storage transaction identifier that can be used to retrieve data or analytics.
+      required:
+       - alertStorTransId
+#
+    NotifResponse:
+      description: >
+        Contains information about planned actions related to data or analytics
+        that are about to be deleted.
+      type: object
+      properties:
+        retrievalInd:
+          type: boolean
+          description: >
+            Indicates if the NF service consumer has determined to retrieve data
+            or analytics that are about to be deleted.
+      required:
+       - retrievalInd
+#
     SummarizationAttribute:
       anyOf:
       - type: string
@@ -979,3 +1043,23 @@ components:
         Possible values are:
         - ANALYTICS_GENERATION: The data is collected for generating the analytics.
         - MODEL_TRAINING: The data is collected for ML model training.
+
+#
+    TermCause:
+      anyOf:
+      - type: string
+        enum:
+          - USER_CONSENT_REVOKED
+          - DCCF_OVERLOAD
+          - OTHER
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents the cause for the subscription termination request by DCCF for data collection.
+        Possible values are:
+        - USER_CONSENT_REVOKED: The user consent has been revoked.
+        - DCCF_OVERLOAD: The DCCF is overloaded.
+        - OTHER: Indicates that the termination is due to other reason.

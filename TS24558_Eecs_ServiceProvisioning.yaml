@@ -1,14 +1,15 @@
 openapi: 3.0.0
+
 info:
   title: Eecs_ServiceProvisioning
-  version: "1.1.0-alpha.1"
+  version: "1.1.0-alpha.2"
   description: |
-    API for ECS Service Provisioning.
-    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    API for ECS Service Provisioning.  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 24.558 V18.0.0 Enabling Edge Applications; Protocol specification.
+  description: 3GPP TS 24.558 V18.1.0 Enabling Edge Applications; Protocol specification.
   url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
 
 security:
@@ -23,13 +24,15 @@ servers:
         description: apiRoot as defined in clause 7.5 of 3GPP TS 29.558
 
 paths:
+
   /subscriptions:
     post:
       description: >
-        Creates a new subscription in ECS in order to be notified of provisioning data 
+        Creates a new subscription in ECS in order to be notified of provisioning data
         changes of interest.
+      operationId: CreateServProvSub
       tags:
-        - Service Provisioning Subscriptions
+        - Service Provisioning Subscriptions (Collection)
       requestBody:
         required: true
         content:
@@ -117,17 +120,18 @@ paths:
       description: >
         Updates an existing individual service provisioning subscription identified
         by the subscriptionId.
+      operationId: UpdateIndServProvSub
       tags:
-        - Individual Service Provisioning Subscription
+        - Individual Service Provisioning Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
-          description: Identifies an individual service provisioning subscription
+          description: Identifies an individual service provisioning subscription.
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to replace the existing subscription
+        description: Parameters to replace the existing subscription.
         required: true
         content:
           application/json:
@@ -169,12 +173,13 @@ paths:
       description: >
         Deletes an existing individual service provisioning subscription identified by
         the subscriptionId.
+      operationId: DeleteIndServProvSub
       tags:
-        - Individual Service Provisioning Subscription
+        - Individual Service Provisioning Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
-          description: Identifies an individual service provisioning subscription
+          description: Identifies an individual service provisioning subscription.
           required: true
           schema:
             type: string
@@ -203,31 +208,33 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     patch:
       description: >
         Partially updates an existing individual service provisioning subscription identified
         by the subscriptionId.
+      operationId: ModifyIndServProvSub
       tags:
-        - Individual Service Provisioning Subscription
+        - Individual Service Provisioning Subscription (Document)
       parameters:
         - name: subscriptionId
           in: path
-          description: Identifies an individual service provisioning subscription
+          description: Identifies an individual service provisioning subscription.
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to replace the existing subscription
+        description: Parameters to replace the existing subscription.
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/ECSServProvSubscriptionPatch'
       responses:
         '200':
           description: >
             OK (The individual service provisioning subscription matching the subscriptionId
-            was modified successfully)
+            was modified successfully).
           content:
             application/json:
               schema:
@@ -277,7 +284,7 @@ paths:
                 $ref: '#/components/schemas/ECSServProvResp'
         '204':
           description: >
-            No Content (the requested service provisioning information does not exist).
+            No Content (The requested service provisioning information does not exist).
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -302,6 +309,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
+
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
@@ -309,7 +317,9 @@ components:
         clientCredentials:
           tokenUrl: '{tokenUrl}'
           scopes: {}
+
   schemas:
+
     ECSServProvReq:
       description: ECS service provisioning request information.
       type: object
@@ -338,10 +348,17 @@ components:
           description: List of connectivity information for the UE.
         locInf:
           $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/LocationInfo'
+        ecspIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Indicates to the ECS which EES providers are preferred by the EEC.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - eecId
+
     ECSServProvResp:
       description: ECS service provisioning response information.
       type: object
@@ -354,6 +371,7 @@ components:
           description: List of EDN configuration information.
       required:
         - ednCnfgInfo
+
     ECSServProvSubscription:
       description: Represents an individual service provisioning subscription resource.
       type: object
@@ -387,14 +405,21 @@ components:
         requestTestNotification:
           type: boolean
           description: >
-            Set to true by Subscriber to request the ECS to send a test notification. Set to 
+            Set to true by Subscriber to request the ECS to send a test notification. Set to
             false or omitted otherwise.
         websockNotifConfig:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+        ecspIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Indicates to the ECS which EES providers are preferred by the EEC.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
         - eecId
+
     ServProvNotification:
       description: Represents notification information of a service provisioning Event.
       type: object
@@ -413,17 +438,19 @@ components:
       required:
         - subId
         - ednCnfgInfo
+
     ConnectivityInfo:
       description: Represents the connectivity information for the UE.
       type: object
       properties:
         plmnId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         ssId:
           type: string
           description: Identifies the SSID of the access point to which the UE is attached.
+
     EDNConfigInfo:
-      description: Represents the EDN information.
+      description: Represents the EDN configuration information.
       type: object
       properties:
         ednConInfo:
@@ -439,8 +466,9 @@ components:
       required:
         - ednConInfo
         - eess
+
     EDNConInfo:
-      description: Represents an EDN connection information .
+      description: Represents an EDN connection information.
       type: object
       properties:
         dnn:
@@ -449,20 +477,23 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         ednTopoSrvArea:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/LocationArea5G'
+
     EESInfo:
       description: Represents EES information.
       type: object
       properties:
         eesId:
           type: string
-          description: Identity of the EES
+          description: Identity of the EES.
         endPt:
-          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint' 
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
         easIds:
           type: array
           items:
             type: string
-          description: Application identities of the Edge Application Servers registered with the EES.
+          description: >
+            Application identities of the Edge Application Servers registered
+            with the EES.
         ecspInfo:
           type: string
           description: Represents an ECSP Information.
@@ -472,7 +503,7 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
-          description: Represents list of Data network access identifier.
+          description: Represents list of Data network access identifiers.
         eesSvcContSupp:
           type: array
           items:
@@ -485,11 +516,21 @@ components:
           description: >
             Indicates whether the EEC is required to register on the EES to use edge services
             or not.
+        easInstInfos:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/EASInstantiationInfo'
+          minItems: 1
+          description: >
+            The EAS instantiation status per EASID (e.g. instantiated, instantiable but not be
+            instantiated yet).
       required:
         - eesId
         - eecRegConf
+
     ECSServProvSubscriptionPatch:
-      description: Represents an individual service provisioning subscription resource.
+      description: >
+            Represents modifications to an individual service provisioning subscription resource.
       type: object
       properties:
         acProfs:

@@ -1,0 +1,133 @@
+openapi: 3.0.0
+
+info:
+  title: SS_VALServiceData
+  description: |
+    API for VAL Service Data.  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+  version: "1.0.0-alpha.1"
+
+externalDocs:
+  description: >
+    3GPP TS 29.549 V18.2.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    Application Programming Interface (API) specification; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
+servers:
+  - url: '{apiRoot}/ss-vsd/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+
+paths:
+  /val-servdata:
+    get:
+      summary: Retrieve the VAL service data.
+      operationId: RetrieveValServiceData
+      tags:
+        - VAL Service Data Sets
+      parameters:
+        - name: val-tgt-ues
+          in: query
+          description: Identifying the list of the target VAL UE(s) or VAL user(s).
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+            minItems: 1
+        - name: val-service-ids
+          in: query
+          description: Identifying the list of the target VAL service(s).
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            minItems: 1
+        - name: supp-feats
+          in: query
+          description: To filter irrelevant responses related to unsupported features.
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Represents the requested VAL service data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValServDataResp'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
+  schemas:
+    ValServDataResp:
+      description: Represents the container for the requested VAL service data.
+      type: object
+      properties:
+        valServData:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValServiceData'
+          minItems: 1
+        suppFeats:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    ValServiceData:
+      description: >
+        Represents the VAL service data associated with VAL user ID(s)/VAL UE ID(s)
+        and/or VAL service ID(s).
+      type: object
+      properties:
+        valTgtUe:
+          $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+        valServIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: >
+            List of the VAL services associated with the VAL user or a VAL UE defined
+            in the "valTgtUe" attribute.
+        valServSpecInfo:
+          type: string
+          description: Contains the VAL service specific information.
+      required:
+        - valTgtUe
+        - valServIds

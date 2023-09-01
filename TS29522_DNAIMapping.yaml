@@ -1,0 +1,344 @@
+openapi: 3.0.0
+
+info:
+  title: 3gpp-dnaimapping
+  version: 1.0.0-alpha.1
+  description: |
+    API for DNAI Mapping.  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: >
+    3GPP TS 29.522 V18.2.0; 5G System; Network Exposure Function Northbound APIs.
+  url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
+servers:
+  - url: '{apiRoot}/3gpp-dnai-mapping/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122.
+
+paths:
+  /{afId}/subscriptions:
+    get:
+      summary: read all of the active subscriptions for the AF
+      operationId: ReadAllSubscriptions
+      tags:
+        - DNAI Mapping Subscriptions
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK (Successful get all of the active subscriptions for the AF)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DnaiMapSub'
+                minItems: 0
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    post:
+      summary: Creates a new subscription resource
+      operationId: CreateNewSubscription
+      tags:
+        - DNAI Mapping Subscriptions
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: new subscription creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DnaiMapSub'
+      callbacks:
+        notification:
+          '{request.body#/notifUri}':
+            post:
+              requestBody:  # contents of the callback message
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/DnaiMapUpdateNotif'
+              responses:
+                '204':
+                  description: No Content (successful notification)
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      responses:
+        '201':
+          description: Created (Successful creation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DnaiMapSub'
+          headers:
+            Location:
+              description: Contains the URI of the newly created resource.
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+  /{afId}/subscriptions/{subscriptionId}:
+    get:
+      summary: read an active subscription for the AF and the subscription Id
+      operationId: ReadAnSubscription
+      tags:
+        - Individual DNAI Mapping Subscription
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK (Successful get the active subscription)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DnaiMapSub'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    delete:
+      summary: Deletes an already existing subscription
+      operationId: DeleteAnSubscription
+      tags:
+        - Individual Dnai Mapping Subscription
+      parameters:
+        - name: afId
+          in: path
+          description: Identifier of the AF
+          required: true
+          schema:
+            type: string
+        - name: subscriptionId
+          in: path
+          description: Identifier of the subscription resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content (Successful deletion of the existing subscription)
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
+  schemas: 
+    DnaiMapSub:
+      description: Represents an Dnai Mapping subscription.
+      type: object
+      properties:
+        easIpAddrs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+          minItems: 1
+          description: >
+            IP address(es) of the EASs in the Local part of the DN or the IP address ranges(IPv4
+            subnetwork(s) and/or IPv6 prefix(es) of the Local part of the DN where the EAS is
+            deployed for each DNAI.
+        fqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        immRep:
+          type: boolean
+        maxNumOfReps:
+          type: integer
+        expiry:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        dnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        requestTestNotification:
+          type: boolean
+          description: >
+            Set to true by the AF to request the NEF to send a test notification
+            as defined in clause 5.2.5.3 of 3GPP TS 29.122. Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      oneOf:
+        - required: [easIpAddrs]
+        - required: [fqdn]
+      required:
+        - notifUri
+
+    DnaiMapUpdateNotif:
+      description: Represents an updated DNAI Mapping notification.
+      type: object
+      properties:
+        dnaiEasAddrMap:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnaiEasAddrMap'
+          minItems: 1
+          description: >
+            Repsent the mapping information between DNAI(s) and EAS address(es).
+      required:
+        - dnaiEasAddrMap
+
+    DnaiEasAddrMap:
+      description: defines the mapping between DNAI and EAS IP address(es).
+      type: object
+      properties:
+        dnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+        easIpAddrs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+          minItems: 1
+          description: >
+            IP address(es) of the EASs in the Local part of the DN or the IP address ranges (IPv4
+            subnetwork(s) and/or IPv6 prefix(es) of the Local part of the DN where the EAS is
+            deployed for each DNAI.
+      required:
+        - dnai
+        - easIpAddrs

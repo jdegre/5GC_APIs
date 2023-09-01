@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.1
+  version: 1.2.0-alpha.2
   title: SS_NetworkResourceAdaptation
   description: |
     SS Network Resource Adaptation Service.  
@@ -9,7 +9,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.549 V18.1.0; Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V18.2.0; Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 
@@ -189,6 +189,220 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+  /mbs-resources:
+    post:
+      summary: Request the creation of a new MBS Resource.
+      operationId: CreateMBSResource
+      tags:
+        - MBS Resources (Collection)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MBSResourceReq'
+      responses:
+        '201':
+          description: >
+            Created. Successfull case. The requested MBS resource is successfully created and a
+            representation of the created Individual MBS Resource resource is returned in the
+            response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MBSResourceResp'
+          headers:
+            Location:
+              description: >
+                Contains the URI of the created Individual MBS Resource resource.
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      callbacks:
+        UserPlaneNotification:
+          '{$request.body#/notifUri}': 
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/UserPlaneNotification'
+              responses:
+                '204':
+                  description: No Content. The notification was succesfully received.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+  /mbs-resources/{mbsResId}:
+    parameters:
+      - name: mbsResId
+        in: path
+        description: Represents the identifier of the Individual MBS Resource resource.
+        required: true
+        schema:
+          type: string
+
+    get:
+      summary: Request the retrieval of an existing Individual MBS Resource.
+      operationId: GetIndivMBSResource
+      tags:
+        - Individual MBS Resource (Document)
+      responses:
+        '200':
+          description: >
+            OK. Successful case. A representation of the requested Individual MBS Resource resource
+            is returned in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MBSResource'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    patch:
+      summary: Request the modification of an existing Individual MBS Resource.
+      operationId: ModifyIndivMBSResource
+      tags:
+        - Individual MBS Resource (Document)
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/MBSResourcePatch'
+      responses:
+        '200':
+          description: >
+            OK. Successful case. The targeted Individual MBS Resource resource is successfully
+            modified and a representation of the updated resource is returned in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MBSResourceResp'
+        '204':
+          description: >
+            No Content. Successful case. The targeted Individual MBS Resource resource is
+            successfully modified and no content is returned in the response body.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    delete:
+      summary: Request the deletion of an existing Individual MBS Resource.
+      operationId: DeleteIndivMBSResource
+      tags:
+        - Individual MBS Resource (Document)
+      responses:
+        '204':
+          description: >
+            No Content. Successful case. The targeted Individual MBS Resource resource is
+            successfully deleted.
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
   /unicast-subscriptions:
     post:
       summary: Creates a new Individual Unicast Subscription resource
@@ -776,6 +990,106 @@ components:
         - maxIntFrames
         - maxLatency
 
+    MBSResourceReq:
+      description: Represents the parameters to request the creation of an MBS Resource.
+      type: object
+      properties:
+        mbsResource:
+          $ref: '#/components/schemas/MBSResource'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbsResource
+
+    MBSResource:
+      description: Represents an MBS Resource.
+      type: object
+      properties:
+        valGroupId:
+          type: string
+        valUeIdsList:
+          type: array
+          items:
+            $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+          minItems: 1
+        servAnmtMode:
+          $ref: '#/components/schemas/ServiceAnnoucementMode'
+        mbsResServInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceInfo'
+        mbsResServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalMbsServiceArea'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        netSysInd:
+          $ref: '#/components/schemas/NetSysIndicator'
+        localMbmsInfo:
+          $ref: 'TS29486_VAE_FileDistribution.yaml#/components/schemas/LocalMbmsInfo'
+        localMbmsActInd:
+          type: boolean
+        mbsResRespInfo:
+          $ref: '#/components/schemas/MBSResourceRespInfo'
+      oneOf:
+        - required: [valGroupId]
+        - required: [valUeIdsList]
+      not:
+        required: [localMbmsInfo, localMbmsActInd]
+      required:
+        - servAnmtMode
+        - mbsResServInfo
+        - notifUri
+
+    MBSResourceRespInfo:
+      description: Represents NRM Server side information related to the MBS Resource.
+      type: object
+      properties:
+        mbs5gSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        mbmsBearerId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        upIpv4Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv4Addr'
+        upIpv6Addr:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Ipv6Addr'
+        upPortNum:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
+      anyOf:
+        - required: [upIpv4Addr]
+        - required: [upIpv6Addr]
+
+    MBSResourceResp:
+      description: Represents a response to an MBS Resource creation/modification request.
+      type: object
+      properties:
+        mbsResource:
+          $ref: '#/components/schemas/MBSResource'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbsResource
+
+    MBSResourcePatch:
+      description: Represents the parameters to request the modification of an MBS Resource.
+      type: object
+      properties:
+        mbsResServInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceInfo'
+        mbsResServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalMbsServiceArea'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+        localMbmsInfo:
+          $ref: 'TS29486_VAE_FileDistribution.yaml#/components/schemas/LocalMbmsInfo'
+        localMbmsActInd:
+          type: boolean
+        mbsResRespInfo:
+          $ref: '#/components/schemas/MBSResourceRespInfo'
+      anyOf:
+        - required: [mbsResServInfo]
+        - required: [mbsResServiceArea]
+        - required: [localMbmsInfo]
+      not:
+        required: [localMbmsInfo, localMbmsActInd]
+
 
 # Simple data types and Enumerations
 
@@ -802,16 +1116,19 @@ components:
         enum:
           - UNICAST
           - MULTICAST
+          - MBS_MULTICAST
+          - MBS_BROADCAST
       - type: string
         description: >
-          This string provides forward-compatibility with future
-          extensions to the enumeration but is not used to encode
-          content defined in the present version of this API.
+          This string provides forward-compatibility with future extensions to the enumeration
+          but is not used to encode content defined in the present version of this API.
       description: |
-        Indicates the delivery mode.  
+        Indicates the user plane delivery mode.  
         Possible values are:
-        - UNICAST: Unicast delivery.
-        - MULTICAST: Multicast delivery.
+        - UNICAST: Indicates Unicast delivery.
+        - MULTICAST: Indicates EPS MBMS Multicast delivery.
+        - MBS_MULTICAST: Indicates 5GS MBS Multicast delivery.
+        - MBS_BROADCAST: Indicates 5GS MBS Broadcast delivery.
 
     NrmEvent:
       anyOf:
@@ -827,3 +1144,21 @@ components:
         Indicates the NRM event.  
         Possible values are:
         - UP_DELIVERY_MODE: User Plane delivery mode.
+
+    NetSysIndicator:
+      anyOf:
+      - type: string
+        enum:
+          - 5GS
+          - EPS
+          - 5GS_AND_EPS
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration
+          but is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the network system indicator, i.e. 5GS, EPS or both.  
+        Possible values are:
+        - 5GS: Indicates that the network system is 5GS.
+        - EPS: Indicates that the network system is EPS.
+        - 5GS_AND_EPS: Indicates that the network system is 5GS and EPS.

@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.2.0-alpha.2'
+  version: '1.2.0-alpha.3'
   title: 'Ngmlc_Location'
   description: |
     GMLC Location Service.  
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.515 V18.1.0; 5G System; Gateway Mobile Location Services; Stage 3
+  description: 3GPP TS 29.515 V18.2.0; 5G System; Gateway Mobile Location Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.515/'
 
 servers:
@@ -30,6 +30,13 @@ paths:
       operationId: RequestLocation
       tags:
         - Request Location
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+          - ngmlc-loc:provide-location:invoke
       requestBody:
         content:
           application/json:
@@ -116,7 +123,7 @@ paths:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/504'
                 default:
                   $ref: 'TS29571_CommonData.yaml#/components/responses/default'
-        EventNotifyNef:
+        EventNotifyNf:
           '{$request.body#/eventNotificationUri}':
             post:
               requestBody:
@@ -124,7 +131,7 @@ paths:
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/EventNotifyData'
+                      $ref: '#/components/schemas/EventNotifyDataExt'
               responses:
                 '204':
                   description: Expected response to a valid notification
@@ -164,6 +171,13 @@ paths:
       operationId: CancelLocation
       tags:
         - Cancel Location
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+          - ngmlc-loc:cancel-location:invoke
       requestBody:
         content:
           application/json:
@@ -209,6 +223,13 @@ paths:
       operationId: UpdateLocation
       tags:
         - Update Location
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+          - ngmlc-loc:location-update:invoke
       requestBody:
         content:
           application/json:
@@ -254,6 +275,13 @@ paths:
       operationId: LocationUpdateSubcribe
       tags:
         - UE location information Subscription creation
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+        - oAuth2ClientCredentials:
+          - ngmlc-loc
+          - ngmlc-loc:loc-update-subs:invoke
       requestBody:
         content:
           application/json:
@@ -346,6 +374,10 @@ components:
           tokenUrl: '{nrfApiRoot}/oauth2/token'
           scopes:
             ngmlc-loc: Access to the Ngmlc_Location API
+            ngmlc-loc:provide-location:invoke: Access to invoke Provide Location
+            ngmlc-loc:cancel-location:invoke: Access to invoke Cancel Location
+            ngmlc-loc:location-update:invoke: Access to invoke Location update
+            ngmlc-loc:loc-update-subs:invoke: Access to invoke Location update subscribe
 
   schemas:
 #
@@ -424,6 +456,10 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
         lpHapType:
           $ref: 'TS29518_Namf_Location.yaml#/components/schemas/LpHapType'
+        evtRptExpectedArea:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+        reportingInd:
+          $ref: '#/components/schemas/ReportingInd'
 
 
 
@@ -474,6 +510,8 @@ components:
         directReportInd:
           type: boolean
           default: false
+        acceptedPeriodicEventInfo:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/PeriodicEventInfo'
 
     CancelLocData:
       description: Contains the input parameters in CancelLocation service operation
@@ -654,8 +692,8 @@ components:
     EventNotifyDataExt:
       description: Extended Event Notify Data for UEs of a target group
       allOf:
-      - $ref: '#/components/schemas/EventNotifyData'
-      - $ref: '#/components/schemas/EventNotifyDataAdditionalInfo'
+        - $ref: '#/components/schemas/EventNotifyData'
+        - $ref: '#/components/schemas/EventNotifyDataAdditionalInfo'
 
     EventNotifyDataAdditionalInfo:
       description: Additional information to Event Notify Data
@@ -776,4 +814,15 @@ components:
           enum:
             - SUCCESS_COMPLETELY
             - SUCCESS_PARTIALLY
+        - type: string
+
+
+    ReportingInd:
+      description: >
+        Indicates one of the mutually exclusive global settings
+      anyOf:
+        - type: string
+          enum:
+            - OPPOSITE_SENSE
+            - POSITIVE_SENSE
         - type: string

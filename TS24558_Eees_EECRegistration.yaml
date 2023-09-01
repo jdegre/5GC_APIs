@@ -1,14 +1,16 @@
 openapi: 3.0.0
+
 info:
   title: Eees_EECRegistration
-  version: "1.1.0-alpha.1"
+  version: "1.1.0-alpha.2"
   description: |
     API for EEC registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
+
 externalDocs:
   description: >
-    3GPP TS 24.558 V18.0.0 Enabling Edge Applications; Protocol specification.
+    3GPP TS 24.558 V18.1.0 Enabling Edge Applications; Protocol specification.
   url: 'https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/'
 
 security:
@@ -23,8 +25,12 @@ servers:
         description: apiRoot as defined in clause 6.1 of 3GPP TS 24.558
 
 paths:
+
   /registrations:
     post:
+      operationId: CreateEECReg
+      tags:
+        - EEC Registrations (Collection)
       description: Create a new EEC registration at the EES.
       requestBody:
         required: true
@@ -65,18 +71,22 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
   /registrations/{registrationId}:
     put:
+      operationId: UpdateIndEECReg
+      tags:
+        - Individual EEC registration (Document)
       description: Update an existing EEC registration a the EES.
       parameters:
         - name: registrationId
           in: path
-          description: Identifies an individual EEC registration
+          description: Identifies an individual EEC registration.
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to replace the existing registration
+        description: Parameters to replace the existing registration.
         required: true
         content:
           application/json:
@@ -120,11 +130,14 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      description: Remove an existing ECC registration at EES.
+      operationId: DeleteIndEECReg
+      tags:
+        - Individual EEC registration (Document)
+      description: Remove an existing EEC registration at EES.
       parameters:
         - name: registrationId
           in: path
-          description: Identifies an individual EEC registration
+          description: Identifies an individual EEC registration.
           required: true
           schema:
             type: string
@@ -152,20 +165,24 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
     patch:
-      description: partially update an existing EEC registration a the EES.
+      operationId: ModifyIndEECReg
+      tags:
+        - Individual EEC registration (Document)
+      description: Partially update an existing EEC registration a the EES.
       parameters:
         - name: registrationId
           in: path
-          description: Identifies an individual EEC registration
+          description: Identifies an individual EEC registration.
           required: true
           schema:
             type: string
       requestBody:
-        description: Parameters to replace the existing registration
+        description: Parameters to replace the existing registration.
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/EECRegistrationPatch'
       responses:
@@ -206,6 +223,7 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
 components:
+
   securitySchemes:
     oAuth2ClientCredentials:
       type: oauth2
@@ -215,6 +233,7 @@ components:
           scopes: {}
 
   schemas:
+
     EECRegistration:
       description: Describes the parameters to perform EEC Registration related operations.
       type: object
@@ -234,7 +253,7 @@ components:
         eecSvcContSupp:
           type: array
           items:
-            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario' 
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
           description: Profiles of ACs for which the EEC provides edge enabling services.
         eecCntxId:
           type: string
@@ -243,13 +262,30 @@ components:
           type: string
           description: Identifier of the EES that provided EEC context ID.
         endPt:
-          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint' 
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
+        ueMobilityReq:
+          type: boolean
+          description: >
+            Set to true to indicate that UE Mobility support is required.
+            Set to false to indicate that UE mobility support is not required.
+            The default value when omitted is false.
+        unfulfillAcProfs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnfulfilledAcProfile'
+          minItems: 1
+          description: >
+            A list of ACIDs of the AC Profile(s) sent from EES, for which the requirements
+            indicated in the AC profile(s) cannot be fulfilled.
         unfulfilledAcProfs:
           $ref: '#/components/schemas/UnfulfilledAcProfile'
+      not:
+        required: [ unfulfilledAcProfs, unfulfillAcProfs ]
       required:
         - eecId
+
     ACProfile:
-      description: ECS service provisioning response information.
+      description: AC information indicating required services and service characteristics.
       type: object
       properties:
         acId:
@@ -270,8 +306,8 @@ components:
         acSvcContSupp:
           type: array
           items:
-            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario' 
-          description: Profiles of ACs for which the EEC provides edge enabling services.
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          description: The ACR scenarios supported by the AC for service continuity.
         simInactTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
         eass:
@@ -280,25 +316,29 @@ components:
             $ref: '#/components/schemas/EasDetail'
           minItems: 1
           description: List of EAS information.
+        easBundleInfo:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EASBundleInfo'
       required:
         - acId
-    EasDetail:    
+
+    EasDetail:
       description: EAS details.
       type: object
-      properties:  
+      properties:
         easId:
           type: string
-          description: Application identifier of the EAS.          
-        expectedSvcKPIs:  
+          description: Application identifier of the EAS.
+        expectedSvcKPIs:
           $ref: '#/components/schemas/ACServiceKPIs'
-        minimumReqSvcKPIs:  
+        minimumReqSvcKPIs:
           $ref: '#/components/schemas/ACServiceKPIs'
       required:
         - easId
-    ACServiceKPIs:       
-      description: EAS details.
+
+    ACServiceKPIs:
+      description: Describes the KPIs required by the AC in order to receive required services.
       type: object
-      properties:  
+      properties:
         connBand:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         reqRate:
@@ -319,6 +359,7 @@ components:
         reqStrg:
           type: string
           description: The storage resources required by the AC.
+
     EECRegistrationPatch:
       description: Describes the parameters to perform EEC Registration update.
       type: object
@@ -330,10 +371,12 @@ components:
           description: Profiles of ACs for which the EEC provides edge enabling services.
         expTime:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
-        unfulfilledAcProfs:
-          $ref: '#/components/schemas/UnfulfilledAcProfile'
+        ueMobilityReq:
+          type: boolean
+          description: Indicates whether UE requires mobility support or not.
+
     UnfulfilledAcProfile:
-      description: Desrcibes AC Profile ID and reason sent by EES in EEC Register response.
+      description: Describes AC Profile ID and reason sent by EES in EEC Register response.
       type: object
       properties:
         acId:
@@ -341,10 +384,20 @@ components:
           description: The AC ID of a AC profile.
         reason:
           $ref: '#/components/schemas/UnfulfillACProfRsn'
+
     UnfulfillACProfRsn:
       anyOf:
         - type: string
           enum:
             - EAS_NOT_AVAILABLE
             - REQ_UNFULFILLED
-      description: represents reason for unfulfilled AC profile requirements.
+        - type: string
+          description: >
+            This string provides forward-compatibility with future extensions to the
+            enumeration and is not used to encode content defined in the present version
+            of this API.
+      description: |
+        Represents reason for unfulfilled AC profile requirements.
+        Possible values are:
+        - EAS_NOT_AVAILABLE: EAS is not available.
+        - REQ_UNFULFILLED: Requirements cannot be fulfilled.

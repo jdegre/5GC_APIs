@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.2
+  version: 1.3.0-alpha.3
   title: Nnwdaf_AnalyticsInfo
   description: |
     Nnwdaf_AnalyticsInfo Service API.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V18.1.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.2.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 
 security:
@@ -285,8 +285,26 @@ components:
           items:
             $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/DnPerfInfo'
           minItems: 1
+        pfdDetermInfos:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/PfdDeterminationInfo'
+          minItems: 1
+        pduSesTrafInfos:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/PduSesTrafficInfo'
+          minItems: 1
+        e2eDataVolTransTimeInfos:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/E2eDataVolTransTimeInfo'
+          minItems: 1
+        accuInfo:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/AccuracyInfo'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
 
     EventFilter:
       description: Represents the event filters used to identify the requested analytics.
@@ -364,6 +382,11 @@ components:
           items:
             $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NetworkPerfType'
           minItems: 1
+        addNwPerfReqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceUsageRequPerNwPerfType'
+          minItems: 1
         userDataConReqs:
           type: array
           items:
@@ -410,7 +433,6 @@ components:
           minItems: 1
         upfInfo:
           $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/UpfInformation'
-
         appServerAddrs:
           type: array
           items:
@@ -431,6 +453,30 @@ components:
           items:
             $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/UeCommReq'
           minItems: 1
+        pduSesInfos:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/PduSessionInfo'
+          minItems: 1
+        pduSesTrafReqs:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/PduSesTrafficReq'
+          minItems: 1
+        locGranularity:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/LocInfoGranularity'
+        useCaseCxt:
+          type: string
+          description: >
+            Indicates the context of usage of the analytics. The value and format of this parameter 
+            are not standardized.
+        e2eDataVolTransTimeReqs:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/E2eDataVolTransTimeReq'
+          minItems: 1
+        accuReq:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/AccuracyReq'
       not:
         required: [anySlice, snssais]
 
@@ -675,6 +721,17 @@ components:
         orderDirection:
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/MatchingDirection'
 
+    ResourceUsageRequPerNwPerfType:
+      description: More requirement for each network performance type.
+      type: object
+      properties:
+        nwPerfType:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/NetworkPerfType'
+        rscUsgReq:
+          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/ResourceUsageRequirement'
+      required:
+        - nwPerfType
+
     EventId:
       anyOf:
       - type: string
@@ -695,6 +752,8 @@ components:
           - WLAN_PERFORMANCE
           - DN_PERFORMANCE
           - PFD_DETERMINATION
+          - PDU_SESSION_TRAFFIC
+          - E2E_DATA_VOL_TRANS_TIME
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -725,6 +784,8 @@ components:
         - WLAN_PERFORMANCE: Represents the analytics of WLAN performance.
         - DN_PERFORMANCE: Represents the analytics of DN performance.
         - PFD_DETERMINATION: Represents the analytics of PFD Determination information for known application identifier(s).
+        - PDU_SESSION_TRAFFIC: Represents the analytics of PDU Session traffic.
+        - E2E_DATA_VOL_TRANS_TIME: Represents the analytics of E2E data volume transfer time.
 
     ContextType:
       anyOf:

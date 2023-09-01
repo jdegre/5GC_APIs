@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '2.3.0-alpha.2'
+  version: '2.3.0-alpha.3'
   title: 'Nudm_SDM'
   description: |
     Nudm Subscriber Data Management Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 18.1.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 18.2.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -60,6 +60,31 @@ paths:
             application/json:
               schema:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+        - name: adjacent-plmns
+          in: query
+          description: List of PLMNs adjacent to the UE's serving PLMN
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+            minItems: 1
+          style: form
+          explode: false
+        - name: single-nssai
+          in: query
+          content:
+            application/json:
+              schema:
+               $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        - name: dnn
+          in: query
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        - name: uc-purpose
+          in: query
+          description: User consent purpose
+          schema:
+             $ref: '#/components/schemas/UcPurpose'
         - name: disaster-roaming-ind
           in: query
           description: Indication whether Disaster Roaming service is applied or not
@@ -312,6 +337,17 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: shared-data-ids
+          in: query
+          description: >
+            List of IDs identifying shared Access and Mobility Subscription Data already
+            available at the NF service consumer
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/SharedDataId'
+          style: form
+          explode: false
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -753,6 +789,13 @@ paths:
             application/json:
               schema:
                $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        - name: disaster-roaming-ind
+          in: query
+          description: Indication whether Disaster Roaming service is applied or not
+          required: false
+          schema:
+            type: boolean
+            default: false
         - name: If-None-Match
           in: header
           description: Validator for conditional requests, as described in RFC 7232, 3.2
@@ -1198,6 +1241,82 @@ paths:
         default:
           description: Unexpected error
 
+  /{supi}/lcs-subscription-data:
+    get:
+      summary: retrieve a UE's LCS Subscription Data
+      operationId: GetLcsSubscriptionData
+      tags:
+        - LCS Subscription Data Retrieval
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-sdm
+        - oAuth2ClientCredentials:
+          - nudm-sdm
+          - nudm-sdm:lcs-subscription-data:read
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LcsSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
+
   /{supi}/v2x-data:
     get:
       summary: retrieve a UE's V2X Subscription Data
@@ -1527,6 +1646,17 @@ paths:
           required: true
           schema:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: shared-data-ids
+          in: query
+          description: >
+            List of IDs identifying shared Data already available at and
+            subscribed by the NF service consumer
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/SharedDataId'
+          style: form
+          explode: false
       requestBody:
         content:
           application/json:
@@ -2700,6 +2830,81 @@ paths:
         default:
           description: Unexpected error
 
+  /{supi}/ranging-slpos-data:
+    get:
+      summary: retrieve a UE's Ranging and Sidelink Positioning Subscription Data
+      operationId: GetRangingSlPosData
+      tags:
+        - Ranging and Sidelink Positioning Subscription Data Retrieval
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudm-sdm
+        - oAuth2ClientCredentials:
+          - nudm-sdm
+          - nudm-sdm:ranging-slpos:read
+      parameters:
+        - name: supi
+          in: path
+          description: Identifier of the UE
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RangingSlPosSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          description: Unexpected error
 
 components:
   securitySchemes:
@@ -2724,6 +2929,7 @@ components:
             nudm-sdm:sms-mng-data:read: Access to read SMS Management data
             nudm-sdm:lcs-privacy-data:read: Access to read LCS privacy data
             nudm-sdm:lcs-mo-data:read: Access to read LCS MO data
+            nudm-sdm:lcs-subscription-data:read: Access to read (other) LCS Subscription data
             nudm-sdm:lcs-bca-data:read: Access to read LCS BCA data
             nudm-sdm:v2x-data:read: Access to read V2X data
             nudm-sdm:prose-data:read: Access to read Prose data
@@ -2742,6 +2948,7 @@ components:
             nudm-sdm:shared-data-subscriptions:modify: Access to update shared data subscriptions
             nudm-sdm:group-identifiers:read: Access to read Group Identifiers
             nudm-sdm:multiple-identifiers:read: Access to read multiple Identifiers
+            nudm-sdm:ranging-slpos-data:read: Access to read Ranging and Sidelink Positioning data
 
   schemas:
 
@@ -2779,6 +2986,8 @@ components:
           $ref: '#/components/schemas/LcsPrivacyData'
         lcsMoData:
           $ref: '#/components/schemas/LcsMoData'
+        lcsSubscriptionData:
+          $ref: '#/components/schemas/LcsSubscriptionData'
         v2xData:
           $ref: '#/components/schemas/V2xSubscriptionData'
         lcsBroadcastAssistanceTypesData:
@@ -2930,6 +3139,12 @@ components:
           default: false
         expectedUeBehaviourList:
           $ref: '#/components/schemas/ExpectedUeBehaviourData'
+        expectedUeBehaviourData:
+          description: A map(list of key-value pairs) where a valid JSON pointer serves as key
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExpectedUeBehaviourData'
+          minProperties: 1
         primaryRatRestrictions:
           type: array
           items:
@@ -2981,6 +3196,11 @@ components:
           $ref: '#/components/schemas/3GppChargingCharacteristics'
         timeSyncData:
           $ref: '#/components/schemas/TimeSyncData'
+        sharedDataList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SharedData'
+          minItems: 1
 
     TimeSyncData:
       type: object
@@ -3001,6 +3221,39 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
           minItems: 1
+        clockQualityDetailLevel:
+          $ref: '#/components/schemas/ClockQualityDetailLevel'
+        clockQualityAcceptanceCriteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClockQualityAcceptanceCriterion'
+          minItems: 1
+
+    ClockQualityAcceptanceCriterion:
+      description: Contains a Clock Quality Acceptance Criterion.
+      type: object
+      properties:
+        synchronizationState:
+          $ref: '#/components/schemas/SynchronizationState'
+        clockQuality:
+          $ref: '#/components/schemas/ClockQuality'
+        parentTimeSource:
+          $ref: '#/components/schemas/TimeSource'
+
+    ClockQuality:
+      description: Contains Clock Quality.
+      type: object
+      properties:
+        traceabilityToGnss:
+          type: boolean
+        traceabilityToUtc:
+          type: boolean
+        frequencyStability:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint16'
+        clockAccuracy:
+          type: string
+          pattern: '^[A-Fa-f0-9]{2}$'
+
 
     PcfSelectionAssistanceInfo:
       type: object
@@ -3085,6 +3338,11 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/CagInfo'
+        conditionalCagInfos:
+          description: A map (list of key-value pairs where PlmnId serves as key) of CagInfo
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ConditionalCagInfo'
         provisioningTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
 
@@ -3155,6 +3413,11 @@ components:
         hrSboAllowed:
           type: boolean
           default: false
+        ladnServiceArea:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
 
     Nssai:
       type: object
@@ -3323,6 +3586,26 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/ExpectedUeBehaviourData'
           minProperties: 1
+        expectedUeBehaviourData:
+          description: A map(list of key-value pairs) where DNN serves as key
+          type: object
+          additionalProperties:
+            description: A map(list of key-value pairs) where a valid JSON Pointer serves as key
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/ExpectedUeBehaviourData'
+            minProperties: 1
+          minProperties: 1
+        appSpecificExpectedUeBehaviourData:
+          description: A map(list of key-value pairs) where DNN serves as key
+          type: object
+          additionalProperties:
+            description: A map(list of key-value pairs) where a valid JSON Pointer serves as key
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/AppSpecificExpectedUeBehaviourData'
+            minProperties: 1
+          minProperties: 1
         suggestedPacketNumDlList:
           description: A map(list of key-value pairs) where Dnn serves as key of SuggestedPacketNumDl
           type: object
@@ -3331,6 +3614,8 @@ components:
           minProperties: 1
         3gppChargingCharacteristics:
           $ref: '#/components/schemas/3GppChargingCharacteristics'
+        nsacMode:
+          $ref: '#/components/schemas/NsacAdmissionMode'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
@@ -3586,6 +3871,12 @@ components:
         udrRestartInd:
           type: boolean
           default: false
+        expectedUeBehaviourThresholds:
+          description: A map(list of key-value pairs) where a valid JSON pointer serves as key of expectedUeBehaviourThresholds
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExpectedUeBehaviourThreshold'
+          minProperties: 1
 
     SdmSubsModification:
       type: object
@@ -3597,6 +3888,12 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
           minItems: 1
+        expectedUeBehaviourThresholds:
+          description: A map(list of key-value pairs) where a valid JSON pointer serves as key of expectedUeBehaviourThresholds
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExpectedUeBehaviourThreshold'
+          minProperties: 1
 
     ModificationNotification:
       type: object
@@ -3795,6 +4092,19 @@ components:
           items:
             $ref: '#/components/schemas/AppDescriptor'
           minItems: 1
+        secondaryAuth:
+          type: boolean
+        dnAaaIpAddressAllocation:
+          type: boolean
+        dnAaaAddress:
+          $ref: '#/components/schemas/IpAddress'
+        additionalDnAaaAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+          minItems: 1
+        dnAaaFqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
 
     AppDescriptor:
       type: object
@@ -3816,6 +4126,10 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/NsSrg'
           minItems: 1
+        nsacMode:
+          $ref: '#/components/schemas/NsacAdmissionMode'
+        validTimePeriod:
+          $ref: '#/components/schemas/ValidTimePeriod'
 
     AppPortId:
       type: object
@@ -3837,6 +4151,10 @@ components:
           items:
             $ref: '#/components/schemas/PlmnOperatorClass'
           minItems: 1
+        evtRptExpectedArea:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
+        areaUsageInd:
+          $ref: '#/components/schemas/AreaUsageInd'
 
     Lpi:
       type: object
@@ -3989,7 +4307,7 @@ components:
         configuredLmfId:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
         pruInd:
-          type: boolean
+          $ref: '#/components/schemas/PruInd'
         lpHapType:
           $ref: 'TS29518_Namf_Location.yaml#/components/schemas/LpHapType'
 
@@ -4038,7 +4356,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BatteryIndication'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
-
+        confidenceLevel:
+          type: string
+          pattern: '^[0]\.[0-9]{2}$|^1\.00$'
+        accuracyLevel:
+          type: string
+          pattern: '^[0]\.[0-9]{2}$|^1\.00$'
 
     SuggestedPacketNumDl:
       type: object
@@ -4219,6 +4542,11 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
           minItems: 1
+        mbsAssistanceInfo:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+          minItems: 1
 
     UcSubscriptionData:
       description: Contains the User Consent Subscription Data.
@@ -4284,8 +4612,6 @@ components:
           items:
             $ref: '#/components/schemas/TimeSyncServiceId'
           minItems: 1
-        uuTimeSyncErrBdgt:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
 
     AfRequestAuthorization:
       description: AF Request Authorization
@@ -4303,6 +4629,13 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        uuTimeSyncErrBdgt:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        tempVals:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TemporalValidity'
           minItems: 1
 
     TimeSyncServiceId:
@@ -4327,6 +4660,62 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
           minItems: 1
+        uuTimeSyncErrBdgt:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+
+    ConditionalCagInfo:
+      type: object
+      required:
+        - allowedCagList
+      properties:
+        allowedCagList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/CagId'
+          minItems: 1
+        cagOnlyIndicator:
+          type: boolean
+        validTimePeriod:
+          $ref: '#/components/schemas/ValidTimePeriod'
+
+    AppSpecificExpectedUeBehaviourData:
+      type: object
+      properties:
+        appId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+        expectedInactivityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        validityTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        confidenceLevel:
+          type: string
+          pattern: '^[0]\.[0-9]{2}$|^1\.00$'
+        accuracyLevel:
+          type: string
+          pattern: '^[0]\.[0-9]{2}$|^1\.00$'
+
+    ExpectedUeBehaviourThreshold:
+      type: object
+      properties:
+        expecedUeBehaviourDatasets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpecedUeBehaviourDataset'
+          minItems: 1
+        singleNssais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          minItems: 1
+        dnns:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1
+        confidenceLevel:
+          type: string
+        accuracyLevel:
+          type: string
 
 
 # SIMPLE TYPES:
@@ -4402,6 +4791,31 @@ components:
     SorCmci:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
 
+    RangingSlPosSubscriptionData:
+      description: Contains the Ranging/SL positioning Subscription Data.
+      type: object
+      properties:
+        rangingSlPosAuth:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RangingSlPosAuth'
+        rangingSlPosPlmn:
+          type: array
+          items:
+            $ref: '#/components/schemas/RangingSlPosPlmn'
+          minItems: 1
+
+    RangingSlPosPlmn:
+      description: Contains the PLMN identities where the Ranging/SL Positioning services are authorised to use and the authorised Ranging/SL Positioning services on this given PLMNs.
+      type: object
+      required:
+        - rangingSlPosPlmn
+      properties:
+        rangingSlPosPlmn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        rangingSlPosAllowed:
+          type: array
+          items:
+            $ref: '#/components/schemas/RangingSlPosAllowed'
+          minItems: 1
 
 # ENUMS:
 
@@ -4420,6 +4834,7 @@ components:
           - SMS_MNG
           - LCS_PRIVACY
           - LCS_MO
+          - LCS_SUB
           - UEC_AMF
           - V2X
           - LCS_BCA
@@ -4510,11 +4925,7 @@ components:
             content defined in the present version of this API.
 
     LcsClientClass:
-      description: >
-        Indicates LCS Client class.
-        The UE LCS privacy profile also indicates the 
-        Location Privacy Indication that can be provided or updated
-        by the UE and/or AFs.
+      description: Indicates LCS Client class.
       anyOf:
         - type: string
           enum:
@@ -4523,6 +4934,8 @@ components:
           - OM_IN_VPLMN
           - ANONYMOUS_LOCATION_SERVICE
           - SPECIFIC_SERVICE
+          - NWDAF_IN_HPLMN
+          - NWDAF_IN_VPLMN
         - type: string
           description: >
             This string provides forward-compatibility with future
@@ -4670,6 +5083,139 @@ components:
           - UNICAST
           - LAYER2_RELAY
           - LAYER3_RELAY
+          - LAYER3_REMOTE
+          - LAYER2_UE_RELAY
+          - LAYER3_UE_RELAY
+          - LAYER2_END
+          - LAYER3_END
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    NsacAdmissionMode:
+      description: >
+        Indicates the NSAC admission mode applied in roaming case.
+      anyOf:
+        - type: string
+          enum:
+          - VPLMN_ADMISSION
+          - VPLMN_WITH_HPLMN_ASSISTANCE
+          - HPLMN_ADMISSION
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    PruInd:
+      description: >
+        Indicates whether the UE can act as a PRU or the type of PRU.
+      anyOf:
+        - type: string
+          enum:
+          - NON_PRU
+          - STATIONARY_PRU
+          - NON_STATIONARY_PRU
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    AreaUsageInd:
+      description: >
+        Indicates one of the mutually exclusive global settings
+        (if the event report allowed area can be used in opposite sense or positive sense).
+      anyOf:
+        - type: string
+          enum:
+          - OPPOSITE_SENSE
+          - POSITIVE_SENSE
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    ClockQualityDetailLevel:
+      description: Indicates the Clock Quality Detail Level.
+      anyOf:
+        - type: string
+          enum:
+          - CLOCK_QUALITY_METRICS
+          - ACCEPT_INDICATION
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    SynchronizationState:
+      description: Indicates the Synchronization State.
+      anyOf:
+        - type: string
+          enum:
+          - LOCKED
+          - HOLDOVER
+          - FREERUN
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    TimeSource:
+      description: Indicates the Time Source.
+      anyOf:
+        - type: string
+          enum:
+          - PTP
+          - GNSS
+          - ATOMIC_CLOCK
+          - TERRESTRIAL_RADIO
+          - SERIAL_TIME_CODE
+          - NTP
+          - HAND_SET
+          - OTHER
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    RangingSlPosAllowed:
+      description: >
+        Indicates the Ranging/SL positioning services that can be authorised to 
+        use in the given PLMN for the UE.
+      anyOf:
+        - type: string
+          enum:
+          - PC5
+          - ANNOUNCE
+          - MONITOR
+          - DISCOVERER
+          - DISCOVEREE
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    ExpecedUeBehaviourDataset:
+      anyOf:
+        - type: string
+          enum:
+          - STATIONARY_INDICATION
+          - COMMUNICATION_DURATION_TIME
+          - PERIODIC_TIME
+          - SCHEDULED_COMMUNICATION_TIME
+          - SCHEDULED_COMMUNICATION_TYPE
+          - EXPECTED_UMTS
+          - TRAFFIC_PROFILE
+          - BATTERY_INDICATION
+          - EXPECTED_INACTIVITY_TIME
         - type: string
           description: >
             This string provides forward-compatibility with future
