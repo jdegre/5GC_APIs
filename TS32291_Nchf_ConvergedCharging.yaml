@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.1.4
+  version: 3.1.5
   description: |
     ConvergedCharging Service    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V17.7.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V17.8.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -282,6 +282,8 @@ components:
           type: string
         eASProviderIdentifier:
           type: string
+        aMFId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfId'
         pDUSessionChargingInformation:
           $ref: '#/components/schemas/PDUSessionChargingInformation'
         roamingQBCInformation:
@@ -429,7 +431,6 @@ components:
         tariffTimeChange:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
-        - triggerType
         - triggerCategory
     MultipleUnitInformation:
       type: object
@@ -742,10 +743,25 @@ components:
       properties:
         latency:
           type: integer
+# Included for backwards compatibility, shall not be used
+        uplinkLatency:
+          type: integer
+        downlinkLatency:
+          type: integer
         throughput:
           $ref: '#/components/schemas/Throughput'
+# Included for backwards compatibility, shall not be used
+        uplinkThroughput:
+          $ref: '#/components/schemas/Throughput'
+        downlinkThroughput:
+          $ref: '#/components/schemas/Throughput'
         maximumPacketLossRate:
+# Included for backwards compatibility, shall not be used
           type: string
+        maximumPacketLossRateUL:
+          type: integer
+        maximumPacketLossRateDL:
+          type: integer
         serviceExperienceStatisticsData:
           $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/ServiceExperienceInfo'
         theNumberOfPDUSessions:
@@ -1583,6 +1599,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
         meanVirtualDiskUsage:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        measuredInBytes:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
+        measuredOutBytes:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint64'
         durationStartTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         durationEndTime:
@@ -2016,6 +2036,9 @@ components:
             - 5G_DDNMF
             - IMS_Node
             - EES
+            - PCF
+            - UDM
+            - UPF
         - type: string
     ChargingCharacteristicsSelectionMode:
       anyOf:

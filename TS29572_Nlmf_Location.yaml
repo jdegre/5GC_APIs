@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.2.3'
+  version: '1.2.4'
   title: 'LMF Location'
   description: |
     LMF Location Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.572 V17.8.0; 5G System; Location Management Services; Stage 3
+  description: 3GPP TS 29.572 V17.9.0; 5G System; Location Management Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.572/'
 
 servers:
@@ -334,6 +334,8 @@ components:
         reliableLocReq:
           type: boolean
           default: false
+        integrityRequirements:
+          $ref: 'TS29515_Ngmlc_Location.yaml#/components/schemas/IntegrityRequirements'
 
     LocationData:
       description: Information within Determine Location Response.
@@ -385,6 +387,8 @@ components:
           $ref: '#/components/schemas/MinorLocationQoS'
         acceptedPeriodicEventInfo:
           $ref: '#/components/schemas/PeriodicEventInfo'
+        haGnssMetrics:
+          $ref: '#/components/schemas/HighAccuracyGnssMetrics'
 
     GeographicArea:
       description: Geographic area specified by different shape.
@@ -1135,6 +1139,9 @@ components:
           $ref: '#/components/schemas/MinorLocationQoS'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        haGnssMetrics:
+          $ref: '#/components/schemas/HighAccuracyGnssMetrics'
+
 
     UeConnectivityState:
       description: Indicates the connectivity state of a UE.
@@ -1155,6 +1162,29 @@ components:
           $ref: '#/components/schemas/Accuracy'
         vAccuracy:
           $ref: '#/components/schemas/Accuracy'
+
+    HighAccuracyGnssMetrics:
+      description: High Accuracy GNSS Positioning Metrics.
+      type: object
+      properties:
+        nrOfUsedSatellites:
+          type: integer
+          minimum: 0
+          maximum: 64
+        hdopi:
+          type: integer
+          minimum: 1
+          maximum: 256
+        pdopi:
+          type: integer
+          minimum: 1
+          maximum: 256
+        age:
+          type: integer
+          minimum: 0
+          maximum: 99
+        fixType:
+          $ref: '#/components/schemas/FixType'
 
 #
 #
@@ -1557,4 +1587,13 @@ components:
           enum:
             - LOCATION_ESTIMATE
             - LOCATION_ASSISTANCE_DATA
+        - type: string
+
+    FixType:
+      description: Specifies the positioning fix type.
+      anyOf:
+        - type: string
+          enum:
+            - CARRIER_PHASE_FLOAT
+            - CARRIER_PHASE_FIX
         - type: string

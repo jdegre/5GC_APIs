@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Scenario specific Intent Expectations
-  version: 17.4.0
+  version: 17.5.0
   description: >-
     OAS 3.0.1 definition of scenario specific Intent Expectations 
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -23,10 +23,8 @@ components:
           type: string
         expectationVerb:
            $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationVerb"
-        expectationObjects:
-          type: array
-          items:
-            $ref: "#/components/schemas/RadioNetworkExpectationObject"
+        expectationObject:
+          $ref: "#/components/schemas/RadioNetworkExpectationObject"
         expectationTargets:
           type: array
           items:
@@ -38,6 +36,7 @@ components:
               - $ref: "#/components/schemas/AveDLRANUEThptTarget"
               - $ref: "#/components/schemas/LowULRANUEThptRatioTarget"
               - $ref: "#/components/schemas/LowDLRANUEThptRatioTarget" 
+              - $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationTarget"
         expectationContexts:
           type: array
           items:
@@ -46,7 +45,7 @@ components:
             $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo" 
       required:
         - expectationId
-    ServiceSupportExpectation:
+    EdgeServiceSupportExpectation:
       description: >-
         This data type is the "IntentExpectation" data type with specialisations to represent MnS consumer's expectations for service deployment    
       type: object
@@ -55,10 +54,8 @@ components:
           type: string
         expectationVerb:
            $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationVerb"
-        expectationObjects:
-          type: array
-          items:
-            $ref: "#/components/schemas/ServiceSupportExpectationObject"
+        expectationObject:
+          $ref: "#/components/schemas/EdgeServiceSupportExpectationObject"
         expectationTargets:
           type: array
           items:
@@ -97,7 +94,7 @@ components:
         objectType:
           type: string
           enum:
-            - RAN_SubNetwork #value for Radio Network Expectation--#
+            - RAN_SubNetwork 
         objectInstance:
           $ref: "TS28623_ComDefs.yaml#/components/schemas/Dn"
         objectContexts:
@@ -110,16 +107,16 @@ components:
               - $ref: "#/components/schemas/PLMNContext"
               - $ref: "#/components/schemas/NRFqBandContext"
               - $ref: "#/components/schemas/RATContext"
-              - $ref: "#/components/schemas/ObjectContext"               
-    ServiceSupportExpectationObject: 
+              - $ref: "TS28312_IntentNrm.yaml#/components/schemas/ObjectContext"               
+    EdgeServiceSupportExpectationObject: 
       description: >-
-        This data type is the "ExpectationObject" data type with specialisations for ServiceSupportExpectation
+        This data type is the "ExpectationObject" data type with specialisations for EdgeServiceSupportExpectation
       type: object
       properties:
         objectType:
           type: string
           enum:
-            - Service_Support #value for Service Support Expectation--#
+            - Service_Support 
         objectInstance:
           $ref: "TS28623_ComDefs.yaml#/components/schemas/Dn"
         objectContexts:
@@ -127,10 +124,10 @@ components:
           items:
             type: object
             oneOf:
-              - $ref: "#/components/schemas/EdgeIdenfiticationIdContext"
-              - $ref: "#/components/schemas/EdgeIdenfiticationLocContext"
+              - $ref: "#/components/schemas/EdgeIdentificationIdContext"
+              - $ref: "#/components/schemas/EdgeIdentificationLocContext"
               - $ref: "#/components/schemas/CoverageAreaTAContext"   
-              - $ref: "#/components/schemas/ObjectContext"   
+              - $ref: "TS28312_IntentNrm.yaml#/components/schemas/ObjectContext"   
    #-------Definition of the ExpectationObject dataType ----------#    
 
 
@@ -525,9 +522,9 @@ components:
               - UTRAN
               - EUTRAN
               - NR
-    EdgeIdenfiticationIdContext:
+    EdgeIdentificationIdContext:
       description: >-
-        This data type is the "ObjectContext" data type with specialisations for EdgeIdenfiticationIdContext      
+        This data type is the "ObjectContext" data type with specialisations for EdgeIdentificationIdContext      
       type: object
       properties:
         contextAttribute:
@@ -542,9 +539,9 @@ components:
           type: array
           items:
             type: string
-    EdgeIdenfiticationLocContext:
+    EdgeIdentificationLocContext:
       description: >-
-        This data type is the "ObjectContext" data type with specialisations for EdgeIdenfiticationLocContext    
+        This data type is the "ObjectContext" data type with specialisations for EdgeIdentificationLocContext    
       type: object
       properties:
         contextAttribute:
@@ -580,7 +577,7 @@ components:
           type: integer
    #-------Definition of the scenario specific  ObjectTarget dataType----------------#
    
-   #-------Definition of the concrete ExpectionContext dataType----------------#
+   #-------Definition of the concrete ExpectationContext dataType----------------#
     ServiceStartTimeContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for ServiceStartTimeContext       
@@ -595,7 +592,7 @@ components:
           enum:
             - IS_EQUAL_TO
         contextValueRange:
-          type: string
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
     ServiceEndTimeContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for ServiceEndTimeContext         
@@ -610,7 +607,7 @@ components:
           enum:
             - IS_EQUAL_TO
         contextValueRange:
-          type: string
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
     UEMobilityLevelContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for UEMobilityLevelContext       
@@ -623,11 +620,9 @@ components:
         contextCondition:
           type: string
           enum:
-            - IS_WITHIN_RANGE
+            - IS_EQUAL_TO
         contextValueRange:
-          type: array
-          items:
-            $ref: "TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel"
+          $ref: "TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel"
     ResourceSharingLevelContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for ResourceSharingLevelContext          
@@ -640,9 +635,7 @@ components:
         contextCondition:
           type: string
           enum:
-            - IS_WITHIN_RANGE
+            - IS_EQUAL_TO
         contextValueRange:
-          type: array
-          items:
-            $ref: "TS28541_SliceNrm.yaml#/components/schemas/SharingLevel"
+          $ref: "TS28541_SliceNrm.yaml#/components/schemas/SharingLevel"
    #-------Definition of the concrete ExpectionContext dataType----------------#
