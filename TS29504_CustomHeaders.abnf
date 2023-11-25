@@ -1,0 +1,109 @@
+; ----------------------------------------
+;   RFC 5234
+; ----------------------------------------
+
+HTAB   = %x09 ; horizontal tab
+
+LF     = %x0A ; linefeed
+
+CR     = %x0D ; carriage return
+
+SP     = %x20
+
+DQUOTE = %x22 ; " (Double Quote)
+
+DIGIT  = %x30-39 ; 0-9
+
+ALPHA  = %x41-5A / %x61-7A ; A-Z / a-z
+
+VCHAR  = %x21-7E ; visible (printing) characters
+
+WSP    = SP / HTAB ; white space
+
+CRLF   = CR LF ; Internet standard newline
+
+
+
+; ----------------------------------------
+;   RFC 5322
+; ----------------------------------------
+
+obs-FWS       = 1*WSP *( CRLF 1*WSP )
+
+FWS           = ( [ *WSP CRLF ] 1*WSP ) / obs-FWS
+
+obs-NO-WS-CTL = %d1-8 / %d11 / %d12 / %d14-31 / %d127
+
+obs-ctext     = obs-NO-WS-CTL
+
+ctext         = %d33-39 / %d42-91 / %d93-126 / obs-ctext
+
+obs-qp        = "\" ( obs-NO-WS-CTL / LF / CR )
+
+quoted-pair   = ( "\" ( VCHAR / WSP ) ) / obs-qp
+
+ccontent      = ctext / quoted-pair / comment
+
+comment       = "(" *( [ FWS ] ccontent ) [ FWS ] ")"
+
+
+
+; ----------------------------------------
+;   RFC 7230
+; ----------------------------------------
+
+OWS      = *( SP / HTAB )
+
+tchar    = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-"
+         / "." / "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA
+
+token    = 1*tchar
+
+obs-text = %x80-FF
+
+
+
+; ----------------------------------------
+;   RFC 7232
+; ----------------------------------------
+
+entity-tag = [ weak ] opaque-tag
+
+weak       = %x57.2F ; "W/", case-sensitive
+
+opaque-tag = DQUOTE *etagc DQUOTE
+
+etagc      = %x21 / %x23-7E / obs-text ; VCHAR except double quotes, plus obs-text
+
+
+
+; ----------------------------------------
+;   3GPP TS 29.504
+;
+;   Version: 18.3.0 (September 2023)
+;
+;   (c) 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+; ----------------------------------------
+
+;
+; Header: 3gpp-Sbi-Notification-Correlation
+;
+
+Sbi-Notification-Correlation-Header = "3gpp-Sbi-Notification-Correlation:" OWS subscriptionId 
+                                    *( OWS "," OWS subscriptionId ) OWS
+
+subscriptionId                      = token
+
+
+
+;
+; Header: 3gpp-Sbi-Etags
+;
+
+Sbi-Etags-Header        = "3gpp-Sbi-Etags:" OWS datasetEtag *( OWS "," OWS datasetEtag ) OWS
+
+datasetEtag             = dataSetName "=" entity-tag
+
+dataSetName             = UeSubscribedDataSetName
+
+UeSubscribedDataSetName = 1*( ALPHA / DIGIT / "_" )
