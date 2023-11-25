@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: 5GMS Common Data Types
-  version: 1.0.1
+  version: 1.0.2
   description: |
     5GMS Common Data Types
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -10,7 +10,7 @@ tags:
   - name: 5GMS Common Data Types
     description: '5G Media Streaming: Common Data Types'
 externalDocs:
-  description: 'TS 26.512 V16.9.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V16.11.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 paths: {}
 components:
@@ -40,7 +40,7 @@ components:
       type: string
       format: uri
       description: 'Absolute Uniform Resource Locator, conforming with the "absolute-URI" production specified in IETF RFC 3986, section 4.3 in which the scheme part is "http" or "https". Note that the "query" suffix is permitted by this production but the "fragment" suffix is not.'
- 
+
     #####################################
     # Clause 6.4.3: Structured data types
     #####################################
@@ -69,12 +69,19 @@ components:
           type: string
 
     ServiceDataFlowDescription:
-      type: object
-      properties:
-        flowDescription:
-          $ref: '#/components/schemas/IpPacketFilterSet'
-        domainName:
-          type: string
+      oneOf:
+        - type: object
+          required:
+            - flowDescription
+          properties:
+            flowDescription:
+              $ref: '#/components/schemas/IpPacketFilterSet'
+        - type: object
+          required:
+            - domainName
+          properties:
+            domainName:
+              type: string
 
     M5QoSSpecification:
       type: object
@@ -149,13 +156,16 @@ components:
     OperationSuccessResponse:
       type: object
       required:
-      - success
+        - success
       properties:
         success:
           type: boolean
         reason:
           type: string
 
+    #####################################
+    # Clause 6.4.4: Enumerated data types
+    #####################################
     CellIdentifierType:
       anyOf:
         - type: string
