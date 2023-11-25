@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.3'
+  version: '1.3.0-alpha.4'
   title: 'NSSF NSSAI Availability'
   description: |
     NSSF NSSAI Availability Service.  
@@ -18,7 +18,7 @@ servers:
         default: https://example.com
         description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
 externalDocs:
-  description: 3GPP TS 29.531 V18.3.0; 5G System; Network Slice Selection Services; Stage 3
+  description: 3GPP TS 29.531 V18.4.0; 5G System; Network Slice Selection Services; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.531/
 paths:
   /nssai-availability/{nfId}:
@@ -305,7 +305,7 @@ paths:
             Location:
               description: >
                 Contains the URI of the newly created resource, according to the structure:
-                {apiRoot}/nnssf-nssaiavailability/v1/nssai-availability/subscriptions/{subscriptionId}
+                {apiRoot}/nnssf-nssaiavailability/<apiVersion>/nssai-availability/subscriptions/{subscriptionId}
               required: true
               schema:
                 type: string
@@ -584,11 +584,6 @@ components:
           items:
             $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsagInfo'
           minItems: 1
-        unavailableNsiList:
-          type: array
-          items:
-            $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsiId'
-          minItems: 1
 
     RestrictedSnssai:
       description: This contains the restricted SNssai information per PLMN
@@ -632,7 +627,6 @@ components:
       type: object
       required:
         - nfNssaiAvailabilityUri
-        - taiList
         - event
       properties:
         nfNssaiAvailabilityUri:
@@ -643,6 +637,11 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
         event:
           $ref: '#/components/schemas/NssfEventType'
+        additionalEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/NssfEventType'
+          minItems: 1
         expiry:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         amfSetId:
@@ -660,6 +659,10 @@ components:
         allAmfSetTaiInd:
           type: boolean
           default: false
+        nsrpSubscribeInfo:
+          $ref: '#/components/schemas/SnssaiReplacementSubscribeInfo'
+        nsiunSubscribeInfo:
+          $ref: '#/components/schemas/NsiUnavailabilitySubscribeInfo'
 
     NssfEventSubscriptionCreatedData:
       description: This contains the information for created event subscription
@@ -684,7 +687,6 @@ components:
       type: object
       required:
         - subscriptionId
-        - authorizedNssaiAvailabilityData
       properties:
         subscriptionId:
           type: string
@@ -701,12 +703,52 @@ components:
             Indicate the impacted S-NSSAIs, the current status for each reported S-NSSAI, and 
             if available the alternative S-NSSAI per impacted S-NSSAI for the S-NSSAIs that are 
             reported as being not available.
+        unavailableNsiList:
+          type: array
+          items:
+            $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsiId'
+          minItems: 1
+
+    SnssaiReplacementSubscribeInfo:
+      description: Present if the NF service consumer subscribes to events related to Network Slice Replacement.
+      type: object
+      properties:
+        snssaiToSubscribe:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        nfType:
+          $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
+        nfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+      required:
+        - snssaiToSubscribe
+        - nfType
+        - nfId
+ 
+    NsiUnavailabilitySubscribeInfo:
+      description: Present if the NF service consumer subscribes to events related to Network Slice Instance Replacement.
+      type: object
+      properties:
+        nsiToSubscribe:
+          type: array
+          items:
+            $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/NsiId'
+        snssaiToSubscribe:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+
     NssfEventType:
       description: This contains the event for the subscription
       anyOf:
         - type: string
           enum:
             - SNSSAI_STATUS_CHANGE_REPORT
+            - SNSSAI_REPLACEMENT_REPORT
+            - NSI_UNAVAILABILITY_REPORT
         - type: string
     PatchDocument:
       description: This contains the JSON Patch instructions for updating the Nssai availability data information at the NSSF

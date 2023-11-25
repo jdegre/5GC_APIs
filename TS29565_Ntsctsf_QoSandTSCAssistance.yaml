@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Ntsctsf_QoSandTSCAssistance Service API
-  version: 1.1.0-alpha.3
+  version: 1.1.0-alpha.4
   description: |
     TSCTSF QoS and TSC Assistance Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.565 V18.2.0; 5G System; Time Sensitive Communication and Time Synchronization function 
+    3GPP TS 29.565 V18.3.0; 5G System; Time Sensitive Communication and Time Synchronization function 
     Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
 
@@ -52,9 +52,10 @@ paths:
               description: >
                 Contains the URI of the created individual TSC application session context resource,
                 according to the structure
-                {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId} or the URI of the
-                created events subscription sub-resource, according to the structure
-                {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId}/events-subscription}
+                {apiRoot}/ntsctsf-qos-tscai/<apiVersion>/tsc-app-sessions/{appSessionId} or the
+                URI of the created events subscription sub-resource, according to the structure
+                {apiRoot}/ntsctsf-qos-tscai/<apiVersion>/tsc-app-sessions/{appSessionId}/
+                events-subscription}
               required: true
               schema:
                 type: string
@@ -428,7 +429,8 @@ paths:
               description: >
                 Contains the URI of the created Events Subscription resource,
                 according to the structure
-                {apiRoot}/ntsctsf-qos-tscai/v1/tsc-app-sessions/{appSessionId}/events-subscription}
+                {apiRoot}/ntsctsf-qos-tscai/<apiVersion>/tsc-app-sessions/{appSessionId}/
+                events-subscription}
               required: true
               schema:
                 type: string
@@ -574,13 +576,18 @@ components:
         - notifUri
         - afId
         - qosReference
-      oneOf:
-        - required: [ueIpAddr]
-        - required: [ueMac]
-        - required: [ueId]
-        - required: [externalGroupId]
-      not:
-        required: [ethFlowInfo, enEthFlowInfo]
+      allOf:
+        - oneOf:
+          - required: [ueIpAddr]
+          - required: [ueMac]
+          - required: [ueId]
+          - required: [externalGroupId]
+        - not:
+            required: [ethFlowInfo, enEthFlowInfo]
+        - not:
+            required: [altQosReqs, altQosReferences]
+        - not:
+            required: [qosReference, altQosReqs]
       properties:
         ueIpAddr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
@@ -653,7 +660,6 @@ components:
           $ref: '#/components/schemas/EventsSubscReqData'
         tempInValidity:
           $ref: '#/components/schemas/TemporalInValidity'
-
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
@@ -716,8 +722,13 @@ components:
           $ref: '#/components/schemas/EventsSubscReqDataRm'
         tempInValidity:
           $ref: '#/components/schemas/TemporalInValidity'
-      not:
-        required: [ethFlowInfo, enEthFlowInfo]
+      allOf:
+        - not:
+            required: [ethFlowInfo, enEthFlowInfo]
+        - not:
+            required: [altQosReqs, altQosReferences]
+        - not:
+            required: [qosReference, altQosReqs]
 
     EventsSubscReqData:
       description: Identifies the events the application subscribes to.
@@ -830,6 +841,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         stopTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - startTime
+        - stopTime
 
 #
 # ENUMERATIONS DATA TYPES

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.5.0-alpha.3'
+  version: '1.5.0-alpha.4'
 
 
   title: 'Common Data Types'
@@ -11,7 +11,7 @@ info:
     All rights reserved.  
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.2.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.3.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -921,11 +921,11 @@ components:
     Dnn:
       type: string
       description: >
-            String representing a Data Network as defined in clause 9A of 3GPP TS 23.003; 
-            it shall contain either a DNN Network Identifier, or a full DNN with both the Network 
-            Identifier and Operator Identifier, as specified in 3GPP TS 23.003 clause 9.1.1 and 9.1.2.
-            It shall be coded as string in which the labels are separated by dots 
-            (e.g. "Label1.Label2.Label3").
+        String representing a Data Network as defined in clause 9A of 3GPP TS 23.003; 
+        it shall contain either a DNN Network Identifier, or a full DNN with both the Network 
+        Identifier and Operator Identifier, as specified in 3GPP TS 23.003 clause 9.1.1 and 9.1.2.
+        It shall be coded as string in which the labels are separated by dots 
+        (e.g. "Label1.Label2.Label3").
     DnnRm:
       type: string
       nullable: true
@@ -1017,7 +1017,8 @@ components:
       pattern: '^(imei-[0-9]{15}|imeisv-[0-9]{16}|mac((-[0-9a-fA-F]{2}){6})(-untrusted)?|eui((-[0-9a-fA-F]{2}){8})|.+)$'
       nullable: true
       description: >
-        This data type is defined in the same way as the 'Pei' data type but with the OpenAPI 'nullable: true' property.
+        This data type is defined in the same way as the 'Pei' data type but with
+        the OpenAPI 'nullable: true' property.
 
     Supi:
       type: string
@@ -1110,6 +1111,41 @@ components:
       type: string
       pattern: '^(imsi-[0-9]{5,15}|nai-.+|gli-.+|gci-.+|suci-(0-[0-9]{3}-[0-9]{2,3}|[1-7]-.+)-[0-9]{1,4}-(0-0-.*|[a-fA-F1-9]-([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])-[a-fA-F0-9]+)|.+)$'
       description: String identifying a SUPI or a SUCI.
+
+    Imsi:
+      description: String identifying an IMSI
+      type: string
+      pattern: '^[0-9]{5,15}$'
+
+    ApplicationlayerId:
+      type: string
+      description: >
+        String identifying an UE with application layer ID. The format of the application 
+        layer ID parameter is same as the Application layer ID defined in clause 11.3.4 of 
+        3GPP TS 24.554.
+
+
+#
+# ENUMERATED DATA TYPES
+#
+
+    GroupServiceId:
+      anyOf:
+        - type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+        - type: integer
+          description: >
+            This integer provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - 1: Group specific NAS level congestion control
+        - 2: Group specific Monitoring of Number of UEs present in a geographical area
+        - 3: Group specific Group specific for 5G LAN Type service
 
 #
 # STRUCTURED DATA TYPES
@@ -1977,6 +2013,16 @@ components:
             - UNAVAILABLE
         - type: string
       description: Indicates the S-NSSAI availability.
+
+    TerminationIndication:
+      description: Indicates the termination of Network Slice Replacement.
+      anyOf:
+        - type: string
+          enum:
+            - NEW_UES_TERMINATION
+            - ALL_UES_TERMINATION
+        - type: string
+
 
 #
 # STRUCTURED DATA TYPES
@@ -3388,6 +3434,9 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        uesWithPduSessionInd:
+          type: boolean
+          default: false
 
     SACEventStatus:
       description: >
@@ -3583,8 +3632,8 @@ components:
           items:
             $ref: '#/components/schemas/FqdnPatternMatchingRule'
           minItems: 1
-        sessionAmbr:
-          $ref: '#/components/schemas/Ambr'
+        sessionDIAmbr:
+          $ref: '#/components/schemas/BitRate'
 
     PartiallyAllowedSnssai:
       description: >
@@ -3629,6 +3678,40 @@ components:
           $ref: '#/components/schemas/UeAuth'
         rgSlPosLocAuth:
           $ref: '#/components/schemas/UeAuth'
+        rgSlPosClientAuth:
+          $ref: '#/components/schemas/UeAuth'
+        rgSlPosServerAuth:
+          $ref: '#/components/schemas/UeAuth'
+
+
+    NrA2xAuth:
+      description: Contains NR A2X services authorized information.
+      type: object
+      properties:
+        uavUeAuth:
+          $ref: '#/components/schemas/UeAuth'
+
+    LteA2xAuth:
+      description: Contains LTE A2X services authorized information.
+      type: object
+      properties:
+        uavUeAuth:
+          $ref: '#/components/schemas/UeAuth'
+
+    SliceUsageControlInfo:
+      type: object
+      required:
+        - sNssai
+      properties:
+        sNssai:
+          $ref: '#/components/schemas/Snssai'
+        deregInactTimer:
+          $ref: '#/components/schemas/DurationSec'
+        sessInactTimer:
+          $ref: '#/components/schemas/DurationSec'
+      anyOf:
+        - required: [ deregInactTimer ]
+        - required: [ sessInactTimer ]
 
 
 #
@@ -3645,7 +3728,7 @@ components:
         any value (if the wildcardSd attribute is present).
 
     SnssaiReplaceInfo:
-      description: Indicates the status of an S-NSSAI and optionally an alternative S-NSSAI.
+      description: Indicates the status of an S-NSSAI and an alternative S-NSSAI optionally.
       type: object
       properties:
         snssai:
@@ -3654,9 +3737,13 @@ components:
           $ref: '#/components/schemas/SnssaiStatus'
         altSnssai:
           $ref: '#/components/schemas/Snssai'
+        nsReplTerminInd:
+          $ref: '#/components/schemas/TerminationIndication'
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
       required:
         - snssai
-        - status
+
 
 #
 # Data Types related to 5G QoS as defined in clause 5.5
@@ -4107,6 +4194,22 @@ components:
       description: >
         This data type is defined in the same way as the ' PartitioningCriteria ' data type, but
         with the OpenAPI 'nullable: true' property.
+
+    PduSetHandlingInfo:
+      anyOf:
+        - type: string
+          enum:
+            - ALL_PDUS_NEEDED
+            - ALL_PDUS_NOT_NEEDED
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+      description: |
+        Possible values are:
+        - "ALL_PDUS_NEEDED": All PDUs of the PDU Set are needed
+        - "ALL_PDUS_NOT_NEEDED": All PDUs of the PDU Set are not needed
 #
 #
 # STRUCTURED DATA TYPES
@@ -4235,9 +4338,8 @@ components:
         pduSetErrRate:
           $ref: '#/components/schemas/PduSetErrRate'
         pduSetHandlingInfo:
-          type: string
-# The data type of "pduSetHandlingInfo" attribute is FFS
-
+         $ref: '#/components/schemas/PduSetHandlingInfo'
+# 
 
     PduSetQosParaRm:
       description: "PduSetQosPara with nullable: true"
@@ -4252,6 +4354,7 @@ components:
 #
 # SIMPLE DATA TYPES
 #
+
     PhysCellId:
       type: integer
       minimum: 0
@@ -4259,6 +4362,7 @@ components:
       description: >
         Integer value identifying the physical cell identity (PCI), as definition of "PhysCellId" IE 
         in clause 6.3.2 of 3GPP TS 38.331.
+
     ArfcnValueNR:
       type: integer
       minimum: 0
@@ -4267,10 +4371,28 @@ components:
         Integer value indicating the ARFCN applicable for a downlink, uplink or bi-directional (TDD)
         NR global frequency raster,
         as definition of "ARFCN-ValueNR" IE in clause 6.3.2 of 3GPP TS 38.331.
+
+    QoeReference:
+      description: >
+        String containing MCC (3 digits), MNC (2 or 3 digits) 
+        and QMC ID (3 octets, encoded as 6 hexadecimal digits).
+      type: string
+      pattern: '^[0-9]{3}-[0-9]{2,3}-[A-Fa-f0-9]{6}$'
+
+    MdtAlignmentInfo:
+      description: |
+        String containing:
+        - Trace Reference: MCC (3 digits), MNC (2 or 3 digits), 
+          Trace ID (3 octets, encoded as 6 hexadecimal digits)
+        - Trace Recording Session Reference (2 octets, encoded as 4 hexadecimal digits)
+      format: string
+      pattern: '^[0-9]{3}-[0-9]{2,3}-[A-Fa-f0-9]{6}-[A-Fa-f0-9]{4}$'
+
 #
 #
 # Enumerations
 #
+
     TraceDepth:
       anyOf:
         - type: string
@@ -4283,9 +4405,10 @@ components:
             - MAXIMUM_WO_VENDOR_EXTENSION
         - type: string
       description: >
-        The enumeration TraceDepth defines how detailed information should be recorded in the trace.
-        See 3GPP TS 32.422 for further description of the values. It shall comply with the
-        provisions defined in table 5.6.3.1-1
+        The enumeration TraceDepth defines how detailed information should be recorded
+        in the trace. See 3GPP TS 32.422 for further description of the values.
+        It shall comply with the provisions defined in table 5.6.3.1-1
+
     TraceDepthRm:
       anyOf:
         - $ref: '#/components/schemas/TraceDepth'
@@ -4365,8 +4488,8 @@ components:
         - type: string
       description: >
         The enumeration MeasurementNrForMdt defines Measurements used for MDT in NR in the trace.
-        See 3GPP TS 32.422 for further description of the values. It shall comply with the provisions
-        defined in table 5.6.3.6-1.
+        See 3GPP TS 32.422 for further description of the values. It shall comply with the
+        provisions defined in table 5.6.3.6-1.
 
     SensorMeasurement:
       anyOf:
@@ -4377,9 +4500,9 @@ components:
             - UE_ORIENTATION
         - type: string
       description: >
-        The enumeration SensorMeasurement defines sensor measurement type for MDT in the trace. See 3GPP
-        TS 32.422 for further description of the values. It shall comply with the provisions defined
-        in table 5.6.3.7-1.
+        The enumeration SensorMeasurement defines sensor measurement type for MDT in the trace.
+        See 3GPP TS 32.422 for further description of the values. It shall comply with the
+        provisions defined in table 5.6.3.7-1.
 
     ReportingTrigger:
       anyOf:
@@ -4508,8 +4631,8 @@ components:
         - type: string
       description: >
         The enumeration CollectionPeriodRmmLteMdt defines Collection period for RRM measurements
-        LTE for MDT in the trace. See 3GPP TS 32.422 for further description of the values. It shall
-        comply with the provisions defined in table 5.6.3.15-1.
+        LTE for MDT in the trace. See 3GPP TS 32.422 for further description of the values.
+        It shall comply with the provisions defined in table 5.6.3.15-1.
 
     MeasurementPeriodLteMdt:
       anyOf:
@@ -4524,9 +4647,9 @@ components:
             - 60000
         - type: string
       description: >
-        The enumeration MeasurementPeriodLteMdt defines Measurement period LTE for MDT in the trace. 
-        See 3GPP TS 32.422 for further description of the values. It shall comply with the
-        provisions defined in table 5.6.3.16-1.
+        The enumeration MeasurementPeriodLteMdt defines Measurement period LTE for MDT in the
+        trace.  See 3GPP TS 32.422 for further description of the values. It shall comply
+        with the provisions defined in table 5.6.3.16-1.
 
     ReportIntervalNrMdt:
       anyOf:
@@ -4585,8 +4708,8 @@ components:
             - 60000
         - type: string
       description: >
-        The enumeration CollectionPeriodRmmNrMdt defines Collection period for RRM measurements NR for MDT in the trace.
-        See 3GPP TS 32.422 for further description of the values. It shall comply with the provisions defined in table 5.6.3.19-1
+        The enumeration CollectionPeriodRmmNrMdt defines Collection period for RRM measurements NR
+        for MDT in the trace. See 3GPP TS 32.422 for further description of the values. It shall comply with the provisions defined in table 5.6.3.19-1
 
     LoggingDurationNrMdt:
       anyOf:
@@ -4603,9 +4726,42 @@ components:
         The enumeration LoggingDurationMdt defines Logging Duration in NR for MDT in the trace. See
         3GPP TS 32.422 for further description of the values. It shall comply with the provisions
         defined in table 5.6.3.20-1.
+
+    QoeServiceType:
+      description: >
+        The enumeration QoeServiceType indicates the kind of service that shall be recorded for
+        QMC. It shall comply with the provisions defined in TS 29.571, table 5.6.3.21-1.
+      anyOf:
+        - type: string
+          enum:
+            - DASH
+            - MTSI
+            - VR
+        - type: string
+          description: >
+            This string provides forward-compatibility with future extensions to the enumeration
+            but is not used to encode content defined in the present version of this API. 
+
+    AvailableRanVisibleQoeMetric:
+      description: >
+        The enumeration AvailableRanVisibleQoeMetric indicates different available
+        RAN-visible QoE metrics to the gNB. It shall comply with the provisions defined
+        in TS 29.571, table 5.6.3.22-1.
+      anyOf:
+        - type: string
+          enum:
+            - APPLICATION_LAYER_BUFFER_LEVEL_LIST
+            - PLAYOUT_DELAY_FOR_MEDIA_STARTUP
+        - type: string
+          description: >
+            This string provides forward-compatibility with future extensions to the enumeration
+            but is not used to encode content defined in the present version of this API. 
+
+
 #
 # STRUCTURED DATA TYPES
 #
+
     TraceData:
       description: contains Trace control and configuration parameters.
       type: object
@@ -4616,12 +4772,12 @@ components:
           pattern: '^[0-9]{3}[0-9]{2,3}-[A-Fa-f0-9]{6}$'
           description: >
             Trace Reference (see 3GPP TS 32.422).It shall be encoded as the concatenation of MCC,
-            MNC and Trace ID as follows: 'MCC'<MNC'-'Trace ID'The Trace ID shall be encoded as a 3 octet string in hexadecimal
-            representation. Each character in the Trace ID string shall take a value of "0" to "9",
-            "a" to "f" or "A" to "F" and shall represent 4 bits.
+            MNC and Trace ID as follows: 'MCC'<MNC'-'Trace ID'The Trace ID shall be encoded as a 
+            3 octet string in hexadecimal representation. Each character in the Trace ID string shall
+            take a value of "0" to "9", "a" to "f" or "A" to "F" and shall represent 4 bits.
             The most significant character representing the 4 most significant bits of the Trace ID
-            shall appear first  in the string, and the character representing the 4 least significant
-            bit of the Trace ID shall appear last in the string.
+            shall appear first in the string, and the character representing the 4 least
+            significant bit of the Trace ID shall appear last in the string.
 
         traceDepth:
           $ref: '#/components/schemas/TraceDepth'
@@ -4865,6 +5021,79 @@ components:
           description: >
             When present, this IE shall contain a list of the physical cell identities where the
             UE is requested to perform measurement logging for the indicated frequency.
+
+
+    QmcConfigInfo:
+      description: >
+        It contains the configuration information for signaling-based activation of the 
+        Quality of Experience (QoE) Measurements Collection (QMC) functionality. 
+      type: object
+      required:
+        - qoeReference
+      properties:
+        qoeReference:
+          $ref: '#/components/schemas/QoeReference'
+        serviceType:
+          $ref: '#/components/schemas/QoeServiceType'
+        sliceScope:
+          type: array
+          items:
+            $ref: '#/components/schemas/Snssai'
+          minItems: 1
+        areaScope:
+          $ref: '#/components/schemas/QmcAreaScope'
+        qoeCollectionEntityAddress:
+          $ref: '#/components/schemas/IpAddr'
+        qoeTarget:
+          $ref: '#/components/schemas/QoeTarget'
+        mdtAlignmentInfo:
+          $ref: '#/components/schemas/MdtAlignmentInfo'
+        availableRanVisibleQoeMetrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableRanVisibleQoeMetric'
+          minItems: 1
+        containerForAppLayerMeasConfig:
+          $ref: '#/components/schemas/Bytes'
+
+    QmcAreaScope:
+      description: >
+        This IE contains the area in Cells or Tracking Areas where the QMC data collection
+        shall take place.
+      type: object
+      properties:
+        nrCellIdList:
+          type: array
+          items:
+            $ref: '#/components/schemas/NrCellId'
+          minItems: 1
+        tacList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tac'
+          minItems: 1
+        taiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tai'
+          minItems: 1
+        plmnList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlmnId'
+          minItems: 1
+
+    QoeTarget:
+      description: >
+        This parameter specifies the target object (individual UE) for the QMC in case of
+        signalling based QMC. It shall be able to carry an IMSI or a SUPI.
+      type: object
+      properties:
+        supi:
+          $ref: '#/components/schemas/Supi'
+        imsi:
+          $ref: '#/components/schemas/Imsi'
+
 
 
 # Data Types related to 5G ODB as defined in clause 5.7
@@ -5484,6 +5713,217 @@ components:
       anyOf:
         - $ref: '#/components/schemas/Ssm'
         - type: string
+
+
+
+# Data Types related to Time Synchronization as defined in clause 5.10
+#
+
+#
+# SIMPLE DATA TYPES
+#
+#
+
+
+#
+# Enumerations
+#
+#
+
+    SynchronizationState:
+      description: Indicates the Synchronization State.
+      anyOf:
+        - type: string
+          enum:
+          - LOCKED
+          - HOLDOVER
+          - FREERUN
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    TimeSource:
+      description: Indicates the Time Source.
+      anyOf:
+        - type: string
+          enum:
+          - PTP
+          - GNSS
+          - ATOMIC_CLOCK
+          - TERRESTRIAL_RADIO
+          - SERIAL_TIME_CODE
+          - NTP
+          - HAND_SET
+          - OTHER
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+    ClockQualityDetailLevel:
+      description: Indicates the Clock Quality Detail Level.
+      anyOf:
+        - type: string
+          enum:
+          - CLOCK_QUALITY_METRICS
+          - ACCEPT_INDICATION
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+
+#
+# STRUCTURED DATA TYPES
+#
+
+    ClockQualityAcceptanceCriterion:
+      description: Contains a Clock Quality Acceptance Criterion.
+      type: object
+      properties:
+        synchronizationState:
+          $ref: '#/components/schemas/SynchronizationState'
+        clockQuality:
+          $ref: '#/components/schemas/ClockQuality'
+        parentTimeSource:
+          $ref: '#/components/schemas/TimeSource'
+
+    ClockQuality:
+      description: Contains Clock Quality.
+      type: object
+      properties:
+        traceabilityToGnss:
+          type: boolean
+        traceabilityToUtc:
+          type: boolean
+        frequencyStability:
+          $ref: '#/components/schemas/Uint16'
+        clockAccuracy:
+          type: string
+          pattern: '^[A-Fa-f0-9]{2}$'
+
+
+
+# Data Types related to IMS SBA as defined in clause 5.11
+#
+
+#
+# SIMPLE DATA TYPES
+#
+#
+
+    SessionId:
+      description: IMS Session Identifier
+      type: string
+
+    MediaId:
+      description: IMS Media Flow Identifier
+      type: string
+
+    MaxMessageSize:
+      description: Maximum SCTP user message size
+      type: integer
+      maximum: 64
+      default: 64
+
+
+#
+# Enumerations
+#
+#
+    MediaResourceType:
+      description: Indicates the Media Resource type
+      anyOf:
+        - type: string
+          enum:
+            - DC
+            - AR
+            - AUDIO
+            - VIDEO
+        - type: string
+
+    MediaProxy:
+      description: Media Proxy Configuration applicable to the media flow
+      anyOf:
+        - type: string
+          enum:
+            - HTTP
+            - UDP
+        - type: string
+
+    SecuritySetup:
+      description: security setup of the DTLS connection
+      anyOf:
+      - type: string
+        enum:
+          - ACTIVE
+          - PASSIVE
+          - ACTPASS
+      - type: string
+
+# STRUCTURED DATA TYPES
+#
+    DcEndpoint:
+      description: Endpoint for Data Channel
+      type: object
+      properties:
+        sctpPort:
+          type: integer
+          maximum: 65535
+          minimum: 0
+          description: Local or remote port for Data Channel
+        fingerprint:
+          type: string
+          pattern: '^(SHA-1|SHA-224|SHA-256|SHA-384|SHA-512|MD5|MD2|TOKEN)\s[0-9A-F]{2}(:[0-9A-F]{2})+'
+          description: local or remote certificate fingerprint for the DTLS association
+        tlsId:
+          type: string
+          pattern: '^[A-Fa-f0-9+/_-]{20,255}$'
+          description: local or remote TLS ID for the media stream
+
+    DcStream:
+      description: Data Channel mapping and configuration information
+      type: object
+      properties:
+        streamId:
+          type: integer
+          maximum: 65535
+          default: 0
+          description: Stream identifier for Data Channel
+        subprotocol:
+          type: string
+          pattern: '^[A-Fa-f0-9]{20}$'
+          description: Subprotocol of the SCTP stream
+        order:
+          type: boolean
+        maxRetry:
+          type: integer
+          default: 0
+          description: maximal number of the times a message will be retransmitted
+        maxTime:
+          type: integer
+          default: 0
+          description: maximal lifetime in milliseconds after which a message will no longer be transmitted or retransmitted
+        priority:
+          type: integer
+          default: 256
+          description: priority of data channel relative to other data channels
+
+
+    ReplaceHttpUrl:
+      description: replacement HTTP URL per stream
+      type: object
+      properties:
+        replaceHttpUrl:
+          $ref: '#/components/schemas/Uri'
+        streamId:
+          type: integer
+          maximum: 65535
+          default: 0
+          description: Stream identifier for Data Channel
 
 #
 # HTTP responses

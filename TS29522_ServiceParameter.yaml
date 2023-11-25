@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-service-parameter
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   description: |
     API for AF service paramter  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.522 V18.2.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V18.3.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
 security:
@@ -403,8 +403,14 @@ components:
         anyUeInd:
           type: boolean
           description: >
-            Identifies whether the AF request applies to any UE. This attribute
-            shall set to "true" if applicable for any UE, otherwise, set to "false".
+            Identifies whether the AF request applies to any non-roaming UE. This attribute,
+            when provided, shall set to "true" if applicable for any UE, otherwise, set to "false".
+        roamUeNetDescs:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkDescription'
+          minItems: 1
+          description: Each element identifies one or more PLMN IDs of inbound roamers.
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         ueIpv4:
@@ -445,6 +451,8 @@ components:
           $ref: '#/components/schemas/ParamForProSeU2URelUe'
         paramForProSeEndUe:
           $ref: '#/components/schemas/ParamForProSeEndUe'
+        paramForRangingSlPos:
+          $ref: '#/components/schemas/ParamForRangingSlPos'
         urspGuidance:
           type: array
           items:
@@ -453,6 +461,12 @@ components:
           description: Contains the service parameter used to guide the URSP.
         a2xParamsPc5:
           $ref: '#/components/schemas/A2xParamsPc5'
+        tnaps:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TnapId'
+          minItems: 1
+          description: Contains the TNAP IDs collocated with the 5G-RG(s) of a specific user.
         mtcProviderId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
         suppFeat:
@@ -480,6 +494,8 @@ components:
           $ref: '#/components/schemas/ParamForProSeU2URelUeRm'
         paramForProSeEndUe:
           $ref: '#/components/schemas/ParamForProSeEndUeRm'
+        paramForRangingSlPos:
+          $ref: '#/components/schemas/ParamForRangingSlPosRm'
         urspGuidance:
           type: array
           items:
@@ -488,6 +504,13 @@ components:
           description: Contains the service parameter used to guide the URSP. 
         a2xParamsPc5:
           $ref: '#/components/schemas/A2xParamsPc5Rm'
+        tnaps:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TnapId'
+          minItems: 1
+          description: Contains the TNAP IDs collocated with the 5G-RG(s) of a specific user.
+          nullable: true
         subNotifEvents:
           type: array
           items:
@@ -585,6 +608,17 @@ components:
       type: string
       nullable: true
 
+    ParamForRangingSlPos:
+      description: Represents the service parameters for ranging and sidelink positioning.
+      type: string
+
+    ParamForRangingSlPosRm:
+      description: >
+        This data type is defined in the same way as the ParamForRangingslpos data type,
+        but with the OpenAPI nullable property set to true.
+      type: string
+      nullable: true
+
     A2xParamsPc5:
       description: >
         Represents configuration parameters for A2X communications over PC5 reference point.
@@ -604,6 +638,14 @@ components:
           $ref: '#/components/schemas/TrafficDescriptorComponents'
         relatPrecedence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        visitedNetDescs:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkDescription'
+          minItems: 1
+          description: >
+            Each element identifies one or more PLMN IDs where AF guidance for VPLMN-specific
+            URSP rule applies.
         routeSelParamSets:
           type: array
           items:
@@ -752,6 +794,29 @@ components:
         - required: [ethFlowDescs]
         - required: [dnns]
         - required: [connCaps]
+
+    NetworkDescription:
+      description: >
+        Represents the description of a PLMN, by the definition of the PLMN ID, the MCC (and
+        applicable MNC(s)) or the indication of any PLMN.
+      type: object
+      properties:
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        mcc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Mcc'
+        mncs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Mnc'
+          minItems: 1
+        anyPlmnInd:
+          type: boolean
+          description: Indicates any PLMN.
+      oneOf:
+        - required: [plmnId]
+        - required: [mcc]
+        - required: [anyPlmnInd]
 
     AuthorizationResult:
       anyOf:

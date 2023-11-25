@@ -1,0 +1,163 @@
+openapi: 3.0.0
+
+info:
+  title: SEALDD Server Data Delivery Context Relocation
+  version: 1.0.0-alpha.1
+  description: |
+    SEALDD Server Data Delivery Context Relocation.  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: >
+    3GPP TS 29.548 V0.3.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    SEAL Data Delivery (SEALDD) Server Services; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.548/
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
+servers:
+  - url: '{apiRoot}/sdd-ddc/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 6.5 of 3GPP TS 29.549
+
+paths:
+  /contexts:
+    get:
+      summary: Pull the DD context from the SEALDD Server.
+      operationId: PullDdContext
+      tags:
+        - DD Context Instances (Collection)
+      parameters:
+        - name: supp-feats
+          in: query
+          description: Contains the list of supported features.
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: Successful case. The requested DD context is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DdContextPushReq'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    post:
+      summary: Push the DD context to the SEALDD Server.
+      tags:
+        - DD Context Instances (Collection)
+      requestBody:
+        description: >
+          Represents the DD context to be pushed to the
+          SEALDD Server.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DdContextPushReq'
+      responses:
+        '200':
+          description: >
+            Successful case. The DD context is successfully pushed to the SEALDD Server and the
+            related information is returned in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DdContextPushResp'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
+  schemas:
+    DdContext:
+      description: Represents the DD context.
+      type: object
+      properties:
+        trLayerContext:
+          $ref: '#/components/schemas/TranspLayerContext'
+
+    TranspLayerContext:
+      description: Represents the transport layer context.
+      type: object
+      properties:
+        transProtoc:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/TransportProtocol'
+      required:
+       - transProtoc
+
+    DdContextPushReq:
+      description: Represents the DD context relocation push request.
+      type: object
+      properties:
+        ddContext:
+          $ref: '#/components/schemas/DdContext'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    DdContextPushResp:
+      description: Represents the DD context relocation push response.
+      type: object
+      properties:
+        endPoint:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteInformation'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'

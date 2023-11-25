@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.2.0-alpha.3'
+  version: '1.2.0-alpha.4'
   title: 'Ngmlc_Location'
   description: |
     GMLC Location Service.  
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.515 V18.2.0; 5G System; Gateway Mobile Location Services; Stage 3
+  description: 3GPP TS 29.515 V18.3.0; 5G System; Gateway Mobile Location Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.515/'
 
 servers:
@@ -459,7 +459,11 @@ components:
         evtRptExpectedArea:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
         reportingInd:
-          $ref: '#/components/schemas/ReportingInd'
+          allOf:
+            - $ref: '#/components/schemas/ReportingInd'
+          default: POSITIVE_SENSE
+        integrityRequirements:
+          $ref: '#/components/schemas/IntegrityRequirements'
 
 
 
@@ -512,6 +516,10 @@ components:
           default: false
         acceptedPeriodicEventInfo:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/PeriodicEventInfo'
+        haGnssMetrics:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/HighAccuracyGnssMetrics'
+        losNlosMeasureInd:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LosNlosMeasureInd'
 
     CancelLocData:
       description: Contains the input parameters in CancelLocation service operation
@@ -630,6 +638,11 @@ components:
           $ref: '#/components/schemas/FailureCause'
         achievedQos:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/MinorLocationQoS'
+        haGnssMetrics:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/HighAccuracyGnssMetrics'
+        losNlosMeasureInd:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LosNlosMeasureInd'
+
 
     UePrivacyRequirements:
       description: UE privacy requirements from (H)GMLC to the serving AMF or VGMLC(in the roaming case) for the target UE
@@ -726,6 +739,27 @@ components:
       allOf:
         - $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/AreaEventInfo'
         - $ref: '#/components/schemas/AreaEventInfoAddition'
+    IntegrityRequirements:
+      description: integrity requirements.
+      type: object
+      properties:
+        timeToAlert:
+          $ref: '#/components/schemas/TimeToAlert'
+        targetIntegrityRisk:
+          $ref: '#/components/schemas/TargetIntegrityRisk'
+        alertLimit:
+          $ref: '#/components/schemas/AlertLimit'
+
+    AlertLimit:
+      description: Alert Limit.
+      type: object
+      required:
+        - horizontalProtectionLevel
+      properties:
+        horizontalProtectionLevel:
+          $ref: '#/components/schemas/HorizontalProtectionLevel'
+        verticalProtectionLevel:
+          $ref: '#/components/schemas/VerticalProtectionLevel'
 
 
 #
@@ -748,6 +782,26 @@ components:
       type: integer
       minimum: 0
       maximum: 127
+    TimeToAlert:
+      description: Contains the time-to-alert
+      type: integer
+      minimum: 1
+      maximum: 300
+    TargetIntegrityRisk:
+      description: Contains the target integrity risk
+      type: integer
+      minimum: 10
+      maximum: 90
+    HorizontalProtectionLevel:
+      description: Contains the Horizontal Protection Level
+      type: integer
+      minimum: 0
+      maximum: 50000
+    VerticalProtectionLevel:
+      description: Contains the Vertical Protection Level
+      type: integer
+      minimum: 0
+      maximum: 50000
 #
 # ENUMS
 #

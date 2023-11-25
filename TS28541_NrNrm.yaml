@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: NR NRM
-  version: 18.4.0
+  version: 18.5.0
   description: >-
     OAS 3.0.1 specification of the NR NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -97,30 +97,22 @@ components:
       type: integer
       maximum: 503
     NrTac:
-      type: integer
-      maximum: 16777215
+      $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tac'
     NrTacList:
       type: array
       items:
-        $ref: '#/components/schemas/NrTac'
-    Tai:
-      type: object
-      properties:
-        plmnId:
-          $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
-        nrTac:
-          $ref: '#/components/schemas/NrTac'
+        $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tac'
     TaiList:
       type: array
       items:
-        $ref: '#/components/schemas/Tai' 
+        $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tai' 
     BackhaulAddress:
       type: object
       properties:
         gnbId:
           $ref: '#/components/schemas/GnbId'
         tai:
-          $ref: "#/components/schemas/Tai"
+          $ref: "TS28623_GenericNrm.yaml#/components/schemas/Tai"
     MappingSetIDBackhaulAddress:
       type: object
       properties:
@@ -182,7 +174,7 @@ components:
         timeDuration:
           type: integer
 
-    UeAccProbilityDist:
+    UeAccProbabilityDist:
       type: object
       properties:
         targetProbability:
@@ -190,7 +182,7 @@ components:
         numberofpreamblessent:
           type: integer
 
-    UeAccDelayProbilityDist:
+    UeAccDelayProbabilityDist:
       type: object
       properties:
         targetProbability:
@@ -599,6 +591,75 @@ components:
             type: integer
           minValue:
             type: integer
+    NTNTAClist:
+      type: array
+      items:
+        $ref: '#/components/schemas/NrTac'
+    Ephemeris:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/PositionVelocity'
+        - $ref: '#/components/schemas/Orbital'
+      properties:
+        satelliteId:
+          type: integer
+  
+    PositionVelocity:
+      type: object
+      properties:
+        positionX:
+          type: integer
+          minimum: 0
+          maximum: 604800
+        positionY:
+          type: integer
+          minimum: 0
+          maximum: 604800
+        positionZ:
+          type: integer
+          minimum: 0
+          maximum: 604800
+        velocityVX:
+          type: integer
+          minimum: -131072
+          maximum: 131071         
+        velocityVY:
+          type: integer
+          minimum: -131072
+          maximum: 131071           
+        velocityVZ:
+          type: integer
+          minimum: -131072
+          maximum: 131071
+
+    Orbital:
+      type: object
+      properties:
+          semiMajorAxis:
+            type: integer
+            minimum: 0
+            maximum: 8589934591 
+          eccentricity:
+            type: integer
+            minimum: -524288
+            maximum: 524287
+          periapsis:
+            type: integer
+            minimum: 0
+            maximum: 16777215
+          longitude:
+            type: integer
+            minimum: 0
+            maximum: 2097151
+          inclination:
+            type: integer
+            minimum: -524288
+            maximum: 524287
+          meanAnomaly:
+            type: integer
+            minimum: 0
+            maximum: 16777215
+
 #-------- Definition of abstract IOCs --------------------------------------------
 
     RrmPolicy_-Attr:
@@ -949,7 +1010,7 @@ components:
                     nrPci:
                       $ref: '#/components/schemas/NrPci'
                     nrTac:
-                      $ref: '#/components/schemas/NrTac'
+                      $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tac'
                     arfcnDL:
                       type: integer
                     arfcnUL:
@@ -1025,7 +1086,11 @@ components:
         - type: object
           properties:
             bWPlist:
-              $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+              type: array
+              items:
+                 $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+              maxItems: 12      
+
 
     NrOperatorCellDu-Single:
       allOf:
@@ -1039,7 +1104,7 @@ components:
             plmnInfoList:
               $ref: '#/components/schemas/PlmnInfoList'
             nrTac:
-              $ref: '#/components/schemas/NrTac'
+              $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tac'
 
     NRFrequency-Single:
       allOf:
@@ -1190,10 +1255,19 @@ components:
                   properties:
                     rRMPolicyMaxRatio:
                       type: integer
+                      default: 100
+                      minimum: 0
+                      maximum: 100
                     rRMPolicyMinRatio:
                       type: integer
+                      default: 0
+                      minimum: 0
+                      maximum: 100
                     rRMPolicyDedicatedRatio:
                       type: integer
+                      default: 0
+                      minimum: 0
+                      maximum: 100
 
     NRCellRelation-Single:
       allOf:
@@ -1418,10 +1492,10 @@ components:
                   properties:
                     drachOptimizationControl:
                       type: boolean
-                    ueAccProbilityDist:
-                      $ref: "#/components/schemas/UeAccProbilityDist"
-                    ueAccDelayProbilityDist:
-                      $ref: "#/components/schemas/UeAccDelayProbilityDist"
+                    ueAccProbabilityDist:
+                      $ref: "#/components/schemas/UeAccProbabilityDist"
+                    ueAccDelayProbabilityDist:
+                      $ref: "#/components/schemas/UeAccDelayProbabilityDist"
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
 
     DMROFunction-Single:
@@ -1869,6 +1943,45 @@ components:
       allOf:
         - $ref: '#/components/schemas/CCOParameters-Attr'
         - type: object
+    
+    NTNFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              type: object
+              properties:
+                nTNpLMNInfoList:
+                  $ref: '#/components/schemas/PlmnInfoList'
+                nTNTAClist:
+                  $ref: '#/components/schemas/NrTacList'
+            EphemerisInfoSet:
+              $ref: '#/components/schemas/EphemerisInfoSet-Multiple'
+
+    EphemerisInfoSet-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    EphemerisInfos:
+                      $ref: '#/components/schemas/Ephemeris-Multiple'
+
+    Ephemeris-Single:
+      allOf:
+              - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+              - type: object
+                oneOf:
+                  - $ref: '#/components/schemas/PositionVelocity'
+                  - $ref: '#/components/schemas/Orbital'
+                properties:
+                  satelliteId:
+                    type: integer
+
 
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------
 
@@ -2032,7 +2145,15 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/EP_S1U-Single'
+    EphemerisInfoSet-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EphemerisInfoSet-Single'
 
+    Ephemeris-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/Ephemeris-Single'
 #-------- Definitions in TS 28.541 for TS 28.532 ---------------------------------
 
     resources-nrNrm:
@@ -2099,3 +2220,7 @@ components:
         - $ref: '#/components/schemas/CCOWeakCoverageParameters-Single'
         - $ref: '#/components/schemas/CCOPilotPollutionParameters-Single'
         - $ref: '#/components/schemas/CCOOvershootCoverageParameters-Single'
+        - $ref: '#/components/schemas/NTNFunction-Single'
+        - $ref: '#/components/schemas/EphemerisInfoSet-Single'
+        - $ref: '#/components/schemas/Ephemeris-Single'
+

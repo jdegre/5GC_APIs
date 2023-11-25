@@ -6,11 +6,11 @@ info:
     API for EAS Registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.3
+  version: 1.1.0-alpha.4
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.2.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.3.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -408,8 +408,54 @@ components:
         bdlId:
           type: string
           description: Indicates a bundle ID.
+        easIdsList:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        bdlType:
+          $ref: '#/components/schemas/BdlType'
+        easBdlReqs:
+          $ref: '#/components/schemas/EASBdlReqs'
+        mainEasId:
+          type: string
       required:
-        - bdlId
+        - bdlType
+      oneOf:
+        - required: [bdlId]
+        - required: [easIdsList]
+
+    EASBdlReqs:
+      type: object
+      description: Represents the EAS bundle requirements.
+      properties:
+        coordinatedEasDisc:
+          type: boolean
+          default: false
+          description: >
+            Set to true to indicate that coordianted EAS discovery is required.
+            Set to false to indicate that coordianted EAS discovery is not required.
+            The default value when this attribute is omitted is false.
+        coordinatedAcr:
+          $ref: '#/components/schemas/CoordinatedAcrReqs'
+        affinity:
+          $ref: '#/components/schemas/Affinity'
+
+    CoordinatedAcrReqs:
+      type: object
+      description: Represents the coordinated ACR related requirements for an EAS bundle.
+      properties:
+        coordinatedAcrInd:
+          type: boolean
+          default: false
+          description: >
+            Set to true to indicate that coordianted ACR is required.
+            Set to false to indicate that coordianted ACR is not required.
+            The default value when this attribute is omitted is false.
+        failureAction:
+          $ref: '#/components/schemas/FailureAction'
+      required:
+        - coordinatedAcrInd
 
     EndPoint:
       type: object
@@ -514,3 +560,58 @@ components:
         - TCP: Indicates the Transmission Control (TCP) Protocol.
         - TCP_TLS: Indicates the Transmission Control Protocol (TCP) with Transport Layer Security
           (TLS) protocol.
+
+    BdlType:
+      anyOf:
+      - type: string
+        enum:
+          - DIRECT
+          - PROXY
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration and
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the EAS Bundle type.  
+        Possible values are:
+        - DIRECT: Indicates that the EAS Bundle type is direct bundle.
+        - PROXY: Indicates that the EAS Bundle type is proxy bundle.
+
+    Affinity:
+      anyOf:
+      - type: string
+        enum:
+          - STRONG
+          - PREFERRED
+          - WEAK
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration and
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the affinity requirements of an EAS bundle.  
+        Possible values are:
+        - STRONG: Indicates that the affinity is strong, i.e., all the EASs of the bundle shall be
+          in the same EDN.
+        - PREFERRED: Indicates that the affinity is preferred, i.e., it is nice to have all the EASs
+          of the bundle in the same EDN, but it is not essential.
+        - WEAK: Indicates that the affinity is weak, i.e., it is not essential to have all the EASs
+          of the bundle in the same EDN.
+
+    FailureAction:
+      anyOf:
+      - type: string
+        enum:
+          - CANCEL
+          - PROCEED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration and
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the EAS bundle related failure action during ACR.  
+        Possible values are:
+        - CANCEL: Indicates that ACR shall be cancelled for the other EAS(s) of the bundle for which
+          ACR is not failed.
+        - PROCEED: Indicates that ACR shall proceed for the other EAS(s) of the bundle for which
+          ACR is not failed.

@@ -6,11 +6,11 @@ info:
     API for EES ACR Management Event.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.3
+  version: 1.1.0-alpha.4
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.2.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.3.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -491,6 +491,14 @@ components:
           description: A list of EAS characteristics.
         trafFilterInfo:
           $ref: '#/components/schemas/TrafficFilterInfo'
+        servContPlanInd:
+          type: boolean
+          description: >
+            Represents the service continuity planning indication (i.e., whether or not the EES
+            shall monitor whether the UE(s) enter the predicted location).
+            When set to true, it indicates that service continuity planning is required.
+            When set to false, it indicates that Service continuity planning is not required.
+            The default value when this attribute is omitted is false.
       required:
         - event
 
@@ -547,6 +555,19 @@ components:
           $ref: '#/components/schemas/ACRParameters'
         acId:
           type: string
+        selACRScen:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectedACRScenarios'
+          minItems: 1
+        servContPlanInd:
+          type: boolean
+          description: >
+            Represents the service continuity planning indication (i.e., whether or not the EES will
+            monitor whether the UE(s) enter the predicted location).
+            When set to true, it indicates that service continuity planning will be performed.
+            When set to false, it indicates that Service continuity planning will not be performed.
+            The default value when this attribute is omitted is false.
       required:
         - event
 
@@ -669,6 +690,25 @@ components:
         - required: [ipFlows]
         - required: [uris]
         - required: [domainNames]
+
+    SelectedACRScenarios:
+      type: object
+      description: >
+        Represents the selected ACR scenario(s) applicable for a given combination of AC and UE.
+      properties:
+        acrList:
+          type: array
+          items:
+            $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
+          minItems: 0
+        acId:
+          type: string
+        ueId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+      required:
+        - acrList
+        - acId
+        - ueId
 
 #
 # ENUMERATIONS DATA TYPES

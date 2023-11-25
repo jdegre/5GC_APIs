@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Eees_EECRegistration
-  version: "1.1.0-alpha.2"
+  version: "1.1.0-alpha.3"
   description: |
     API for EEC registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 24.558 V18.1.0 Enabling Edge Applications; Protocol specification.
+    3GPP TS 24.558 V18.2.0 Enabling Edge Applications; Protocol specification.
   url: 'https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/'
 
 security:
@@ -269,6 +269,8 @@ components:
             Set to true to indicate that UE Mobility support is required.
             Set to false to indicate that UE mobility support is not required.
             The default value when omitted is false.
+        ueType:
+          $ref: '#/components/schemas/DeviceType'
         unfulfillAcProfs:
           type: array
           items:
@@ -374,6 +376,8 @@ components:
         ueMobilityReq:
           type: boolean
           description: Indicates whether UE requires mobility support or not.
+        ueType:
+          $ref: '#/components/schemas/DeviceType'
 
     UnfulfilledAcProfile:
       description: Describes AC Profile ID and reason sent by EES in EEC Register response.
@@ -401,3 +405,20 @@ components:
         Possible values are:
         - EAS_NOT_AVAILABLE: EAS is not available.
         - REQ_UNFULFILLED: Requirements cannot be fulfilled.
+
+    DeviceType:
+      anyOf:
+      - type: string
+        enum:
+          - CONSTRAINED_UE
+          - NORMAL_UE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Represents the UE type.
+        Possible values are:
+        - CONSTRAINED_UE: Indicates UE is constrained with resources like power, processor etc.
+        - NORMAL_UE: Indicates UE is not constrained with resources.

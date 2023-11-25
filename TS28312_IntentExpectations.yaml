@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Scenario specific Intent Expectations
-  version: 18.0.0
+  version: 18.1.0
   description: >-
     OAS 3.0.1 definition of scenario specific Intent Expectations 
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -23,32 +23,71 @@ components:
           type: string
         expectationVerb:
            $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationVerb"
-        expectationObjects:
-          type: array
-          items:
-            $ref: "#/components/schemas/RadioNetworkExpectationObject"
+        expectationObject:
+          $ref: "#/components/schemas/RadioNetworkExpectationObject"
         expectationTargets:
           type: array
           items:
             type: object
             oneOf:
-              - $ref: "#/components/schemas/WeakRSRPRatioTarget"
-              - $ref: "#/components/schemas/LowSINRRatioTarget"
-              - $ref: "#/components/schemas/AveULRANUEThptTarget"
-              - $ref: "#/components/schemas/AveDLRANUEThptTarget"
-              - $ref: "#/components/schemas/LowULRANUEThptRatioTarget"
-              - $ref: "#/components/schemas/LowDLRANUEThptRatioTarget" 
+              - $ref: '#/components/schemas/WeakRSRPRatioTarget'
+              - $ref: '#/components/schemas/LowSINRRatioTarget'
+              - $ref: '#/components/schemas/AveULRANUEThptTarget'
+              - $ref: '#/components/schemas/AveDLRANUEThptTarget'
+              - $ref: '#/components/schemas/LowULRANUEThptRatioTarget'
+              - $ref: '#/components/schemas/LowDLRANUEThptRatioTarget' 
+              - $ref: '#/components/schemas/HighULPrbLoadRatioTarget'
+              - $ref: '#/components/schemas/HighDLPrbLoadRatioTarget'
+              - $ref: '#/components/schemas/AveULPrbLoadTarget'
+              - $ref: '#/components/schemas/AveDLPrbLoadTarget'
+              - $ref: "#/components/schemas/RANEnergyConsumptionTarget"
+              - $ref: "#/components/schemas/RANEnergyEfficiencyTarget"               
+              - $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ExpectationTarget'
         expectationContexts:
           type: array
           items:
-            $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationContext"
-        expectationfulfilmentInfo:
-            $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo" 
+            $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ExpectationContext'
       required:
         - expectationId
-    ServiceSupportExpectation:
+    EdgeServiceSupportExpectation:
       description: >-
         This data type is the "IntentExpectation" data type with specialisations to represent MnS consumer's expectations for service deployment    
+      type: object
+      properties:
+        expectationId:
+          type: string
+        expectationVerb:
+           $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ExpectationVerb'
+        expectationObject:
+          $ref: '#/components/schemas/ServiceSupportExpectationObject'
+        expectationTargets:
+          type: array
+          items:
+            type: object
+            oneOf:
+              - $ref: '#/components/schemas/DLThptPerUETarget'
+              - $ref: '#/components/schemas/ULThptPerUETarget'
+              - $ref: '#/components/schemas/DLLatencyTarget'
+              - $ref: '#/components/schemas/ULLatencyTarget'
+              - $ref: '#/components/schemas/MaxNumberofUEsTarget'
+              - $ref: '#/components/schemas/ActivityFactorTarget'
+              - $ref: '#/components/schemas/UESpeedTarget'
+              - $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ExpectationTarget'
+        expectationContexts:
+          type: array
+          items:
+            type: object
+            oneOf:
+              - $ref: '#/components/schemas/ServiceStartTimeContext'
+              - $ref: '#/components/schemas/ServiceEndTimeContext'
+              - $ref: '#/components/schemas/UEMobilityLevelContext'
+              - $ref: '#/components/schemas/ResourceSharingLevelContext'
+              - $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ExpectationContext'
+      required:
+        - expectationId   
+    5GCNetworkExpectation:
+      description: >-
+        This data type is the "IntentExpectation" data type with specialisations to represent MnS consumer's expectations for 5GC network delivering   
       type: object
       properties:
         expectationId:
@@ -58,34 +97,23 @@ components:
         expectationObjects:
           type: array
           items:
-            $ref: "#/components/schemas/ServiceSupportExpectationObject"
+            $ref: "#/components/schemas/5GCNetworkExpectationObject"
         expectationTargets:
           type: array
           items:
             type: object
             oneOf:
-              - $ref: "#/components/schemas/DLThptPerUETarget"
-              - $ref: "#/components/schemas/ULThptPerUETarget"
-              - $ref: "#/components/schemas/DLLatencyTarget"
-              - $ref: "#/components/schemas/ULLatencyTarget"
-              - $ref: "#/components/schemas/MaxNumberofUEsTarget"
-              - $ref: "#/components/schemas/ActivityFactorTarget"
-              - $ref: "#/components/schemas/UESpeedTarget"
+              - $ref: "#/components/schemas/MaxNumberofPDUsessionsTarget"
+              - $ref: "#/components/schemas/MaxNumberofRegisteredsubscribersTarget"
               - $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationTarget"
         expectationContexts:
           type: array
           items:
-            type: object
-            oneOf:
-              - $ref: "#/components/schemas/ServiceStartTimeContext"
-              - $ref: "#/components/schemas/ServiceEndTimeContext"
-              - $ref: "#/components/schemas/UEMobilityLevelContext"
-              - $ref: "#/components/schemas/ResourceSharingLevelContext"
-              - $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationContext"
+            $ref: "TS28312_IntentNrm.yaml#/components/schemas/ExpectationContext"
         expectationfulfilmentInfo:
-            $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"    
+            $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo" 
       required:
-        - expectationId                      
+        - expectationId                   
    #-------Definition of the IntentExpectation dataType ----------#    
 
    #-------Definition of the scenario specific ExpectationObject dataType ----------#    
@@ -97,29 +125,50 @@ components:
         objectType:
           type: string
           enum:
-            - RAN_SubNetwork #value for Radio Network Expectation--#
+            - RAN_SubNetwork
         objectInstance:
-          $ref: "TS28623_ComDefs.yaml#/components/schemas/Dn"
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
         objectContexts:
           type: array
           items:
             type: object
             oneOf:
-              - $ref: "#/components/schemas/CoverageAreaPolygonContext"
-              - $ref: "#/components/schemas/CoverageTACContext"
-              - $ref: "#/components/schemas/PLMNContext"
-              - $ref: "#/components/schemas/NRFqBandContext"
-              - $ref: "#/components/schemas/RATContext"
-              - $ref: "#/components/schemas/ObjectContext"               
+              - $ref: '#/components/schemas/CoverageAreaPolygonContext'
+              - $ref: '#/components/schemas/CoverageTACContext'
+              - $ref: '#/components/schemas/PLMNContext'
+              - $ref: '#/components/schemas/NRFqBandContext'
+              - $ref: '#/components/schemas/RATContext'
+              - $ref: "#/components/schemas/UEGroupContext"
+              - $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ObjectContext'                                
     ServiceSupportExpectationObject: 
       description: >-
-        This data type is the "ExpectationObject" data type with specialisations for ServiceSupportExpectation
+        This data type is the "ExpectationObject" data type with specialisations for EdgeServiceSupportExpectation
       type: object
       properties:
         objectType:
           type: string
           enum:
-            - Service_Support #value for Service Support Expectation--#
+            - EdgeService_Support #value for Edge Service Support Expectation--#
+        objectInstance:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+        objectContexts:
+          type: array
+          items:
+            type: object
+            oneOf:
+              - $ref: '#/components/schemas/EdgeIdenfiticationIdContext'
+              - $ref: '#/components/schemas/EdgeIdentificationLocContext'
+              - $ref: '#/components/schemas/CoverageAreaTAContext'   
+              - $ref: 'TS28312_IntentNrm.yaml#/components/schemas/ObjectContext'   
+    5GCNetworkExpectationObject:
+      description: >-
+        This data type is the "ExpectationObject" data type with specialisations for 5GCNetworkExpectation
+      type: object
+      properties:
+        objectType:
+          type: string
+          enum:
+            - 5GC_SubNetwork #value for 5GC Network Expectation--#
         objectInstance:
           $ref: "TS28623_ComDefs.yaml#/components/schemas/Dn"
         objectContexts:
@@ -127,10 +176,11 @@ components:
           items:
             type: object
             oneOf:
-              - $ref: "#/components/schemas/EdgeIdenfiticationIdContext"
-              - $ref: "#/components/schemas/EdgeIdenfiticationLocContext"
-              - $ref: "#/components/schemas/CoverageAreaTAContext"   
-              - $ref: "#/components/schemas/ObjectContext"   
+              - $ref: "#/components/schemas/NfTypeContext"
+              - $ref: "#/components/schemas/NfInstanceLocationContext"
+              - $ref: "#/components/schemas/PLMNContext"
+              - $ref: "#/components/schemas/TaiContext"
+              - $ref: "#/components/schemas/ObjectContext"            
    #-------Definition of the ExpectationObject dataType ----------#    
 
 
@@ -153,9 +203,7 @@ components:
           minimum: 0
           maximum: 100
         targetContexts:
-          $ref: "#/components/schemas/WeakRSRPContext"
-        targetFulfilmentInfo:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"
+          $ref: '#/components/schemas/WeakRSRPContext'
     WeakRSRPContext:
       description: >-
         This data type is the "TargetContext" data type with specialisations for WeakRSRPContext
@@ -189,9 +237,7 @@ components:
           minimum: 0
           maximum: 100
         targetContexts:
-          $ref: "#/components/schemas/LowSINRContext"
-        targetFulfilmentInfo:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"
+          $ref: '#/components/schemas/LowSINRContext'
     LowSINRContext:
       description: >-
         This data type is the "TargetContext" data type with specialisations for LowSINRContext
@@ -222,8 +268,6 @@ components:
             - IS_GREATER_THAN
         targetValueRange:
           type: integer
-        targetFulfilmentInfo:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"
     AveDLRANUEThptTarget:
       description: >-
         This data type is the "ExpectationTarget" data type with specialisations for AveDLRANUEThptTarget    
@@ -239,8 +283,6 @@ components:
             - IS_GREATER_THAN
         targetValueRange:
           type: integer
-        targetFulfilmentInfo:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"
     LowULRANUEThptRatioTarget:
       description: >-
         This data type is the "ExpectationTarget" data type with specialisations for LowULRANUEThptRatioTarget        
@@ -259,9 +301,7 @@ components:
           minimum: 0
           maximum: 100
         targetContexts:
-          $ref: "#/components/schemas/LowULRANUEThptContext"
-        targetFulfilmentInfo:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"
+          $ref: '#/components/schemas/LowULRANUEThptContext'
     LowULRANUEThptContext:
       description: >-
         This data type is the "TargetContext" data type with specialisations for LowULRANUEThptContext    
@@ -295,9 +335,7 @@ components:
           minimum: 0
           maximum: 100
         targetContexts:
-          $ref: "#/components/schemas/LowDLRANUEThptContext"
-        targetFulfilmentInfo:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/FulfilmentInfo"
+          $ref: '#/components/schemas/LowDLRANUEThptContext'
     LowDLRANUEThptContext:
       description: >-
         This data type is the "TargetContext" data type with specialisations for LowDLRANUEThptContext      
@@ -313,6 +351,142 @@ components:
             - IS_LESS_THAN
         contextValueRange:
           type: number
+    HighULPrbLoadRatioTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for HighULPrbLoadRatioTarget         
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - HighULPrbLoadRatio
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+        targetContexts:
+          $ref: '#/components/schemas/HighULPrbLoadContext'
+    HighULPrbLoadContext:
+      description: >-
+        This data type is the "TargetContext" data type with specialisations for HighULPrbLoadContext      
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - HighULPrbLoadThreshold
+        contextCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        contextValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+    HighDLPrbLoadRatioTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for HighDLPrbLoadRatioTarget         
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - HighDLPrbLoadRatio
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+        targetContexts:
+          $ref: '#/components/schemas/HighDLPrbLoadContext'
+    HighDLPrbLoadContext:
+      description: >-
+        This data type is the "TargetContext" data type with specialisations for HighDLPrbLoadContext      
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - HighDLPrbLoadThreshold
+        contextCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        contextValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+    AveULPrbLoadTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for AveULPrbLoadTarget    
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - AveULPrbLoad
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+    AveDLPrbLoadTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for AveDLPrbLoadTarget    
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - AveDLPrbLoad
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+          minimum: 0
+          maximum: 100
+    RANEnergyConsumptionTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for RANEnergyConsumptionTarget      
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - RANEnergyConsumption
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+    RANEnergyEfficiencyTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for RANEnergyEfficiencyTarget       
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - RANEnergyEfficiency
+        targetCondition:
+          type: string
+          enum:
+            - IS_GREATER_THAN
+        targetValueRange:
+          type: integer
     DLThptPerUETarget:
       description: >-
         This data type is the "ExpectationTarget" data type with specialisations for DLThptPerUETarget       
@@ -327,7 +501,7 @@ components:
           enum:
             - IS_GREATER_THAN
         targetValueRange:
-          $ref: "TS28541_SliceNrm.yaml#/components/schemas/XLThpt"
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/XLThpt'
     ULThptPerUETarget:
       description: >-
         This data type is the "ExpectationTarget" data type with specialisations for ULThptPerUETarget       
@@ -342,7 +516,7 @@ components:
           enum:
             - IS_GREATER_THAN
         targetValueRange:
-          $ref: "TS28541_SliceNrm.yaml#/components/schemas/XLThpt"
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/XLThpt'
     DLLatencyTarget:
       description: >-
         This data type is the "ExpectationTarget" data type with specialisations for DLLatencyTarget       
@@ -418,6 +592,37 @@ components:
             - IS_LESS_THAN
         targetValueRange:
           type: integer
+    MaxNumberofPDUsessionsTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for MaxNumberofPDUsessionsTarget     
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - MaxNumberofPDUsessions
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+    MaxNumberofRegisteredsubscribersTarget:
+      description: >-
+        This data type is the "ExpectationTarget" data type with specialisations for MaxNumberofRegisteredsubscribersTarget     
+      type: object
+      properties:
+        targetName:
+          type: string
+          enum:
+            - MaxNumberofRegisteredsubscribers
+        targetCondition:
+          type: string
+          enum:
+            - IS_LESS_THAN
+        targetValueRange:
+          type: integer
+
    #-------Definition of the concrete ExpectationTarget  dataType----------#  
    
    #-------Definition of the concrete ObjectTarget dataType----------------#
@@ -429,7 +634,7 @@ components:
         contextAttribute:
           type: string
         contextCondition:
-          $ref: "TS28312_IntentNrm.yaml#/components/schemas/Condition"
+          $ref: 'TS28312_IntentNrm.yaml#/components/schemas/Condition'
         contextValueRange:
           type: array
           items:
@@ -450,7 +655,7 @@ components:
         contextValueRange:
           type: array
           items:
-            $ref: "#/components/schemas/CoverageArea"
+            $ref: '#/components/schemas/CoverageArea'
     CoverageArea:
       type: string
     CoverageTACContext:
@@ -469,7 +674,7 @@ components:
         contextValueRange:
           type: array
           items:
-            $ref: "TS28541_NrNrm.yaml#/components/schemas/NrTac"
+            $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTac'
     PLMNContext:
       description: >-
         This data type is the "ObjectContext" data type with specialisations for PLMNContext       
@@ -486,7 +691,7 @@ components:
         contextValueRange:
           type: array
           items:
-            $ref: "TS28623_ComDefs.yaml#/components/schemas/PlmnId"
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
     NRFqBandContext:
       description: >-
         This data type is the "ObjectContext" data type with specialisations for NRFqBandContext       
@@ -525,9 +730,33 @@ components:
               - UTRAN
               - EUTRAN
               - NR
+    UEGroupContext:
+      description: >-
+        This data type is the "ObjectContext" data type with specialisations for UEGroup([5QI, SNSSAI])
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - UEGroup
+        contextCondition:
+          type: string
+          enum:
+            - IS_ALL_OF
+        contextValueRange:
+          type: array
+          items:
+            $ref: "#/components/schemas/UEGroup"            
+    UEGroup:
+      type: object
+      properties:
+        fiveQI:
+          type: integer
+        sNssai:
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/Snssai'  
     EdgeIdenfiticationIdContext:
       description: >-
-        This data type is the "ObjectContext" data type with specialisations for EdgeIdenfiticationIdContext      
+        This data type is the "ObjectContext" data type with specialisations for EdgeIdentificationIdContext      
       type: object
       properties:
         contextAttribute:
@@ -542,9 +771,9 @@ components:
           type: array
           items:
             type: string
-    EdgeIdenfiticationLocContext:
+    EdgeIdentificationLocContext:
       description: >-
-        This data type is the "ObjectContext" data type with specialisations for EdgeIdenfiticationLocContext    
+        This data type is the "ObjectContext" data type with specialisations for EdgeIdentificationLocContext    
       type: object
       properties:
         contextAttribute:
@@ -575,12 +804,64 @@ components:
         contextValueRange:
           type: array
           items:
-            $ref: "#/components/schemas/CoverageAreaTAList"
+            $ref: '#/components/schemas/CoverageAreaTAList'
     CoverageAreaTAList:
           type: integer
+    NfTypeContext:          
+      description: >-
+        This data type is the "ObjectContext" data type with specialisations for NfTypeContext   
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - NfType
+        contextCondition:
+          type: string
+          enum:
+            - IS_ALL_OF
+        contextValueRange:
+          type: array
+          items:
+            $ref: "TS28623_GenericNrm.yaml#/components/schemas/NFType"
+    NfInstanceLocationContext:          
+      description: >-
+        This data type is the "ObjectContext" data type with specialisations for NfInstanceLocationContext 
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - NfInstanceLocation
+        contextCondition:
+          type: string
+          enum:
+            - IS_ALL_OF
+        contextValueRange:
+          type: array
+          items:
+            type: string
+    TaiContext:          
+      description: >-
+        This data type is the "ObjectContext" data type with specialisations for TaiContext
+      type: object
+      properties:
+        contextAttribute:
+          type: string
+          enum:
+            - Tai
+        contextCondition:
+          type: string
+          enum:
+            - IS_ALL_OF
+        contextValueRange:
+          type: array
+          items:
+            $ref: "TS28623_GenericNrm.yaml#/components/schemas/Tai"
+
    #-------Definition of the scenario specific  ObjectTarget dataType----------------#
    
-   #-------Definition of the concrete ExpectionContext dataType----------------#
+   #-------Definition of the concrete ExpectationContext dataType----------------#
     ServiceStartTimeContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for ServiceStartTimeContext       
@@ -595,7 +876,7 @@ components:
           enum:
             - IS_EQUAL_TO
         contextValueRange:
-          type: string
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
     ServiceEndTimeContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for ServiceEndTimeContext         
@@ -610,7 +891,7 @@ components:
           enum:
             - IS_EQUAL_TO
         contextValueRange:
-          type: string
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
     UEMobilityLevelContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for UEMobilityLevelContext       
@@ -623,11 +904,9 @@ components:
         contextCondition:
           type: string
           enum:
-            - IS_WITHIN_RANGE
+            - IS_EQUAL_TO
         contextValueRange:
-          type: array
-          items:
-            $ref: "TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel"
+          $ref: "TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel"
     ResourceSharingLevelContext:
       description: >-
         This data type is the "ExpectationContext" data type with specialisations for ResourceSharingLevelContext          
@@ -640,9 +919,7 @@ components:
         contextCondition:
           type: string
           enum:
-            - IS_WITHIN_RANGE
+            - IS_EQUAL_TO
         contextValueRange:
-          type: array
-          items:
-            $ref: "TS28541_SliceNrm.yaml#/components/schemas/SharingLevel"
+          $ref: "TS28541_SliceNrm.yaml#/components/schemas/SharingLevel"
    #-------Definition of the concrete ExpectionContext dataType----------------#

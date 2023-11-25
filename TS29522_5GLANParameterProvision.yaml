@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-5glan-pp
-  version: 1.2.0-alpha.3
+  version: 1.2.0-alpha.4
   description: |
     API for 5G LAN Parameter Provision.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.522 V18.2.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V18.3.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
 security:
@@ -125,6 +125,45 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      callbacks:
+        5GLANParamProvNotif:
+          '{request.body#/notifUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/5GLanParamProvNotif'
+              responses:
+                '204':
+                  description: No Content. Successful reception of the notification.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
   /{afId}/subscriptions/{subscriptionId}:
     get:
@@ -427,8 +466,33 @@ components:
         vnGroupCommInd:
           type: boolean
           description: >
-            Indicates that the 5G VN group is associated with 5G VN group communication when
-            it is present and set to "true". The default value is "false" if omitted.
+            Indicates whether the 5G VN group is associated with 5G VN group communication when
+            When set to "true", it indicates that the 5G VN group is associated with 5G VN group
+            communication. When set to "false", it indicates that the 5G VN group is not
+            associated with 5G VN group communication. The default value when omitted is "false".
+        maxGrpDataRateInfo:
+          $ref: '#/components/schemas/MaxGrpDataRateInfo'
+        cpParams:
+          $ref: '#/components/schemas/CpParams'
+        npConfigParams:
+          $ref: '#/components/schemas/NpConfigParams'
+        lpiParams:
+          $ref: '#/components/schemas/LpiParams'
+        acsParams:
+          $ref: '#/components/schemas/AcsParams'
+        ecsAddrParams:
+          $ref: '#/components/schemas/ECSAddrParams'
+        dnnSnssaiParams:
+          $ref: '#/components/schemas/DnnSnssaiParams'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        requestTestNotification:
+          type: boolean
+          description: >
+            Set to true to request to send a test notification as defined in clause 5.2.5.3.
+            Set to false or omitted otherwise.
+        websockNotifConfig:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/WebsockNotifConfig'
       required:
         - exterGroupId
         - gpsis
@@ -457,6 +521,20 @@ components:
           description: >
             Describes the operation systems and the corresponding applications for
             each operation systems. The key of map is osId.
+        cpParams:
+          $ref: '#/components/schemas/CpParams'
+        npConfigParams:
+          $ref: '#/components/schemas/NpConfigParams'
+        lpiParams:
+          $ref: '#/components/schemas/LpiParams'
+        acsParams:
+          $ref: '#/components/schemas/AcsParams'
+        ecsAddrParams:
+          $ref: '#/components/schemas/ECSAddrParams'
+        dnnSnssaiParams:
+          $ref: '#/components/schemas/DnnSnssaiParams'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
 
     AppDescriptor:
       description: Represents an operation system and the corresponding applications.
@@ -490,6 +568,124 @@ components:
           description: >
             Identifies applications that are running on the UE's operating system.
             Any string value can be used as a key of the map.
+
+    MaxGrpDataRateInfo:
+      description: >
+        Represents the Maximum Group Data Rate related information.
+      type: object
+      properties:
+        maxGrpDataRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        maxGrpDataRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+      anyOf:
+        - required: [maxGrpDataRateUl]
+        - required: [maxGrpDataRateDl]
+
+    CpParams:
+      description: Represents Communication Pattern parameters.
+      type: object
+      properties:
+        cpParameterSets:
+          type: object
+          additionalProperties:
+            $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/CpParameterSet'
+          minProperties: 1
+          description: >
+            Contains one or more set(s) of CP parameters information for the 5G VN group.
+            Any string value may be used as a key of the map.
+        cpReports:
+          type: object
+          additionalProperties:
+            $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/CpReport'
+          minProperties: 1
+          description: >
+            Contains the identifier(s) of the set(s) of CP parameters for which the provided CP
+            parameters are not added or modified successfully with the corresponding failure reason.
+            Each element provides the related information for one or more CP set identifier(s).
+            The key of the map is a string representing the failure identifier.
+          readOnly: true
+      required:
+        - cpParameterSets
+
+    NpConfigParams:
+      description: Represents Network Parameters Configuration information.
+      type: object
+      properties:
+        maximumLatency:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        maximumResponseTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        suggestedNumberOfDlPackets:
+          type: integer
+          minimum: 0
+          description: >
+            Contains the number of packets that the serving gateway shall buffer in case the UE is
+            not reachable.
+        groupReportingGuardTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        validityTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+
+    LpiParams:
+      description: Represents Location Privacy Indication parameters.
+      type: object
+      properties:
+        lpi:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/Lpi'
+      required:
+        - lpi
+
+    AcsParams:
+      description: Represents ACS configuration parameters.
+      type: object
+      properties:
+        acsInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AcsInfo'
+      required:
+        - acsInfo
+
+    ECSAddrParams:
+      description: Represents ECS address configuration parameters.
+      type: object
+      properties:
+        ecsServerAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EcsServerAddr'
+        spatialValidityCond:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SpatialValidityCond'
+      required:
+        - ecsServerAddr
+
+    DnnSnssaiParams:
+      description: Represents DNN and S-NSSAI specific Group Parameters.
+      type: object
+      properties:
+        defQos:
+          $ref: 'TS29522_GroupParametersProvisioning.yaml#/components/schemas/AfReqDefaultQoS'
+        ladnServArea:
+          $ref: 'TS29522_GroupParametersProvisioning.yaml#/components/schemas/LadnServArea'
+      anyOf:
+        - required: [ defQos ]
+        - required: [ ladnServArea ]
+
+    5GLanParamProvNotif:
+      description: Represents a 5G LAN Parameter Provisioning Event Notification.
+      type: object
+      properties:
+        npConfigNotif:
+          $ref: '#/components/schemas/NpConfigNotif'
+
+    NpConfigNotif:
+      description: Represents a Network Parameters Configuration related notification.
+      type: object
+      properties:
+        configResults:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/ConfigResult'
+          minItems: 1
+        appliedParam:
+          $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/AppliedParameterConfiguration'
 
     AaaUsage:
       anyOf:

@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Slice NRM
-  version: 18.4.0
+  version: 18.5.0
   description: >-
     OAS 3.0.1 specification of the Slice NRM
     @ 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -23,26 +23,26 @@ components:
       enum:
         - STATIONARY
         - NOMADIC
-        - RESTRICTED MOBILITY
-        - FULLY MOBILITY
+        - RESTRICTED_MOBILITY
+        - FULL_MOBILITY
     SynAvailability:
       type: string
       enum:
-        - NOT SUPPORTED
-        - BETWEEN BS AND UE
-        - BETWEEN BS AND UE & UE AND UE
+        - NOT_SUPPORTED
+        - BETWEEN_BS_AND_UE
+        - BETWEEN_BS_AND_UE_AND_UE_AND_UE
     PositioningAvailability:
       type: array
       items:
         type: string
         enum:
-          - CIDE-CID
+          - CIDE_CID
           - OTDOA
-          - RF FINGERPRINTING
+          - RF_FINGERPRINTING
           - AECID
-          - HYBRID POSITIONING
-          - NET-RTK
-    Predictionfrequency:
+          - HYBRID_POSITIONING
+          - NET_RTK
+    PredictionFrequency:
       type: string
       enum:
         - PERSEC
@@ -52,22 +52,18 @@ components:
       type: string
       enum:
         - SHARED
-        - NON-SHARED
+        - NON_SHARED
 
     NetworkSliceSharingIndicator:
       type: string
       enum:
         - SHARED
-        - NON-SHARED
+        - NON_SHARED
 
     SliceSimultaneousUse:
-      type: string
-      enum:
-        - ZERO
-        - ONE
-        - TWO
-        - THREE
-        - FOUR
+      type: integer
+      minimum: 0
+      maximum: 4
     Category:
       type: string
       enum:
@@ -98,9 +94,16 @@ components:
     Support:
       type: string
       enum:
-        - NOT SUPPORTED
+        - NOT_SUPPORTED
         - SUPPORTED
     DelayTolerance:
+      type: object
+      properties:
+        servAttrCom:
+          $ref: '#/components/schemas/ServAttrCom'
+        support:
+          $ref: '#/components/schemas/Support'
+    NonIPSupport:
       type: object
       properties:
         servAttrCom:
@@ -189,8 +192,8 @@ components:
           $ref: '#/components/schemas/ServAttrCom'
         availability:
           $ref: '#/components/schemas/PositioningAvailability'
-        predictionfrequency:
-          $ref: '#/components/schemas/Predictionfrequency'
+        predictionFrequency:
+          $ref: '#/components/schemas/PredictionFrequency'
         accuracy:
           $ref: '#/components/schemas/Float'
     PositioningRANSubnet:
@@ -198,8 +201,8 @@ components:
       properties:
         availability:
           $ref: '#/components/schemas/PositioningAvailability'
-        predictionfrequency:
-          $ref: '#/components/schemas/Predictionfrequency'
+        predictionFrequency:
+          $ref: '#/components/schemas/PredictionFrequency'
         accuracy:
           $ref: '#/components/schemas/Float'     
     UserMgmtOpen:
@@ -322,7 +325,7 @@ components:
         maxNumberOfPDUSessions:
           type: integer
         coverageAreaTAList:
-          $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/TaiList'
         resourceSharingLevel:
           $ref: '#/components/schemas/SharingLevel'
         dLMaxPktSize:
@@ -348,12 +351,15 @@ components:
         nssaaSupport:
           $ref: '#/components/schemas/NSSAASupport'
         n6Protection:
-          $ref: '#/components/schemas/N6Protection'    
+          $ref: '#/components/schemas/N6Protection'
+        nonIPSupport:
+          $ref: '#/components/schemas/NonIPSupport'
+    
     RANSliceSubnetProfile:
       type: object
       properties:
         coverageAreaTAList:
-          $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/TaiList'
         dLLatency:
           type: number
         uLLatency:
@@ -404,6 +410,8 @@ components:
           $ref: '#/components/schemas/DeterministicComm'
         uLDeterministicComm:
           $ref: '#/components/schemas/DeterministicComm'
+        nonIPSupport:
+          $ref: '#/components/schemas/NonIPSupport'
     TopSliceSubnetProfile:
       type: object
       properties:
@@ -446,7 +454,7 @@ components:
         activityFactor:
           type: integer
         coverageAreaTAList:
-          $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/TaiList'
         resourceSharingLevel:
           $ref: '#/components/schemas/SharingLevel'
         uEMobilityLevel:
@@ -465,6 +473,8 @@ components:
           $ref: '#/components/schemas/NSSAASupport'
         n6Protection:
           $ref: '#/components/schemas/N6Protection'
+        nonIPSupport:
+          $ref: '#/components/schemas/NonIPSupport'
 
     ServiceProfile:
       type: object
@@ -522,7 +532,9 @@ components:
           v2XCommModels:
             $ref: '#/components/schemas/V2XCommModels'
           coverageArea:
-            $ref: 'TS28623_ComDefs.yaml#/components/schemas/GeoArea'
+            type: array
+            items:
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/GeoArea'
           termDensity:
             $ref: '#/components/schemas/TermDensity'
           activityFactor:
@@ -547,6 +559,8 @@ components:
             $ref: '#/components/schemas/NSSAASupport'
           n6Protection:
             $ref: '#/components/schemas/N6Protection'
+          nonIPSupport:
+            $ref: '#/components/schemas/NonIPSupport'
     SliceProfile:
       type: object
       properties:
@@ -574,7 +588,7 @@ components:
            enum: 
             - VLAN
             - MPLS
-            - Segment
+            - SEGMENT
          logicalInterfaceId:
            type: string
          systemName:
@@ -590,7 +604,8 @@ components:
             - EGP
             - EIGRP
             - BGP
-            - IS-IS
+            - IS_IS
+            - STATIC
 
     ConnectionPointInfo:
       type: object
@@ -641,7 +656,7 @@ components:
       type: boolean
     RequestedReservationExpiration:
       description: >-
-        An attribute which specifes MnS consuner's requirements for the validity period of the resource reservation.
+        An attribute which specifies MnS consuner's requirements for the validity period of the resource reservation.
       type: string
     ResourceReservationStatus:
       description: >-
@@ -653,7 +668,7 @@ components:
         - USED
     ReservationExpiration:
       description: >-
-        An attribute which specifes the actual validity period of the resource reservation..
+        An attribute which specifies the actual validity period of the resource reservation..
       type: string
     ReservationFailureReason:
       description: >-
@@ -796,7 +811,7 @@ components:
                 uLThptPerSliceSubnet:
                   $ref: '#/components/schemas/XLThpt'
                 coverageAreaTAList:
-                  $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTacList'
+                  $ref: 'TS28541_NrNrm.yaml#/components/schemas/TaiList'
     FeasibilityCheckAndReservationJob-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'     
@@ -815,6 +830,8 @@ components:
                   $ref: '#/components/schemas/RecommendationRequest'
                 requestedReservationExpiration:
                   $ref: '#/components/schemas/RequestedReservationExpiration'
+                feasibilityTimeWindow:
+                  $ref: 'TS28623_ComDefs.yaml#/components/schemas/TimeWindow'                  
                 processMonitor:
                   $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ProcessMonitor'
                 feasibilityResult:

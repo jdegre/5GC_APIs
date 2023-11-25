@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.2'
+  version: '1.3.0-alpha.3'
   title: 'Nudm_PP'
   description: |
     Nudm Parameter Provision Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.503 Unified Data Management Services, version 18.2.0
+  description: 3GPP TS 29.503 Unified Data Management Services, version 18.3.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/'
 
 servers:
@@ -650,6 +650,11 @@ components:
           $ref: '#/components/schemas/MbsAssistanceInfo'
         appSpecificExpectedUeBehaviour:
           $ref: '#/components/schemas/AppSpecificExpectedUeBehaviour'
+        sliceUsageControlInfos:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceUsageControlInfo'
+          minItems: 1
       nullable: true
 
     MbsAssistanceInfo:
@@ -694,7 +699,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         mtcProviderInformation:
@@ -713,7 +718,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         mtcProviderInformation:
@@ -731,13 +736,22 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
           minItems: 1
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         afInstanceId:
           type: string
         internalGroupIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
         mtcProviderInformation:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MtcProviderInformation'
+        membersData:
+          description: >
+            Contains the list of 5G VN Group members, each member is identified by GPSI.
+            A map (list of key-value pairs where Gpsi serves as key) of GpsiInfo. 
+            The value in each entries of the map shall be an empty JSON object.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GpsiInfo'
+          minProperties: 1
 
     5GVnGroupData:
       type: object
@@ -774,6 +788,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
         5gVnGroupCommunicationInd:
           type: boolean
+        maxGroupDataRate:
+          $ref: '#/components/schemas/MaxGroupDataRate'
+
 
     ExpectedUeBehaviour:
       type: object
@@ -784,7 +801,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         stationaryIndication:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/StationaryIndicationRm'
         communicationDurationTime:
@@ -801,7 +818,9 @@ components:
             $ref: '#/components/schemas/LocationArea'
           minItems: 1
           nullable: true
-          description: Identifies the UE's expected geographical movement. The attribute is only applicable in 5G.
+          description: >
+            Identifies the UE's expected geographical movement. The attribute is only
+            applicable in 5G.
         trafficProfile:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/TrafficProfileRm'
         batteryIndication:
@@ -844,7 +863,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DayOfWeek'
 
     NetworkAreaInfo:
-      description: Describes a network area information in which the NF service consumer requests the number of UEs.
+      description: >
+        Describes a network area information in which the NF service consumer requests
+        the number of UEs.
       type: object
       properties:
         ecgis:
@@ -881,7 +902,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         plmnEcInfos:
           type: array
           items:
@@ -914,7 +935,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         dnn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         singleNssai:
@@ -937,7 +958,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         mtcProviderInformation:
@@ -956,7 +977,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         mtcProviderInformation:
@@ -969,7 +990,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         lpi:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/Lpi'
         mtcProviderInformation:
@@ -977,7 +998,13 @@ components:
         evtRptExpectedArea:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicArea'
         areaUsageInd:
-          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/AreaUsageInd'
+          allOf:
+            - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/AreaUsageInd'
+          default: POSITIVE_SENSE
+        upLocRepIndAf:
+          allOf:
+            - $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/UpLocRepIndAf'
+          default: USER_PLANE_REPORT_NOT_ALLOWED
       nullable: true
 
     PpDataEntry:
@@ -986,7 +1013,7 @@ components:
         communicationCharacteristics:
           $ref: '#/components/schemas/CommunicationCharacteristicsAF'
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         validityTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         mtcProviderInformation:
@@ -1013,6 +1040,11 @@ components:
           minProperties: 1
         ecRestriction:
           $ref: '#/components/schemas/EcRestriction'
+        sliceUsageControlInfos:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceUsageControlInfo'
+          minItems: 1
       nullable: true
 
     CommunicationCharacteristicsAF:
@@ -1102,7 +1134,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         expectedUeBehaviourData:
           description: A map(list of key-value pairs) where a valid JSON pointer serves as key
           type: object
@@ -1123,7 +1155,7 @@ components:
         afInstanceId:
           type: string
         referenceId:
-          $ref: '#/components/schemas/ReferenceId'
+          $ref: 'TS29503_Nudm_EE.yaml#/components/schemas/ReferenceId'
         appSpecificExpectedUeBehaviourData:
           description: A map(list of key-value pairs) where a valid JSON pointer serves as key
           type: object
@@ -1132,11 +1164,27 @@ components:
           minProperties: 1
       nullable: true
 
+    MaxGroupDataRate:
+      description: >
+        The limits of the total bit rate across all sessions of the 5G VN group
+        (uplink and downlink)
+      type: object
+      properties:
+        uplink:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        downlink:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+
+    GpsiInfo:
+      description: >
+        In this version of this specificiaiton, this data type does not contain any attributes,
+        it is used to convey an empty JSON objects as the value of the entries in the membersData map.
+      type: object
+      nullable: true
+
 
 # SIMPLE TYPES:
 
-    ReferenceId:
-      type: integer
 
     PpDlPacketCount:
       type: integer

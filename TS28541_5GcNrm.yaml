@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: 3GPP 5GC NRM
-  version: 18.4.0
+  version: 18.5.0
   description: >-
     OAS 3.0.1 specification of the 5GC NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -112,7 +112,7 @@ components:
             $ref: 'TS28541_NrNrm.yaml#/components/schemas/Snssai'
     NFStatus:
       type: string
-      description: any of enumrated value
+      description: any of enumerated value
       enum:
         - REGISTERED
         - SUSPENDED
@@ -126,7 +126,7 @@ components:
     TACList:
       type: array
       items:
-        $ref: 'TS28541_NrNrm.yaml#/components/schemas/NrTac'
+        $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tac'
     WeightFactor:
       type: integer
     AusfInfo:
@@ -152,7 +152,7 @@ components:
           minItems: 1
     SupportedDataSet:
       type: string
-      description: any of enumrated value
+      description: any of enumerated value
       enum:
         - SUBSCRIPTION
         - POLICY
@@ -190,7 +190,7 @@ components:
           type: string
         n1MessageClass:  
           type: boolean
-        n2InfroamtionClass:
+        n2InformationClass:
           type: boolean
         versions:
           type: string
@@ -273,7 +273,7 @@ components:
           type: string
     SEPPType:
       type: string
-      description: any of enumrated value
+      description: any of enumerated value
       enum:
         - CSEPP
         - PSEPP
@@ -290,7 +290,7 @@ components:
         $ref: '#/components/schemas/SupportedFunc'
     CommModelType:
       type: string
-      description: any of enumrated value
+      description: any of enumerated value
       enum:
         - DIRECT_COMMUNICATION_WO_NRF
         - DIRECT_COMMUNICATION_WITH_NRF
@@ -533,9 +533,9 @@ components:
           enum:
             - INACTIVE
             - ACTIVE
-        activeEacThreshhold:
+        activeEacThreshold:
           type: integer
-        deactiveEacThreshhold:
+        deactiveEacThreshold:
           type: integer
         numberofUEs:
           type: integer
@@ -594,7 +594,7 @@ components:
           items:
             type: string
     
-    SNssaiSmfInfoItem:
+    SnssaiSmfInfoItem:
       type: object
       properties:
         sNSSAI:
@@ -653,7 +653,7 @@ components:
     TaiList:
       type: array
       items:
-        $ref: 'TS28541_NrNrm.yaml#/components/schemas/Tai' 
+        $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Tai' 
     SupiRange:
       type: object
       properties:
@@ -675,7 +675,7 @@ components:
     ProseCapability:
       type: object
       properties:
-        proseDirectDiscovey:
+        proseDirectDiscovery:
           type: boolean
         proseDirectCommunication:
           type: boolean
@@ -1494,6 +1494,264 @@ components:
         secondaryChfInstance:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
 
+    AmfInfo:
+      description: Information of an AMF NF Instance
+      type: object
+      # required:
+        # - amfSetId
+        # - amfRegionId
+        # - guamiList
+      properties:
+        # amfSetId:
+          # $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfSetId'
+        # amfRegionId:
+          # $ref: 'TS29571_CommonData.yaml#/components/schemas/AmfRegionId'
+        guamiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
+        backupInfoAmfFailure:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
+        backupInfoAmfRemoval:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Guami'
+          minItems: 1
+        # n2InterfaceAmfInfo:
+          # $ref: '#/components/schemas/N2InterfaceAmfInfo'
+        # amfOnboardingCapability:
+          # type: boolean
+          # default: false
+        # highLatencyCom:
+          # type: boolean
+
+    SmfInfo:
+      description: Information of an SMF NF Instance
+      type: object
+      required:
+        - sNssaiSmfInfoList
+      properties:
+        sNssaiSmfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnssaiSmfInfoItem'
+          minItems: 1
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
+        pgwFqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+        pgwIpAddrList:
+          type: array
+          items:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/IpAddr'
+          minItems: 1
+        accessType:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 65535
+        vsmfSupportInd:
+          type: boolean
+        pgwFqdnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+          minItems: 1
+        # smfOnboardingCapability:
+          # type: boolean
+          # default: false
+          # deprecated: true
+        # ismfSupportInd:
+          # type: boolean
+        # smfUPRPCapability:
+          # type: boolean
+          # default: false
+
+    UpfInfo:
+      description: Information of an UPF NF Instance
+      type: object
+      # required:
+        # - sNssaiUpfInfoList
+      properties:
+        # sNssaiUpfInfoList:
+          # type: array
+          # items:
+            # $ref: '#/components/schemas/SnssaiUpfInfoItem'
+          # minItems: 1
+        smfServingArea:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        interfaceUpfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceUpfInfoItem'
+          minItems: 1
+        iwkEpsInd:
+          type: boolean
+          default: false
+        # sxaInd:
+          # type: boolean
+        pduSessionTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
+          minItems: 1
+        atsssCapability:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AtsssCapability'
+        ueIpAddrInd:
+          type: boolean
+          default: false
+        taiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
+          minItems: 1
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
+        wAgfInfo:
+          # $ref: '#/components/schemas/WAgfInfo'
+          $ref: '#/components/schemas/IpInterface'
+        tngfInfo:
+          # $ref: '#/components/schemas/TngfInfo'
+          $ref: '#/components/schemas/IpInterface'
+        twifInfo:
+          # $ref: '#/components/schemas/TwifInfo'
+          $ref: '#/components/schemas/IpInterface'
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 65535
+        redundantGtpu:
+          type: boolean
+          default: false
+        ipups:
+          type: boolean
+          default: false
+        dataForwarding:
+          type: boolean
+          default: false
+        supportedPfcpFeatures:
+          type: string
+        # upfEvents:
+          # type: array
+          # items:
+            # $ref: 'TS29564_Nupf_EventExposure.yaml#/components/schemas/EventType'
+          # minItems: 1
+
+    PcfInfo:
+      description: Information of a PCF NF Instance
+      type: object
+      properties:
+        groupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        dnnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 1
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+          minItems: 1
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        rxDiamHost:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        rxDiamRealm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        v2xSupportInd:
+          type: boolean
+          default: false
+        proseSupportInd:
+          type: boolean
+          default: false
+        proseCapability:
+          $ref: '#/components/schemas/ProseCapability'
+        v2xCapability:
+          $ref: '#/components/schemas/V2xCapability'
+
+    NefInfo:
+      description: Information of an NEF NF Instance
+      type: object
+      properties:
+        nefId:
+          # $ref: '#/components/schemas/NefId'
+          type: string
+        pfdData:
+          $ref: '#/components/schemas/PfdData'
+        afEeData:
+          $ref: '#/components/schemas/AfEventExposureData'
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        externalGroupIdentifiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 1
+        servedFqdnList:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        taiList:
+          $ref: '#/components/schemas/TaiList'
+        taiRangeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaiRange'
+          minItems: 1
+        dnaiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
+        unTrustAfInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnTrustAfInfo'
+          minItems: 1
+        uasNfFunctionalityInd:
+          type: boolean
+          default: false
+
     NrfInfo:
       description: Information of an NRF NF Instance, used in hierarchical NRF deployments
       type: object
@@ -1506,6 +1764,18 @@ components:
               - $ref: '#/components/schemas/UdrInfo'
               - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
           minProperties: 1
+        servedUdrInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/UdrInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
         servedUdmInfo:
           description: A map (list of key-value pairs) where nfInstanceId serves as key
           type: object
@@ -1514,12 +1784,164 @@ components:
               - $ref: '#/components/schemas/UdmInfo'
               - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
           minProperties: 1
+        servedUdmInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/UdmInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
         servedAusfInfo:
           description: A map (list of key-value pairs) where nfInstanceId serves as key
           type: object
           additionalProperties:
             anyOf:
               - $ref: '#/components/schemas/AusfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedAusfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/AusfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        servedAmfInfo:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/AmfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedAmfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/AmfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        servedSmfInfo:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/SmfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedSmfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/SmfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        servedUpfInfo:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/UpfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedUpfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/UpfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        servedPcfInfo:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/PcfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedPcfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/PcfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        # servedBsfInfo:
+          # description: A map (list of key-value pairs) where nfInstanceId serves as key
+          # type: object
+          # additionalProperties:
+            # anyOf:
+              # - $ref: '#/components/schemas/BsfInfo'
+              # - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          # minProperties: 1
+        # servedBsfInfoList:
+          # description: A map (list of key-value pairs) where nfInstanceId serves as key
+          # type: object
+          # additionalProperties:
+            # description: A map (list of key-value pairs) where a valid JSON string serves as key
+            # type: object
+            # additionalProperties:
+              # anyOf:
+                # - $ref: '#/components/schemas/BsfInfo'
+                # - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            # minProperties: 1
+          # minProperties: 1
+        servedChfInfo:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/ChfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedChfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/ChfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        servedNefInfo:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/NefInfo'
               - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
           minProperties: 1
         servedNwdafInfo:
@@ -1530,6 +1952,36 @@ components:
               - $ref: '#/components/schemas/NwdafInfo'
               - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
           minProperties: 1
+        servedNwdafInfoList:
+          type: object
+          description: A map (list of key-value pairs) where NF Instance Id serves as key
+          additionalProperties:
+            type: object
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            additionalProperties:
+              $ref: '#/components/schemas/NwdafInfo'
+            minProperties: 1
+          minProperties: 1
+        # servedPcscfInfoList:
+          # description: A map (list of key-value pairs) where nfInstanceId serves as key
+          # type: object
+          # additionalProperties:
+            # description: A map (list of key-value pairs) where a valid JSON string serves as key
+            # type: object
+            # additionalProperties:
+              # anyOf:
+                # - $ref: '#/components/schemas/PcscfInfo'
+                # - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            # minProperties: 1
+          # minProperties: 1
+        # servedGmlcInfo:
+          # description: A map (list of key-value pairs) where nfInstanceId serves as key
+          # type: object
+          # additionalProperties:
+            # anyOf:
+              # - $ref: '#/components/schemas/GmlcInfo'
+              # - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          # minProperties: 1
         servedLmfInfo:
           description: A map (list of key-value pairs) where nfInstanceId serves as key
           type: object
@@ -1538,12 +1990,58 @@ components:
               - $ref: '#/components/schemas/LmfInfo'
               - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
           minProperties: 1
+        # servedNfInfo:
+          # description: A map (list of key-value pairs) where nfInstanceId serves as key
+          # type: object
+          # additionalProperties:
+            # $ref: '#/components/schemas/NfInfo'
+          # minProperties: 1
+        # servedHssInfoList:
+          # description: A map (list of key-value pairs) where nfInstanceId serves as key
+          # type: object
+          # additionalProperties:
+            # description: A map (list of key-value pairs) where a valid JSON string serves as key
+            # type: object
+            # additionalProperties:
+              # anyOf:
+                # - $ref: '#/components/schemas/HssInfo'
+                # - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            # minProperties: 1
+          # minProperties: 1
         servedUdsfInfo:
           description: A map (list of key-value pairs) where nfInstanceId serves as key
           type: object
           additionalProperties:
             anyOf:
               - $ref: '#/components/schemas/UdsfInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedUdsfInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            description: A map (list of key-value pairs) where a valid JSON string serves as key
+            type: object
+            additionalProperties:
+              anyOf:
+                - $ref: '#/components/schemas/UdsfInfo'
+                - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+            minProperties: 1
+          minProperties: 1
+        servedScpInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/ScpInfo'
+              - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
+          minProperties: 1
+        servedSeppInfoList:
+          description: A map (list of key-value pairs) where nfInstanceId serves as key
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: '#/components/schemas/SeppInfo'
               - $ref: 'TS29571_CommonData.yaml#/components/schemas/EmptyObject'
           minProperties: 1
         servedTrustAfInfo:
@@ -1558,6 +2056,150 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/NssaafInfo'
           minProperties: 1
+    NTNPLMNRestrictionsInfo:
+      description: restrictions per PLMN that relates to non-terrestrial network access
+      type: object
+      properties:
+        pLMNId:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
+        blockedLocationInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockedLocationInfoList'
+          minItems: 1
+    BlockedLocationInfoList:
+      description: location for which the PLMN access restrictions are to be applied in case of NTN
+      type: object
+      properties:
+        blockedLocation:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
+        blockedDur:
+          $ref: '#/components/schemas/TimeDuration'
+        blockedSlice:
+          type: string
+    TimeDuration:
+      description: location for which the PLMN access restrictions are to be applied in case of NTN
+      type: object
+      properties:
+        blockedDurStartTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        blockedDurEndTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+
+    GmlcInfo:
+      description: Information of a GMLC NF Instance
+      type: object
+      properties:
+        servingClientTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalClientType'
+        gmlcNumbers:
+          type: array
+          items:
+            type: string
+            pattern: '^[0-9]{5,15}$'
+
+    SnssaiTsctsfInfoItem:
+      description: Set of parameters supported by TSCTSF for a given S-NSSAI
+      type: object
+      required:
+        - sNssai
+        - dnnInfoList
+      properties:
+        sNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
+        dnnInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnnTsctsfInfoItem'
+          minItems: 1
+    DnnTsctsfInfoItem:
+      description: Parameters supported by an TSCTSF for a given DNN
+      type: object
+      required:
+        - dnn
+      properties:
+        dnn:
+          anyOf:
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+            - $ref: 'TS29571_CommonData.yaml#/components/schemas/WildcardDnn'
+    TsctsfInfo:
+      description: Information of a TSCTSF NF Instance
+      type: object
+      properties:
+        sNssaiInfoList:
+          description: A map (list of key-value pairs) where a valid JSON string serves as key
+          additionalProperties:
+            $ref: '#/components/schemas/SnssaiTsctsfInfoItem'
+          minProperties: 0
+        externalGroupIdentifiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+        internalGroupIdentifiersRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalGroupIdRange'
+
+    BsfInfo:
+      description: Information of a BSF NF Instance
+      type: object
+      properties:
+        dnnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          minItems: 0
+        ipDomainList:
+          type: array
+          items:
+            type: string
+          minItems: 0
+        ipv4AddressRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv4AddressRange'
+          minItems: 0
+        ipv6PrefixRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ipv6PrefixRange'
+          minItems: 0
+        rxDiamHost:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        rxDiamRealm:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DiameterIdentity'
+        groupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
+        supiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupiRange'
+          minItems: 0
+        gpsiRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityRange'
+          minItems: 0            
+ 
+    AanfInfo:
+      description: Represents the information relative to an AAnF NF Instance.
+      type: object
+      properties:
+        routingIndicators:
+          type: array
+          items:
+            type: string
+            pattern: '^[0-9]{1,4}$'
 
 #-------- Definition of concrete IOCs --------------------------------------------
     ProvMnS:
@@ -1668,6 +2310,14 @@ components:
               $ref: '#/components/schemas/ChfFunction-Multiple'
             MFAFFunction:
               $ref: '#/components/schemas/MfafFunction-Multiple'
+            GMLCFunction:
+              $ref: '#/components/schemas/GmlcFunction-Multiple'
+            TSCTSFFunction:
+              $ref: '#/components/schemas/TsctsfFunction-Multiple'
+            AANFFunction:
+              $ref: '#/components/schemas/AanfFunction-Multiple'
+            BSFFunction:
+              $ref: '#/components/schemas/BsfFunction-Multiple'            
 
     AmfFunction-Single:
       allOf:
@@ -1687,34 +2337,20 @@ components:
                       type: string
                     interPlmnFQDN:
                       type: string
-                    taiList:
-                      $ref: '#/components/schemas/TaiList'
-                    taiRangeList:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/TaiRange'
                     weightFactor:
                       $ref: '#/components/schemas/WeightFactor'
                     cNSIIdList:
                       $ref: '#/components/schemas/CNSIIdList'
-                    gUAMIdList:
-                      type: array
-                      items: 
-                        $ref: '#/components/schemas/GUAMInfo'
-                    backupInfoAmfFailure:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/GUAMInfo'
-                    backupInfoAmfRemoval:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/GUAMInfo'
                     amfSetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
                     managedNFProfile:
                       $ref: '#/components/schemas/ManagedNFProfile'
                     commModelList:
                       $ref: '#/components/schemas/CommModelList'
+                    nTNPLMNInfoList:
+                      $ref: '#/components/schemas/NTNPLMNRestrictionsInfo'
+                    amfInfo:
+                      $ref: '#/components/schemas/AmfInfo'  
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
@@ -1740,14 +2376,16 @@ components:
               $ref: '#/components/schemas/EP_N26-Multiple'
             EP_NLS:
               $ref: '#/components/schemas/EP_NLS-Multiple'
-            EP_NLG:
-              $ref: '#/components/schemas/EP_NLG-Multiple'
+            EP_NL2:
+              $ref: '#/components/schemas/EP_NL2-Multiple'
             EP_N58:
               $ref: '#/components/schemas/EP_N58-Multiple'
             EP_N41:
               $ref: '#/components/schemas/EP_N41-Multiple'
             EP_N42:
               $ref: '#/components/schemas/EP_N42-Multiple'
+            EP_N89:
+              $ref: '#/components/schemas/EP_N89-Multiple'              
     AmfSet-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -1806,43 +2444,18 @@ components:
                       $ref: '#/components/schemas/TACList'
                     sBIFqdn:
                       type: string
-                    sNssaiSmfInfoList:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/SNssaiSmfInfoItem'
-                    taiList:
-                      $ref: '#/components/schemas/TaiList'
-                    taiRangeList:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/TaiRange'
-                    pwgFqdn:
-                      type: string
-                    pgwAddrList:
-                      type: array
-                      items:
-                        $ref: 'TS28623_ComDefs.yaml#/components/schemas/IpAddr'
-                    accessType:
-                      $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
-                    priority:
-                      type: integer
                     cNSIIdList:
                       $ref: '#/components/schemas/CNSIIdList'
-                    vsmfSupportInd:
-                      type: boolean
-                    pwgFqdnList:    
-                      type: array
-                      items: 
-                        type: string
                     managedNFProfile:
                       $ref: '#/components/schemas/ManagedNFProfile'
                     commModelList:
                       $ref: '#/components/schemas/CommModelList'
+                    SmfInfo:
+                      $ref: '#/components/schemas/SmfInfo'  
                     configurable5QISetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
                     dynamic5QISetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
-
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
@@ -1860,6 +2473,8 @@ components:
               $ref: '#/components/schemas/EP_S5C-Multiple'
             EP_N40:
               $ref: '#/components/schemas/EP_N40-Multiple'
+            EP_N88:
+              $ref: '#/components/schemas/EP_N88-Multiple'
             FiveQiDscpMappingSet:
               $ref: '#/components/schemas/FiveQiDscpMappingSet-Single'
             GtpUPathQoSMonitoringControl:
@@ -1885,52 +2500,12 @@ components:
                       $ref: '#/components/schemas/TACList'
                     cNSIIdList:
                       $ref: '#/components/schemas/CNSIIdList'
-                    smfServingArea:
-                       type: string
-                    interfaceUpfInfoList:
-                       type: array
-                       items:
-                         $ref: '#/components/schemas/InterfaceUpfInfoItem'
-                    iwkEpsInd:
-                       type: boolean
-                    pduSessionTypes:
-                      type: string
-                      enum:
-                        - IPV4
-                        - IPV6
-                        - IPV4V6
-                        - UNSTRUCTURED
-                        - ETHERNET
-                    atsssCapability:
-                       $ref: '#/components/schemas/AtsssCapability'
-                    ueIpAddrInd:
-                       type: boolean
-                    taiList:
-                      $ref: '#/components/schemas/TaiList'
-                    taiRangeList:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/TaiRange'
-                    wAgfInfo:
-                      $ref: '#/components/schemas/IpInterface'
-                    tngfInfo:
-                      $ref: '#/components/schemas/IpInterface'
-                    twifInfo:
-                      $ref: '#/components/schemas/IpInterface'
-                    priority:
-                      type: integer
-                    redundantGtpu:
-                      type: boolean
-                    ipups:
-                      type: boolean
-                    dataForwarding:
-                      type: boolean
-                    supportedPfcpFeatures:
-                      type: string
                     managedNFProfile:
                       $ref: '#/components/schemas/ManagedNFProfile'
                     supportedBMOList:
                       $ref: '#/components/schemas/SupportedBMOList'
+                    upfInfo:
+                      $ref: '#/components/schemas/UpfInfo'        
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
@@ -1983,34 +2558,14 @@ components:
                       $ref: '#/components/schemas/ManagedNFProfile'
                     commModelList:
                       $ref: '#/components/schemas/CommModelList'
-                    groupId:
-                      type: string
-                    dnnList:
-                      type: array
-                      items:
-                        type: string
-                    supiRanges:
-                      $ref: '#/components/schemas/SupiRangeList'
-                    gpsiRanges:
-                      $ref: '#/components/schemas/IdentityRangeList'
-                    rxDiamHost:
-                      type: string
-                    rxDiamRealm:
-                      type: string
-                    v2xSupportInd:
-                      type: boolean
-                    proseSupportInd:
-                      type: boolean
-                    proseCapability:
-                      $ref: '#/components/schemas/ProseCapability'
-                    v2xCapability:
-                      $ref: '#/components/schemas/V2xCapability'
+                    supportedBMOList:
+                      $ref: '#/components/schemas/SupportedBMOList'
+                    PcfInfo:
+                      $ref: '#/components/schemas/PcfInfo' 
                     configurable5QISetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
                     dynamic5QISetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
-                    supportedBMOList:
-                      $ref: '#/components/schemas/SupportedBMOList'
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
@@ -2026,6 +2581,8 @@ components:
               $ref: '#/components/schemas/EP_N28-Multiple'
             EP_Rx:
               $ref: '#/components/schemas/EP_Rx-Multiple'
+            EP_N84:
+              $ref: '#/components/schemas/EP_N84-Multiple'
             PredefinedPccRuleSet:
               $ref: '#/components/schemas/PredefinedPccRuleSet-Single'
 
@@ -2056,6 +2613,8 @@ components:
               $ref: '#/components/schemas/EP_N12-Multiple'
             EP_N13:
               $ref: '#/components/schemas/EP_N13-Multiple'
+            EP_N61:
+              $ref: '#/components/schemas/EP_N61-Multiple'
     UdmFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -2089,6 +2648,10 @@ components:
               $ref: '#/components/schemas/EP_N13-Multiple'
             EP_N59:
               $ref: '#/components/schemas/EP_N13-Multiple'
+            EP_NL6:
+              $ref: '#/components/schemas/EP_NL6-Multiple'
+            EP_N87:
+              $ref: '#/components/schemas/EP_N87-Multiple'
     UdrFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -2152,6 +2715,8 @@ components:
           properties:
             EP_N27:
               $ref: '#/components/schemas/EP_N27-Multiple'
+            EP_N96:
+              $ref: '#/components/schemas/EP_N96-Multiple'
     NssfFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -2307,7 +2872,17 @@ components:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
                     nwdafInfo:
                       $ref: '#/components/schemas/NwdafInfo'
-                      
+                    nwdafLogicalFuncSupported:
+                      type: string
+                      enum:
+                        - NWDAF_WITH_ANLF
+                        - NWDAF_WITH_MTLF
+                        - NWDAF_WITH_ANLF_MTLF
+        - type: object
+          properties:
+            EP_NL3:
+              $ref: '#/components/schemas/EP_NL3-Multiple'
+
     ScpFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -2345,53 +2920,22 @@ components:
                       $ref: '#/components/schemas/CapabilityList'
                     isCAPIFSup:
                       type: boolean
-                    taiList:
-                      $ref: '#/components/schemas/TaiList'
-                    taiRangeList:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/TaiRange'
-                    dnai:
-                      type: string
-                    nefId:
-                      type: string
-                    pfdData:
-                      $ref: '#/components/schemas/PfdData'
-                    afEeData:
-                      $ref: '#/components/schemas/AfEventExposureData'
-                    gpsiRanges:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/IdentityRange'
-                      minItems: 1
-                    externalGroupIdentifiersRanges:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/IdentityRange'
-                      minItems: 1
-                    servedFqdnList:
-                      type: array
-                      items:
-                        type: string
-                      minItems: 1
-                    dnaiList:
-                      type: array
-                      items:
-                        $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
-                      minItems: 1
-                    unTrustAfInfoList:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/UnTrustAfInfo'
-                      minItems: 1
-                    uasNfFunctionalityInd:
-                      type: boolean
-                      default: false
+                    nefInfo:
+                       $ref: '#/components/schemas/NefInfo' 
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
             EP_N33:
               $ref: '#/components/schemas/EP_N33-Multiple'
+            EP_NL5:
+              $ref: '#/components/schemas/EP_NL5-Multiple'
+            EP_N85:
+              $ref: '#/components/schemas/EP_N85-Multiple'
+            EP_N62:
+              $ref: '#/components/schemas/EP_N62-Multiple'
+            EP_N63:
+              $ref: '#/components/schemas/EP_N63-Multiple'
+
     NsacfFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -2984,7 +3528,63 @@ components:
                       $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
                     remoteAddress:
                       $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
-    EP_NLG-Single:
+    EP_NL2-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_NL3-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_NL5-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_NL6-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_NL9-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
         - type: object
@@ -3260,6 +3860,12 @@ components:
           properties:
             EP_N5:
               $ref: '#/components/schemas/EP_N5-Multiple'
+            EP_N86:
+              $ref: '#/components/schemas/EP_N86-Multiple'
+            EP_N63:
+              $ref: '#/components/schemas/EP_N63-Multiple'
+            EP_N62:
+              $ref: '#/components/schemas/EP_N62-Multiple'
 
     NssaafFunction-Single:
       allOf:
@@ -3446,6 +4052,257 @@ components:
                       $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
                     remoteAddress:
                       $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+
+    AanfFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
+                - type: object
+                  properties:
+                    pLMNInfoList:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/PlmnInfoList'
+                    sBIFqdn:
+                      type: string
+                    managedNFProfile:
+                      $ref: '#/components/schemas/ManagedNFProfile'
+                    commModelList:
+                      $ref: '#/components/schemas/CommModelList'
+                    aanfInfo:
+                      $ref: '#/components/schemas/AanfInfo'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+        - type: object
+          properties:
+            EP_N61:
+              $ref: '#/components/schemas/EP_N61-Multiple'
+            EP_N62:
+              $ref: '#/components/schemas/EP_N62-Multiple'
+            EP_N63:
+              $ref: '#/components/schemas/EP_N63-Multiple'
+    EP_N61-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_N62-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_N63-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+
+
+    GmlcFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
+                - type: object
+                  properties:
+                    pLMNInfoList:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/PlmnInfoList'
+                    sBIFqdn:
+                      type: string
+                    managedNFProfile:
+                      $ref: '#/components/schemas/ManagedNFProfile'
+                    commModelList:
+                      $ref: '#/components/schemas/CommModelList'
+                    gmlcInfo:
+                      $ref: '#/components/schemas/GmlcInfo'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+        - type: object
+          properties:
+            EP_NL2:
+              $ref: '#/components/schemas/EP_NL2-Multiple'
+            EP_NL3:
+              $ref: '#/components/schemas/EP_NL3-Multiple'
+            EP_NL5:
+              $ref: '#/components/schemas/EP_NL5-Multiple'
+            EP_NL6:
+              $ref: '#/components/schemas/EP_NL6-Multiple'
+            EP_NL9:
+              $ref: '#/components/schemas/EP_NL9-Multiple'
+    TsctsfFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
+                - type: object
+                  properties:
+                    pLMNInfoList:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/PlmnInfoList'
+                    sBIFqdn:
+                      type: string
+                    managedNFProfile:
+                      $ref: '#/components/schemas/ManagedNFProfile'
+                    commModelList:
+                      $ref: '#/components/schemas/CommModelList'
+                    tsctsfInfo:
+                      $ref: '#/components/schemas/TsctsfInfo'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+        - type: object
+          properties:
+            EP_N84:
+              $ref: '#/components/schemas/EP_N84-Multiple'
+            EP_N85:
+              $ref: '#/components/schemas/EP_N85-Multiple'
+            EP_N86:
+              $ref: '#/components/schemas/EP_N86-Multiple'
+            EP_N87:
+              $ref: '#/components/schemas/EP_N87-Multiple'
+            EP_N89:
+              $ref: '#/components/schemas/EP_N89-Multiple'
+            EP_N96:
+              $ref: '#/components/schemas/EP_N96-Multiple'
+
+    EP_N84-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'    
+    EP_N85-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_N86-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_N87-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_N89-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+    EP_N96-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
+
+    BsfFunction-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
+                - type: object
+                  properties:
+                    pLMNInfoList:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/PlmnInfoList'
+                    sBIFqdn:
+                      type: string
+                    cNSIIdList:
+                      $ref: '#/components/schemas/CNSIIdList'
+                    managedNFProfile:
+                      $ref: '#/components/schemas/ManagedNFProfile'
+                    commModelList:
+                      $ref: '#/components/schemas/CommModelList'
+                    bsfInfo:
+                      $ref: '#/components/schemas/BsfInfo'
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
 
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------
 
@@ -3702,14 +4559,42 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/EP_NLS-Single'
-    EP_NLG-Multiple:
+    EP_NL2-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/EP_NLG-Single'
+        $ref: '#/components/schemas/EP_NL2-Single'
+    EP_NL3-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_NL3-Single'
+    EP_NL5-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_NL5-Single'
+    EP_NL6-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_NL6-Single'
+    EP_NL9-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_NL9-Single'
     EP_N60-Multiple:
       type: array
       items:
         $ref: '#/components/schemas/EP_N60-Single'
+    EP_N61-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N61-Single'
+    EP_N62-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N62-Single'
+    EP_N63-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N63-Single' 
     EP_Npc4-Multiple:
       type: array
       items:
@@ -3726,10 +4611,34 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/EP_Npc8-Single'
+    EP_N84-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N84-Single'
+    EP_N85-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N85-Single'
+    EP_N86-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N86-Single'
+    EP_N87-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N87-Single'
     EP_N88-Multiple:
       type: array
       items:
         $ref: '#/components/schemas/EP_N88-Single'
+    EP_N89-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N89-Single'
+    EP_N96-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N96-Single'
     Configurable5QISet-Multiple:
       type: array
       items:
@@ -3770,6 +4679,22 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/MfafFunction-Single'
+    GmlcFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/GmlcFunction-Single'
+    TsctsfFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/TsctsfFunction-Single'
+    AanfFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/AanfFunction-Single'
+    BsfFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/BsfFunction-Single'
 
 #------------ Definitions in TS 28.541 for TS 28.532 -----------------------------
 
@@ -3844,7 +4769,16 @@ components:
        - $ref: '#/components/schemas/EP_N58-Single'
        - $ref: '#/components/schemas/EP_N59-Single'              
        - $ref: '#/components/schemas/EP_N60-Single'
+       - $ref: '#/components/schemas/EP_N61-Single'
+       - $ref: '#/components/schemas/EP_N62-Single'
+       - $ref: '#/components/schemas/EP_N63-Single'
+       - $ref: '#/components/schemas/EP_N84-Single'
+       - $ref: '#/components/schemas/EP_N85-Single'
+       - $ref: '#/components/schemas/EP_N86-Single'
+       - $ref: '#/components/schemas/EP_N87-Single'
        - $ref: '#/components/schemas/EP_N88-Single'
+       - $ref: '#/components/schemas/EP_N89-Single'
+       - $ref: '#/components/schemas/EP_N96-Single'
 
        - $ref: '#/components/schemas/EP_Npc4-Single'
        - $ref: '#/components/schemas/EP_Npc6-Single'
@@ -3856,7 +4790,12 @@ components:
        - $ref: '#/components/schemas/EP_Rx-Single'
        - $ref: '#/components/schemas/EP_MAP_SMSC-Single'
        - $ref: '#/components/schemas/EP_NLS-Single'
-       - $ref: '#/components/schemas/EP_NLG-Single'
+       - $ref: '#/components/schemas/EP_NL2-Single'
+       - $ref: '#/components/schemas/EP_NL3-Single'
+       - $ref: '#/components/schemas/EP_NL5-Single'
+       - $ref: '#/components/schemas/EP_NL6-Single'
+       - $ref: '#/components/schemas/EP_NL9-Single'
+
        - $ref: '#/components/schemas/Configurable5QISet-Single'
        - $ref: '#/components/schemas/FiveQiDscpMappingSet-Single'
        - $ref: '#/components/schemas/PredefinedPccRuleSet-Single'
@@ -3868,3 +4807,7 @@ components:
        - $ref: '#/components/schemas/DccfFunction-Single'
        - $ref: '#/components/schemas/ChfFunction-Single'
        - $ref: '#/components/schemas/MfafFunction-Single'
+       - $ref: '#/components/schemas/GmlcFunction-Single'
+       - $ref: '#/components/schemas/TsctsfFunction-Single'
+       - $ref: '#/components/schemas/AanfFunction-Single'
+       - $ref: '#/components/schemas/BsfFunction-Single'

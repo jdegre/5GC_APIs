@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.3
+  version: 1.3.0-alpha.4
   title: Npcf_UEPolicyControl
   description: |
     UE Policy Control Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.525 V18.2.0; 5G System; UE Policy Control Service.
+  description: 3GPP TS 29.525 V18.3.0; 5G System; UE Policy Control Service.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.525/'
 
 servers:
@@ -338,16 +338,15 @@ components:
             $ref: '#/components/schemas/RequestTrigger'
           minItems: 1
           description: >
-            Request Triggers that the PCF subscribes. Only values "LOC_CH" and "PRA_CH" are
-            permitted.
+            Request Triggers that the PCF subscribes.
         pras:
           type: object
           additionalProperties:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfo'
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PresenceInfoRm'
           minProperties: 1
           description: >
             Contains the presence reporting area(s) for which reporting was requested.
-            The praId attribute within the PresenceInfo data type is the key of the map.
+            The praId attribute within the PresenceInfoRm data type is the key of the map.
         andspDelInd:
           type: boolean
           description: >
@@ -357,6 +356,12 @@ components:
             Indication of UE support of ANDSP. When set to true, it indicates the UE supports ANDSP,
             when set to false it indicates the UE does not support ANDSP.
           type: boolean
+        pduSessions:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionInfo'
+          minItems: 1
+          description: Combination of DNN and S-NSSAIs for which LBO information is requested. 
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -433,6 +438,9 @@ components:
           items:
             $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/ConfiguredSnssai'
           minItems: 1
+          description: >
+            The Configured NSSAI for the serving PLMN, and the mapped S-NSSAI value of home
+            network corresponding to the configured S-NSSAI in the serving PLMN.
         n3gNodeReSel:
           $ref: '#/components/schemas/Non3gppAccess'
         satBackhaulCategory:
@@ -442,6 +450,23 @@ components:
           description: >
             It indicates the UE Policy Association is triggered by a 5GS to EPS mobility
             scenario.
+        vpsUePolGuidance:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UePolicyParameters'
+          minProperties: 1
+          description: >
+            Contains the service parameter used to guide the VPLMN-specific URSP.
+            The key of the map represents the AF request to guide VPLMN-specific URS rules.
+            This attribute only applies in roaming and when the V-PCF is the NF service consumer.
+        lboRoamInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/LboRoamingInformation'
+          minItems: 1
+          description: >
+            Contains LBO roaming information for DNN and S-NSSAI combination(s).
+            This attribute only applies in roaming and when the AMF is the NF service consumer.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -520,8 +545,19 @@ components:
           items:
             $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/ConfiguredSnssai'
           minItems: 1
+          description: >
+            The Configured NSSAI for the serving PLMN, and the mapped S-NSSAI value of home
+            network corresponding to the configured S-NSSAI in the serving PLMN.
         satBackhaulCategory:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
+        urspEnfRep:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UrspEnforcementPduSession'
+          description: >
+            Contains information about the enforced URSP rule(s) in one or more PDU sessions.
+            The key of the map is a character string that represents an integer value.
+          minProperties: 1
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
 
@@ -548,8 +584,7 @@ components:
           minItems: 1
           nullable: true
           description: >
-            Request Triggers that the PCF subscribes. Only values "LOC_CH" and "PRA_CH" are
-            permitted.
+            Request Triggers that the PCF subscribes.
         pras:
           type: object
           additionalProperties:
@@ -563,6 +598,14 @@ components:
           type: boolean
           description: >
             Indication that the updated ANDSP/WLANSP has been successfully delivered to the UE.
+        pduSessions:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionInfo'
+          minItems: 1
+          description: >
+            Combination of DNN and S-NSSAIs for which LBO information is requested. 
+          nullable: true
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -618,6 +661,82 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
         connectState:
           $ref: 'TS29518_Namf_EventExposure.yaml#/components/schemas/CmState'
+        confSnssais:
+          type: array
+          items:
+            $ref: 'TS29531_Nnssf_NSSelection.yaml#/components/schemas/ConfiguredSnssai'
+          minItems: 1
+          description: >
+            The Configured NSSAI for the serving PLMN, and the mapped S-NSSAI value of home
+            network corresponding to the configured S-NSSAI in the serving PLMN.
+        satBackhaulCategory:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SatelliteBackhaulCategory'
+        urspEnfRep:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UrspEnforcementPduSession'
+          description: >
+            Contains information about the enforced URSP rule(s) in one or more PDU sessions.
+            The key of the map is a character string that represents an integer value.
+          minProperties: 1
+        lboRoamInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/LboRoamingInformation'
+          minItems: 1
+          description: >
+            Contains LBO roaming information for DNN and S-NSSAI combination(s).
+
+    UePolicyParameters:
+      description: >
+        Contains the service parameters used to guide the VPLMN-specific URSP rule determination.
+      type: object
+      properties:
+        urspGuidance:
+          type: array
+          items:
+            $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/UrspRuleRequest'
+          minItems: 1
+          description: Contains the service parameter used to guide the URSP. 
+
+    LboRoamingInformation:
+      description: >
+        Contains LBO roaming information for a DNN and S-NSSAI.
+      type: object
+      properties:
+        lboRoamAllowed:
+          type: boolean
+          description: >
+            Indicates whether LBO for the DNN and S-NSSAI is allowed when roaming.
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+      required:
+        - dnn
+        - snssai
+
+    UrspEnforcementPduSession:
+      description: >
+        Represents URSP enforcement information for a PDU session.
+      type: object
+      required:
+        - urspEnfInfo
+      properties:
+        urspEnfInfo:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/UrspEnforcementInfo'
+        sscMode:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SscMode'
+        ueReqDnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        redundantPduSessionInfo:
+          $ref: 'TS29502_Nsmf_PDUSession.yaml#/components/schemas/RedundantPduSessionInformation'
+        accessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        ratType: 
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
+        pduSessInfo: 
+          $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/PduSessionInformation'
 
     UePolicy:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
@@ -642,7 +761,9 @@ components:
           - SAT_CATEGORY_CHG
           - NON_3GPP_NODE_RESELECTION
           - CONF_NSSAI_CH
+          - LBO_INFO_CH
           - FEAT_RENEG
+          - URSP_ENF_INFO
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -669,9 +790,15 @@ components:
           category, or non-satellite backhaul.
         - NON_3GPP_NODE_RESELECTION: The UE has connected to a wrong non-3GPP access node that
           does not match its subscribed S-NSSAI(s). This policy control request trigger does not
-          require a subscription.        - CONF_NSSAI_CH: Configured NSSAI change. Indicates that the configured NSSAI has changed.
+          require a subscription.
+        - CONF_NSSAI_CH: Configured NSSAI change. Indicates that the configured NSSAI has changed.
+        - LBO_INFO_CH: LBO information change. The AMF reports LBO roaming allowed or not allowed
+          for the requested DNN(s) and S-NSSAI(s). This policy control request trigger only applies
+          in roaming scenarios when the NF service consumer is the AMF.
         - FEAT_RENEG: The NF service consumer notifies that the target AMF is requesting feature
           re-negotiation.
+        - URSP_ENF_INFO: The V-PCF has received URSP enforcement information for one or more URSP
+          rules. This trigger applies in roaming scenarios and to the V-PCF.
 
     PolicyAssociationReleaseCause:
       anyOf:

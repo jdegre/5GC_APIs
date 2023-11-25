@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nnwdaf_MLModelTraining
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.2
   description: |
     Nnwdaf_MLModelTraining API Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V18.2.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.3.0; 5G System; Network Data Analytics Services.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/
 
 servers:
@@ -319,9 +319,15 @@ components:
         mLModelInfos:
           type: array
           items:
-            $ref: '#/components/schemas/MLModelInfo'
+            $ref: 'TS29520_Nnwdaf_MLModelProvision.yaml#/components/schemas/MLEventNotif'
           minItems: 1
           description: Represents the ML Model information.
+        immReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/NwdafMLModelTrainNotif'
+          minItems: 1
+          description: Immediately reported ML Model Training notifications.
         mLModelTrainInfos:
           type: array
           items:
@@ -341,11 +347,6 @@ components:
             "true" if it is requested, otherwise set to "false".
         mLTrainRepInfo:
           $ref: '#/components/schemas/MLTrainReportInfo'
-        modelInterInfo:
-          type: string
-          description: >
-            String identifying the ML Model Interoperability Information. This is vendor-specific
-            information and is agreed between vendors, if necessary for sharing purposes.
         notifCorreId:
           type: string
           description: >
@@ -361,7 +362,6 @@ components:
             parameter are not standardized.
       required:
         - mLEventSubscs
-        - modelInterInfo
         - notifUri
         - notifCorreId
 
@@ -374,18 +374,18 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         eventReq:
           $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/ReportingInformation'
-        failEventReports:
+        mLModelInfos:
           type: array
           items:
-            $ref: '#/components/schemas/FailureEventInfoForMLModelTrain'
+            $ref: 'TS29520_Nnwdaf_MLModelProvision.yaml#/components/schemas/MLEventNotif'
           minItems: 1
-          description: >
-            Supplied by the NWDAF containing MTLF when available, shall contain the event(s) that
-            the subscription is not successful including the failure reason(s).
-        mLModelInfo:
-          $ref: '#/components/schemas/MLModelInfo'
-        mLModelTrainInfo:
-          $ref: '#/components/schemas/MLModelTrainInfo'
+          description: Represents the ML Model information.
+        mLModelTrainInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/MLModelTrainInfo'
+          minItems: 1
+          description: Represents the ML Model training information.
         mLPreFlag:
           type: boolean
           description: >
@@ -399,12 +399,6 @@ components:
             "true" if it is requested, otherwise set to "false".
         mLTrainRepInfo:
           $ref: '#/components/schemas/MLTrainReportInfo'
-        modelInterInfo:
-          type: string
-          description: >
-            String identifying the ML Model Interoperability Information. This is vendor-
-            specific information and is agreed between vendors, if necessary for sharing
-            purposes.
         roundInd:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         tgtRepUe:
@@ -419,13 +413,15 @@ components:
       description: Represents notifications on events that occurred.
       type: object
       properties:
+        delayEventNotif:
+          $ref: '#/components/schemas/DelayEventNotif'
         mLCorreId:
           type: string
           description: String identifying the subscription is for a Federated Learning procedure.
         mLModelInfos:
           type: array
           items:
-            $ref: '#/components/schemas/MLModelInfo'
+            $ref: 'TS29520_Nnwdaf_MLModelProvision.yaml#/components/schemas/MLEventNotif'
           minItems: 1
           description: Represents the ML Model information.
         notifCorreId:
@@ -434,36 +430,32 @@ components:
             String identifying the Notification Correlation ID in the corresponding notification.
         roundInd:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        statusReport:
+          $ref: '#/components/schemas/StatusReportInfo'
         termTrainReq:
-          $ref: '#/components/schemas/TermMLModelTrainInfo'
+          $ref: '#/components/schemas/TermTrainCause'
         uCaseCont:
           type: string
           description: >
             String identifying the context of use of ML model. The value and format of this
             parameter are not standardized.
       required:
-        - mLModelInfos
         - notifCorreId
+      oneOf:
+        - required: [delayEventNotif]
+        - required: [mLModelInfos]
+        - required: [termTrainReq]
+        - required: [mLModelInfos, termTrainReq]
 
-    MLModelInfo:
-      description: Represents the ML Model information.
-      type: object
-      properties:
-        accMLModel:
-          $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/Accuracy'
-        eventNotif:
-          $ref: 'TS29520_Nnwdaf_MLModelProvision.yaml#/components/schemas/MLEventNotif'
-        modelUniqueId:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
 
     MLModelTrainInfo:
-      description: Represents the ML Model training informaiton, include requirement on data availability and time availability, training filter information.
+      description: >
+        Represents the ML Model training information, include requirement on data availability and
+        time availability, training filter information.
       type: object
       properties:
         dataAvReq:
-          type: string
-          description: >
-            String representing the requirement on available data for the ML model training.
+          $ref: '#/components/schemas/DataAvReq'
         timeAvReq:
           type: string
           description: >
@@ -477,7 +469,7 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
     FailureEventInfoForMLModelTrain:
-      description: Represents the failure event informaiton for a ML Model Training subscription.
+      description: Represents the failure event information for a ML Model Training subscription.
       type: object
       properties:
         mLTrainEvent:
@@ -488,20 +480,83 @@ components:
         - mLTrainEvent
         - failureCodeTrain
 
-    TermMLModelTrainInfo:
-      description: Indicating that the subscription is requested to be terminated.
+
+    DataAvReq:
+      description: Represents the requirement on available data for the ML model training.
       type: object
       properties:
-        terminationTrainReq:
+        dataStatProps:
+          type: array
+          items:
+            $ref: 'TS29520_Nnwdaf_EventsSubscription.yaml#/components/schemas/DatasetStatisticalProperty'
+          minItems: 1
+        inpEvents:
+          type: array
+          items:
+            $ref: 'TS29574_Ndccf_DataManagement.yaml#/components/schemas/DccfEvent'
+          minItems: 1
+        minNumSamples:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        timeWindows:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+          minItems: 1
+      required:
+        - inpEvents
+
+    DelayEventNotif:
+      description: >
+        Indicating that the NWDAF containing MTLF is not able to complete the training of ML model
+        within the maximum response time, the cause code, and the expected time complete the
+        training.
+      type: object
+      properties:
+        delayEventInd:
           type: boolean
           description: >
-            Indication that the subscription is requested to be terminated if set to "true", i.e. no
-            further notifications related to this subscription will be provided. Otherwise set to
-            "false". The default value is "true".
-        termTrainCause:
-          $ref: '#/components/schemas/TermTrainCause'
+            Indicates that the NWDAF containing MTLF is not able to complete the training of ML
+            model within the maximum response time. Set to "true" if not able to complete the ML
+            model training on time, otherwise set to "false".
+        delayCause:
+          $ref: '#/components/schemas/DelayCause'
+        expCompTime:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
       required:
-        - terminationTrainReq
+        - delayEventInd
+
+    StatusReportInfo:
+      description: >
+        Indicating status information generated by the NWDAF containing MTLF during ML model
+        training.
+      type: object
+      properties:
+        mlModelAcc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        trainInDataInfo:
+          $ref: '#/components/schemas/TrainDataInfo'
+
+    TrainDataInfo:
+      description: Represents the training input data information.
+      type: object
+      properties:
+        areaDataSet:
+          type: string
+          description: Indicates the areas covered by the data set.
+        maxValues:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Represents the maximum value of one dimension of data.
+        minValues:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Represents the minimum value of one dimension of data.
+        samplRatio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
 
 #
 # ENUMERATIONS DATA TYPES
@@ -516,6 +571,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the failure reason.  
         Possible values are:
           - UNAVAILABLE_ML_MODEL_TRAIN: The ML model training is unavailable.
 
@@ -531,7 +587,26 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the reasons that ML Model Training to be terminated.  
         Possible values are:
           - NWDAF_OVERLOAD: The NWDAF is overloaded for the ML model training.
           - NOT_AVAILABLE_ML_TRAIN: The ML model training process is not available.
+          - OTHERS: Other cause.
+
+    DelayCause:
+      anyOf:
+      - type: string
+        enum:
+          - ML_MODEL_TRAIN_FAILURE
+          - NEED_MORE_TIME
+          - OTHERS
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the reasons for ML Model training delay.  
+        Possible values are:
+          - ML_MODEL_TRAIN_FAILURE: The ML model training is failure.
+          - NEED_MORE_TIME: The ML model training needs more time.
           - OTHERS: Other cause.

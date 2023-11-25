@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: 'UPF Event Exposure Service'
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   description: |
     UPF Event Exposure Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.564 V18.1.0; 5G System; User Plane Function Services; Stage 3.
+  description: 3GPP TS 29.564 V18.2.0; 5G System; User Plane Function Services; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.564/
 
 servers:
@@ -279,7 +279,7 @@ components:
       anyOf:
         - required: [ ueIpv4Addr ]
         - required: [ ueIpv6Prefix ]
-# anyOf construct requires further considerations to cover non-IP PDU sessions and subscription for ANY UE
+        - required: [ ueMacAddr ]
       properties:
         eventType:
           $ref: '#/components/schemas/EventType'
@@ -397,7 +397,7 @@ components:
         trafficFilters:
           type: array
           items:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/FlowInformation'
           minItems: 1        
         granularityOfMeasurement:
           $ref: '#/components/schemas/GranularityOfMeasurement'
@@ -451,6 +451,16 @@ components:
       description: QoS Monitoring Measurement information
       type: object
       properties:
+        flowInfos:
+          type: array
+          items:
+            $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/FlowInformation'
+          minItems: 1
+        appIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
+          minItems: 1
         dlPacketDelay:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
         ulPacketDelay:
@@ -461,6 +471,25 @@ components:
           type: boolean
           enum:
            - true
+        dlMinThroughput:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        dlMaxThroughput:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        dlAveThroughput:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        ulMinThroughput:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        ulMaxThroughput:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        ulAveThroughput:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        dlCongestion:
+          type: string
+        ulCongestion:
+          type: string
+# Editor's note: whether and how to report the minimum, maximum and average DL and/or UL throughput 
+# over the measurement period is FFS.
+# Editor's note: the encoding of the dlCongestion and ulCongestion IEs is FFS
 
     TscManagementInfo:
       description: TSC Management Information
@@ -482,7 +511,7 @@ components:
         appId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
         flowInfo:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/FlowInformation'
         volumeMeasurement:
           $ref: '#/components/schemas/VolumeMeasurement'
         throughputMeasurement:
@@ -565,6 +594,8 @@ components:
       properties:
         domainName:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+        domainNameProtocol:
+          $ref: '#/components/schemas/DnProtocol'
       required:
         - domainName
 
@@ -588,11 +619,9 @@ components:
         - type: string
           enum:
           - ONE_TIME
-          - CONTINUOUS
           - PERIODIC
         - type: string
 
-# The need for the CONTINUOUS value is FFS
 
     MeasurementType:
       description: Measurement Type
@@ -613,5 +642,17 @@ components:
           - PER_SESSION
           - PER_FLOW
         - type: string
+
+    DnProtocol:
+      description: Domain Name Protocol
+      anyOf:
+        - type: string
+          enum:
+          - DNS_QNAME
+          - TLS_SNI
+          - TLS_SAN
+          - TLS_SCN
+        - type: string
+
 
 # SIMPLE TYPES

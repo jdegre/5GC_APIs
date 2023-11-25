@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 1.2.0-alpha.2
+  version: 1.2.0-alpha.3
   title: SS_NetworkResourceAdaptation
   description: |
     SS Network Resource Adaptation Service.  
@@ -9,7 +9,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.549 V18.2.0; Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V18.3.0; Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 
@@ -394,6 +394,116 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/403'
         '404':
           $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+  /mbs-resources/{mbsResId}/activate:
+    parameters:
+      - name: mbsResId
+        in: path
+        description: Represents the identifier of the Individual MBS Resource resource.
+        required: true
+        schema:
+          type: string
+
+    post:
+      summary: Request the activation of an existing MBS Resource.
+      operationId: ActivateMBSResource
+      tags:
+        - Individual MBS Resource (Document)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MbsResAct'
+      responses:
+        '200':
+          description: >
+            OK. The activation request is successfully received and processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MbsResAct'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+  /mbs-resources/{mbsResId}/deactivate:
+    parameters:
+      - name: mbsResId
+        in: path
+        description: Represents the identifier of the Individual MBS Resource resource.
+        required: true
+        schema:
+          type: string
+
+    post:
+      summary: Request the deactivation of an existing MBS Resource.
+      operationId: DeactivateMBSResource
+      tags:
+        - Individual MBS Resource (Document)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MbsResDeact'
+      responses:
+        '200':
+          description: >
+            OK. The deactivation request is successfully received and processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MbsResDeact'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
         '429':
           $ref: 'TS29122_CommonData.yaml#/components/responses/429'
         '500':
@@ -1089,6 +1199,28 @@ components:
         - required: [localMbmsInfo]
       not:
         required: [localMbmsInfo, localMbmsActInd]
+
+    MbsResAct:
+      description: Represents the parameters related to the activation of the MBS Resource.
+      type: object
+      properties:
+        mbs5gSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbs5gSessionId
+
+    MbsResDeact:
+      description: Represents the parameters related to the deactivation of the MBS Resource.
+      type: object
+      properties:
+        mbs5gSessionId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - mbs5gSessionId
 
 
 # Simple data types and Enumerations

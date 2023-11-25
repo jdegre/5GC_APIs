@@ -6,11 +6,11 @@ info:
     API for EAS Discovery.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.1.0-alpha.2"
+  version: "1.1.0-alpha.3"
 
 externalDocs:
   description: >
-    3GPP TS 24.558 V18.1.0 Enabling Edge Applications; Protocol specification.
+    3GPP TS 24.558 V18.2.0 Enabling Edge Applications; Protocol specification.
   url: https://www.3gpp.org/ftp/Specs/archive/24_series/24.558/
 
 security:
@@ -367,6 +367,8 @@ components:
             the current request. The default value false indicates the EAS instantiation triggering
             should not be performed. The true value indicate the EAS instantiation triggering should
             be performed.
+        predictExpTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
       required:
         - requestorId
 
@@ -387,6 +389,15 @@ components:
           description: >
             Contains the EAS instantiation information for each discovered EAS returned within
             the discoveredEas attribute.
+        edgeLoadAnalytics:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EdgeLoadAnalytic'
+          minProperties: 1
+          description: >
+            Contains the statistical analytics data and predictive analytics data for each
+            discovered application server. The key of the map shall be the EAS ID to which
+            the provided analytics data within the map value relates.
       required:
         - discoveredEas
 
@@ -432,9 +443,15 @@ components:
             the current request. The default value false indicates the EAS instantiation triggering
             should not be performed. The true value indicate the EAS instantiation triggering should
             be performed.
+        eecTriggerRequest:
+          type: boolean
+          description: >
+            Indicates to the EES whether the application triggering is required by the EEC.
+            Default value false indicates the application triggering is not required.
       required:
         - eecId
         - easEventType
+
     EasDiscoveryNotification:
       description: Notification of EAS discovery information.
       type: object
@@ -460,6 +477,15 @@ components:
           description: >
             Contains the EAS instantiation information for each discovered EAS returned within
             the "discoveredEas" attribute.
+        edgeLoadAnalytics:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EdgeLoadAnalytic'
+          minProperties: 1
+          description: >
+            Contains the statistical analytics data and predictive analytics data for each
+            discovered application server. The key of the map shall be the EAS ID to which
+            the provided analytics data within the map value relates.
       required:
         - subId
         - eventType
@@ -489,6 +515,16 @@ components:
         easId:
           type: string
           description: EAS application identifier.
+        appGrpId:
+          type: string
+          description: >
+            Application group identifier, identifying a group of UEs using the same
+            application service.
+        easSyncInd:
+          type: boolean
+          description: >
+            Indicates whether the synchronization between the EASs is required. The
+            default value false indicates the EAS synchronization is not required.
         easProvId:
           type: string
           description: EAS provider identifier.
@@ -530,6 +566,7 @@ components:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
       required:
         - eas
+
     EasDynamicInfoFilter:
       description: Represents EAS dynamic information changes filter.
       type: object
@@ -542,6 +579,7 @@ components:
           description: List of EAS dynamic information required by the EEC per EAS.
       required:
         - dynInfoFilter
+
     EasDynamicInfoFilterData:
       description: Represents an EAS dynamic information.
       type: object
@@ -561,6 +599,8 @@ components:
         easPt:
           type: boolean
           description: Notify if EAS endpoint changed.
+        easEndPoint:
+          $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EndPoint'
         easFeature:
           type: boolean
           description: Notify if EAS feature changed.
@@ -641,3 +681,43 @@ components:
         - required: [eesId]
         - required: [easId]
         - required: [eecId]
+
+    EdgeLoadAnalytic:
+      description: >
+        Contains the statistical analytics data and predictive analytics data for each
+        discovered application server.
+      type: object
+      properties:
+        easId:
+          type: string
+          description: The application identifier of the EAS, e.g. FQDN, URI.
+        predictData:
+          $ref: '#/components/schemas/PredictiveData'
+        statisticData:
+          $ref: '#/components/schemas/StatisticalData'
+      required:
+        - easId
+
+    PredictiveData:
+      description: >
+        Contains the predictive analytics data for each discovered EAS service status
+         (e.g. EAS schedule, EAS status) change.
+      type: object
+      properties:
+        scheds:
+          type: array
+          items:
+            $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+          minItems: 1
+        status:
+          type: string
+          description: Indicates the EAS status (e.g. Enabled, Disabled etc.).
+
+    StatisticalData:
+      description: >
+        Contains the statistical analytics data (e.g. number of times the client received
+        expected performance from the EAS).
+      type: object
+      properties:
+        numRecPerf:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'

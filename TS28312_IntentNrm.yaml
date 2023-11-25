@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Intent NRM
-  version: 18.0.0
+  version: 18.1.0
   description: >-
     OAS 3.0.1 definition of the Intent NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -27,8 +27,8 @@ components:
         properties:
           SubNetwork:
             $ref: '#/components/schemas/SubNetwork-Multiple'
-          Intent:
-            $ref: '#/components/schemas/Intent-Multiple'
+          IntentHandlingFunction:
+            $ref: '#/components/schemas/IntentHandlingFunction-Multiple'
 
     Intent-Single:
       allOf:
@@ -44,13 +44,56 @@ components:
               oneOf:
                 - $ref: "#/components/schemas/IntentExpectation"
                 - $ref: "TS28312_IntentExpectations.yaml#/components/schemas/RadioNetworkExpectation"
-                - $ref: "TS28312_IntentExpectations.yaml#/components/schemas/ServiceSupportExpectation"                
+                - $ref: "TS28312_IntentExpectations.yaml#/components/schemas/EdgeServiceSupportExpectation"                
           intentContexts:
             type: array
             items:
-              $ref: "#/components/schemas/IntentContext"
-          intentFulfilmentInfo:
-            $ref: "#/components/schemas/FulfilmentInfo"
+              $ref: '#/components/schemas/IntentContext'
+          intentAdminState:
+            type: string
+            enum:
+              - ACTIVATED
+              - DEACTIVATED
+          intentPriority:
+            type: integer  
+          observationPeriod:
+            type: integer
+          intentReportReference:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'  
+    IntentReport-Single:
+      allOf:
+      - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'    
+      - type: object
+        properties:
+          intentFulfilmentReport:
+            type: array
+            items:
+              $ref: '#/components/schemas/IntentFulfilmentReport'
+          intentConflictReports:
+            type: array
+            items:
+              $ref: '#/components/schemas/IntentConflictReport'
+          intentFeasibilityCheckReport:
+            type: array
+            items:
+              $ref: '#/components/schemas/IntentFeasibilityCheckReport'            
+          intentReference:
+            $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+    IntentHandlingFunction-Single:
+      allOf:
+      - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+      - type: object
+        properties:
+          intentHandlingCapabilityList:
+            type: array
+            items:
+              $ref: '#/components/schemas/IntentHandlingCapability'
+          Intent:
+            $ref: '#/components/schemas/Intent-Multiple'
+          IntentReport:  
+            $ref: '#/components/schemas/IntentReport-Multiple'
+
    #-------Definition of generic IOCs ----------#  
 
    #-------Definition of the generic IntentExpectation dataType ----------#    
@@ -63,20 +106,16 @@ components:
           type: string
         expectationVerb:
            $ref: "#/components/schemas/ExpectationVerb"
-        expectationObjects:
-          type: array
-          items:
-            $ref: "#/components/schemas/ExpectationObject"
+        expectationObject:
+          $ref: "#/components/schemas/ExpectationObject"
         expectationTargets:
           type: array
           items:
-            $ref: "#/components/schemas/ExpectationTarget"
+            $ref: '#/components/schemas/ExpectationTarget'
         expectationContexts:
           type: array
           items:
-            $ref: "#/components/schemas/ExpectationContext"
-        expectationfulfilmentInfo:
-            $ref: "#/components/schemas/FulfilmentInfo" 
+            $ref: '#/components/schemas/ExpectationContext'
       required:
         - expectationId
    #-------Definition of the generic IntentExpectation dataType ----------#    
@@ -91,14 +130,13 @@ components:
           type: string
           enum:
             - RAN_SubNetwork  #value for Radio Network Expectation--#
-            - Service_Support  #value for Service Support Expectation--#
-            - TBD    #-This will be added based on defined scenario specfic intent expectation-#
+            - Edge_Service_Support  #value for Edge Service Support Expectation--#
         objectInstance:
-          $ref: "TS28623_ComDefs.yaml#/components/schemas/Dn"
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
         objectContexts:
           type: array
           items:
-            $ref: "#/components/schemas/ObjectContext"           
+            $ref: '#/components/schemas/ObjectContext'           
 
    #-------Definition of the generic ExpectationObject dataType ----------#    
 
@@ -136,7 +174,7 @@ components:
       type: object
       properties:
         fulfilStatus:
-          $ref: "#/components/schemas/FulfilStatus"
+          $ref: '#/components/schemas/FulfilStatus'
         notFullfilledState:
           description: ->
             An attribute which is used when FulfilmentInfo is implemented for IntentFulfilmentInfo
@@ -151,6 +189,17 @@ components:
       enum:
           - DELIVER
           - ENSURE
+    ValueRangeType:
+      oneOf:
+        - type: number
+        - type: string
+        - type: boolean
+        - type: integer
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/TimeWindow'
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/GeoArea'
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
+        - $ref: 'TS28623_ComDefs.yaml#/components/schemas/GeoCoordinate'
    #-------Definition of the generic dataType --------------#    
 
    #-------Definition of the generic IntentContext dataType --------------#    
@@ -162,11 +211,13 @@ components:
         contextAttribute:
           type: string
         contextCondition:
-          $ref: "#/components/schemas/Condition"
+          $ref: '#/components/schemas/Condition'
         contextValueRange:
-          type: array
-          items:
-            type: number 
+            oneOf:
+              - type: array
+                items:
+                  $ref: "#/components/schemas/ValueRangeType"
+              - $ref: "#/components/schemas/ValueRangeType"
    #-------Definition of the generic IntentContext dataType --------------#   
    
    #-------Definition of the generic ExpectationTarget dataType----------#     
@@ -178,13 +229,17 @@ components:
         targetName:
           type: string
         targetCondition:
-          $ref: "#/components/schemas/Condition"
+          $ref: '#/components/schemas/Condition'
         targetValueRange:
-          type: number
+            oneOf:
+              - type: array
+                items:
+                  $ref: "#/components/schemas/ValueRangeType"
+              - $ref: "#/components/schemas/ValueRangeType"
         targetContexts:
           type: array
           items:
-            $ref: "#/components/schemas/TargetContext"
+            $ref: '#/components/schemas/TargetContext'
     TargetContext:
       description: >-
         This data type is the "TargetContext" data type without specialisations
@@ -193,9 +248,13 @@ components:
         contextAttribute:
           type: string
         contextCondition:
-          $ref: "#/components/schemas/Condition"
+          $ref: '#/components/schemas/Condition'
         contextValueRange:
-          type: number        
+            oneOf:
+              - type: array
+                items:
+                  $ref: "#/components/schemas/ValueRangeType"
+              - $ref: "#/components/schemas/ValueRangeType"      
    #-------Definition of the generic ExpectationTarget  dataType----------#  
    
    #-------Definition of the generic ObjectContext dataType----------------#
@@ -207,11 +266,13 @@ components:
         contextAttribute:
           type: string
         contextCondition:
-          $ref: "#/components/schemas/Condition"
+          $ref: '#/components/schemas/Condition'
         contextValueRange:
-          type: array
-          items:
-            type: number 
+            oneOf:
+              - type: array
+                items:
+                  $ref: "#/components/schemas/ValueRangeType"
+              - $ref: "#/components/schemas/ValueRangeType" 
    #-------Definition of the generic ObjectContext dataType----------------#
 
    #-------Definition of the generic ExpectionContext dataType----------------#
@@ -223,13 +284,108 @@ components:
         contextAttribute:
           type: string
         contextCondition:
-          $ref: "#/components/schemas/Condition"
+          $ref: '#/components/schemas/Condition'
         contextValueRange:
+            oneOf:
+              - type: array
+                items:
+                  $ref: "#/components/schemas/ValueRangeType"
+              - $ref: "#/components/schemas/ValueRangeType" 
+   #-------Definition of the concrete ExpectionContext dataType----------------#
+   #-------Definition of the generic IntentFulfilmentReport dataType----------------#
+    IntentFulfilmentReport:
+      description: >-
+        This data type is the "IntentFulfilmentReport" data type without specialisations       
+      type: object
+      properties:
+        intentFulfilmentInfo:
+          $ref: '#/components/schemas/FulfilmentInfo'
+        expectationFulfilmentResult:
+          type: array
+          items: 
+            $ref: '#/components/schemas/ExpectationFulfilmentResult'
+   #-------Definition of the concrete IntentFulfilmentReport dataType----------------#
+
+   #-------Definition of the generic ExpectationFulfilmentResult dataType----------------#
+    ExpectationFulfilmentResult:
+      description: >-
+        This data type is the "ExpectationFulfilmentResult" data type without specialisations       
+      type: object
+      properties:
+        expectaitonId:
+          type: string
+        expectationFulfilmentInfo:
+          $ref: '#/components/schemas/FulfilmentInfo'
+        targetFulfilmentResult:
+          type: array
+          items: 
+            $ref: '#/components/schemas/TargetFulfilmentResult'
+   #-------Definition of the concrete ExpectationFulfilmentResult dataType----------------#
+
+   #-------Definition of the generic TargetFulfilmentResult dataType----------------#
+    TargetFulfilmentResult:
+      description: >-
+        This data type is the "TargetFulfilmentResult" data type without specialisations       
+      type: object
+      properties:
+        targetName:
+          type: string
+        targetFulfilmentInfo:
+          $ref: '#/components/schemas/FulfilmentInfo'
+        targetAchievedValue:
+          type: number
+   #-------Definition of the concrete TargetFulfilmentResult dataType----------------#
+
+   #-------Definition of the generic IntentConflictReport dataType----------------#
+    IntentConflictReport:
+      description: >-
+        This data type is the "IntentConflictReport" data type without specialisations       
+      type: object
+      properties:
+        conflictType:
+          type: string
+          enum:
+              - INTENT_CONFLICT
+              - EXPECTATION_CONFLICT
+              - TARGET_CONFLICT
+        conflictField:
+          type: string
+   #-------Definition of the concrete IntentConflictReport dataType----------------#
+
+   #-------Definition of the generic IntentFeasibilityCheckReport dataType----------------#
+    IntentFeasibilityCheckReport:
+      description: >-
+        This data type is the "IntentFeasibilityCheckReport" data type without specialisations       
+      type: object
+      properties:
+        feasibilityCheckResult:
+          type: string
+          enum:
+              - FEASIBLE
+              - INFEASIBLE
+        infeasibilityReason:
+          description: ->
+            An attribute which is used when feasibilityCheckResult is INFEASIBLE
+          type: string
+   #-------Definition of the concrete IntentFeasibilityCheckReport dataType----------------#
+
+   #-------Definition of the generic IntentHandlingCapability dataType----------------#
+    IntentHandlingCapability:   
+      type: object
+      properties:
+        intentHandlingCapabilityId:
+          type: string
+        supportedExpectationObjectType:
+          type: string
+          enum: 
+            - RAN_SUBNETWORK
+            - EDGE_SERVICE_SUPPORT
+        supportedExpectationTargetType:
           type: array
           items:
-            type: number 
-   #-------Definition of the concrete ExpectionContext dataType----------------#
-   
+            $ref: "#/components/schemas/ExpectationTarget"
+   #-------Definition of the concrete IntentHandlingCapability dataType----------------#
+
    #------Definition of JSON arrays for name-contained IOCs ---------------#
 
     SubNetwork-Multiple:
@@ -240,7 +396,19 @@ components:
     Intent-Multiple:
       type: array
       items:
-        $ref: '#/components/schemas/Intent-Single'              
+        $ref: '#/components/schemas/Intent-Single'    
+
+    IntentReport-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/IntentReport-Single'
+   
+    IntentHandlingFunction-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/IntentHandlingFunction-Single'
+
+
    #------Definition of JSON arrays for name-contained IOCs ---------------#
    
    #----- Definitions in TS 28.312 for TS 28.532 --------------------------#

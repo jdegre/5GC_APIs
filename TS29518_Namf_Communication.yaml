@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.3
+  version: 1.3.0-alpha.4
   title: Namf_Communication
   description: |
     AMF Communication Service.  
@@ -14,7 +14,7 @@ security:
       - namf-comm
 
 externalDocs:
-  description: 3GPP TS 29.518 V18.2.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V18.3.0; 5G System; Access and Mobility Management Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 
 servers:
@@ -2509,6 +2509,10 @@ components:
           $ref: '#/components/schemas/ProSeInformation'
         tssInfo:
           $ref: '#/components/schemas/TssInformation'
+        rsppInfo:
+          $ref: '#/components/schemas/RsppInformation'
+        a2xInfo:
+          $ref: '#/components/schemas/A2xInformation'
       required:
         - n2InformationClass
     N1MessageNotification:
@@ -2670,6 +2674,9 @@ components:
         selectedPlmnId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         iabNodeInd:
+          type: boolean
+          default: false
+        mbsrNodeInd:
           type: boolean
           default: false
         ceModeBInd:
@@ -2972,6 +2979,12 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/WirelineServiceAreaRestriction'
         asTimeDisParam:
           $ref: 'TS29507_Npcf_AMPolicyControl.yaml#/components/schemas/AsTimeDistributionParam'
+        amPolicyInfoContainer:
+          $ref: '#/components/schemas/AmPolicyInfoContainer'
+        a2xContext:
+          $ref: '#/components/schemas/A2xContext'
+        mbsrOperationAllowed:
+          $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/MbsrOperationAllowed'
 
 
     N2SmInformation:
@@ -3278,6 +3291,8 @@ components:
         anchorSmfSupportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         anchorSmfOauth2Required:
+          type: boolean
+        hrsboAllowedInd:
           type: boolean
       required:
         - pduSessionId
@@ -3761,6 +3776,11 @@ components:
             presenceInfoList IE) of the AmfEvent data type shall be the key of the map.
           additionalProperties:
             $ref: '#/components/schemas/AreaOfInterestEventState'
+        accessToken:
+          type: string
+          description: >
+            JWS Compact Serialized representation of JWS signed JSON object (AccessTokenClaims 
+            defined in 3GPP TS 29.510)
 
     UeDifferentiationInfo:
       description: Represents the UE Differentiation Information and its validity time
@@ -3832,6 +3852,8 @@ components:
         l2End:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UeAuth'
         l3End:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UeAuth'
+        multiPathComm:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UeAuth'
         nrUePc5Ambr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
@@ -3922,6 +3944,46 @@ components:
       required:
         - tssContainer
 
+    RsppInformation:
+      description: Represents Ranging/SL positioning related N2 information.
+      type: object
+      properties:
+        n2Pc5RsppPol:
+          $ref: '#/components/schemas/N2InfoContent'
+
+    A2xContext:
+      description: Represents the A2X services related parameters
+      type: object
+      properties:
+        nrA2xServicesAuth:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NrA2xAuth'
+        lteA2xServicesAuth:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/LteA2xAuth'
+        nrUeSidelinkAmbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        lteUeSidelinkAmbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        pc5QoSPara:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Pc5QoSPara'
+
+    A2xInformation:
+      description: A2X related N2 information
+      type: object
+      properties:
+        n2Pc5Pol:
+          $ref: '#/components/schemas/N2InfoContent'
+
+    AmPolicyInfoContainer:
+      description: AM Policy Information Container
+      type: object
+      properties:
+        sliceUsgCtrlInfoSets:
+          type: object
+          description: A map(list of key-value pairs) where Snssai serves as key.
+          additionalProperties:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceUsageControlInfo'
+          minProperties: 1
+
 #
 # SIMPLE DATA TYPES
 #
@@ -3978,6 +4040,8 @@ components:
           - V2X
           - PROSE
           - TSS
+          - RSPP
+          - A2X
       - type: string
     N1MessageClass:
       description: Enumeration for N1 Message Class

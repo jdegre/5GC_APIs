@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nnsacf_NSAC
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   description: |
     Nnsacf_NSAC Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.536 V18.2.0; 5G System; Network Slice Admission Control Services; Stage 3.
+  description: 3GPP TS 29.536 V18.3.0; 5G System; Network Slice Admission Control Services; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.536/
 
 servers:
@@ -178,7 +178,7 @@ paths:
     post:
       summary: >
         Network Slice Admission Control update of the local maximum number of registered UEs and/or 
-        number of PDU sessions of the network slice at NSACF.
+        PDU sessions of the network slice at NSACF.
       operationId: LocalNumberUpdate
       tags:
         - slice collection
@@ -219,6 +219,56 @@ paths:
         '504':
           $ref: 'TS29571_CommonData.yaml#/components/responses/504'
 
+  /slices/roaming-quotas/query:
+    post:
+      summary: >
+        Network Slice Admission Control fetching of the maximum number of registered UEs and/or
+        number of PDU sessions of the network slice at NSACF.
+      operationId: QuotaUpdate
+      tags:
+        - slice collection
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nnsacf-nsac
+        - oAuth2ClientCredentials:
+          - nnsacf-nsac
+          - nnsacf-nsac:roaming-quotas-query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuotaUpdateRequestData'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuotaUpdateResponseData'
+        '307':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        '504':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/504'
+
+
 components:
 
   securitySchemes:
@@ -236,8 +286,8 @@ components:
               Access to service operations applying to the collection of slice subject to NSAC for
               PDU sessions
             nnsacf-nsac:ac-info-update: >
-              Access to the NSAC update of the local maximum number of registered UEs and/or number
-              of PDU sessions of the network slice at NSACF
+              Access to the NSAC update of the local maximum number of registered UEs and/or 
+              PDU sessions of the network slice at NSACF
 
   schemas:
 
@@ -320,6 +370,10 @@ components:
           type: boolean
           enum:
            - true
+        servingPlmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        nsacMode:
+          $ref: '#/components/schemas/NsacAdmissionMode'
       required:
         - updateFlag
         - snssai
@@ -416,9 +470,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         maxNumUes:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        ueAdmissionThreshold:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - snssai
-        - maxNumUes
 
     PduAdmissionValue:
       type: object
@@ -432,6 +487,33 @@ components:
         - maxNumPdus
 
     ACUpdateData:
+      type: object
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        maxUesNumber:
+          type: integer
+        maxPdusNumber:
+          type: integer
+      required:
+        - snssai
+
+    QuotaUpdateRequestData:
+      type: object
+      properties:
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
+        quotaType:
+          items:
+            $ref: '#/components/schemas/SliceQuotaType'
+      required:
+        - snssai
+        - plmnId
+        - quotaType
+
+    QuotaUpdateResponseData:
       type: object
       properties:
         snssai:
@@ -512,3 +594,37 @@ components:
         - EXCEED_MAX_PDU_NUM
         - EXCEED_MAX_PDU_NUM_3GPP
         - EXCEED_MAX_PDU_NUM_N3GPP
+
+    SliceQuotaType:
+      anyOf:
+      - type: string
+        enum:
+          - MAX_UE_NUM
+          - MAX_PDU_NUM
+          - BOTH
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: >
+        Slice quota type. Possible values are
+        - MAX_UE_NUM
+        - MAX_PDU_NUM
+        - BOTH
+
+    NsacAdmissionMode:
+      description: >
+        Indicates the NSAC admission mode applied in roaming case.
+      anyOf:
+        - type: string
+          enum:
+          - VPLMN_ADMISSION
+          - VPLMN_WITH_HPLMN_ASSISTANCE
+        - type: string
+          description: >
+            This string provides forward-compatibility with future
+            extensions to the enumeration but is not used to encode
+            content defined in the present version of this API.
+            - VPLMN_ADMISSION
+            - VPLMN_WITH_HPLMN_ASSISTANCE

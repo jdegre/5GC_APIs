@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: nmbsf-mbs-ud-ingest
-  version: 1.1.0-alpha.3
+  version: 1.1.0-alpha.4
   description: |
     API for MBS User Data Ingest Session Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.580 V18.2.0; 5G System; Multicast/Broadcast Service Function Services.
+    3GPP TS 29.580 V18.3.0; 5G System; Multicast/Broadcast Service Function Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.580/'
 
 servers:
@@ -688,8 +688,8 @@ components:
           nullable: true
           description: >
             Represents one or more MBS Distribution Session(s) composing the MBS User Data Ingest 
-            Session. The key of the map shall be set to the value ofthe "mbsDistSessionId" attribute 
-            of the MBSDistributionSessionInfo data structure encoding the corresponding map entry.
+            Session.
+            The key of the map shall be any unique string encoded value.
         actPeriods:
           type: array
           items:
@@ -788,6 +788,7 @@ components:
           description: >
             Contains the requested modifications to one or more MBS Distribution Session(s) 
             composing the MBS User Data Ingest Session.
+            The key of the map shall be any unique string encoded value.
         actPeriods:
           type: array
           items:
@@ -808,7 +809,7 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-          minItems: 1
+          minItems: 0
         objIngUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         objDistrUri:
@@ -1055,6 +1056,11 @@ components:
           - DATA_INGEST_FAILURE
           - DELIVERY_STARTED
           - SESSION_TERMINATED
+          - DIST_SESS_ACTIVATED
+          - DIST_SESS_DEACTIVATED
+          - DIST_SESS_EST_FAILURE
+          - DIST_SESS_ESTABLISHED
+          - USER_SER_AD
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration
@@ -1095,3 +1101,16 @@ components:
             The MBS User Data delivery is started.
         - SESSION_TERMINATED: >
             The MBS User Data Ingest Session is terminated.
+        - DIST_SESS_ACTIVATED:
+            Indicates that the MBS Distribution Session is activated successfully.
+        - DIST_SESS_DEACTIVATED:
+            Indicates that the MBS Distribution Session is deactivated.
+        - DIST_SESS_EST_FAILURE:
+            Indicates that the MBSF failed to successfully establish the MBS Distribution Session at
+            the MBSTF. This is an "MBS Distribution Session" level event.
+        - DIST_SESS_ESTABLISHED:
+            Indicates that the MBS Distribution Session established.
+            This is an "MBS Distribution Session" level event.
+        - USER_SER_AD:
+            Indicates that the MBSF advertises the User Service Announcement information to the MBS
+            Application Provider.

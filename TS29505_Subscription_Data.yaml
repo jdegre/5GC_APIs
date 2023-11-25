@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.505 V18.2.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
+  description: 3GPP TS 29.505 V18.3.0; 5G System; Usage of the Unified Data Repository Service for subscription data; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.505/'
 
 paths:
@@ -2051,6 +2051,47 @@ paths:
           $ref: 'TS29571_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+      callbacks:
+        staleCheckNotification:
+          '{request.body#/udmStaleCheckCallbackUri}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: 'TS29503_Nudm_UECM.yaml#/components/schemas/SmfRegistrationInfo'
+              responses:
+                '204':
+                  description: Successful Notification response
+                '307':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+                '502':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+                '503':
+                  $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+                default:
+                  description: Unexpected error
 
     delete:
       summary: To remove an individual SMF context data of a UE the UDR
@@ -10088,6 +10129,82 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /subscription-data/{ueId}/a2x-data:
+    get:
+      summary: Retrieves the subscribed A2X Data of a UE
+      operationId: QueryA2xData
+      tags:
+        - A2X Subscription Data
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:subscription-data
+      parameters:
+        - name: ueId
+          in: path
+          description: UE id
+          required: true
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VarUeId'
+        - name: supported-features
+          in: query
+          description: Supported Features
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        - name: If-None-Match
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.2
+          schema:
+            type: string
+        - name: If-Modified-Since
+          in: header
+          description: Validator for conditional requests, as described in RFC 7232, 3.3
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/A2xSubscriptionData'
+          headers:
+            Cache-Control:
+              description: Cache-Control containing max-age, as described in RFC 7234, 5.2
+              schema:
+                type: string
+            ETag:
+              description: Entity Tag, containing a strong validator, as described in RFC 7232, 2.3
+              schema:
+                type: string
+            Last-Modified:
+              description: Timestamp for last modification of the resource, as described in RFC 7232, 2.2
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
 components:
   schemas:
     AuthenticationSubscription:
@@ -10204,6 +10321,7 @@ components:
         - USER_CONSENT
         - MBS
         - PP_DATA
+        - A2X
       - type: string
 
     UeSubscribedDatasetNames:
@@ -10266,6 +10384,8 @@ components:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/MbsSubscriptionData'
         ppData:
           $ref: '#/components/schemas/PpData'
+        a2xData:
+          $ref: '#/components/schemas/A2xSubscriptionData'
 
     AccessAndMobilitySubscriptionData:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/AccessAndMobilitySubscriptionData'
@@ -10297,6 +10417,9 @@ components:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/LcsMoData'
     LcsSubscriptionData:
       $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/LcsSubscriptionData'
+    A2xSubscriptionData:
+      $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/A2xSubscriptionData'
+
     AuthorizationData:
       description: NIDD Authorization Information
       required:

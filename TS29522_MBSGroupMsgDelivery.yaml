@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-mbs-group-msg
-  version: 1.0.0-alpha.2
+  version: 1.0.0-alpha.3
   description: |
     API for MBS Group Message Delivery.
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.522 V18.2.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V18.3.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
 security:
@@ -30,7 +30,7 @@ paths:
       summary: Retrieve all the active MBS Group Message Deliveries.
       operationId: GetMbsGroupMsgDeliveries
       tags:
-        - MBS Group Message Deliveries
+        - MBS Group Message Deliveries (Collection)
       responses:
         '200':
           description: >
@@ -68,7 +68,7 @@ paths:
       summary: Request the creation of an MBS Group Message Delivery.
       operationId: CreateMbsGroupMsgDelivery
       tags:
-        - MBS Group Message Deliveries
+        - MBS Group Message Deliveries (Collection)
       requestBody:
         required: true
         content:
@@ -78,15 +78,18 @@ paths:
       responses:
         '201':
           description: >
-            Created. Successful case. An MBS Group Message Delivery is created.
+            Created. Successful case. The requested MBS Group Message Delivery is successfully
+            created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MbsGroupMsgDelResp'
-        '307':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
-        '308':
-          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+          headers:
+            Location:
+              description: Contains the URI of the newly created resource.
+              required: true
+              schema:
+                type: string
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -115,7 +118,7 @@ paths:
             post:
               requestBody:
                 description: >
-                  Represents the status of MBS Group Message Delivery.
+                  Represents the notification on the status of MBS Group Message Delivery.
                 required: true
                 content:
                   application/json:
@@ -123,7 +126,9 @@ paths:
                       $ref: '#/components/schemas/MbsGroupMsgDelStatusNotif'
               responses:
                 '204':
-                  description: No content. The notification is successfully received.
+                  description: >
+                    No content. The MBS Group Message Delivery Status notification is successfully
+                    received.
                 '307':
                   $ref: 'TS29122_CommonData.yaml#/components/responses/307'
                 '308':
@@ -157,16 +162,52 @@ paths:
       - name: delRef
         in: path
         description: >
-          Identifier of the Individual MBS Group Message Delivery resource.
+          Contains the identifier of the Individual MBS Group Message Delivery resource.
         required: true
         schema:
           type: string
 
-    put:
+    get:
+      summary: Retrieve an existing MBS Group Message Delivery.
+      operationId: GetMbsGroupMsgDelivery
+      tags:
+        - Individual MBS Group Message Delivery (Document)
+      responses:
+        '200':
+          description: >
+            OK. All the requested MBS Group Message Delivery is successfully returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MbsGroupMsgDelData'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+    patch:
       summary: Request the modification of an existing MBS Group Message Delivery.
       operationId: ModifyMbsGroupMsgDelivery
       tags:
-        - Individual MBS Group Message Delivery
+        - Individual MBS Group Message Delivery (Document)
       requestBody:
         required: true
         content:
@@ -176,13 +217,16 @@ paths:
       responses:
         '200':
           description: >
-            OK. Successful case. The MBS Group Message Delivery is modified.
+            OK. Successful case. The MBS Group Message Delivery is successfully modified and a
+            representation of the updated resource is returned in the response body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MbsGroupMsgDelResp'
         '204':
-          description: No Content. Successful case, the requested group message delivery is      successfully updated.
+          description: >
+            No Content. Successful case. The MBS Group Message Delivery is
+            successfully modified and no content is returned in the response body.
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -211,10 +255,10 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
     delete:
-      summary: Deletes an existing Individual MBS Group Message Delivery resource.
+      summary: Request the deletion of an existing Individual MBS Group Message Delivery resource.
       operationId: DeleteMbsGroupMsgDelivery
       tags:
-        - Individual MBS Group Message Delivery
+        - Individual MBS Group Message Delivery (Document)
       responses:
         '204':
           description: >
@@ -285,19 +329,22 @@ components:
         - externalGroupId
         - startTime
         - stopTime
+        - notifUri
       oneOf:
         - required: [mbsServArea]
         - required: [extMbsServArea]
 
     MbsGroupMsgDelResp:
       description: >
-        Represents a response to a requested group message delivery.
+        Represents a response to a requested MBS group message delivery.
       type: object
       properties:
         mbsGroupMsgDelData:
           $ref: '#/components/schemas/MbsGroupMsgDelData'
         delStatus:
           type: boolean
+        mbsUserServiceAnmt:
+          $ref: 'TS26517_MBSUserServiceAnnouncement.yaml#/components/schemas/UserServiceDescription'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -308,8 +355,6 @@ components:
       description: Represents the requested modifications to an existing MBS Group Message Delivery.
       type: object
       properties:
-        externalGroupId:
-          $ref: 'TS29122_CommonData.yaml#/components/schemas/ExternalGroupId'
         mbsServArea:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsServiceArea'
         extMbsServArea:
@@ -324,7 +369,7 @@ components:
         required: [mbsServArea, extMbsServArea]
 
     MbsGroupMsgDelStatusNotif:
-      description: Represents status notification information for an MBS group message delivery.
+      description: Represents the status notification information for an MBS group message delivery.
       type: object
       properties:
         delStatus:

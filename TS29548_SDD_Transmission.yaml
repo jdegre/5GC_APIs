@@ -1,0 +1,184 @@
+openapi: 3.0.0
+
+info:
+  title: SEALDD Data Transmission Service
+  version: 1.0.0-alpha.1
+  description: |
+    SEALDD Server Data Transmission Service.  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+
+externalDocs:
+  description: >
+    3GPP TS 29.548 V0.3.0; Service Enabler Architecture Layer for Verticals (SEAL);
+    SEAL Data Delivery (SEALDD) Server Services; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.548/
+
+servers:
+  - url: '{apiRoot}/sdd-trans/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 5.2.4 of 3GPP TS 29.122
+
+security:
+  - {}
+  - oAuth2ClientCredentials: []
+
+paths:
+  /{transType}/request-trans:
+    parameters:
+      - name: transType
+        in: path
+        description: >
+          Represents the requested transmission type (i.e., regular or URLLC).
+        required: true
+        schema:
+          $ref: '#/components/schemas/TransType'
+
+    post:
+      summary: Request SEALDD enabled regular or URLLC Data Transmission.
+      operationId: RequestTrans
+      tags:
+        - Request SEALDD Data Transmission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransReq'
+      responses:
+        '200':
+          description: >
+            OK. The SEALDD enabled regular or URLLC application data transmission service request
+            was successfully received and processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransResp'
+        '307':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+        '308':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+        '400':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{tokenUrl}'
+          scopes: {}
+
+  schemas:
+    TransReq:
+      description: >
+        Represents the parameters to request the SEALDD enabled regular or URLLC application data
+        transmission service.
+      type: object
+      properties:
+        valServerId:
+          type: string
+        valServiceId:
+          type: string
+        valTargetUeId:
+          $ref: 'TS29548_SDD_TransmissionQualityMeasurement.yaml#/components/schemas/ValTargetUeId'
+        valServerConnInfo:
+          $ref: '#/components/schemas/ConnInfo'
+        valServerBdw:
+          $ref: '#/components/schemas/ValServBdw'
+        valUsersBdw:
+          $ref: '#/components/schemas/ValUsersBdw'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - valServerId
+        - valServerConnInfo
+
+    TransResp:
+      description: >
+        Represents a SEALDD enabled regular or URLLC application data transmission service response.
+      type: object
+      properties:
+        ddServerConnInfo:
+          $ref: '#/components/schemas/ConnInfo'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    ConnInfo:
+      description: >
+        Represents SEALDD Data transmission connection information.
+      type: object
+      properties:
+        ipv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
+        ipv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6Addr'
+        port:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Port'
+        uri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
+      oneOf:
+        - required: [ipv4Addr]
+        - required: [ipv6Addr]
+        - required: [uri]
+
+    ValServBdw:
+      description: >
+        Represents VAL Server related bandwidth information.
+      type: object
+      properties:
+        totalUlBdw:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bandwidth'
+        totalDlBdw:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bandwidth'
+      required:
+        - totalUlBdw
+        - totalDlBdw
+
+    ValUsersBdw:
+      description: >
+        Represents VAL users related bandwidth information.
+      type: object
+      properties:
+        minUlBdw:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bandwidth'
+        minDlBdw:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bandwidth'
+        maxUlBdw:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bandwidth'
+        maxDlBdw:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Bandwidth'
+      required:
+        - minUlBdw
+        - minDlBdw
+        - maxUlBdw
+        - maxDlBdw
+
+    TransType:
+      description: >
+        Represents the requested transmission type (i.e., regular or URLLC).
+      type: string

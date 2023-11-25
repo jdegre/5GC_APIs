@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.4'
+  version: '1.3.0-alpha.5'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V18.3.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V18.4.0; 5G System; Session Management Services; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -1978,6 +1978,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         sNssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        additionalSnssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         upCnxState:
           $ref: '#/components/schemas/UpCnxState'
         n2SmInfo:
@@ -2498,8 +2500,8 @@ components:
         disasterRoamingInd:
           type: boolean
           default: false
-        hrsboReqInfo:
-          $ref: '#/components/schemas/HrsboReqInfo'
+        hrsboInfo:
+          $ref: '#/components/schemas/HrsboInfoFromVplmn'
         ecsAddrConfigInfos:
           type: array
           items:
@@ -2542,6 +2544,8 @@ components:
         pduSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         sNssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        additionalSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         enablePauseCharging:
           type: boolean
@@ -2622,8 +2626,13 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
         pcfGroupId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfGroupId'
-        hrsboRspInfo:
-          $ref: '#/components/schemas/HrsboRspInfo'
+        hrsboInfo:
+          $ref: '#/components/schemas/HrsboInfoFromHplmn'
+        pendingUpdateInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingUpdateInfo'
+          minItems: 1
       required:
         - pduSessionType
         - sscMode
@@ -2810,8 +2819,8 @@ components:
           items:
             $ref: 'TS29503_Nudm_PP.yaml#/components/schemas/EcsAddrConfigInfo'
           minItems: 1
-        hrsboReqInfo:
-          $ref: '#/components/schemas/HrsboReqInfo'
+        hrsboInfo:
+          $ref: '#/components/schemas/HrsboInfoFromVplmn'
         altSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
       required:
@@ -2870,8 +2879,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         intraPlmnApiRoot:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-        hrsboRspInfo:
-          $ref: '#/components/schemas/HrsboRspInfo'
+        hrsboInfo:
+          $ref: '#/components/schemas/HrsboInfoFromHplmn'
 
     ReleaseData:
       description: Data within Release Request
@@ -3010,8 +3019,18 @@ components:
           default: false
         n9InactivityTimer:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
-        hrsboRspInfo:
-          $ref: '#/components/schemas/HrsboRspInfo'
+        hrsboInfo:
+          $ref: '#/components/schemas/HrsboInfoFromHplmn'
+        altHplmnSnssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        pduSessionRetainInd:
+          type: boolean
+          enum:
+           - true
+        pendingUpdateInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingUpdateInfo'
       required:
         - requestIndication
 
@@ -3276,6 +3295,9 @@ components:
             $ref: '#/components/schemas/EpsBearerId'
           minItems: 1
         ranUnchangedInd:
+          type: boolean
+          default: false
+        hrsboSupportInd:
           type: boolean
           default: false
 
@@ -3660,8 +3682,15 @@ components:
           type: boolean
         hDnsAddr:
           $ref: '#/components/schemas/IpAddress'
+        hPlmnAddr:
+          $ref: '#/components/schemas/IpAddress'
         vplmnOffloadingInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/VplmnOffloadingInfo'
+        pendingUpdateInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingUpdateInfo'
+          minItems: 1
       required:
         - pduSessionId
         - dnn
@@ -3847,6 +3876,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         guaFbrUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        5qiPL:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5QiPriorityLevel'
 
     DdnFailureSubs:
       description: DDN Failure Subscription
@@ -4054,7 +4085,7 @@ components:
         psetrSupportInd:
           type: boolean
 
-    HrsboReqInfo:
+    HrsboInfoFromVplmn:
       description: HR-SBO Information in request message
       type: object
       properties:
@@ -4064,8 +4095,14 @@ components:
            - true
         vEasdfAddr:
           $ref: '#/components/schemas/IpAddress'
+        localDnsAddr:
+          $ref: '#/components/schemas/IpAddress'
+        easRediscoveryInd:
+          type: boolean
+          enum:
+           - true
 
-    HrsboRspInfo:
+    HrsboInfoFromHplmn:
       description: HR-SBO Information in response message
       type: object
       properties:
@@ -4077,6 +4114,11 @@ components:
           $ref: '#/components/schemas/IpAddress'
         vplmnOffloadingInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/VplmnOffloadingInfo'
+        internalGroupIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+          minItems: 1
 
 #
 # SIMPLE DATA TYPES
@@ -4307,7 +4349,8 @@ components:
           - REL_DUE_TO_EXCEEDED_UE_SLICE_DATA_RATE
           - REL_DUE_TO_EXCEEDED_SLICE_DATA_RATE
           - REL_DUE_TO_CONTEXT_NOT_FOUND
-
+          - REL_DUE_TO_MBSR_NOT_AUTHORIZED
+          - DEACT_DUE_TO_UE_OUT_OF_SLICE_SUPPORT_AREA
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4370,7 +4413,8 @@ components:
         - REL_DUE_TO_EXCEEDED_UE_SLICE_DATA_RATE
         - REL_DUE_TO_EXCEEDED_SLICE_DATA_RATE
         - REL_DUE_TO_CONTEXT_NOT_FOUND
-
+        - REL_DUE_TO_MBSR_NOT_AUTHORIZED
+        - DEACT_DUE_TO_UE_OUT_OF_SLICE_SUPPORT_AREA
 
     ResourceStatus:
       anyOf:
@@ -4711,6 +4755,29 @@ components:
       description: |
         Type of PDU Session information. Possible values are
           - AF_COORDINATION_INFO
+
+    PendingUpdateInfo:
+      anyOf:
+      - type: string
+        enum:
+          - UE_LOCATION
+          - TIMEZONE
+          - ACCESS_TYPE
+          - RAT_TYPE
+          - AMF_ID
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Pending Update Information. Possible values are
+          - UE_LOCATION
+          - TIMEZONE
+          - ACCESS_TYPE
+          - RAT_TYPE
+          - AMF_ID
+
 #
 # HTTP request bodies
 #

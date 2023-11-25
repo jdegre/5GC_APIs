@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.3
+  version: 1.3.0-alpha.4
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V18.2.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.3.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 
 security:
@@ -137,7 +137,7 @@ paths:
       responses:
         '204':
           description: >
-            No Content. The Individual NWDAF Event Subscription resource matching the subscriptionId 
+            No Content. The Individual NWDAF Event Subscription resource matching the subscriptionId
             was deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
@@ -177,14 +177,14 @@ paths:
       parameters:
         - name: subscriptionId
           in: path
-          description: String identifying a subscription to the Nnwdaf_EventsSubscription Service
+          description: String identifying a subscription to the Nnwdaf_EventsSubscription Service.
           required: true
           schema:
             type: string
       responses:
         '200':
           description: >
-            The Individual NWDAF Event Subscription resource was modified successfully and a 
+            The Individual NWDAF Event Subscription resource was modified successfully and a
             representation of that resource is returned.
           content:
             application/json:
@@ -300,15 +300,15 @@ paths:
         - name: transferId
           in: path
           description: >
-            String identifying a request for an analytics subscription transfer to the 
-            Nnwdaf_EventsSubscription Service
+            String identifying a request for an analytics subscription transfer to the
+            Nnwdaf_EventsSubscription Service.
           required: true
           schema:
             type: string
       responses:
         '204':
           description: >
-            No Content. The Individual NWDAF Event Subscription Transfer resource matching the 
+            No Content. The Individual NWDAF Event Subscription Transfer resource matching the
             transferId was deleted.
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
@@ -356,7 +356,7 @@ paths:
         - name: transferId
           in: path
           description: >
-            String identifying a request for an analytics subscription transfer to the 
+            String identifying a request for an analytics subscription transfer to the
             Nnwdaf_EventsSubscription Service
           required: true
           schema:
@@ -488,8 +488,8 @@ components:
         loadLevelThreshold:
           type: integer
           description: >
-            Indicates that the NWDAF shall report the corresponding network slice load level to the NF 
-            service consumer where the load level of the network slice identified by snssais is 
+            Indicates that the NWDAF shall report the corresponding network slice load level to the
+            NF service consumer where the load level of the network slice identified by snssais is
             reached.
         notificationMethod:
           $ref: '#/components/schemas/NotificationMethod'
@@ -519,6 +519,20 @@ components:
           minItems: 1
         networkArea:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+        temporalGranSize:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        spatialGranSizeTa:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        spatialGranSizeCell:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        fineGranAreas:
+          type: array
+          items:
+            $ref: 'TS29522_AMPolicyAuthorization.yaml#/components/schemas/GeographicalArea'
+          minItems: 1
+          description: Indicates the fine granularity areas to which the subscription applies.
         visitedAreas:
           type: array
           items:
@@ -558,7 +572,7 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 1
           description: >
-            Identification(s) of network slice to which the subscription applies. It corresponds to 
+            Identification(s) of network slice to which the subscription applies. It corresponds to
             snssais in the data model definition of 3GPP TS 29.520. 
         tgtUe:
           $ref: '#/components/schemas/TargetUeInformation'
@@ -650,8 +664,15 @@ components:
           items:
             $ref: '#/components/schemas/PduSesTrafficReq'
           minItems: 1
+        locAccReqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocAccuracyReq'
+          minItems: 1
         locGranularity:
           $ref: '#/components/schemas/LocInfoGranularity'
+        locOrientation:
+            $ref: '#/components/schemas/LocationOrientation'
         dataVlTrnsTmRqs:
           type: array
           items:
@@ -659,6 +680,21 @@ components:
           minItems: 1
         accuReq:
           $ref: '#/components/schemas/AccuracyReq'
+        pauseFlg:
+          type: boolean
+          description: >
+            Pause analytics consumption flag. Set to "true" to indicate the NWDAF to stop sending
+            the notifications of analytics. Default value is "false" if omitted.
+        resumeFlg:
+          type: boolean
+          description: >
+            Resume analytics consumption flag. Set to "true" to indicate the NWDAF to resume sending
+            the notifications of analytics. Default value is "false" if omitted.
+        movBehavReqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovBehavReq'
+          minItems: 1
       required:
         - event
       not:
@@ -810,6 +846,33 @@ components:
           minItems: 1
         accuInfo:
           $ref: '#/components/schemas/AccuracyInfo'
+        cancelAccuInd:
+          type: boolean
+          description: >
+            Indicates cancelled subscription of the analytics accuracy information.
+            Set to "true" indicates the NWDAF cancelled subscription of analytics accuracy
+            information as the NWDAF does not support the accuracy checking capability.
+            Otherwise set to "false". Default value is "false" if omitted.
+        pauseInd:
+          type: boolean
+          description: >
+            Pause analytics consumption indication. Set to "true" to indicate the consumer to stop
+            the consumption of the analytics. Default value is "false" if omitted.
+        resumeInd:
+          type: boolean
+          description: >
+            Resume analytics consumption indication. Set to "true" to indicate the consumer to
+            resume the consumption of the analytics. Default value is "false" if omitted.
+        movBehavInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovBehavInfo'
+          minItems: 1
+        locAccInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocAccuracyInfo'
+          minItems: 1
       required:
         - event
 
@@ -895,8 +958,8 @@ components:
 
     NsiLoadLevelInfo:
       description: >
-        Represents the network slice and optionally the associated network slice instance and the 
-            load level information.
+        Represents the network slice and optionally the associated network slice instance and the
+        load level information.
       type: object
       properties:
         loadLevelInformation:
@@ -929,8 +992,8 @@ components:
             Each element indicates the time elapsed between times each threshold is met or exceeded
             or crossed. The start time and end time are the exact time stamps of the resource usage
             threshold is reached or exceeded. May be present if the "listOfAnaSubsets" attribute is
-             provided and the maximum number of instances shall not exceed the value provided in the
-             "numOfExceedLoadLevelThr" attribute.
+            provided and the maximum number of instances shall not exceed the value provided in the
+            "numOfExceedLoadLevelThr" attribute.
         numOfUes:
           $ref: '#/components/schemas/NumberAverage'
         numOfPduSess:
@@ -970,7 +1033,8 @@ components:
             Each element indicates the preferred accuracy level per analytics subset. It may be
             present if the "listOfAnaSubsets" attribute is present in the subscription request when
             the subscription event is NF_LOAD, UE_COMM, DISPERSION, NETWORK_PERFORMANCE,
-            WLAN_PERFORMANCE, DN_PERFORMANCE or SERVICE_EXPERIENCE or E2E_DATA_VOL_TRANS_TIME.
+            WLAN_PERFORMANCE, DN_PERFORMANCE, SERVICE_EXPERIENCE or E2E_DATA_VOL_TRANS_TIME,
+            UE_MOBILITY, PDU_SESSION_TRAFFIC or MOVEMENT_BEHAVIOUR.
         startTs:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         endTs:
@@ -981,7 +1045,7 @@ components:
             Offset period in units of seconds to the reporting time, if the value is negative means
             statistics in the past offset period, otherwise a positive value means prediction in the
             future offset period. May be present if the "repPeriod" attribute is included within the
-            "evtReq" attribute or the "repetitionPeriod" attribute is included within the 
+            "evtReq" attribute or the "repetitionPeriod" attribute is included within the
             EventSubscription type.
         sampRatio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
@@ -1061,7 +1125,7 @@ components:
         loc:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         geoLoc:
-          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicalCoordinates'
+          $ref: 'TS29522_AMPolicyAuthorization.yaml#/components/schemas/GeographicalArea'
         ratio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         confidence:
@@ -1241,7 +1305,13 @@ components:
       properties:
         areaInfo:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
-        startTs:
+        fineAreaInfos:
+          type: array
+          items:
+            $ref: 'TS29522_AMPolicyAuthorization.yaml#/components/schemas/GeographicalArea'
+          minItems: 1
+          description: >
+            This attribute contains the geographical locations in a fine granularity.        startTs:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         endTs:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
@@ -1318,6 +1388,8 @@ components:
         varPacketLossRate:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
         svcExpLevel:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        speed:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
 
     NfLoadLevelInformation:
@@ -1402,8 +1474,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         ratio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
-        amount:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         confidence:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         addtMeasInfo:
@@ -1875,7 +1945,7 @@ components:
 
     DispersionInfo:
       description: >
-        Represents the Dispersion information. When subscribed event is "DISPERSION", the 
+        Represents the Dispersion information. When subscribed event is "DISPERSION", the
         "disperInfos" attribute shall be included.
       type: object
       properties:
@@ -2025,6 +2095,22 @@ components:
         avgPktDelayDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
         varPktDelayDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgE2ePktDelayUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        varE2ePktDelayUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgE2ePktDelayDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
+        varE2ePktDelayDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgE2ePktLossRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        varE2ePktLossRateUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        avgE2ePktLossRateDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketLossRate'
+        varE2ePktLossRateDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
 
     WlanPerformanceReq:
@@ -2296,18 +2382,16 @@ components:
           description: >
             UE Location order indication. Set to "true" to indicate the NWDAF to provide the UE
             Mobility analytics in a UE Location order, otherwise set to "false" or omit.
-        locationGranReq:
-          $ref: '#/components/schemas/LocationGranularity'
 
     PduSessionInfo:
       description: Represents combination of PDU Session parameter(s) information.
       type: object
       properties:
-        pduSessTypes:
+        pduSessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
-        sscModes:
+        sscMode:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SscMode'
-        accessTypes:
+        accessType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
 
     PfdDeterminationInfo:
@@ -2327,8 +2411,8 @@ components:
           minItems: 1
           description: >
             Represents a 3-tuple with protocol, server ip and server port for UL/DL
-            application traffic. The content of the string has the same encoding as the IPFilterRule 
-            AVP value as defined in IETF RFC 6733 [18].
+            application traffic. The content of the string has the same encoding as the IPFilterRule
+            AVP value as defined in IETF RFC 6733.
         urls:
           type: array
           items:
@@ -2354,14 +2438,11 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
         dnn:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         tdMatchTrafs:
           type: array
           items:
@@ -2473,7 +2554,7 @@ components:
     E2eDataVolTransTimeInfo:
       description: >
         Represents the E2E data volume transfer time analytics information when subscribed event is
-        "E2E_DATA_VOL_TRANS_TIME", the "e2eDataVolTransTimeInfos" attribute shall be included.
+        "E2E_DATA_VOL_TRANS_TIME", the "dataVlTrnsTmInfos" attribute shall be included.
       type: object
       properties:
         e2eDataVolTransTimes:
@@ -2543,6 +2624,8 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         validityPeriod:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
+        dataVolTransTime:
+          $ref: '#/components/schemas/DataVolumeTransferTime'
       oneOf:
         - required: [ueLoc]
         - required: [snssai]
@@ -2582,6 +2665,96 @@ components:
         - required: [mediumLevel]
         - required: [lowLevel]
 
+    DataVolumeTransferTime:
+      description: >
+        Indicates the E2E data volume transfer time and the data volume used to derive the transfer
+        time.
+      properties:
+        uplinkVolume:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+        avgTransTimeUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        varTransTimeUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        downlinkVolume:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
+        avgTransTimeDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        varTransTimeDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+
+    GeoLocation:
+      description: >
+        Represents a horizontal and optionally vertical location using either geographic
+        or local coordinates.
+      type: object
+      properties:
+        point:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/Point'
+        pointAlt:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/PointAltitude'
+        refPoint:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LocalOrigin'
+        localCoords:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/RelativeCartesianLocation'
+      anyOf:
+        - required: [point]
+        - required: [pointAlt]
+        - allOf:
+          - required: [refPoint]
+          - required: [localCoords]
+
+    LocAccuracyReq:
+      description: >
+        Contains location accuracy analytics requirements.
+      type: object
+      properties:
+        accThres:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        accThresMatchDir:
+          $ref: '#/components/schemas/MatchingDirection'
+        inOutThres:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        inOutThresMatchDir:
+          $ref: '#/components/schemas/MatchingDirection'
+        posMethod:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/PositioningMethod'
+
+    LocAccuracyInfo:
+      description: >
+        Contains location accuracy analytics.
+      type: object
+      properties:
+        locAccPerMeths:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocAccuracyPerMethod'
+          minItems: 1
+          description: Location accuracy information per positioning method.
+        inOutUePct:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        inOutInd:
+          type: boolean
+          description: Indicates if the target location is indoors or outdoors.
+      required:
+        - locAccPerMeths
+      not:
+        required: [inOutUePct, inOutInd]
+
+    LocAccuracyPerMethod:
+      description: >
+        Contains location accuracy analytics per positioning method.
+      type: object
+      properties:
+        posMethod:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/PositioningMethod'
+        locAcc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        losNlosPercent:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      required:
+        - posMethod
+        - locAcc
     AccuracyReq:
       description: Represents the analytics accuracy requirement information.
       type: object
@@ -2600,6 +2773,7 @@ components:
             Indicates the updated Analytics flag. Set to "true" indicates that the NWDAF can provide
             the updated analytics if the analytics can be generated within the analytics accuracy
             information time window, which is specified by "accuTimeWin" attribute.
+            Otherwise set to “false”. Default value is “false” if omitted.
         correctionInterval:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
 
@@ -2609,11 +2783,81 @@ components:
       properties:
         accuracyVal:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        meetAccuReqInd:
-          type: boolean
-          description: >
-            Set to "true" if the accuracy value meets the requested preferred level of accuracy.
-            Otherwise set to "false" or omitted.
+        accuSampleNbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+
+        anaAccuInd:
+          $ref: '#/components/schemas/AnalyticsAccuracyIndication'
+
+    MovBehavReq:
+      description: Represents the Movement Behaviour analytics requirements.
+      properties:
+        locationGranReq:
+            $ref: '#/components/schemas/LocInfoGranularity'
+        reportThresholds:
+            $ref: '#/components/schemas/ThresholdLevel'
+
+    MovBehavInfo:
+      description: Represents the Movement Behaviour information.
+      properties:
+        geoLoc:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicalCoordinates'
+        movBehavs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovBehav'
+          minItems: 1
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+
+    MovBehav:
+      description: Represents the Movement Behaviour information per time slot.
+      properties:
+        tsStart:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        tsDuration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        numOfUe:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+        avrSpeed:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        speedThresdInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeedThresholdInfo'
+          minItems: 1
+        directionUeInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DirectionInfo'
+          minItems: 1
+      required:
+        - tsStart
+        - tsDuration
+
+    SpeedThresholdInfo:
+      description: UEs information whose speed is faster than the speed threshold.
+      properties:
+        numOfUe:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+
+    DirectionUeInfo:
+      description: Heading directions information of the UE flow in the target area.
+      properties:
+        direction:
+            $ref: '#/components/schemas/Direction'
+        numOfUe:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        avrSpeed:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+      required:
+        - direction
 
 #
 # ENUMERATIONS DATA TYPES
@@ -2659,6 +2903,13 @@ components:
           - PFD_DETERMINATION
           - PDU_SESSION_TRAFFIC
           - E2E_DATA_VOL_TRANS_TIME
+          - MOVEMENT_BEHAVIOUR
+          - NUM_OF_UE
+          - MOV_UE_RATIO
+          - AVR_SPEED
+          - SPEED_THRESHOLD
+          - MOV_UE_DIRECTION
+          - LOC_ACCURACY
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2694,6 +2945,10 @@ components:
           information.
         - E2E_DATA_VOL_TRANS_TIME: Indicates that the event subscribed is of E2E data volume 
           transfer time.
+        - MOVEMENT_BEHAVIOUR: Indicates that the event subscribed is the Movement Behaviour
+          information.
+        - LOC_ACCURACY: Indicates that the event subscribed is of location accuracy.
+
 
     Accuracy:
       anyOf:
@@ -3037,28 +3292,22 @@ components:
           - VAR_UL_PKT_DELAY
           - AVG_DL_PKT_DELAY
           - VAR_DL_PKT_DELAY
-          - FLOW_DESC_MATCH_TD
-          - FLOW_DESC_UNMATCH_TD
-          - APP_ID_MATCH_TD
-          - APP_ID_UNMATCH_TD
-          - DOMAIN_DESC_MATCH_TD
-          - DOMAIN_DESC_UNMATCH_TD
-          - UL_VOL_MATCH_TD
-          - UL_VOL_UNMATCH_TD
-          - DL_VOL_MATCH_TD
-          - DL_VOL_UNMATCH_TD
-          - ALL_VOL_MATCH_TD
-          - ALL_VOL_UNMATCH_TD
-          - NUM_OF_UL_PACK_MATCH_TD
-          - NUM_OF_UL_PACK_UNMATCH_TD
-          - NUM_OF_DL_PACK_MATCH_TD
-          - NUM_OF_DL_PACK_UNMATCH_TD
-          - NUM_OF_ALL_PACK_MATCH_TD
-          - NUM_OF_ALL_PACK_UNMATCH_TD
+          - TRAFFIC_MATCH_TD
+          - TRAFFIC_UNMATCH_TD
           - NUMBER_OF_UE
           - UE_GEOG_DIST
           - UE_DIRECTION
           - USER_LOCATION
+          - AVG_E2E_UL_PKT_DELAY
+          - VAR_E2E_UL_PKT_DELAY
+          - AVG_E2E_DL_PKT_DELAY
+          - VAR_E2E_DL_PKT_DELAY
+          - AVG_E2E_UL_PKT_LOSS_RATE
+          - VAR_E2E_UL_PKT_LOSS_RATE
+          - AVG_E2E_DL_PKT_LOSS_RATE
+          - VAR_E2E_DL_PKT_LOSS_RATE
+          - E2E_DATA_VOL_TRANS_TIME_FOR_UE_LIST
+          - IN_OUT_PERCENT
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -3163,44 +3412,10 @@ components:
           This value is only applicable to RED_TRANS_EXP event.
         - VAR_DL_PKT_DELAY: Indicates variance downlink packet delay round trip on GTP-U path on N3.
           This value is only applicable to RED_TRANS_EXP event.
-        - FLOW_DESC_MATCH_TD: Indicates IP Flow descriptor containing 3-tuple, server side
-          (destination address, port, and protocol) in the traffic that matches Traffic Descriptor
-          within the PDU Sessions.
-        - FLOW_DESC_UNMATCH_TD: Indicates IP Flow descriptor containing 3-tuple, server side
-          (destination address, port, and protocol) in the traffic that does not match Traffic
-          Descriptor within the PDU Sessions.
-        - APP_ID_MATCH_TD: Indicates Application ID that matches Traffic Descriptor within the PDU
-          Sessions.
-        - APP_ID_UNMATCH_TD: Indicates Application ID that does not match Traffic Descriptor within
-          the PDU Sessions.
-        - DOMAIN_DESC_MATCH_TD: Indicates Domain descriptor that matches Traffic Descriptor within
-          the PDU Sessions.
-        - DOMAIN_DESC_UNMATCH_TD: Indicates UL data volume exchanged that matches Traffic Descriptor
-          within the PDU Sessions. This value is only applicable to PDU_SESSION_TRAFFIC event.
-        - UL_VOL_MATCH_TD: Indicates UL data volume exchanged that matches Traffic Descriptor within
-          the PDU Sessions.
-        - UL_VOL_UNMATCH_TD: Indicates UL data volume exchanged that does not match Traffic
-          Descriptor within the PDU Sessions.
-        - DL_VOL_MATCH_TD: Indicates DL data volume exchanged that matches Traffic Descriptor within
-          the PDU Sessions.
-        - DL_VOL_UNMATCH_TD: Indicates DL data volume exchanged that does not match Traffic
-          Descriptor within the PDU Sessions.
-        - ALL_VOL_MATCH_TD: Indicates overall data volume exchanged that matches Traffic Descriptor
-          within the PDU Sessions.
-        - ALL_VOL_UNMATCH_TD: Indicates overall data volume exchanged that does not match Traffic
-          Descriptor within the PDU Sessions.
-        - NUM_OF_UL_PACK_MATCH_TD: Indicates the number of UL packets exchanged that matches Traffic
-          Descriptor within the PDU Sessions.
-        - NUM_OF_UL_PACK_UNMATCH_TD: Indicates the number of UL packets exchanged that does not
-          match Traffic Descriptor within the PDU Sessions.
-        - NUM_OF_DL_PACK_MATCH_TD: Indicates the number of DL packets exchanged that matches Traffic
-          Descriptor within the PDU Sessions.
-        - NUM_OF_DL_PACK_UNMATCH_TD: Indicates the number of DL packets exchanged that does not
-          match Traffic Descriptor within the PDU Sessions.
-        - NUM_OF_ALL_PACK_MATCH_TD: Indicates the number of overall packets exchanged that matches
-          Traffic Descriptor within the PDU Sessions.
-        - NUM_OF_ALL_PACK_UNMATCH_TD: Indicates the number of overall packets exchanged that does
-          not match Traffic Descriptor within the PDU Sessions.
+        - TRAFFIC_MATCH_TD: Identifies traffic that matches Traffic Descriptor provided by
+          the consumer.
+        - TRAFFIC_UNMATCH_TD: Identifies traffic that does not match Traffic Descriptor
+          provided by the consumer.
         - NUMBER_OF_UE: Indicates the number of UEs. This value is only applicable to
           DN_PERFORMANCE event.
         - UE_GEOG_DIST: Indicates the geographical distribution of the UEs that can be selected by
@@ -3209,6 +3424,38 @@ components:
           UE_MOBILITY event.
         - USER_LOCATION: Indicates the user location. This value is only applicable to UE_MOBILITY
           event.
+        - AVG_E2E_UL_PKT_DELAY: Indicates average End-to-End (between UE and UPF) uplink packet
+          delay. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_E2E_UL_PKT_DELAY: Indicates the variance of End-to-End (between UE and UPF) uplink
+          packet delay. This value is only applicable to RED_TRANS_EXP event.
+        - AVG_E2E_DL_PKT_DELAY: Indicates average End-to-End (between UE and UPF) downlink packet
+          delay. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_E2E_DL_PKT_DELAY: Indicates the variance of End-to-End (between UE and UPF) downlink
+          packet delay. This value is only applicable to RED_TRANS_EXP event.
+        - AVG_E2E_UL_PKT_LOSS_RATE: Indicates average End-to-End (between UE and UPF) uplink packet
+          loss rate. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_E2E_UL_PKT_LOSS_RATE: Indicates the variance of End-to-End (between UE and UPF) uplink
+          packet loss rate. This value is only applicable to RED_TRANS_EXP event.
+        - AVG_E2E_DL_PKT_LOSS_RATE: Indicates average End-to-End (between UE and UPF) downlink
+          packet loss rate. This value is only applicable to RED_TRANS_EXP event.
+        - VAR_E2E_DL_PKT_LOSS_RATE: Indicates the variance of End-to-End (between UE and UPF)
+          downlink packet loss rate. This value is only applicable to RED_TRANS_EXP event.
+        - E2E_DATA_VOL_TRANS_TIME_FOR_UE_LIST: Indicates the classified E2E data volume transfer
+          time statistics or predictions for multiple UEs with respect to one or more reporting
+          thresholds.
+        - NUM_OF_UE: Indicates the total number of users in the area of interest. This
+          value is only applicable to MOVEMENT_BEHAVIOUR event.
+        - MOV_UE_RATIO: Indicates the Ratio of moving UEs in the area of interest. This value
+          is only applicable to MOVEMENT_BEHAVIOUR event.
+        - AVR_SPEED: Indicates the average speed of all UEs in the area of interest. This value
+          is only applicable to MOVEMENT_BEHAVIOUR event.
+        - SPEED_THRESHOLD: Indicates the information on UEs in the area of interest whose speed
+          is faster than the speed threshold. This value is only applicable to MOVEMENT_BEHAVIOUR
+          event.
+        - MOV_UE_DIRECTION: Indicates the heading directions of the UE flow in the target area.
+          This value is only applicable to MOVEMENT_BEHAVIOUR event.
+        - IN_OUT_PERCENT: Indicates the percentage of indoor/outdoor UEs at a location.
+          The value is only applicable to the LOC_ACCURACY event.
 
     DispersionType:
       oneOf:
@@ -3299,6 +3546,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the device type.  
         Possible values are:  
           - MOBILE_PHONE: Mobile Phone.
           - SMART_PHONE: Smartphone.
@@ -3419,6 +3667,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the cause for requesting to terminate an analytics subscription.  
         Possible values are:  
           - APPLICABLE_TIME_WINDOW: The ordering criterion is the Applicable Time Window.
           - NETWORK_STATUS_INDICATION: The ordering criterion is the network status indication.
@@ -3433,6 +3682,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the ordering criterion for the list of UE mobility analytics.  
         Possible values are:  
           - TIME_SLOT: The ordering criterion is the time slot.
 
@@ -3447,6 +3697,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the ordering criterion for the list of UE communication analytics.  
         Possible values are:  
           - START_TIME: The ordering criterion of the analytics is the start time.
           - DURATION: The ordering criterion of the analytics is the duration of the communication.
@@ -3463,6 +3714,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the ordering criterion for the list of network performance analytics.  
         Possible values are:  
           - NUMBER_OF_UES: The ordering criterion of the analytics is the number of UEs.
           - COMMUNICATION_PERF: The ordering criterion of the analytics is the communication performance.
@@ -3474,14 +3726,17 @@ components:
         enum:
           - TA_LEVEL
           - CELL_LEVEL
+          - LON_AND_LAT_LEVEL
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the preferred granularity of location information.  
         Possible values are:  
-          - TA_LEVEL: TA level.
-          - CELL_LEVEL: Cell level.
+          - TA_LEVEL: Indicates location granularity of TA level.
+          - CELL_LEVEL: Indicates location granularity of Cell level.
+          - LON_AND_LAT_LEVEL: Indicates location granularity of longitude and latitude level.
 
     TrafficDirection:
       anyOf:
@@ -3495,6 +3750,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the traffic direction for the resource usage information.  
         Possible values are:  
           - UL_AND_DL: Uplink and downlink traffic.
           - UL: Uplink traffic.
@@ -3511,6 +3767,7 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the average or peak value of the resource usage for the network performance type.  
         Possible values are:  
           - AVERAGE: Resource usage information in average value.
           - PEAK: Resource usage information in peak value.
@@ -3526,23 +3783,62 @@ components:
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
+        Represents the ordering criterion for the list of E2E data volume transfer time.  
         Possible values are:  
           - TIME_SLOT_START: Indicates the order of time slot start.
           - E2E_DATA_VOL_TRANS_TIME: The ordering criterion is the E2E data volume transfer time.
 
-    LocationGranularity:
+
+
+    AnalyticsAccuracyIndication:
       anyOf:
       - type: string
         enum:
-          - TA_LEVEL
-          - CELL_LEVEL
-          - LON_AND_LAT_LEVEL
+          - MEET
+          - NOT_MEET
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents the notification methods for the subscribed events.  
+        Possible values are:
+        - MEET: Indicates meet the analytics accuracy requirement.
+        - NOT_MEET: Indicates not meet the analytics accuracy requirement.
+
+    LocationOrientation:
+      anyOf:
+      - type: string
+        enum:
+          - HORIZONTAL
+          - VERTICAL
+          - HOR_AND_VER
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration but
           is not used to encode content defined in the present version of this API.
       description: |
         Possible values are:  
-          - TA_LEVEL: Indicates location granularity of TA level.
-          - CELL_LEVEL: Indicates location granularity of cell level.
-          - LON_ANG_LAT_LEVEL: Indicates location granularity of longitude and latitude level.
+          - HORIZONTAL: Indicates horizontal orientation.
+          - VERTICAL: Indicates vertical orientation.
+          - HOR_AND_VER: Indicates both horizontal and vertical orientation.
+
+    Direction:
+      anyOf:
+      - type: string
+        enum:
+          - NORTH
+          - SOUTH
+          - EAST
+          - WEST
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - NORTH: North direction.
+          - SOUTH: South direction.
+          - EAST: EAST direction.
+          - WEST: WEST direction.

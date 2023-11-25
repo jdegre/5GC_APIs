@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.2.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -1622,6 +1622,16 @@ paths:
           required: false
           schema:
             type: boolean
+        - name: roam-ue-net-descs
+          in: query
+          description: >
+            Each element identifies oner or more PLMNs for a roaming UE. 
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/NetworkDescription'
+            minItems: 1
         - name: supp-feat
           in: query
           description: Supported Features
@@ -2817,16 +2827,16 @@ components:
           description: Identifies the N6 traffic routing requirement.
         sfcIdDl:
           type: string
-          description: Reference to a pre-configured service function chain policy for DL traffic
+          description: Reference to a pre-configured service function chain for DL traffic
         sfcIdUl:
           type: string
-          description: Reference to a pre-configured service function chain policy for UL traffic
+          description: Reference to a pre-configured service function chain for UL traffic
         metadata:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Metadata'
         traffCorreInd:
           type: boolean
         tfcCorreInfo:
-          $ref: 'TS29522_TrafficInfluence.yaml#/components/schemas/TrafficCorrelationInfo'
+          $ref: '#/components/schemas/TrafficCorrelationInfo'
         validStartTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         validEndTime:
@@ -2842,6 +2852,7 @@ components:
         upPathChgNotifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         headers:
+          description: Contains the headers provisioned by the NEF.
           type: array
           items:
             type: string
@@ -2934,18 +2945,18 @@ components:
           description: Identifies the N6 traffic routing requirement.
         sfcIdDl:
           type: string
-          description: Reference to a pre-configured service function chain policy for DL traffic
+          description: Reference to a pre-configured service function chain for DL traffic
           nullable: true
         sfcIdUl:
           type: string
-          description: Reference to a pre-configured service function chain policy for UL traffic
+          description: Reference to a pre-configured service function chain for UL traffic
           nullable: true
         metadata:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Metadata'
         traffCorreInd:
           type: boolean
         tfcCorreInfo:
-          $ref: 'TS29522_TrafficInfluence.yaml#/components/schemas/TrafficCorrelationInfo'
+          $ref: '#/components/schemas/TrafficCorrelationInfo'
         validStartTime:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         validEndTime:
@@ -2962,6 +2973,7 @@ components:
         upPathChgNotifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         headers:
+          description: Contains the headers provisioned by the NEF.
           type: array
           items:
             type: string
@@ -3188,6 +3200,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MacAddr48'
         anyUeInd:
           type: boolean
+          description: >
+            Identifies whether the service parameters applies to any non roaming UE.
+        roamUeNetDescs:
+          type: array
+          items:
+            $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/NetworkDescription'
+          minItems: 1
+          description: Each element identifies one or more PLMN IDs of inbound roamers.
         paramOverPc5:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverPc5'
         paramOverUu:
@@ -3202,12 +3222,23 @@ components:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeU2NRelUe'
         paramForProSeRemUe:
           $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeRemUe'
+        paramForProSeU2URelUe:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeU2URelUe'
+        paramForProSeEndUe:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeEndUe'
         urspGuidance:
           type: array
           items:
             $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/UrspRuleRequest'
           minItems: 1
-          description: Contains the service parameter used to guide the URSP.
+          description: >
+            Contains the service parameter used to guide the URSP and/or VPLMN specific URSP.
+        tnaps:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TnapId'
+          minItems: 1
+          description: Contains the TNAP IDs collocated with the 5G-RG(s) of a specific user.
         deliveryEvents:
           type: array
           items:
@@ -3226,6 +3257,7 @@ components:
         resUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         headers:
+          description: Contains the headers provisioned by the NEF.
           type: array
           items:
             type: string
@@ -3235,39 +3267,71 @@ components:
           items:
             type: string
           minItems: 1
+        paramForRangingSlPos:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForRangingSlPos'
 
     ServiceParameterDataPatch:
       description: Represents the service parameter data that can be updated.
       type: object
       properties:
         paramOverPc5:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverPc5'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverPc5Rm'
         paramOverUu:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverUu'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParameterOverUuRm'
         a2xParamsPc5:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/A2xParamsPc5'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/A2xParamsPc5Rm'
         paramForProSeDd:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeDd'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeDdRm'
         paramForProSeDc:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeDc'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeDcRm'
         paramForProSeU2NRelUe:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeU2NRelUe'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeU2NRelUeRm'
         paramForProSeRemUe:
-          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeRemUe'
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeRemUeRm'
+        paramForProSeU2URelUE:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeU2URelUeRm'
+        paramForProSeEndUe:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForProSeEndUeRm'
         urspInfluence:
           type: array
           items:
             $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/UrspRuleRequest'
           minItems: 1
-          description: Contains the service parameter used to influence the URSP.
+          deprecated: true
+          description: Contains the service parameter used to influence the URSP. This attribute is
+            deprecated by the urspGuidance attribute.
+        urspGuidance:
+          type: array
+          items:
+            $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/UrspRuleRequest'
+          minItems: 1
+          nullable: true
+          description: >
+            Contains the service parameter used to influence the URSP and/or VPLMN specific URSP.
+        tnaps:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/TnapId'
+          minItems: 1
+          description: Contains the TNAP IDs collocated with the 5G-RG(s) of a specific user.
+          nullable: true
         deliveryEvents:
           type: array
           items:
            $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/Event'
           minItems: 1
+          nullable: true
           description: Contains the outcome of the UE Policy Delivery.
         policDelivNotifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        headers:
+          description: Contains the headers provisioned by the NEF.
+          type: array
+          items:
+            type: string
+          minItems: 1
+        paramForRangingSlPos:
+          $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/ParamForRangingSlPosRm'
 
     AmInfluData:
       description: Represents the AM Influence Data.
@@ -3512,6 +3576,35 @@ components:
       required:
         - dataInd
 
+    TrafficCorrelationInfo:
+      description: >
+        Contains the information for traffic correlation.
+      type: object
+      properties:
+        correType:
+          $ref: '#/components/schemas/CorrelationType'
+        tfcCorrId:
+          type: string
+          description: >
+            Identification of a set of UEs accessing the application identified by the 
+            Application Identifier or traffic filtering information.
+        comEasIpv4Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4AddrRm'
+        comEasIpv6Addr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6AddrRm'
+        fqdnRange:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/FqdnPatternMatchingRule'
+          minItems: 1
+          nullable: true
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/UriRm'
+        notifId:
+          type: string
+          nullable: true
+      nullable: true
+
     DataInd:
       anyOf:
       - type: string
@@ -3534,3 +3627,15 @@ components:
         - BDT: BDT data.
         - SVC_PARAM: Service parameter data.
         - AM: AM influence data.
+
+    CorrelationType:
+      description: Indicates that a common DNAI or common EAS should be selected.
+      anyOf:
+      - type: string
+        enum:
+          - COMMON_DNAI
+          - COMMON_EAS
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.

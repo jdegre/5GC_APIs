@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: AI/ML NRM
-  version: 17.4.0
+  version: 18.1.0
   description: >-
     OAS 3.0.1 specification of the AI/ML NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -14,27 +14,6 @@ components:
   schemas:
 
 #-------- Definition of types-----------------------------------------------------
-
-    MLEntityList:
-      type: array
-      items:
-        $ref: '#/components/schemas/MLEntity'
-
-    MLEntity:
-      type: object
-      properties:
-        mLEntityId:
-          type: string
-        inferenceType:
-          type: string
-        mLEntityVersion:
-          type: string
-        expectedRunTimeContext:
-          $ref: '#/components/schemas/MLContext'
-        trainingContext:
-          $ref: '#/components/schemas/MLContext'
-        runTimeContext:
-          $ref: '#/components/schemas/MLContext'
 
     MLContext:
       type: object
@@ -122,6 +101,8 @@ components:
               $ref: '#/components/schemas/ManagedElement-Multiple'
             MLTrainingFunction:
               $ref: '#/components/schemas/MLTrainingFunction-Multiple'
+            MLEntityRepository:
+              $ref: '#/components/schemas/MLEntityRepository-Multiple'
 
     ManagedElement-Single:
       allOf:
@@ -135,6 +116,8 @@ components:
           properties:
             MLTrainingFunction:
               $ref: '#/components/schemas/MLTrainingFunction-Multiple'
+            MLEntityRepository:
+              $ref: '#/components/schemas/MLEntityRepository-Multiple'
 
     MLTrainingFunction-Single:
       allOf:
@@ -146,8 +129,8 @@ components:
                 - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-Attr'
                 - type: object
                   properties:
-                    mLEntityList:
-                      $ref: '#/components/schemas/MLEntityList'
+                    mLEntityRepositoryRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
         - type: object
           properties:
@@ -169,6 +152,8 @@ components:
                   properties:
                     mLEntityId:
                       type: string
+                    inferenceType:
+                      type: string  
                     candidateTrainingDataSource:
                       type: array
                       items:
@@ -188,6 +173,8 @@ components:
                       type: boolean
                     suspendRequest:
                       type: boolean
+                    mLEntityToTrainRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
 
     MLTrainingProcess-Single:
       allOf:
@@ -249,6 +236,42 @@ components:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
                     lastTrainingRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+                    mLEnityGeneratedRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+
+    MLEntity-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              type: object
+              properties:
+                mLEntityId:
+                  type: string
+                inferenceType:
+                  type: string
+                mLEntityVersion:
+                  type: string
+                expectedRunTimeContext:
+                  $ref: '#/components/schemas/MLContext'
+                trainingContext:
+                  $ref: '#/components/schemas/MLContext'
+                runTimeContext:
+                  $ref: '#/components/schemas/MLContext'   
+
+    MLEntityRepository-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              type: object
+              properties:
+                mLRepositoryId:
+                  type: string
+            MLEntity:
+              $ref: '#/components/schemas/MLEntity-Multiple'
 
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------
 
@@ -276,7 +299,14 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/MLTrainingReport-Single'
-
+    MLEntity-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/MLEntity-Single'
+    MLEntityRepository-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/MLEntityRepository-Single'
 
 #-------- Definitions in TS 28.104 for TS 28.532 ---------------------------------
 
@@ -289,3 +319,5 @@ components:
         - $ref: '#/components/schemas/MLTrainingRequest-Single'
         - $ref: '#/components/schemas/MLTrainingProcess-Single'
         - $ref: '#/components/schemas/MLTrainingReport-Single'
+        - $ref: '#/components/schemas/MLEntity-Single'
+        - $ref: '#/components/schemas/MLEntityRepository-Single'
