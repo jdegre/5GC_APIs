@@ -204,6 +204,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## ADRF (Analytics Data Repository Function)
 * [Data Management](https://jdegre.github.io/loader.html?yaml=TS29575_Nadrf_DataManagement.yaml)
+* [ML Model Management Service](https://jdegre.github.io/loader.html?yaml=TS29575_Nadrf_MLModelManagement.yaml)
 
 ## MFAF (Messaging Framework Adaptor Function)
 * [3GPP DCCF Adaptor (3DA) Data Management](https://jdegre.github.io/loader.html?yaml=TS29576_Nmfaf_3daDataManagement.yaml)
