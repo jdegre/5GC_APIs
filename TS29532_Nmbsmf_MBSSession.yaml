@@ -2,15 +2,15 @@ openapi: 3.0.0
 
 info:
   title: 'Nmbsmf-MBSSession'
-  version: 1.1.1
+  version: 1.1.2
   description: |
     MB-SMF MBSSession Service.
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 
 externalDocs:
   description: >
-    3GPP TS 29.532 V17.3.0; 5G System; 5G Multicast-Broadcast Session Management Services;
+    3GPP TS 29.532 V17.5.0; 5G System; 5G Multicast-Broadcast Session Management Services;
     Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.532/
 
@@ -118,6 +118,13 @@ paths:
         '204':
           description: >
             Successful modification of the MBS session without content in the response.
+        '200':
+          description: >
+            Successful modification of the MBS session with content in the response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRspData'
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -732,6 +739,8 @@ components:
         contactPcfInd:
           type: boolean
           default: false
+        areaSessionPolicyId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/AreaSessionPolicyId'
 
     ContextUpdateReqData:
       description: Data within ContextUpdate Request
@@ -1027,6 +1036,15 @@ components:
       properties:
         accMbsServiceInfo:
           $ref: 'TS29537_Npcf_MBSPolicyAuthorization.yaml#/components/schemas/AcceptableMbsServInfo'
+
+    UpdateRspData:
+      description: Data within Update Response
+      type: object
+      properties:
+        mbsSession:
+          $ref: '#/components/schemas/ExtMbsSession'
+      required:
+        - mbsSession
 
 
 #

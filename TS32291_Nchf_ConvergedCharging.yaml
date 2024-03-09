@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.1.5
+  version: 3.1.6
   description: |
     ConvergedCharging Service    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V17.8.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V17.9.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -1069,6 +1069,11 @@ components:
       properties:
         externalIndividualIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        externalIndividualIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
         externalGroupIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
         groupIdentifier:
@@ -1254,11 +1259,10 @@ components:
           minItems: 0
         managementOperationStatus:
           $ref: '#/components/schemas/ManagementOperationStatus'
-# To be introduced once the reference to 'generic.yaml is resolved    
-#        managementOperationalState:
-#          $ref: 'genericNrm.yaml#/components/schemas/OperationalState'
-#        managementAdministrativeState:
-#          $ref: 'genericNrm.yaml#/components/schemas/AdministrativeState'
+        managementOperationalState:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/OperationalState'
+        managementAdministrativeState:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
       required:
         - managementOperation
     ServiceProfileChargingInformation:
@@ -1271,16 +1275,14 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 0
-# To be introduced once the reference to 'nrNrm.yaml is resolved    
-#         sST:
-#           $ref: 'nrNrm.yaml#/components/schemas/Sst'
+        sST:
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/Sst'
         latency:
           type: integer
         availability:
           type: number
-# To be introduced once the reference to sliceNrm.yaml is resolved    
-#         resourceSharingLevel:
-#           $ref: 'sliceNrm.yaml#/components/schemas/SharingLevel'
+        resourceSharingLevel:
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/SharingLevel'
         jitter:
           type: integer
         reliability:
@@ -1289,11 +1291,11 @@ components:
           type: integer
         coverageArea:
           type: string
-# To be introduced once the reference to sliceNrm.yaml is resolved    
+# To be introduced once the reference to SliceNrm.yaml is resolved    
 #        uEMobilityLevel:
-#          $ref: 'sliceNrm.yaml#/components/schemas/MobilityLevel'
+#          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel'
 #        delayToleranceIndicator:
-#          $ref: 'sliceNrm.yaml#/components/schemas/Support'
+#          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/Support'
         dLThptPerSlice:
           $ref: '#/components/schemas/Throughput'
         dLThptPerUE:
@@ -1308,9 +1310,9 @@ components:
           type: string
         supportedAccessTechnology:
           type: integer
-# To be introduced once the reference to sliceNrm.yaml is resolved    
+# To be introduced once the reference to SliceNrm.yaml is resolved    
 #        v2XCommunicationModeIndicator:
-#          $ref: 'sliceNrm.yaml#/components/schemas/Support'
+#          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/Support'
         addServiceProfileInfo:
           type: string
     Throughput:
@@ -2095,6 +2097,7 @@ components:
             - REDUNDANT_TRANSMISSION_CHANGE
             - CGI_SAI_CHANGE
             - RAI_CHANGE
+            - VSMF_CHANGE
         - type: string
     FinalUnitAction:
       anyOf:

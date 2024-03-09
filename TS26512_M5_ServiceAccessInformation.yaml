@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: M5_ServiceAccessInformation
-  version: 2.3.0
+  version: 2.4.0
   description: |
     5GMS AF M5 Service Access Information API
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -10,7 +10,7 @@ tags:
   - name: M5_ServiceAccessInformation
     description: '5G Media Streaming: Media Session Handling (M5) APIs: Service Access Information'
 externalDocs:
-  description: 'TS 26.512 V17.6.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V17.7.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
   - url: '{apiRoot}/3gpp-m5/v2'
@@ -90,6 +90,7 @@ components:
           required:
             - serverAddresses
             - locationReporting
+            - accessReporting
             - samplePercentage
           properties:
             reportingInterval:
@@ -106,28 +107,32 @@ components:
           type: object
           required:
             - serverAddresses
-            - validPolicyTemplateIds
+            - policyTemplateBindings
             - sdfMethods
           properties: 
             serverAddresses:
               $ref: '#/components/schemas/ServerAddresses'
-            validPolicyTemplateIds:
+            policyTemplateBindings:
               type: array
+              minItems: 1
               items: 
-                $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
-              minItems: 0
+                type: object
+                required:
+                  - externalReference
+                  - policyTemplateId
+                properties: 
+                  externalReference:
+                    type: string
+                  policyTemplateId:
+                    $ref: 'TS26512_CommonData.yaml#/components/schemas/ResourceId'
             sdfMethods:
               type: array
               items:
                 $ref: 'TS26512_CommonData.yaml#/components/schemas/SdfMethod'
               minItems: 0
-            externalReferences:
-              type: array
-              items:
-                type: string
-              minItems: 1
-        clientMetricsReportingConfiguration:
+        clientMetricsReportingConfigurations:
           type: array
+          minItems: 1
           items:
             type: object
             required:

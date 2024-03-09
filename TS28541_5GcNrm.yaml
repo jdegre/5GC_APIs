@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: 3GPP 5GC NRM
-  version: 17.12.0
+  version: 17.13.0
   description: >-
     OAS 3.0.1 specification of the 5GC NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -1174,8 +1174,8 @@ components:
                       type: string
                     cNSIIdList:
                       $ref: '#/components/schemas/CNSIIdList'
-                    nFProfileList:
-                      $ref: '#/components/schemas/NFProfileList'
+                    managedNFProfile:
+                      $ref: '#/components/schemas/ManagedNFProfile'
                     snssaiList:
                       $ref: '#/components/schemas/SnssaiList'
                     commModelList:
@@ -1187,6 +1187,8 @@ components:
               $ref: '#/components/schemas/EP_N22-Multiple'
             EP_N31:
               $ref: '#/components/schemas/EP_N31-Multiple'
+            EP_N34:
+              $ref: '#/components/schemas/EP_N34-Multiple'
     SmsfFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -1305,7 +1307,11 @@ components:
                       $ref: '#/components/schemas/CommModelList'
                     networkSliceInfoList:
                       $ref: '#/components/schemas/NetworkSliceInfoList'
-                      
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
+        - type: object
+          properties:
+            EP_N34:
+              $ref: '#/components/schemas/EP_N34-Multiple'                      
     ScpFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -1861,6 +1867,20 @@ components:
                       type: string
                     withIPX:
                       type: boolean
+    EP_N34-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/EP_RP-Attr'
+                - type: object
+                  properties:
+                    localAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/LocalAddress'
+                    remoteAddress:
+                      $ref: 'TS28541_NrNrm.yaml#/components/schemas/RemoteAddress'
     EP_N33-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -2071,7 +2091,8 @@ components:
               type: string
               enum:
                 - GBR
-                - NonGBR
+                - NON_GBR
+                - DELAY_CRITICAL_GBR
             priorityLevel:
               type: integer
             packetDelayBudget:
@@ -2416,6 +2437,10 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/EP_N33-Single'
+    EP_N34-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/EP_N34-Single'        
     EP_S5C-Multiple:
       type: array
       items:
@@ -2545,6 +2570,7 @@ components:
        - $ref: '#/components/schemas/EP_N31-Single'
        - $ref: '#/components/schemas/EP_N32-Single'
        - $ref: '#/components/schemas/EP_N33-Single'       
+       - $ref: '#/components/schemas/EP_N34-Single'
        - $ref: '#/components/schemas/EP_N60-Single'
        - $ref: '#/components/schemas/EP_N88-Single'
 
