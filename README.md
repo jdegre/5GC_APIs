@@ -340,7 +340,7 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [PC5 Provisioning Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_PC5ProvisioningRequirement.yaml)
 * [Service And QoS Control Info](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ServiceAndQoSControlInfo.yaml)
 * [VRU Zone Management](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_VRUZoneManagement.yaml)
-* [](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2PApplicationRequirement.yaml)
+* [V2P Application Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2PApplicationRequirement.yaml)
 
 ## SEAL (Service Enabler Architecture Layer)
 * [Network Resource Adaptation](https://jdegre.github.io/loader.html?yaml=TS29549_SS_NetworkResourceAdaptation.yaml)
