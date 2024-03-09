@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: M1_ContentPreparationTemplatesProvisioning
-  version: 1.1.0
+  version: 1.1.1
   description: |
     5GMS AF M1 Content Preparation Templates Provisioning API
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -10,7 +10,7 @@ tags:
   - name: M1_ContentPreparationTemplatesProvisioning
     description: '5G Media Streaming: Provisioning (M1) APIs: Content Preparation Templates Provisioning'
 externalDocs:
-  description: 'TS 26.512 V16.9.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V16.12.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 servers:
   - url: '{apiRoot}/3gpp-m1/v1'
@@ -31,7 +31,7 @@ paths:
       operationId: createContentPreparationTemplate
       summary: 'Create (and optionally upload) a new Content Preparation Template for the specified Provisioning Session'
       requestBody:
-        description: 'A Content Preparation Template of any type'
+        description: 'A Content Preparation Template of any supported type'
         required: true
         content:
           '*/*':
@@ -46,6 +46,12 @@ paths:
               required: true
               schema:
                 $ref: 'TS26512_CommonData.yaml#/components/schemas/AbsoluteUrl'
+        '415':
+          # Unsupported Media Type
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '503':
+          # Service Unavailable
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
   /provisioning-sessions/{provisioningSessionId}/content-preparation-templates/{contentPreparationTemplateId}:
     parameters:
       - name: provisioningSessionId
@@ -85,6 +91,12 @@ paths:
           description: 'Updated Content Preparation Template'
         '404':
           description: 'Not Found'
+        '415':
+          # Unsupported Media Type
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '503':
+          # Service Unavailable
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
     patch:
       operationId: patchContentPreparationTemplate
       summary: 'Patch the specified Content Preparation Template for the specified Provisioning Session'
@@ -107,6 +119,12 @@ paths:
                 type: string
         '404':
           description: 'Not Found'
+        '415':
+          # Unsupported Media Type
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '503':
+          # Service Unavailable
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
     delete:
       operationId: destroyContentPreparationTemplate
       summary: 'Destroy the specified Content Preparation Template of the specified Provisioning Session'
