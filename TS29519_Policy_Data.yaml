@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -2098,6 +2098,10 @@ paths:
         - oAuth2ClientCredentials:
           - nudr-dr
           - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:group-control-data:read
       parameters:
         - name: supp-feat
           in: query
@@ -2138,6 +2142,17 @@ paths:
       operationId: ModifyGroupPolCtrlData
       tags:
         - GroupPolicyControlData (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:policy-data
+          - nudr-dr:policy-data:group-control-data:modify
       requestBody:
         required: true
         content:
@@ -2394,11 +2409,6 @@ components:
             The limit identifier is used as the key of the map.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        resetIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
       required:
         - smPolicySnssaiData
 
@@ -2464,8 +2474,8 @@ components:
             $ref: '#/components/schemas/LimitIdToMonitoringKey'
           minProperties: 1
           description: >
-            A reference to the UsageMonitoringDataLimit or UsageMonitoringData instances
-            for this DNN and SNSSAI that may also include the related monitoring key(s).
+            A reference to the UsageMonDataLimit or UsageMonData instances for this DNN and SNSSAI
+            that may also include the related monitoring key(s).
             The key of the map is the limit identifier.
         mpsPriority:
           type: boolean
@@ -2645,6 +2655,13 @@ components:
           $ref: 'TS29122_ResourceManagementOfBdt.yaml#/components/schemas/TrafficDescriptor'
         bdtpStatus:
           $ref: '#/components/schemas/BdtPolicyStatus'
+        warnNotifEnabled:
+          type: boolean
+          description: >
+            Indicates whether the BDT warning notification is enabled (true) or not (false).
+            Default value is false.
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
         resetIds:
@@ -2940,6 +2957,10 @@ components:
           $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/TransferPolicy'
         bdtpStatus:
           $ref: '#/components/schemas/BdtPolicyStatus'
+        warnNotifEnabled:
+          type: boolean
+          description: >
+            Indicates whether the BDT warning notification is enabled (true) or not (false).
 
     SlicePolicyData:
       description: Contains the network slice specific policy control information.
@@ -2955,11 +2976,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        resetIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
 
     SlicePolicyDataPatch:
       description: Contains the modified network slice specific policy control information.
@@ -3029,8 +3045,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
-        policyStatus:
-          $ref: '#/components/schemas/PolicyStatus'
         altQosParamSets:
           type: array
           items:
@@ -3054,6 +3068,8 @@ components:
           description: >
             Requested QoS requirements expressed as the QoS Reference which represents
             a pre-defined QoS information.
+        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         warnNotifEnabled:
           type: boolean
           description: >
@@ -3076,8 +3092,12 @@ components:
       properties:
         pdtqPolicy:
           $ref: 'TS29543_Npcf_PDTQPolicyControl.yaml#/components/schemas/PdtqPolicy'
-        policyStatus:
-          $ref: '#/components/schemas/PolicyStatus'
+
+        warnNotifEnabled:
+          type: boolean
+          description: >
+            Indicates whether the PDTQ warning notification is enabled (true) or not (false).        notifUri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
 
     GroupPolicyData:
       description: Contains the group specific policy control subscription information.
@@ -3089,11 +3109,6 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-        resetIds:
-          type: array
-          items:
-            type: string
-          minItems: 1
 
     GroupPolicyDataPatch:
       description: >
@@ -3125,6 +3140,13 @@ components:
     ItemPath:
       description: Identifies a fragment (subset of resource data) of a given resource.
       type: string
+
+    BdtReferenceIdRm:
+      type: string
+      description: >
+        This data type is defined in the same way as the BdtReferenceId data type defined in
+        3GPP TS 29.122, but with the nullable property set to true.
+      nullable: true
 
 # ENUMS:
 
@@ -3181,22 +3203,3 @@ components:
           description: >
             This string provides forward-compatibility with future extensions to the enumeration
             and is not used to encode content defined in the present version of this API.
-
-    PolicyStatus:
-      description: Indicates the validation status of a negotiated PDTQ policy.
-      anyOf:
-      - type: string
-        enum:
-          - INVALID
-          - VALID
-      - type: string
-        description: >
-          This string provides forward-compatibility with future extensions to the enumeration
-          and is not used to encode content defined in the present version of this API.
-
-    BdtReferenceIdRm:
-      type: string
-      description: >
-        This data type is defined in the same way as the BdtReferenceId data type defined in
-        3GPP TS 29.122, but with the nullable property set to true.
-      nullable: true

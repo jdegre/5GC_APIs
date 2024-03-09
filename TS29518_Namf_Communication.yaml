@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.4
+  version: 1.3.0-alpha.5
   title: Namf_Communication
   description: |
     AMF Communication Service.  
@@ -14,7 +14,7 @@ security:
       - namf-comm
 
 externalDocs:
-  description: 3GPP TS 29.518 V18.3.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V18.4.0; 5G System; Access and Mobility Management Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 
 servers:
@@ -2409,6 +2409,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        notifCorrelationId:
+          type: string
       required:
         - n2InformationClass
         - n2NotifyCallbackUri
@@ -2487,8 +2489,11 @@ components:
         notifySourceNgRan:
           type: boolean
           default: false
+        notifCorrelationId:
+          type: string
       required:
         - n2NotifySubscriptionId
+
     N2InfoContainer:
       description: N2 information container
       type: object
@@ -2509,8 +2514,8 @@ components:
           $ref: '#/components/schemas/ProSeInformation'
         tssInfo:
           $ref: '#/components/schemas/TssInformation'
-        rsppInfo:
-          $ref: '#/components/schemas/RsppInformation'
+        rslpInfo:
+          $ref: '#/components/schemas/RslpInformation'
         a2xInfo:
           $ref: '#/components/schemas/A2xInformation'
       required:
@@ -2695,6 +2700,7 @@ components:
         - ranNodeId
         - initialAmfName
         - userLocation
+
     AreaOfValidity:
       description: Area of validity information for N2 information transfer
       type: object
@@ -2704,6 +2710,11 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Tai'
           minItems: 0
+        taiRangeList:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/TaiRange'
+          minItems: 1
       required:
         - taiList
     UeContextTransferReqData:
@@ -2985,6 +2996,12 @@ components:
           $ref: '#/components/schemas/A2xContext'
         mbsrOperationAllowed:
           $ref: 'TS29503_Nudm_SDM.yaml#/components/schemas/MbsrOperationAllowed'
+        lcsUpContext:
+          $ref: '#/components/schemas/LcsUpContext'
+        reconnectInd:
+          type: boolean
+          default: false
+
 
 
     N2SmInformation:
@@ -3944,11 +3961,11 @@ components:
       required:
         - tssContainer
 
-    RsppInformation:
+    RslpInformation:
       description: Represents Ranging/SL positioning related N2 information.
       type: object
       properties:
-        n2Pc5RsppPol:
+        n2Pc5RslpPol:
           $ref: '#/components/schemas/N2InfoContent'
 
     A2xContext:
@@ -3984,6 +4001,14 @@ components:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/SliceUsageControlInfo'
           minProperties: 1
 
+    LcsUpContext:
+      description: Represents the LCS UP related parameters
+      type: object
+      properties:
+        upConnectionStatus:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/UpConnectionStatus'
+        servingLMFIdentification:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LMFIdentification'
 #
 # SIMPLE DATA TYPES
 #
@@ -4054,7 +4079,6 @@ components:
           - SMS
           - UPDP
           - LCS
-          - PRU
       - type: string
     N1N2MessageTransferCause:
       description: Enumeration for N1N2Message Transfer Cause

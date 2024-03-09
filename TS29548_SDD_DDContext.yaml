@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: SEALDD Server Data Delivery Context Relocation
-  version: 1.0.0-alpha.1
+  version: 1.0.0-alpha.4
   description: |
     SEALDD Server Data Delivery Context Relocation.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.548 V0.3.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.548 V1.0.0 Service Enabler Architecture Layer for Verticals (SEAL);
     SEAL Data Delivery (SEALDD) Server Services; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.548/
 
@@ -45,7 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DdContextPushReq'
+                $ref: '#/components/schemas/DdContextResp'
         '400':
           $ref: 'TS29122_CommonData.yaml#/components/responses/400'
         '401':
@@ -83,14 +83,14 @@ paths:
             schema:
               $ref: '#/components/schemas/DdContextPushReq'
       responses:
-        '200':
+        '201':
           description: >
-            Successful case. The DD context is successfully pushed to the SEALDD Server and the
-            related information is returned in the response body.
+            Created. Successful case. The DD context is successfully pushed to the SEALDD Server and
+            the related information is returned in the response body.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DdContextPushResp'
+                $ref: '#/components/schemas/DdContextResp'
         '307':
           $ref: 'TS29122_CommonData.yaml#/components/responses/307'
         '308':
@@ -128,12 +128,24 @@ components:
           scopes: {}
 
   schemas:
+
+#
+# STRUCTURED DATA TYPES
+#
+
     DdContext:
       description: Represents the DD context.
       type: object
       properties:
+        uuContext:
+          $ref: '#/components/schemas/SddUuContext'
+        sContext:
+          $ref: '#/components/schemas/SddSContext'
         trLayerContext:
           $ref: '#/components/schemas/TranspLayerContext'
+      required:
+       - uuContext
+       - sContext
 
     TranspLayerContext:
       description: Represents the transport layer context.
@@ -145,19 +157,93 @@ components:
        - transProtoc
 
     DdContextPushReq:
-      description: Represents the DD context relocation push request.
+      description: Represents the DD context push request.
       type: object
       properties:
         ddContext:
           $ref: '#/components/schemas/DdContext'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+       - ddContext
 
-    DdContextPushResp:
-      description: Represents the DD context relocation push response.
+    DdContextResp:
+      description: Represents the DD context push response.
       type: object
       properties:
+        ddContext:
+          $ref: '#/components/schemas/DdContext'
         endPoint:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteInformation'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+
+    SddUuContext:
+      description: Represents the context related to the SEALDD-Uu connection.
+      type: object
+      properties:
+        sddFlowId:
+          type: string
+          description: Represents the SEALDD flow ID.
+        valServiceId:
+          type: string
+          description: Contains the identifier of the VAL service.
+        valServerId:
+          type: string
+          description: Contains the identifier of the VAL Server.
+        valServEndPoint:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/RouteInformation'
+        ddClientConnInfo:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ConnInfo'
+        ddServConnInfo:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ConnInfo'
+        valTgtUe:
+          $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+        comLifetime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        valUsersBdw:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ValUsersBdw'
+        pendingTimer:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+      required:
+       - sddFlowId
+       - valServEndPoint
+
+    SddSContext:
+      description: Represents the context related to the SEALDD-S connection.
+      type: object
+      properties:
+        valServerId:
+          type: string
+          description: Contains the identifier of the VAL Server.
+        valServiceId:
+          type: string
+          description: Contains the identifier of the VAL service.
+        valTargetUeId:
+          type: string
+          description: Contains the identifier of the target VAL UE.
+        valServerConnInfo:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ConnInfo'
+        ddServerConnInfo:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ConnInfo'
+        qosInfo:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/QosInfo'
+        valServerBdw:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ValServBdw'
+        valUsersBdw:
+          $ref: 'TS29548_SDD_Transmission.yaml#/components/schemas/ValUsersBdw'
+      required:
+       - valServerId
+       - valServerConnInfo
+
+
+# SIMPLE DATA TYPES
+#
+
+#
+# ENUMERATIONS
+#
+
+# Data types describing alternative data types or combinations of data types:
+#
+

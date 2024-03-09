@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Slice NRM
-  version: 18.5.0
+  version: 18.6.0
   description: >-
     OAS 3.0.1 specification of the Slice NRM
     @ 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -178,13 +178,6 @@ components:
           $ref: '#/components/schemas/SynAvailability'
         accuracy:
           $ref: '#/components/schemas/Float'
-    SynchronicityRANSubnet:
-      type: object
-      properties:
-        availability:
-          $ref: '#/components/schemas/SynAvailability'
-        accuracy:
-          $ref: '#/components/schemas/Float'
     Positioning:
       type: object
       properties:
@@ -196,15 +189,6 @@ components:
           $ref: '#/components/schemas/PredictionFrequency'
         accuracy:
           $ref: '#/components/schemas/Float'
-    PositioningRANSubnet:
-      type: object
-      properties:
-        availability:
-          $ref: '#/components/schemas/PositioningAvailability'
-        predictionFrequency:
-          $ref: '#/components/schemas/PredictionFrequency'
-        accuracy:
-          $ref: '#/components/schemas/Float'     
     UserMgmtOpen:
       type: object
       properties:
@@ -304,6 +288,68 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SecFunc'
+    DataNetwork:
+      type: object
+      properties:
+        servAttrCom:
+          $ref: '#/components/schemas/ServAttrCom'
+        dnnList:
+          type: array
+          items: 
+            type: string
+    DataAccess:
+      type: object
+      properties:
+        dataNetworkName:
+          type: string
+        dataAccessUsed:
+          type: string
+          enum:
+            - DIRECT_INTERNET_ACCESS
+            - TERM_PVT_NETWORK
+            - LOCAL_TRAFFIC
+    TunnellingMechanism:
+      type: object
+      properties:
+        dataNetworkName:
+          type: string
+        tunellingMechanismUsed:
+          type: string
+          enum:
+            - L2TP_TUNNEL
+            - GRE_TUNNEL
+            - VPN_TUNNEL
+            - LABEL_BASED_ROUTING
+            - 802.1Q_VLAN
+            - SRV6
+            - OTHER
+    LboAllowed:
+      type: object
+      properties:
+        dataNetworkName:
+          type: string
+        localBreakoutAllowed:
+          type: string
+          enum:
+            - YES
+            - NO
+    DataNetworkAccess:
+      type: object
+      properties:
+        servAttrCom:
+          $ref: '#/components/schemas/ServAttrCom'
+        dataAccessList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataAccess'
+        tunnellingMechanismList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TunnellingMechanism'
+        localBreakoutAllowedList:
+          type: array
+          items:
+            $ref: '#/components/schemas/LboAllowed'
 
     CNSliceSubnetProfile:
       type: object
@@ -334,11 +380,11 @@ components:
           type: integer
         delayTolerance:
           $ref: '#/components/schemas/DelayTolerance'
-        synchronicity:
-          $ref: '#/components/schemas/SynchronicityRANSubnet'
         sliceSimultaneousUse:
           $ref: '#/components/schemas/SliceSimultaneousUse'
-        reliability:
+        dLReliability:
+          type: number
+        uLReliability:
           type: number
         energyEfficiency:
           type: number 
@@ -354,6 +400,16 @@ components:
           $ref: '#/components/schemas/N6Protection'
         nonIPSupport:
           $ref: '#/components/schemas/NonIPSupport'
+        availability:
+          type: number
+        maxDLDataVolume:
+          type: number
+        maxULDataVolume:
+          type: number
+        supportedDataNetworks:
+          $ref: '#/components/schemas/DataNetwork'
+        dataNetworkAccess:
+          $ref: '#/components/schemas/DataNetworkAccess'
     
     RANSliceSubnetProfile:
       type: object
@@ -382,7 +438,9 @@ components:
           $ref: '#/components/schemas/XLThpt'
         uESpeed:
           type: integer
-        reliability:
+        dLReliability:
+          type: number
+        uLReliability:
           type: number
         dLMaxPktSize:
           type: integer
@@ -395,7 +453,7 @@ components:
         delayTolerance:
           $ref: '#/components/schemas/DelayTolerance'
         positioning:
-          $ref: '#/components/schemas/PositioningRANSubnet'
+          $ref: '#/components/schemas/Positioning'
         sliceSimultaneousUse:
           $ref: '#/components/schemas/SliceSimultaneousUse'
         energyEfficiency:
@@ -405,13 +463,22 @@ components:
         survivalTime:
           type: number
         synchronicity:
-          $ref: '#/components/schemas/SynchronicityRANSubnet'
+          $ref: '#/components/schemas/Synchronicity'
         dLDeterministicComm:
           $ref: '#/components/schemas/DeterministicComm'
         uLDeterministicComm:
           $ref: '#/components/schemas/DeterministicComm'
         nonIPSupport:
           $ref: '#/components/schemas/NonIPSupport'
+        availability:
+          type: number
+        maxDLDataVolume:
+          type: number
+        maxULDataVolume:
+          type: number
+        kPIMonitoring:
+          $ref: '#/components/schemas/KPIMonitoring'
+
     TopSliceSubnetProfile:
       type: object
       properties:
@@ -461,7 +528,9 @@ components:
           $ref: '#/components/schemas/MobilityLevel'
         uESpeed:
           type: integer
-        reliability:
+        dLReliability:
+          type: number
+        uLReliability:
           type: number
         dLDeterministicComm:
           $ref: '#/components/schemas/DeterministicComm'
@@ -475,6 +544,18 @@ components:
           $ref: '#/components/schemas/N6Protection'
         nonIPSupport:
           $ref: '#/components/schemas/NonIPSupport'
+        availability:
+          type: number
+        maxDLDataVolume:
+          type: number
+        maxULDataVolume:
+          type: number
+        kPIMonitoring:
+          $ref: '#/components/schemas/KPIMonitoring'
+        supportedDataNetworks:
+          $ref: '#/components/schemas/DataNetwork'
+        dataNetworkAccess:
+          $ref: '#/components/schemas/DataNetworkAccess'
 
     ServiceProfile:
       type: object
@@ -545,7 +626,9 @@ components:
             type: integer
           survivalTime:
             type: number
-          reliability:
+          dLReliability:
+            type: number
+          uLReliability:
             type: number
           maxDLDataVolume:
             type: number
@@ -561,6 +644,11 @@ components:
             $ref: '#/components/schemas/N6Protection'
           nonIPSupport:
             $ref: '#/components/schemas/NonIPSupport'
+          supportedDataNetworks:
+            $ref: '#/components/schemas/DataNetwork'
+          dataNetworkAccess:
+            $ref: '#/components/schemas/DataNetworkAccess'
+
     SliceProfile:
       type: object
       properties:
@@ -675,7 +763,25 @@ components:
         An attribute that specifies the additional reason information if the reservation is failed. 
       type: string
 
+    ResourceIsolationRule:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum:
+            - MANAGED_FUNCTION
+            - NETWORK_SERVICE
+        isolationRule:
+          type: string
+          enum:
+            - DEDICATED
+            - SHARED
 
+    NetworkSlicingApplicability:
+      type: string
+      enum:
+        - NETWORKSLICE
+        - NETWORKSLICESUBNET
 
 #------------ Definition of concrete IOCs ----------------------------------------
 
@@ -717,7 +823,8 @@ components:
               $ref: '#/components/schemas/NetworkSliceController-Multiple'
             NetworkSliceSubnetController:
               $ref: '#/components/schemas/NetworkSliceSubnetController-Multiple'
-
+            IsolationProfile:
+              $ref: '#/components/schemas/IsolationProfile-Multiple'
 
     NetworkSlice-Single:
       allOf:
@@ -738,6 +845,8 @@ components:
                       $ref: '#/components/schemas/ServiceProfileList'
                     networkSliceControllerRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+                    isolationProfileRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
 
     NetworkSliceSubnet-Single:
       allOf:
@@ -772,6 +881,8 @@ components:
                         - CN_SLICESUBNET
                     networkSliceSubnetControllerRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+                    isolationProfileRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
 
     EP_Transport-Single:
       allOf:
@@ -894,6 +1005,26 @@ components:
                 networkSliceSubnetRef:
                   $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
 
+    IsolationProfile-Single:
+      allOf:
+        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
+        - type: object
+          properties:
+            attributes:
+              allOf:
+                - type: object
+                  properties:
+                    networkSlicingApplicability:
+                      $ref: '#/components/schemas/NetworkSlicingApplicability'
+                    resourceIsolationRuleList:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ResourceIsolationRule'
+                    networkSliceRefList:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+                    networkSliceSubnetRefList:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/DnList'
+
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------
     SubNetwork-Multiple:
       type: array
@@ -934,6 +1065,11 @@ components:
       items:
         $ref: '#/components/schemas/NetworkSliceSubnetController-Single'
 
+    IsolationProfile-Multiple:
+      type: array
+      items:
+        $ref: '#/components/schemas/IsolationProfile-Single'
+
 #------------ Definitions in TS 28.541 for TS 28.532 -----------------------------
 
     resources-sliceNrm:
@@ -948,4 +1084,5 @@ components:
        - $ref: '#/components/schemas/FeasibilityCheckAndReservationJob-Single'
        - $ref: '#/components/schemas/NetworkSliceController-Single'
        - $ref: '#/components/schemas/NetworkSliceSubnetController-Single'
+       - $ref: '#/components/schemas/IsolationProfile-Single'
     

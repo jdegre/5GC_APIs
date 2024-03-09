@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: NR NRM
-  version: 18.5.0
+  version: 18.6.0
   description: >-
     OAS 3.0.1 specification of the NR NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -16,7 +16,9 @@ components:
 #-------- Definition of types-----------------------------------------------------
 
     GnbId:
-      type: string
+      type: integer
+      minimum: 0
+      maximum: 4294967295
     GnbIdLength:
       type: integer
       minimum: 22
@@ -25,16 +27,17 @@ components:
       type: string
       maxLength: 150
     GnbDuId:
-      type: number
+      type: integer
       minimum: 0
       maximum: 68719476735
     GnbCuUpId:
-      type: number
+      type: integer
       minimum: 0
       maximum: 68719476735
 
     Sst:
       type: integer
+      minimum: 0
       maximum: 255
     Snssai:
       type: object
@@ -43,6 +46,7 @@ components:
           $ref: '#/components/schemas/Sst'
         sd:
           type: string
+          pattern: '^[A-Fa-f0-9]{6}$'
 
     PlmnIdList:
       type: array
@@ -65,13 +69,24 @@ components:
       type: string
     NpnIdentity:
       type: object
+      oneOf:
+        - required: [ plmnId, cagidList ]
+        - required: [ plmnId, nidList ]       
       properties:
         plmnId:
           $ref: 'TS28623_ComDefs.yaml#/components/schemas/PlmnId'
         cagidList:
-          $ref: '#/components/schemas/cagId'
+          type: array
+          items:
+            $ref: '#/components/schemas/cagId'
+          minItems: 1
+          maxItems: 12  
         nidList:
-          $ref: '#/components/schemas/nid'
+          type: array
+          items:
+            $ref: '#/components/schemas/nid'
+          minItems: 1
+          maxItems: 12              
     NpnIdentityList:
       type: array
       items:
@@ -247,7 +262,7 @@ components:
       enum:
         - DL
         - UL
-        - DL and UL
+        - DL_AND_UL
     BwpContext:
       type: string
       enum:
@@ -540,8 +555,8 @@ components:
           enum:
             - RS1
             - RS2
-            - RS1forEnoughMitigation
-            - RS1forNotEnoughMitigation          
+            - RS1_FOR_ENOUGH_MITIGATION
+            - RS1_FOR_NOT_ENOUGH_MITIGATION         
 
     RimRSReportConf:
       type: object
@@ -582,7 +597,7 @@ components:
         - PRB
         - PRB_UL
         - PRB_DL
-        - RRC
+        - RRC_CONNECTED_USERS
         - DRB    
     ParameterRange:
       type: object
@@ -591,19 +606,36 @@ components:
             type: integer
           minValue:
             type: integer
+
     NTNTAClist:
       type: array
       items:
         $ref: '#/components/schemas/NrTac'
+    
     Ephemeris:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/PositionVelocity'
-        - $ref: '#/components/schemas/Orbital'
+        - required: [ positionVelocity ]
+        - required: [ orbital ]
+      required:
+        - satelliteId
+        - epochTime
       properties:
         satelliteId:
-          type: integer
-  
+          type: string
+          pattern: '^[0-9]{5}$'
+        epochTime:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/DateTime'
+        positionVelocity:
+          $ref: '#/components/schemas/PositionVelocity'
+        orbital:
+          $ref: '#/components/schemas/Orbital'
+
+    EphemerisInfos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Ephemeris'
+
     PositionVelocity:
       type: object
       properties:
@@ -828,7 +860,14 @@ components:
               $ref: '#/components/schemas/EP_F1C-Single'
             EP_F1U:
               $ref: '#/components/schemas/EP_F1U-Multiple'
-
+            configurable5QISetRef:
+              description: This attribute is condition optional. The condition is NG-RAN Multi-Operator Core Network (NG-RAN MOCN) network sharing with operator specific 5QI is supported.
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+            dynamic5QISetRef:
+              description: This attribute is condition optional. The condition is NG-RAN Multi-Operator Core Network (NG-RAN MOCN) network sharing with operator specific 5QI is supported.            
+              $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+            NrOperatorCellDu:
+              $ref: '#/components/schemas/NrOperatorCellDu-Multiple'              
     GnbCuUpFunction-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -910,6 +949,8 @@ components:
                     configurable5QISetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
                     dynamic5QISetRef:
+                      $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
+                    ephemerisInfoSetRef:
                       $ref: 'TS28623_ComDefs.yaml#/components/schemas/Dn'
                     dCHOControl:
                       type: boolean
@@ -1078,8 +1119,7 @@ components:
               $ref: '#/components/schemas/CPCIConfigurationFunction-Single'
             DRACHOptimizationFunction:
               $ref: '#/components/schemas/DRACHOptimizationFunction-Single'
-            NrOperatorCellDu:
-              $ref: '#/components/schemas/NrOperatorCellDu-Multiple'
+
     BWPSet-Single:
       allOf:
         - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
@@ -1226,7 +1266,7 @@ components:
                     beamType:
                       type: string
                       enum:
-                        - SSB-BEAM
+                        - SSB_BEAM
                     beamAzimuth:
                       type: integer
                       minimum: -1800
@@ -1474,13 +1514,13 @@ components:
                     isProbingCapable:
                       type: string
                       enum:
-                         - yes
-                         - no
+                         - YES
+                         - NO
                     energySavingState:
                       type: string
                       enum:
-                         - isNotEnergySaving
-                         - isEnergySaving
+                         - IS_NOT_ENERGY_SAVING
+                         - IS_ENERGY_SAVING
 
     DRACHOptimizationFunction-Single:
       allOf:
@@ -1496,7 +1536,6 @@ components:
                       $ref: "#/components/schemas/UeAccProbabilityDist"
                     ueAccDelayProbabilityDist:
                       $ref: "#/components/schemas/UeAccDelayProbabilityDist"
-        - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/ManagedFunction-ncO'
 
     DMROFunction-Single:
       allOf:
@@ -1584,13 +1623,13 @@ components:
                     energySavingControl:
                       type: string
                       enum:
-                         - toBeEnergySaving
-                         - toBeNotEnergySaving
+                         - TO_BE_ENERGY_SAVING
+                         - TO_BE_NOT_ENERGY_SAVING
                     energySavingState:
                       type: string
                       enum:
-                         - isNotEnergySaving
-                         - isEnergySaving
+                         - IS_NOT_ENERGY_SAVING
+                         - IS_ENERGY_SAVING
 
     RimRSGlobal-Single:
       allOf:
@@ -1956,7 +1995,7 @@ components:
                   $ref: '#/components/schemas/PlmnInfoList'
                 nTNTAClist:
                   $ref: '#/components/schemas/NrTacList'
-            EphemerisInfoSet:
+            ephemerisInfoSet:
               $ref: '#/components/schemas/EphemerisInfoSet-Multiple'
 
     EphemerisInfoSet-Single:
@@ -1968,20 +2007,8 @@ components:
               allOf:
                 - type: object
                   properties:
-                    EphemerisInfos:
-                      $ref: '#/components/schemas/Ephemeris-Multiple'
-
-    Ephemeris-Single:
-      allOf:
-              - $ref: 'TS28623_GenericNrm.yaml#/components/schemas/Top'
-              - type: object
-                oneOf:
-                  - $ref: '#/components/schemas/PositionVelocity'
-                  - $ref: '#/components/schemas/Orbital'
-                properties:
-                  satelliteId:
-                    type: integer
-
+                    ephemerisInfos:
+                      $ref: '#/components/schemas/EphemerisInfos'
 
 #-------- Definition of JSON arrays for name-contained IOCs ----------------------
 
@@ -2150,10 +2177,6 @@ components:
       items:
         $ref: '#/components/schemas/EphemerisInfoSet-Single'
 
-    Ephemeris-Multiple:
-      type: array
-      items:
-        $ref: '#/components/schemas/Ephemeris-Single'
 #-------- Definitions in TS 28.541 for TS 28.532 ---------------------------------
 
     resources-nrNrm:
@@ -2222,5 +2245,4 @@ components:
         - $ref: '#/components/schemas/CCOOvershootCoverageParameters-Single'
         - $ref: '#/components/schemas/NTNFunction-Single'
         - $ref: '#/components/schemas/EphemerisInfoSet-Single'
-        - $ref: '#/components/schemas/Ephemeris-Single'
 

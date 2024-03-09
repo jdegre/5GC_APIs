@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: 3gpp-service-parameter
-  version: 1.2.0-alpha.4
+  version: 1.2.0-alpha.5
   description: |
     API for AF service paramter  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.522 V18.3.0; 5G System; Network Exposure Function Northbound APIs.
+    3GPP TS 29.522 V18.4.0; 5G System; Network Exposure Function Northbound APIs.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.522/'
 
 security:
@@ -426,8 +426,11 @@ components:
           items:
             $ref: '#/components/schemas/Event'
           minItems: 1
+          description: >
+            Identifies the AF subscribed event(s) notifications related to AF provisioned
+            service parameters.
         notificationDestination:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         requestTestNotification:
           type: boolean
           description: >
@@ -517,8 +520,11 @@ components:
             $ref: '#/components/schemas/Event'
           minItems: 1
           nullable: true
+          description: >
+            Identifies the AF subscribed event(s) notifications related to AF provisioned
+            service parameters.
         notificationDestination:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
 
     ParameterOverPc5:
       description: >
@@ -686,6 +692,8 @@ components:
             Indicates the TAIs in which the route selection parameters apply. This attribute is 
             applicable only within the 5GC and it shall not be included in the request messages of 
             untrusted AFs for URSP guidance.
+        pduSessType:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
 
     Event:
       anyOf:
@@ -787,13 +795,18 @@ components:
           description: >
             This is matched against the information provided by a UE application when it
             requests a network connection with certain capabilities.
-      anyOf:
-        - required: [appDescs]
-        - required: [flowDescs]
-        - required: [domainDescs]
-        - required: [ethFlowDescs]
-        - required: [dnns]
-        - required: [connCaps]
+        pinId:
+          type: string
+          description: This is matched against a PIN ID for a specific PIN configured in the PEGC.
+      oneOf:
+        - required: [pinId]
+        - anyOf:
+          - required: [appDescs]
+          - required: [flowDescs]
+          - required: [domainDescs]
+          - required: [ethFlowDescs]
+          - required: [dnns]
+          - required: [connCaps]
 
     NetworkDescription:
       description: >
@@ -810,6 +823,7 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Mnc'
           minItems: 1
+          description: Represents the applicable MNC(s) for the indicated MCC.
         anyPlmnInd:
           type: boolean
           description: Indicates any PLMN.
@@ -839,6 +853,8 @@ components:
       properties:
         failureCause:
           $ref: '#/components/schemas/Failure'
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
 
     Failure:
       oneOf:

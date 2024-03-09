@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.4
+  version: 1.3.0-alpha.5
   title: Nsmf_EventExposure
   description: |
     Session Management Event Exposure Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.508 V18.3.0; 5G System; Session Management Event Exposure Service.
+  description: 3GPP TS 29.508 V18.4.0; 5G System; Session Management Event Exposure Service.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.508/
 
 servers:
@@ -413,6 +413,19 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MutingExceptionInstructions'
         mutingSetting:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/MutingNotificationsSettings'
+        defQosSupp:
+          type: boolean
+          description: >
+            Indicates whether the NF service consumer requests to receive QoS Flow performance
+            information for the QoS Flow associated with the default QoS rule if there are no
+            measurements available for the provided Application Identifier included in the appIds
+            attribute.
+        qosMonPending:
+          type: boolean
+          description: >
+            Indicates that the reporting will be activated when the measurements are enabled by a
+            PCC rule. It shall always be set to true when present. It may only be provided in the
+            response.
       required:
         - notifId
         - notifUri
@@ -460,6 +473,8 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/ApplicationId'
           minItems: 1
+        networkArea:
+          $ref: 'TS29554_Npcf_BDTPolicyControl.yaml#/components/schemas/NetworkAreaInfo'
         targetPeriod:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         transacDispInd:
@@ -529,6 +544,8 @@ components:
             Indication of EAS re-discovery. If present and set to "true", it indicates the EAS
             re-discovery is performed, e.g. due to change of common EAS. Default value is "false" if
             omitted.
+        trafCorreInfo:
+          $ref: '#/components/schemas/TrafficCorrelationNotification'
         sourceUeIpv4Addr:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4Addr'
         sourceUeIpv6Prefix:
@@ -555,6 +572,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnId'
         accType:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        pduAccTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
         pduSeId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         ratType:
@@ -640,13 +662,17 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
           minItems: 1
-        ulConInfo:
+        ulCongInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        dlConInfo:
+        dlCongInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         cimf:
           type: boolean
           description: Represents the congestion information measurement failure indicator.
+        ulDataRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        dlDataRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
         timeWindow:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         smNasFromUe:
@@ -684,6 +710,8 @@ components:
         targetAfId:
           type: string
           description: Identifier of the Application Function responsible for the target DNAI.
+        5qi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/5Qi'
       required:
         - event
         - timeStamp
@@ -799,6 +827,38 @@ components:
         upfAddr:
           $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/AddrFqdn'
 
+    TrafficCorrelationNotification:
+      description: Represents notifications for 5GC determined Traffic Correlation Information.
+      type: object
+      properties:
+        smfId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+        tfcCorrId:
+          type: string
+          description: >
+            Identification of a set of UEs accessing the application identified by the 
+            Application Identifier or traffic filtering information.
+        dnais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
+        easFqdn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+        easIpAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+        pduSessionNbr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      required:
+        - smfId
+        - pduSessionNbr
+        - tfcCorrId
+      anyOf:
+        - required: [dnais]
+        - anyOf:
+          - required: [easFqdn]
+          - required: [easIpAddr]
+
     SmfEvent:
       anyOf:
       - type: string
@@ -821,7 +881,7 @@ components:
           - UPF_INFO
           - UP_STATUS_INFO
           - SATB_CH
-          - 5QI_INFO
+          - TRAFFIC_CORRELATION
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -849,7 +909,8 @@ components:
         - UPF_INFO: The UPF information, including the UPF ID/address/FQDN information.
         - UP_STATUS_INFO: The User Plane status information.
         - SATB_CH: Satellite backhaul category change.
-        - 5QI_INFO: Indicates that the event subscribed is related to 5QI.
+        - TRAFFIC_CORRELATION: Indicates that the SMF provides 5GC determined traffic correlation
+          information for a set of UEs identified by Traffic Correlation ID.
 
     NotificationMethod:
       anyOf:

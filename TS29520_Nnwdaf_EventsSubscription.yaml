@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.4
+  version: 1.3.0-alpha.5
   title: Nnwdaf_EventsSubscription
   description: |
     Nnwdaf_EventsSubscription Service API.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.520 V18.3.0; 5G System; Network Data Analytics Services.
+  description: 3GPP TS 29.520 V18.4.0; 5G System; Network Data Analytics Services.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.520/'
 
 security:
@@ -576,6 +576,8 @@ components:
             snssais in the data model definition of 3GPP TS 29.520. 
         tgtUe:
           $ref: '#/components/schemas/TargetUeInformation'
+        roamingInfo:
+          $ref: '#/components/schemas/RoamingInfo'
         congThresholds:
           type: array
           items:
@@ -695,6 +697,13 @@ components:
           items:
             $ref: '#/components/schemas/MovBehavReq'
           minItems: 1
+        relProxReqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelProxReq'
+          minItems: 1
+        feedback:
+          $ref: '#/components/schemas/AnalyticsFeedbackInfo'
       required:
         - event
       not:
@@ -873,6 +882,11 @@ components:
           items:
             $ref: '#/components/schemas/LocAccuracyInfo'
           minItems: 1
+        relProxInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelProxInfo'
+          minItems: 1
       required:
         - event
 
@@ -1031,10 +1045,7 @@ components:
           minItems: 1
           description: >
             Each element indicates the preferred accuracy level per analytics subset. It may be
-            present if the "listOfAnaSubsets" attribute is present in the subscription request when
-            the subscription event is NF_LOAD, UE_COMM, DISPERSION, NETWORK_PERFORMANCE,
-            WLAN_PERFORMANCE, DN_PERFORMANCE, SERVICE_EXPERIENCE or E2E_DATA_VOL_TRANS_TIME,
-            UE_MOBILITY, PDU_SESSION_TRAFFIC or MOVEMENT_BEHAVIOUR.
+            present if the "listOfAnaSubsets" attribute is present in the subscription request.
         startTs:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         endTs:
@@ -1135,6 +1146,8 @@ components:
           items:
             $ref: '#/components/schemas/GeoDistributionInfo'
           minItems: 1
+        distThreshold:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - loc
 
@@ -1146,9 +1159,14 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         gpsi:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        numOfUe:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        avrSpeed:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        ratio:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
         direction:
-          type: string
-          description: String identifying the moving direction of the UE.
+          $ref: '#/components/schemas/Direction'
       required:
         - direction
       oneOf:
@@ -2380,8 +2398,15 @@ components:
         ueLocOrderInd:
           type: boolean
           description: >
-            UE Location order indication. Set to "true" to indicate the NWDAF to provide the UE
-            Mobility analytics in a UE Location order, otherwise set to "false" or omit.
+            UE Location order indication. Set to "true" to indicate the NWDAF to provide UE
+            locations in the UE Mobility analytics in time order, otherwise set to "false" or
+            omitted.
+        distThresholds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          minItems: 1
+          description: Indicates the linear distance threshold.
 
     PduSessionInfo:
       description: Represents combination of PDU Session parameter(s) information.
@@ -2391,8 +2416,11 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionType'
         sscMode:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SscMode'
-        accessType:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+        accessTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
 
     PfdDeterminationInfo:
       description: Represents the PFD Determination information for a known application identifier.
@@ -2427,6 +2455,8 @@ components:
           description: Represents Domain name matching criteria.
         dnProtocol:
           $ref: 'TS29122_PfdManagement.yaml#/components/schemas/DomainNameProtocol'
+        pfdConfidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - appId
 
@@ -2525,11 +2555,10 @@ components:
           $ref: '#/components/schemas/E2eDataVolTransTimeCriterion'
         order:
           $ref: '#/components/schemas/MatchingDirection'
-        reportThresholds:
-          type: array
-          items:
-            type: string
-          minItems: 1
+        highTransTmThr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        lowTransTmThr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         repeatDataTrans:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         tsIntervalDataTrans:
@@ -2538,6 +2567,9 @@ components:
           $ref: '#/components/schemas/DataVolume'
         maxNumberUes:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+      oneOf:
+        - required: [repeatDataTrans]
+        - required: [tsIntervalDataTrans]
 
     DataVolume:
       description: Data Volume including UL/DL.
@@ -2572,6 +2604,8 @@ components:
           items:
             $ref: '#/components/schemas/GeoDistributionInfo'
           minItems: 1
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
       required:
         - e2eDataVolTransTimes
 
@@ -2588,10 +2622,6 @@ components:
           items:
             $ref: '#/components/schemas/E2eDataVolTransTimePerUe'
           minItems: 1
-        repeatDataTrans:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
-        tsIntervalDataTrans:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
       required:
         - tsStart
         - tsDuration
@@ -2601,15 +2631,10 @@ components:
       description: Represents the E2E data volume transfer time per UE.
       type: object
       properties:
-        supis:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
-          minItems: 1
-        gpsis:
-          type: array
-          items:
-            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
         snssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
         appId:
@@ -2673,13 +2698,13 @@ components:
         uplinkVolume:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         avgTransTimeUl:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         varTransTimeUl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
         downlinkVolume:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/Volume'
         avgTransTimeDl:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         varTransTimeDl:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
 
@@ -2845,19 +2870,155 @@ components:
         ratio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
 
-    DirectionUeInfo:
-      description: Heading directions information of the UE flow in the target area.
+    RelProxReq:
+      description: Represents the Relative Proximity analytics requirements.
       properties:
         direction:
+          type: array
+          items:
             $ref: '#/components/schemas/Direction'
+          minItems: 1
         numOfUe:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        proximityCrits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProximityCriterion'
+          minItems: 1
+
+    RelProxInfo:
+      description: Represents the Relative Proximity information.
+      properties:
+        tsStart:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        tsDuration:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        supis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        gpsis:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+        ueProximities:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeProximity'
+          minItems: 1
+        ttcInfo:
+          $ref: '#/components/schemas/TimeToCollisionInfo'
+      required:
+        - tsStart
+        - tsDuration
+        - ueProximities
+
+    UeProximity:
+      description: Represents the Observed or Predicted proximity information.
+      properties:
+        ueDistance:
+          type: integer
+        ueVelocity:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
         avrSpeed:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        locOrientation:
+          $ref: '#/components/schemas/LocationOrientation'
+        ueTrajectories:
+          type: array
+          items:
+            $ref: '#/components/schemas/UeTrajectory'
+          minItems: 1
         ratio:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SamplingRatio'
+
+    UeTrajectory:
+      description: Represents timestamped UE positions.
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        timestampedLocs:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimestampedLocation'
+          minItems: 1
       required:
-        - direction
+        - timestampedLocs
+      oneOf:
+        - required: [supi]
+        - required: [gpsi]
+
+    TimestampedLocation:
+      description: The timestamped locations of the trajectory of the UE.
+      properties:
+        ts:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        locInfo:
+          items:
+            $ref: '#/components/schemas/LocationInfo'
+      required:
+        - ts
+        - locInfo
+
+    TimeToCollisionInfo:
+      description: Represents Time To Collision (TTC) information.
+      properties:
+        ttc:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+        accuracy:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+        confidence:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+
+    AnalyticsFeedbackInfo:
+      description: Analytics feedback information.
+      properties:
+        actionTimes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+          minItems: 1
+          description: The times at which an action was taken.
+        usedAnaTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NwdafEvent'
+          minItems: 1
+          description: The analytics types that were used to take the action.
+        impactInd:
+          type: boolean
+          description: Indication about the impact of an action on the ground truth data.
+      required:
+        - actionTimes
+
+    RoamingInfo:
+      description: Information related to roaming analytics.
+      type: object
+      properties:
+        plmnId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PlmnIdNid'
+        aois:
+          type: array
+          items:
+            $ref: 'TS29522_AMPolicyAuthorization.yaml#/components/schemas/GeographicalArea'
+          minItems: 1
+          description: Areas of Interest in the HPLMN or the VPLMN.
+        servingNfIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
+          minItems: 1
+          description: NF ID(s) of the NF(s) serving the roaming UE(s) in the VPLMN.
+        servingNfSetIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NfSetId'
+          minItems: 1
+          description: NF Set ID(s) of the NF Set(s) serving the roaming UE(s) in the VPLMN.
 
 #
 # ENUMERATIONS DATA TYPES
@@ -2910,6 +3071,7 @@ components:
           - SPEED_THRESHOLD
           - MOV_UE_DIRECTION
           - LOC_ACCURACY
+          - RELATIVE_PROXIMITY
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -2948,6 +3110,8 @@ components:
         - MOVEMENT_BEHAVIOUR: Indicates that the event subscribed is the Movement Behaviour
           information.
         - LOC_ACCURACY: Indicates that the event subscribed is of location accuracy.
+        - RELATIVE_PROXIMITY: Indicates that the event subscribed is the Relative Proximity
+          information.
 
 
     Accuracy:
@@ -3143,6 +3307,7 @@ components:
         enum:
           - UNAVAILABLE_DATA
           - BOTH_STAT_PRED_NOT_ALLOWED
+          - PREDICTION_NOT_ALLOWED
           - UNSATISFIED_REQUESTED_ANALYTICS_TIME
           - OTHER
       - type: string
@@ -3158,6 +3323,8 @@ components:
         - BOTH_STAT_PRED_NOT_ALLOWED: Indicates the requested analysis information for the event is
           rejected since the start time is in the past and the end time is in the future, which
           means the NF service consumer requested both statistics and prediction for the analytics.
+        - PREDICTION_NOT_ALLOWED: Indicates that the request for the prediction of the analytics
+          event is not allowed.
         - UNSATISFIED_REQUESTED_ANALYTICS_TIME: Indicates that the requested event is rejected since
           the analytics information is not ready when the time indicated by the "timeAnaNeeded"
           attribute (as provided during the creation or modification of subscription) is reached.
@@ -3297,7 +3464,6 @@ components:
           - NUMBER_OF_UE
           - UE_GEOG_DIST
           - UE_DIRECTION
-          - USER_LOCATION
           - AVG_E2E_UL_PKT_DELAY
           - VAR_E2E_UL_PKT_DELAY
           - AVG_E2E_DL_PKT_DELAY
@@ -3308,6 +3474,7 @@ components:
           - VAR_E2E_DL_PKT_LOSS_RATE
           - E2E_DATA_VOL_TRANS_TIME_FOR_UE_LIST
           - IN_OUT_PERCENT
+          - TIME_TO_COLLISION
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -3422,8 +3589,6 @@ components:
           the AF for application service. This value is only applicable to UE_MOBILITY event.
         - UE_DIRECTION: Indicates the direction of the UEs. This value is only applicable to
           UE_MOBILITY event.
-        - USER_LOCATION: Indicates the user location. This value is only applicable to UE_MOBILITY
-          event.
         - AVG_E2E_UL_PKT_DELAY: Indicates average End-to-End (between UE and UPF) uplink packet
           delay. This value is only applicable to RED_TRANS_EXP event.
         - VAR_E2E_UL_PKT_DELAY: Indicates the variance of End-to-End (between UE and UPF) uplink
@@ -3456,6 +3621,8 @@ components:
           This value is only applicable to MOVEMENT_BEHAVIOUR event.
         - IN_OUT_PERCENT: Indicates the percentage of indoor/outdoor UEs at a location.
           The value is only applicable to the LOC_ACCURACY event.
+        - TIME_TO_COLLISION: Indicates the time until for a collision with another UE happens.
+          This value is only applicable to RELATIVE_PROXIMITY event prediction.
 
     DispersionType:
       oneOf:
@@ -3832,6 +3999,10 @@ components:
           - SOUTH
           - EAST
           - WEST
+          - NORTHWEST
+          - NORTHEAST
+          - SOUTHWEST
+          - SOUTHEAST
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration but
@@ -3842,3 +4013,26 @@ components:
           - SOUTH: South direction.
           - EAST: EAST direction.
           - WEST: WEST direction.
+          - NORTHWEST: Northwest direction.
+          - NORTHEAST: Northeast direction.
+          - SOUTHWEST: Southwest direction.
+          - SOUTHEAST: Southeast direction.
+
+    ProximityCriterion:
+      anyOf:
+      - type: string
+        enum:
+          - VELOCITY
+          - AVG_SPD
+          - ORIENTATION
+          - TRAJECTORY
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration but
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Possible values are:  
+          - VELOCITY: Velocity.
+          - AVG_SPD: Average speed.
+          - ORIENTATION: Orientation.
+          - TRAJECTORY: Mobility trajectory.

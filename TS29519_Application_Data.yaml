@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.519 V18.3.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
+    3GPP TS 29.519 V18.4.0; 5G System; Usage of the Unified Data Repository Service for Policy Data,
     Application Data and Structured Data for Exposure.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.519/'
 
@@ -2348,6 +2348,294 @@ paths:
         default:
           $ref: 'TS29571_CommonData.yaml#/components/responses/default'
 
+  /application-data/af-qos-data-sets:
+    get:
+      summary: Retrieve AF Requested QoS Data
+      operationId: ReadAFReqQoSData
+      tags:
+        - AF Requested QoS Data (Store)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:af-qos-data-sets:read
+      parameters:
+        - name: dnns
+          in: query
+          description: Each element identifies a DNN
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+            minItems: 1
+        - name: snssais
+          in: query
+          description: Each element identifies a slice.
+          required: false
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+                minItems: 1
+        - name: internal-group-ids
+          in: query
+          description: Each element identifies a group of users.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+            minItems: 1
+        - name: supis
+          in: query
+          description: Each element identifies the user.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+            minItems: 1
+        - name: data-set-ids
+          in: query
+          description: Each element identifies an Individual AF requested QoS resource.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            minItems: 1
+        - name: supp-feat
+          in: query
+          required: false
+          description: Supported Features
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: The AF requested QoS Data stored in the UDR are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AfRequestedQosData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /application-data/af-qos-data-sets/{afReqQosId}:
+    put:
+      summary: Create or update an Individual AF Requested QoS Data resource.
+      operationId: CreateIndividualAFReqQoSData
+      tags:
+        - Individual AF Requested QoS Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:af-qos-data-sets:create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AfRequestedQosData'
+      parameters:
+        - name: afReqQosId
+          in: path
+          description: >
+            The Identifier of an Individual AF Requested QoS Data to be created or updated.
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: >
+            The creation of an Individual AF Requested QoS Data resource is confirmed and a
+            representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AfRequestedQosData'
+          headers:
+            Location:
+              description: >
+                Contains the URI of the newly created resource, according to the structure:
+                {apiRoot}/nudr-dr/<apiVersion>/application-data/af-qos-data-sets/{afReqQosId}
+              required: true
+              schema:
+                type: string
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    patch:
+      summary: Modify part of the properties of an individual AF requested QoS Data resource
+      operationId: UpdateIndividualAFRequestedQoSData
+      tags:
+        - Individual AF requested QoS Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:af-qos-data-sets:modify
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AfRequestedQosDataPatch'
+      parameters:
+        - name: afReqQosId
+          in: path
+          description: >
+            The Identifier of an Individual AF Requested QoS Data to be updated.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            The update of an Individual AF Requested QoS Data resource is confirmed and
+            a response body containing AF Requested QoS Data shall be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AfRequestedQosData'
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete an individual AF requested QoS Data resource
+      operationId: DeleteIndividualAFRequestedQosData
+      tags:
+        - Individual AF requested QoS Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:af-qos-data-sets:modify
+      parameters:
+        - name: afReqQosId
+          in: path
+          description: >
+            The Identifier of an Individual AF Requested QoS Data to be deleted.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The Individual AF requested QoS Data was deleted successfully.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
   /application-data/subs-to-notify/{subsId}:
     parameters:
      - name: subsId
@@ -2735,14 +3023,319 @@ paths:
         - name: easDeployInfoId
           in: path
           description: >
-            The Identifier of an Individual EAS Deployment Data to be updated. It shall apply the
-            format of Data type string.
+            The Identifier of an Individual EAS Deployment Data to be deleted.
+            It shall apply the format of Data type string.
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: The Individual Influence Data was deleted successfully.
+          description: The Individual EAS Deployment Data was deleted successfully.
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /application-data/dnai-eas-mappings/{dnai}:
+    parameters:
+     - name: dnai
+       in: path
+       required: true
+       schema:
+         type: string
+    get:
+      summary: Retrieves the EAS address information for a DNAI.
+      operationId: ReadDnaiEasMapping
+      tags:
+        - DnaiEasMapping (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:dnai-eas:read
+      parameters:
+        - name: supp-feat
+          in: query
+          description: Supported Features
+          required: false
+          schema:
+             $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      responses:
+        '200':
+          description: >
+            Upon success, a response body containing EAS address information for a DNAI
+            is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DnaiEasMapping'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /application-data/ecs-address-roaming:
+    get:
+      summary: Retrieve ECS Address Roaming Data
+      operationId: ReadEcsRoamingData
+      tags:
+        - ECS Address Roaming Data (Store)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:ecs-address-roaming:read
+      parameters:
+        - name: internal-group-id
+          in: query
+          description: Identifies a group of users.
+          required: false
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        - name: any-ue
+          in: query
+          description: >
+            Indicates that any UE is targetted if included and set to true, otherwise set to false.
+            Default value is false if omitted.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: The ECS Address Roaming Data stored in the UDR are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EcsAddrData'
+                minItems: 1
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '414':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/414'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+  /application-data/ecs-address-roaming/{ecsAddrInfoId}:
+    get:
+      summary: Retrieve an individual ECS Address Roaming Data resource
+      operationId: ReadIndividualEcsAddr
+      tags:
+        - Individual ECS Address Roaming Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:ecs-address-roaming:read
+      parameters:
+        - name: ecsAddrInfoId
+          description: >
+            String identifying an Individual ECS Address Roaming Data resource.
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            The ECS Address Roaming Data stored in the UDR for an Individual ECS Address Roaming
+            Data resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EcsAddrData'
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '406':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/406'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    put:
+      summary: Create or update an individual ECS Address Roaming Data resource
+      operationId: CreateOrReplaceIndividualEcsAddressData
+      tags:
+        - Individual ECS Address Roaming Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:ecs-address-roaming:create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EcsAddrData'
+      parameters:
+        - name: ecsAddrInfoId
+          in: path
+          description: >
+            The Identifier of an Individual ECS Address Roaming Data to be created or updated.
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: >
+            The creation of an Individual EECS Address Roaming Data resource is confirmed
+            and a representation of that resource is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EcsAddrData'
+          headers:
+            Location:
+              description: >
+                Contains the URI of the newly created resource.
+              required: true
+              schema:
+                type: string
+        '200':
+          description: >
+            The update of an Individual ECS Address Roaming Data resource is confirmed
+            and a response body containing ECS Address Roaming Data is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EcsAddrData'
+        '204':
+          description: No content
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+    delete:
+      summary: Delete an individual ECS Address Roaming Data resource
+      operationId: DeleteIndividualEcsAddrData
+      tags:
+        - Individual ECS Address Roaming Data (Document)
+      security:
+        - {}
+        - oAuth2ClientCredentials:
+          - nudr-dr
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+        - oAuth2ClientCredentials:
+          - nudr-dr
+          - nudr-dr:application-data
+          - nudr-dr:application-data:ecs-address-roaming:modify
+      parameters:
+        - name: ecsAddrInfoId
+          in: path
+          description: >
+            The Identifier of an Individual ECS Address Roaming Data to be updated.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The Individual ECS Address Roaming Data was deleted successfully.
         '400':
           $ref: 'TS29571_CommonData.yaml#/components/responses/400'
         '401':
@@ -2904,8 +3497,6 @@ components:
           - required: [supi]
           - required: [interGroupId]
           - required: [interGroupIdList]
-      not:
-        required: [interGroupId, interGroupIdList]
 
     TrafficInfluDataPatch:
       description: Represents the Traffic Influence Data to be updated in the UDR.
@@ -3062,11 +3653,8 @@ components:
         - required: [dnns]
         - required: [snssais]
         - required: [internalGroupIds]
-        - required: [internalGroupIds]
         - required: [internalGroupIdsAdd]
         - required: [supis]
-      not:
-        required: [internalGroupIds, internalGroupIdsAdd]
 
     TrafficInfluDataNotif:
       description: Represents traffic influence data for notification.
@@ -3355,7 +3943,9 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
         anyUeInd:
           type: boolean
-          description: Indicates whether the data is applicable for any UE.
+          description: >
+            When set to true, it indicates whether the data is applicable for any UE. Otherwise set
+            to "false". Default value is "false" if omitted.
         roamUePlmnIds:
           type: array
           items:
@@ -3385,7 +3975,9 @@ components:
           minItems: 1
         thruReq:
           type: boolean
-          description: Indicates whether high throughput is desired for the indicated UE traffic.
+          description: >
+            When set to true, it indicates whether high throughput is desired for the 
+            indicated UE traffic. Otherwise set to "false". Default value is "false" if omitted.
         covReq:
           type: array
           items:
@@ -3514,6 +4106,12 @@ components:
           $ref: '#/components/schemas/ServiceParameterData'
         amInfluData:
           $ref: '#/components/schemas/AmInfluData'
+        dnaiEasData:
+          $ref: '#/components/schemas/DnaiEasMapping'
+        afReqQosData:
+          $ref: '#/components/schemas/AfRequestedQosData'
+        ecsAddrData:
+          $ref: '#/components/schemas/EcsAddrData'
       required:
         - resUri
 
@@ -3573,6 +4171,11 @@ components:
           items:
             $ref: 'TS29522_AMInfluence.yaml#/components/schemas/DnnSnssaiInformation'
           minItems: 1
+        dnais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
       required:
         - dataInd
 
@@ -3581,7 +4184,7 @@ components:
         Contains the information for traffic correlation.
       type: object
       properties:
-        correType:
+        corrType:
           $ref: '#/components/schemas/CorrelationType'
         tfcCorrId:
           type: string
@@ -3600,10 +4203,176 @@ components:
           nullable: true
         notifUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UriRm'
-        notifId:
+        notifCorrId:
           type: string
           nullable: true
+          description: Notification correlation identifier.
       nullable: true
+
+    AfRequestedQosData:
+      description: Represents AF Requested QoS data.
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        interGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        afAppId:
+          type: string
+          description: Identifies an AF application.
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        sliceInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        evSubsc:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EventsSubscReqData'
+        flowInfos:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+        qosReference:
+          type: string
+        altSerReqs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        altSerReqsData:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AlternativeServiceRequirementsData'
+          minItems: 1
+          description: >
+            Contains alternative service requirements that include individual QoS parameter sets.
+        disUeNotif:
+          type: boolean
+        marBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        marBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mirBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        mirBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        tempInValidity:
+          $ref: 'TS29565_Ntsctsf_QoSandTSCAssistance.yaml#/components/schemas/TemporalInValidity'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - suppFeat
+      oneOf:
+      - required: [supi]
+      - required: [interGroupId]
+
+    AfRequestedQosDataPatch:
+      description: Represents modification of Individual AF Requested QoS data.
+      type: object
+      properties:
+        afAppId:
+          type: string
+          description: Identifies an AF application.
+          nullable: true
+        evSubsc:
+          $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/EventsSubscReqDataRm'
+        flowInfos:
+          type: array
+          items:
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/FlowInfo'
+          minItems: 1
+          nullable: true
+        qosReference:
+          type: string
+          nullable: true
+        altSerReqs:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          nullable: true
+        altSerReqsData:
+          type: array
+          items:
+            $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/AlternativeServiceRequirementsData'
+          minItems: 1
+          description: >
+            Contains removable alternative service requirements that include individual QoS
+            parameter sets.
+          nullable: true
+        disUeNotif:
+          type: boolean
+          nullable: true
+        marBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        marBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        mirBwDl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        mirBwUl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRateRm'
+        tempInValidity:
+          $ref: 'TS29565_Ntsctsf_QoSandTSCAssistance.yaml#/components/schemas/TemporalInValidity'
+
+    DnaiEasMapping:
+      description: Contains DNAI to EAS mapping information.
+      type: object
+      properties:
+        dnaiEasInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnaiEasInfo'
+          minItems: 1
+          description: Each element conrtains EAS address information for a DNAI.
+      required:
+        - dnaiEasInfos
+
+    DnaiEasInfo:
+      description: Contains EAS information for a DNAI.
+      type: object
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        snssai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        easIpAddrs:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/IpAddr'
+          minItems: 1
+          description: Each element contains EAS addresses, address ranges, and/or prefixes.
+        fqdns:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/FqdnPatternMatchingRule'
+          minItems: 1
+          description: Each element conrtains FQDN matching rules for the EAS(s) of a DNAI.
+      anyOf:
+        - required: [dnn]
+        - required: [snssai]
+      oneOf:
+        - required: [easIpAddrs]
+        - required: [fqdns]
+    EcsAddrData:
+      description: Represents ECS Address Data.
+      type: object
+      properties:
+        self:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Link'
+        ecsServerAddr:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EcsServerAddr'
+        spatialValidityCond:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SpatialValidityCond'
+        anyUeInd:
+          type: boolean
+          description: >
+            If provided and set to true it indicates that all the UEs are targetted,
+            otherwise set to false. The default value is false if omitted.
+        internalGroupId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
+        suppFeat:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+      required:
+        - ecsServerAddr
 
     DataInd:
       anyOf:
@@ -3614,6 +4383,9 @@ components:
           - BDT
           - SVC_PARAM
           - AM
+          - DNAI_EAS
+          - REQ_QOS
+          - ECS
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -3627,6 +4399,9 @@ components:
         - BDT: BDT data.
         - SVC_PARAM: Service parameter data.
         - AM: AM influence data.
+        - DNAI_EAS: DNAI EAS mapping data.
+        - REQ_QOS: AF Requested QoS data for a UE or group of UE(s) not identified by UE address(es).
+        - ECS: ECS Address data.
 
     CorrelationType:
       description: Indicates that a common DNAI or common EAS should be selected.

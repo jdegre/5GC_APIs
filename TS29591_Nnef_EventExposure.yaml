@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Nnef_EventExposure
-  version: 1.3.0-alpha.3
+  version: 1.3.0-alpha.4
   description: |
     NEF Event Exposure Service.  
     © 2023 , 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.591 V18.2.0; 5G System; Network Exposure Function Southbound Services; Stage 3.
+    3GPP TS 29.591 V18.4.0; 5G System; Network Exposure Function Southbound Services; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.591/
 
 servers:
@@ -375,28 +375,64 @@ components:
           items:
             $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/MsQoeMetricsCollection'
           minItems: 1
+          deprecated: true
+        msQoeMetrics:
+          type: array
+          items:
+            $ref: 'TS26512_EventExposure.yaml#/components/schemas/QoEMetricsCollection'
+          minItems: 1
+          description: Represents the Media Streaming QoE metrics event notification.
         msConsumpInfos:
           type: array
           items:
             $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/MsConsumptionCollection'
           minItems: 1
+          deprecated: true
+        msConsumpReports:
+          type: array
+          items:
+            $ref: 'TS26512_EventExposure.yaml#/components/schemas/ConsumptionReportingUnitsCollection'
+          minItems: 1
+          description: Represents the Media Streaming Consumption event notification.
         msNetAssInvInfos:
           type: array
           items:
             $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/MsNetAssInvocationCollection'
           minItems: 1
+          deprecated: true
+        msNetAssistInvocation:
+          type: array
+          items:
+            $ref: 'TS26512_EventExposure.yaml#/components/schemas/NetworkAssistanceInvocationsCollection'
+          minItems: 1
+          description: >
+            Represents the Media Streaming Network Assistance Invocations event notification.
         msDynPlyInvInfos:
           type: array
           items:
             $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/MsDynPolicyInvocationCollection'
           minItems: 1
+          deprecated: true
+        msDynPlyInvocation:
+          type: array
+          items:
+            $ref: 'TS26512_EventExposure.yaml#/components/schemas/DynamicPolicyInvocationsCollection'
+          minItems: 1
+          description: Represents the Media Streaming Dynamic Policy Invocations event notification.
         msAccActInfos:
           type: array
           items:
             $ref: 'TS29517_Naf_EventExposure.yaml#/components/schemas/MSAccessActivityCollection'
           minItems: 1
+          deprecated: true
+        msAccess:
+          type: array
+          items:
+            $ref: 'TS26512_EventExposure.yaml#/components/schemas/MediaStreamingAccessesCollection'
+          minItems: 1
+          description: Represents the Media Streaming access event notification.
         gnssAssistDataInfo:
-            $ref: '#/components/schemas/GNSSAssistDataInfo'
+          $ref: '#/components/schemas/GNSSAssistDataInfo'
         datVolTransTimeInfos:
           type: array
           items:
@@ -567,11 +603,14 @@ components:
       description: Represents GNSS Assistance Data related information.
       type: object
       properties:
+        gnssAssistData:
+          $ref: '#/components/schemas/GNSSAssistData'
         servArea:
           $ref: '#/components/schemas/GNSSServArea'
         sourceInfo:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/GeographicalCoordinates'
       required:
+        - gnssAssistData
         - servArea
 
     GNSSServArea:
@@ -641,3 +680,9 @@ components:
           activity.
         - GNSS_ASSISTANCE_DATA: Indicates that the subscribed/notified event is GNSS Assistance Data
           Collection.
+
+    GNSSAssistData:
+      type: string
+      description: >
+        Represents GNSS Assistance Data encoded as specified in clause 6.5.2.1 of
+        3GPP TS 37.355 [31].

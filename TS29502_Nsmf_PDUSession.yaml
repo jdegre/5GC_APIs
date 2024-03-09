@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.5'
+  version: '1.3.0-alpha.6'
   title: 'Nsmf_PDUSession'
   description: |
     SMF PDU Session Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.502 V18.4.0; 5G System; Session Management Services; Stage 3
+  description: 3GPP TS 29.502 V18.5.0; 5G System; Session Management Services; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.502/
 
 servers:
@@ -819,7 +819,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: representation of the payload of Send MO Data Request
+        description: representation of the content of Send MO Data Request
         required: true
         content:
           multipart/related:  # message with a binary body part
@@ -1089,7 +1089,7 @@ paths:
                 - Individual PDU session (V-SMF)
               operationId: TransferMtData
               requestBody:
-                description: representation of the payload of Transfer MT Data Request
+                description: representation of the content of Transfer MT Data Request
                 required: true
                 content:
                   multipart/related:  # message with a binary body part
@@ -1156,7 +1156,7 @@ paths:
                 - Individual PDU session (I-SMF)
               operationId: TransferMtData-ismf
               requestBody:
-                description: representation of the payload of Transfer MT Data Request
+                description: representation of the content of Transfer MT Data Request
                 required: true
                 content:
                   multipart/related:  # message with a binary body part
@@ -1581,7 +1581,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: representation of the payload of the Retrieve Request
+        description: representation of the content of the Retrieve Request
         required: true
         content:
           application/json:
@@ -1639,7 +1639,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: representation of the payload of Transfer MO Data Request
+        description: representation of the content of Transfer MO Data Request
         required: true
         content:
           multipart/related:  # message with a binary body part
@@ -1715,6 +1715,8 @@ components:
         unauthenticatedSupi:
           type: boolean
           default:  false
+        roamingUeInd:
+          type: boolean
         pei:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Pei'
         gpsi:
@@ -1946,8 +1948,6 @@ components:
         upipSupported:
           type: boolean
           default: false
-        uavAuthenticated:
-          type: boolean
         disasterRoamingInd:
           type: boolean
           default: false
@@ -1960,6 +1960,12 @@ components:
         hrsboAllowedInd:
           type: boolean
           default: false
+        estabRejectionInd:
+          type: boolean
+          enum:
+            - true
+        estabRejectionCause:
+          $ref: '#/components/schemas/EstablishmentRejectionCause'
       required:
         - servingNfId
         - servingNetwork
@@ -2319,6 +2325,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
         interPlmnApiRoot:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
+        targetDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
       required:
         - statusInfo
 
@@ -2426,6 +2434,8 @@ components:
         chargingId:
           type: string
           pattern: '^(0|([1-9]{1}[0-9]{0,9}))$'
+        smfChargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmfChargingId'
         oldPduSessionId:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSessionId'
         epsBearerCtxStatus:
@@ -2451,9 +2461,6 @@ components:
           type: boolean
           default: false
         maNwUpgradeInd:
-          type: boolean
-          default: false
-        n3gPathSwitchSupportInd:
           type: boolean
           default: false
         dnaiList:
@@ -2506,6 +2513,14 @@ components:
           type: array
           items:
             $ref: 'TS29503_Nudm_PP.yaml#/components/schemas/EcsAddrConfigInfo'
+          minItems: 1
+        pduSetSupportInd:
+          type: boolean
+          default: false
+        ecnMarkingCongestionInfoStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/EcnMarkingCongestionInfoStatus'
           minItems: 1
       required:
         - dnn
@@ -2595,12 +2610,11 @@ components:
         maAcceptedInd:
           type: boolean
           default: false
-        n3gPathSwitchSupportInd:
-          type: boolean
-          default: false
         homeProvidedChargingId:
           type: string
           pattern: '^(0|([1-9]{1}[0-9]{0,9}))$'
+        homeProvidedSmfChargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmfChargingId'
         nefExtBufSupportInd:
           type: boolean
           default: false
@@ -2823,6 +2837,17 @@ components:
           $ref: '#/components/schemas/HrsboInfoFromVplmn'
         altSnssai:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+        disasterRoamingInd:
+          type: boolean
+          enum:
+           - true
+        pduSetSupportInd:
+          type: boolean
+        ecnMarkingCongestionInfoStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/EcnMarkingCongestionInfoStatus'
+          minItems: 1
       required:
         - requestIndication
 
@@ -2850,6 +2875,8 @@ components:
         homeProvidedChargingId:
           type: string
           pattern: '^(0|([1-9]{1}[0-9]{0,9}))$'
+        homeProvidedSmfChargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmfChargingId'
         upSecurity:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UpSecurity'
         maxIntegrityProtectedDataRateUl:
@@ -3108,6 +3135,11 @@ components:
           $ref: '#/components/schemas/N4Information'
         modifiedEbiListNotDelivered:
           type: boolean
+        ecnMarkingCongestionInfoStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/EcnMarkingCongestionInfoStatus'
+          minItems: 1
 
     StatusNotification:
       description: Data within Notify Status Request
@@ -3171,6 +3203,8 @@ components:
           $ref: '#/components/schemas/QosFlowAccessType'
         defaultQosRuleInd:
           type: boolean
+        ecnMarkingCongestInfoReq:
+          $ref: '#/components/schemas/EcnMarkingCongestInfoReq'
       required:
         - qfi
         - qosRules
@@ -3191,6 +3225,12 @@ components:
           $ref: '#/components/schemas/QosFlowProfile'
         associatedAnType:
           $ref: '#/components/schemas/QosFlowAccessType'
+        ecnMarkingCongestInfoReq:
+          $ref: '#/components/schemas/EcnMarkingCongestInfoReq'
+        tscaiUl:
+          $ref: '#/components/schemas/TscAssistanceInformation'
+        tscaiDl:
+          $ref: '#/components/schemas/TscAssistanceInformation'
       required:
         - qfi
 
@@ -3229,6 +3269,8 @@ components:
           $ref: '#/components/schemas/QosMonitoringReq'
         qosRepPeriod:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        pduSetQosPara:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/PduSetQosPara'
       required:
         - 5qi
 
@@ -3300,6 +3342,11 @@ components:
         hrsboSupportInd:
           type: boolean
           default: false
+        storedOffloadIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/OffloadIdentifier'
+          minItems: 1
 
     SmContextRetrievedData:
       description: Data within Retrieve SM Context Response
@@ -3628,6 +3675,8 @@ components:
         chargingId:
           type: string
           pattern: '^(0|([1-9]{1}[0-9]{0,9}))$'
+        smfChargingId:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/SmfChargingId'
         chargingInfo:
           $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/ChargingInformation'
         roamingChargingProfile:
@@ -3668,9 +3717,6 @@ components:
           type: boolean
         n9fscSupportInd:
           type: boolean
-        disasterRoamingInd:
-          type: boolean
-          default: false
         anchorSmfOauth2Required:
           type: boolean
         fullDnaiList:
@@ -3684,13 +3730,29 @@ components:
           $ref: '#/components/schemas/IpAddress'
         hPlmnAddr:
           $ref: '#/components/schemas/IpAddress'
-        vplmnOffloadingInfo:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/VplmnOffloadingInfo'
+        vplmnOffloadingInfoList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VplmnOffloadingInfo'
+          minItems: 1
+        offloadIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/OffloadIdentifier'
+          minItems: 1
+        easIpReplacementInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EasIpReplacementInfo'
+        targetDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
         pendingUpdateInfoList:
           type: array
           items:
             $ref: '#/components/schemas/PendingUpdateInfo'
           minItems: 1
+        easInfoToRefresh:
+          $ref: '#/components/schemas/EasInfoToRefresh'
+        pduSetSupportInd:
+          type: boolean
       required:
         - pduSessionId
         - dnn
@@ -3965,6 +4027,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketDelBudget'
         packetErrRate:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/PacketErrRate'
+        maxDataBurstVol:
+          type: integer
+          minimum: 1
+          maximum: 2000000
       required:
         - index
 
@@ -4101,6 +4167,13 @@ components:
           type: boolean
           enum:
            - true
+        easInfoToRefresh:
+          $ref: '#/components/schemas/EasInfoToRefresh'
+        storedOffloadIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/OffloadIdentifier'
+          minItems: 1
 
     HrsboInfoFromHplmn:
       description: HR-SBO Information in response message
@@ -4112,13 +4185,85 @@ components:
           $ref: '#/components/schemas/IpAddress'
         hPlmnAddr:
           $ref: '#/components/schemas/IpAddress'
-        vplmnOffloadingInfo:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/VplmnOffloadingInfo'
+        vplmnOffloadingInfoList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/VplmnOffloadingInfo'
+        offloadIds:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/OffloadIdentifier'
         internalGroupIds:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/GroupId'
           minItems: 1
+        easIpReplacementInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/EasIpReplacementInfo'
+        targetDnai:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+
+    EasInfoToRefresh:
+      description: EAS information to be refreshed for EAS re-discovery
+      type: object
+      properties:
+        ipv4AddressRanges:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv4AddressRange'
+          minItems: 1
+        ipv6AddressRanges:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Ipv6AddressRange'
+          minItems: 1
+        fqdnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
+          minItems: 1
+
+    EcnMarkingCongestInfoReq:
+      description: ECN Marking or Congestion Information Request
+      type: object
+      properties:
+        ecnMarkingReq:
+          $ref: '#/components/schemas/EcnMarkingReq'
+        congestionInfoReq:
+          $ref: '#/components/schemas/CongestionInfoReq'
+      oneOf:
+        - required: [ ecnMarkingReq ]
+        - required: [ congestionInfoReq ]
+
+    EcnMarkingCongestionInfoStatus:
+      description: ECN Marking or Congestion Information Status
+      type: object
+      properties:
+        qfi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Qfi'
+        activationStatus:
+          $ref: '#/components/schemas/ActivationStatus'
+      required:
+        - qfi
+        - activationStatus
+
+    TscAssistanceInformation:
+      description: TSC Assistance Information
+      type: object
+      properties:
+        periodicity:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
+        n6JitterInformation:
+          $ref: '#/components/schemas/N6JitterInformation'
+
+    N6JitterInformation:
+      description: Jitter information associated with the Periodicity in downlink
+      type: object
+      properties:
+        lowerJitterInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Int32'
+        higherJitterInfo:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Int32'
 
 #
 # SIMPLE DATA TYPES
@@ -4351,6 +4496,7 @@ components:
           - REL_DUE_TO_CONTEXT_NOT_FOUND
           - REL_DUE_TO_MBSR_NOT_AUTHORIZED
           - DEACT_DUE_TO_UE_OUT_OF_SLICE_SUPPORT_AREA
+          - REJECT_DUE_TO_N1_SM_ERROR
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -4415,6 +4561,7 @@ components:
         - REL_DUE_TO_CONTEXT_NOT_FOUND
         - REL_DUE_TO_MBSR_NOT_AUTHORIZED
         - DEACT_DUE_TO_UE_OUT_OF_SLICE_SUPPORT_AREA
+        - REJECT_DUE_TO_N1_SM_ERROR
 
     ResourceStatus:
       anyOf:
@@ -4778,6 +4925,76 @@ components:
           - RAT_TYPE
           - AMF_ID
 
+    EstablishmentRejectionCause:
+      anyOf:
+      - type: string
+        enum:
+          - OPERATOR_DETERMINED_BARRING
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        PDU Session Establishment Rejection Cause. Possible values are
+          - OPERATOR_DETERMINED_BARRING
+
+    EcnMarkingReq:
+      anyOf:
+      - type: string
+        enum:
+          - UL
+          - DL
+          - BOTH
+          - STOP
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        ECN Marking Request Type. Possible values are
+        - UL
+        - DL
+        - BOTH
+        - STOP
+
+    CongestionInfoReq:
+      anyOf:
+      - type: string
+        enum:
+          - UL
+          - DL
+          - BOTH
+          - STOP
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Congestion Information Request Type. Possible values are
+        - UL
+        - DL
+        - BOTH
+        - STOP
+
+    ActivationStatus:
+      anyOf:
+      - type: string
+        enum:
+          - ACTIVE
+          - NOT_ACTIVE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Activation Status. Possible values are
+        - ACTIVE
+        - NOT_ACTIVE
+
 #
 # HTTP request bodies
 #
@@ -5080,7 +5297,7 @@ components:
           schema:
             $ref: '#/components/schemas/ExtProblemDetails'
     '413':
-      description: Payload Too Large
+      description: Content Too Large
       content:
         application/problem+json:
           schema:

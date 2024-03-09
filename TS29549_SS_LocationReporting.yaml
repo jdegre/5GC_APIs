@@ -4,13 +4,13 @@ info:
   title: SS_LocationReporting
   description: |
     API for SEAL Location Reporting Configuration.  
-    © 2022, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.2.0-alpha.1"
+  version: "1.2.0-alpha.2"
 
 externalDocs:
   description: >
-    3GPP TS 29.549 V18.0.0 Service Enabler Architecture Layer for Verticals (SEAL);
+    3GPP TS 29.549 V18.4.0 Service Enabler Architecture Layer for Verticals (SEAL);
     Application Programming Interface (API) specification; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.549/
 
@@ -73,6 +73,46 @@ paths:
           $ref: 'TS29122_CommonData.yaml#/components/responses/503'
         default:
           $ref: 'TS29122_CommonData.yaml#/components/responses/default'
+      callbacks:
+        NotifyLocationTriggerEvent:
+          '{$request.body#/notifUri}':
+            post:
+              summary: Notify on location event.
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/LocationReport'
+              responses:
+                '204':
+                  description: The notification is successfully received.
+                '307':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/307'
+                '308':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/308'
+                '400':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/400'
+                '401':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/401'
+                '403':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/403'
+                '404':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/404'
+                '411':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/411'
+                '413':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/413'
+                '415':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/415'
+                '429':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/429'
+                '500':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/500'
+                '503':
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/503'
+                default:
+                  $ref: 'TS29122_CommonData.yaml#/components/responses/default'
 
   /trigger-configurations/{configurationId}:
     get:
@@ -288,10 +328,23 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         repPeriod:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         accuracy:
           $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/Accuracy'
+        valSvcAreaIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: >
+            Represents the VAL service area ID(s).
+        triggCriteria:
+          $ref: '#/components/schemas/TriggeringCriteria'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        report:
+          $ref: '#/components/schemas/LocationReport'
       required:
         - valServerId
         - valTgtUe
@@ -306,5 +359,110 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
         repPeriod:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        notifUri:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/Uri'
         accuracy:
           $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/Accuracy'
+        valSvcAreaIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: >
+            Represents the VAL service area ID(s).
+        triggCriteria:
+          $ref: '#/components/schemas/TriggeringCriteria'
+
+    TriggeringCriteria:
+      description: Represents the location reporting triggering criteria.
+      type: object
+      properties:
+        reportingMode:
+          $ref: 'TS29508_Nsmf_EventExposure.yaml#/components/schemas/NotificationMethod'
+        repPer:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DurationSec'
+        locChgCond:
+          $ref: '#/components/schemas/LocChangeCond'
+        ioInd:
+          $ref: '#/components/schemas/InsideOutsideInd'
+        repSchedules:
+          type: array
+          minItems: 1
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/ScheduledCommunicationTime'
+          description: >
+            Indicates the requested reporting schedule, e.g., day(s) of the week
+            and/or time period(s) for the location reporting.
+      required:
+        - reportingMode
+
+    LocationReport:
+      description: Represents the location trigger report.
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          description: Represents the subscription ID.
+        valTgtUe:
+          $ref: 'TS29549_SS_UserProfileRetrieval.yaml#/components/schemas/ValTargetUe'
+        locInfo:
+          $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/LocationInfo'
+        timeStamp:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/DateTime'
+      required:
+        - subscriptionId
+        - valTgtUe
+        - locInfo
+
+# Simple data types and Enumerations
+    InsideOutsideInd:
+      anyOf:
+      - type: string
+        enum:
+           - INSIDE
+           - OUTSIDE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents a desired condition of the location reporting,
+        e.g., inside or outside the given area.  
+        Possible values are:
+        - INSIDE: Indicates that the reporting shall occur when the UE is inside the given location.
+        - OUTSIDE: Indicates that the reporting shall occur when the UE is outside the given
+            location.
+
+    LocChangeCond:
+      anyOf:
+      - type: string
+        enum:
+           - CELL
+           - NODEB
+           - TA_RA
+           - WLAN_AN
+           - CIVIC_ADDR
+           - GPS
+           - SAI
+           - ECGI
+           - RAT
+           - VAL_SERVICE_AREA
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration and is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents a desired condition of the requested location change.  
+        Possible values are:
+        - CELL: The condition is cell change.
+        - NODEB: The condition is eNodeB or gNodeB change.
+        - TA_RA: The condition is TA or RA change.
+        - WLAN_AN: The condition is WLAN access network change (e.g., SSID or BSSID change).
+        - CIVIC_ADDR: The condition is civic address change.
+        - GPS: The condition is GPS coordinate change.
+        - SAI: The condition is SAI change..
+        - ECGI: The condition is ECGI change.
+        - RAT: The condition is RAT change.
+        - VAL_SERVICE_AREA: The condition is VAL service area change.

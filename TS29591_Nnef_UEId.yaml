@@ -1,0 +1,98 @@
+openapi: 3.0.0
+info:
+  title: Nnef_UEId
+  version: 1.0.0-alpha.1
+  description: |
+    NEF Traffic Correlation Service.  
+    © 2023 , 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
+    All rights reserved.
+externalDocs:
+  description: >
+    3GPP TS 29.591 V18.4.0; 5G System; Network Exposure Function Southbound Services; Stage 3.
+  url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.591/
+servers:
+  - url: '{apiRoot}/nnef-ueid/v1'
+    variables:
+      apiRoot:
+        default: https://example.com
+        description: apiRoot as defined in clause 4.4 of 3GPP TS 29.501
+security:
+  - {}
+  - oAuth2ClientCredentials:
+    - nnef-ueid
+
+paths:
+  /fetch:
+    post:
+      summary: fetch the Internal UE Identifier for roaming UE(s).
+      operationId: FetchUEId
+      tags:
+        - UE ID (Document)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UeIdReq'
+      responses:
+        '200':
+          description: The requested information was returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UeIdInfo'
+        '204':
+          description: No Content (The requested Internal UE Identifier does not exist.)
+        '400':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/400'
+        '401':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/401'
+        '403':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/403'
+        '404':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/404'
+        '411':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/411'
+        '413':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/413'
+        '415':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/415'
+        '429':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/429'
+        '500':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/500'
+        '502':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/502'
+        '503':
+          $ref: 'TS29571_CommonData.yaml#/components/responses/503'
+        default:
+          $ref: 'TS29571_CommonData.yaml#/components/responses/default'
+
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+          scopes:
+            nnef-ueid: Access to the UE ID API
+
+  schemas:
+    UeIdReq:
+      description: Contains parameters to request to fetch the Internal UE Identifier.
+      type: object
+      properties:
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+      required:
+        - gpsi
+
+    UeIdInfo:
+      description: Contains the UE ID Information.
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+      required:
+        - supi

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
   title: Nchf_ConvergedCharging
-  version: 3.2.0-alpha.3
+  version: 3.2.0-alpha.4
   description: |
     ConvergedCharging Service    © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
     All rights reserved.
 externalDocs:
   description: >
-    3GPP TS 32.291 V18.3.0: Telecommunication management; Charging management; 
+    3GPP TS 32.291 V18.4.0: Telecommunication management; Charging management; 
     5G system, charging service; Stage 3.
   url: 'http://www.3gpp.org/ftp/Specs/archive/32_series/32.291/'
 servers:
@@ -591,6 +591,8 @@ components:
           $ref: '#/components/schemas/UserInformation'
         userLocationinfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
+        iMSSessionInformation:
+          $ref: 'TS29512_Npcf_SMPolicyControl.yaml#/components/schemas/CallInfo'
         mAPDUNon3GPPUserLocationInfo:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/UserLocation'
         non3GPPUserLocationTime:
@@ -689,6 +691,8 @@ components:
             $ref: '#/components/schemas/5GLANTypeService'
         sNPNInformation:
             $ref: '#/components/schemas/SNPNInformation'
+        5GMulticastService:
+            $ref: '#/components/schemas/5GMulticastService'
       required:
         - pduSessionID
         - dnnId
@@ -742,6 +746,10 @@ components:
           items:
             $ref: '#/components/schemas/QosMonitoringReport'
           minItems: 0
+        mBSSessionID:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+        mBSDeliveryMethod:
+          $ref: '#/components/schemas/MbsDeliveryMethod'
     NSPAContainerInformation:
       type: object
       properties:
@@ -1065,8 +1073,18 @@ components:
       properties:
         externalIndividualIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        externalIndividualIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
         internalIndividualIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        internalIndividualIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
         externalGroupIdentifier:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/ExternalGroupId'
         groupIdentifier:
@@ -1275,11 +1293,10 @@ components:
           minItems: 0
         managementOperationStatus:
           $ref: '#/components/schemas/ManagementOperationStatus'
-# To be introduced once the reference to 'generic.yaml is resolved    
-#        managementOperationalState:
-#          $ref: 'genericNrm.yaml#/components/schemas/OperationalState'
-#        managementAdministrativeState:
-#          $ref: 'genericNrm.yaml#/components/schemas/AdministrativeState'
+        managementOperationalState:
+           $ref: 'TS28623_ComDefs.yaml#/components/schemas/OperationalState'
+        managementAdministrativeState:
+          $ref: 'TS28623_ComDefs.yaml#/components/schemas/AdministrativeState'
       required:
         - managementOperation
     ServiceProfileChargingInformation:
@@ -1292,16 +1309,14 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
           minItems: 0
-# To be introduced once the reference to 'nrNrm.yaml is resolved    
-#         sST:
-#           $ref: 'nrNrm.yaml#/components/schemas/Sst'
+        sST:
+          $ref: 'TS28541_NrNrm.yaml#/components/schemas/Sst'
         latency:
           type: integer
         availability:
           type: number
-# To be introduced once the reference to sliceNrm.yaml is resolved    
-#         resourceSharingLevel:
-#           $ref: 'sliceNrm.yaml#/components/schemas/SharingLevel'
+        resourceSharingLevel:
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/SharingLevel'
         jitter:
           type: integer
         reliability:
@@ -1310,11 +1325,10 @@ components:
           type: integer
         coverageArea:
           type: string
-# To be introduced once the reference to sliceNrm.yaml is resolved    
-#        uEMobilityLevel:
-#          $ref: 'sliceNrm.yaml#/components/schemas/MobilityLevel'
-#        delayToleranceIndicator:
-#          $ref: 'sliceNrm.yaml#/components/schemas/Support'
+        uEMobilityLevel:
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/MobilityLevel'
+        delayToleranceIndicator:
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/Support'
         dLThptPerSlice:
           $ref: '#/components/schemas/Throughput'
         dLThptPerUE:
@@ -1329,9 +1343,8 @@ components:
           type: string
         supportedAccessTechnology:
           type: integer
-# To be introduced once the reference to sliceNrm.yaml is resolved    
-#        v2XCommunicationModeIndicator:
-#          $ref: 'sliceNrm.yaml#/components/schemas/Support'
+        v2XCommunicationModeIndicator:
+          $ref: 'TS28541_SliceNrm.yaml#/components/schemas/Support'
         addServiceProfileInfo:
           type: string
     Throughput:
@@ -2015,7 +2028,7 @@ components:
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
           minItems: 0
-        optionalCapability:
+        optionalCapability :
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Uint32'
@@ -2136,6 +2149,14 @@ components:
           type: string
         description:
           type: string
+    5GMulticastService:
+      type: object
+      properties:
+        mBSSessionIdList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/MbsSessionId'
+          minItems: 1
     NotificationType:
       anyOf:
         - type: string
@@ -2181,6 +2202,7 @@ components:
       anyOf:
         - type: string
           enum:
+			# SMF TriggerType
             - QUOTA_THRESHOLD
             - QHT
             - FINAL
@@ -2224,6 +2246,21 @@ components:
             - REDUNDANT_TRANSMISSION_CHANGE
             - CGI_SAI_CHANGE
             - RAI_CHANGE
+            - JOIN_MULTICAST
+            - MBS_DELIVERY_METHOD_CHANGE
+            - LEAVE_MULTICAST
+            - VSMF_CHANGE
+			# IMS TriggerType
+            - SIP_INVITE
+            - SIP_RE-INVITE_OR_UPDATE
+            - SIP_2XX_ACKNOWLEDGING
+            - SIP_1XX_PROVISIONAL_RESPONSE
+            - SIP_4XX_5XX_OR_6XX_RESPONSE
+            - ANY_OTHER_SIP_MESSAGE            - SIP_BYE_MESSAGE
+            - SIP_2XX_ACKNOWLEDGING_A_SIP_BYE
+            - ABORTING_A_SIP_SESSION_SET-UP
+            - SIP_3XX_FINAL_OR_REDIRECTION_RESPONSE
+            - SIP_4XX_5XX_OR_6XX_FINAL_RESPONSE
         - type: string
     FinalUnitAction:
       anyOf:
@@ -2720,4 +2757,11 @@ components:
           enum: 
             - OPERATOR_PROVIDED
             - CONFIGURED
+        - type: string
+    MbsDeliveryMethod:
+      anyOf:
+        - type: string
+          enum: 
+            - SHARED
+            - INDIVIDUAL
         - type: string

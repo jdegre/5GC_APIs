@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Ntsctsf_TimeSynchronization Service API
-  version: 1.1.0-alpha.4
+  version: 1.1.0-alpha.5
   description: |
     TSCTSF Time Synchronization Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.565 V18.3.0; 5G System; Time Sensitive Communication and Time Synchronization Function 
+    3GPP TS 29.565 V18.4.0; 5G System; Time Sensitive Communication and Time Synchronization Function 
     Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
 servers:
@@ -697,29 +697,28 @@ components:
         - stateOfConfig
 
     StateOfConfiguration:
-      description: Contains the state of the time synchronization configuration.
+      description: >
+        Contains the state of the time synchronization configuration and the clock quality
+        acceptance criteria result.
       type: object
       properties:
         stateNwtt:
           type: boolean
           description: >
-            When the PTP port state is Leader, Follower or Passive, it is included and set to true
-            to indicate the state of configuration for NW-TT port is active; when PTP port state is
-            in any other case, it is included and set to false to indicate the state of
-            configuration for NW-TT port is inactive. Default value is false.
+            When any of the PTP port state(s)in NW-TT is Leader, Follower or Passive, it is
+            included and set to trueto indicate the current state of the time synchronization
+            configuration for the NW-TT port(s) of the PTP instance is active; when
+            PTP port state isin any other case, it is included and set to false to indicate
+            the state ofconfiguration for the NW-TT port(s) of the PTP instance
+            is inactive. Default value is false.
         stateOfDstts:
-          description: Contains the PTP port states of the DS-TT(s).
+          description: >
+            Contains the PTP port states and the clock quality acceptance criteria result of the
+            DS-TT(s).
           type: array
           items:
             $ref: '#/components/schemas/StateOfDstt'
           minItems: 1
-        clkQltAcptCriReports:
-          type: array
-          items:
-            $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/ClockQualityAcceptanceCriteriaResult'
-          minItems: 1
-          description: >
-            Indicates if the clock quality acceptance criteria is met or not for the indicated UE(s).
 
     StateOfDstt:
       description: Contains the PTP port state of a DS-TT.
@@ -736,6 +735,8 @@ components:
             to indicate the state of configuration for DS-TT port is active; when PTP port state is
             in any other case, it is included and set to false to indicate the state of
             configuration for DS-TT port is inactive. Default value is false.
+        clkQltIndOfDstts:
+            $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/AcceptanceCriteriaResultIndication'
       required:
         - state
       oneOf:
@@ -770,12 +771,16 @@ components:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TemporalValidity'
         covReq:
           type: array
-          description: Identifies a list of Tracking Areas per serving network where time synchronization service configuration is allowed.
+          description: >
+            Identifies a list of Tracking Areas per serving network where time
+            synchronization service configuration is allowed.
           items:
             $ref: 'TS29534_Npcf_AMPolicyAuthorization.yaml#/components/schemas/ServiceAreaCoverageInfo'
           minItems: 1
-        timeSyncStatusParam:
-            $ref: 'TS29522_TimeSyncExposure.yaml#/components/schemas/TimeSyncStatusParam'
+        clkQltDetLvl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ClockQualityDetailLevel'
+        clkQltAcptCri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ClockQualityAcceptanceCriterion'
       required: 
         - upNodeId
         - reqPtpIns

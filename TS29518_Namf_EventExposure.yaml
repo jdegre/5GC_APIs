@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.3
+  version: 1.3.0-alpha.4
   title: Namf_EventExposure
   description: |
     AMF Event Exposure Service.  
@@ -14,7 +14,7 @@ security:
       - namf-evts
 
 externalDocs:
-  description: 3GPP TS 29.518 V18.2.0; 5G System; Access and Mobility Management Services
+  description: 3GPP TS 29.518 V18.4.0; 5G System; Access and Mobility Management Services
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/'
 
 servers:
@@ -337,6 +337,7 @@ components:
         - eventNotifyUri
         - notifyCorrelationId
         - nfId
+
     AmfEvent:
       description: Describes an event to be subscribed
       type: object
@@ -407,6 +408,16 @@ components:
         ranTimingSynchroStatusChange:
           type: boolean
           default: false
+        notifyForSupiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        notifyForSnssaiDnnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SnssaiDnnItem'
+          minItems: 1
       required:
         - type
     AmfEventNotification:
@@ -652,7 +663,7 @@ components:
             - replace
         path:
           type: string
-          pattern: '^\/eventList\/-|(\/eventList\/0|\/eventList\/[1-9][0-9]*){1}(\/presenceInfoList\/0|\/presenceInfoList\/[1-9][0-9]*)?|\/excludeSupiList|\/excludeGpsiList|\/includeSupiList|\/includeGpsiList$'
+          pattern: '^\/eventList\/-|(\/eventList\/0|\/eventList\/[1-9][0-9]*){1}(\/presenceInfoList\/0|\/presenceInfoList\/[1-9][0-9]* |\/notifyForSupiList|\/notifyForSnssaiDnnList)?|\/excludeSupiList|\/excludeGpsiList|\/includeSupiList|\/includeGpsiList$'
         value:
           $ref: '#/components/schemas/AmfEvent'
         presenceInfo:
@@ -676,6 +687,16 @@ components:
           type: array
           items:
             $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+          minItems: 1
+        notifyForSupiList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+          minItems: 1
+        notifyForSnssaiDnnList:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/SnssaiDnnItem'
           minItems: 1
       required:
         - op
@@ -1107,4 +1128,5 @@ components:
       - type: string
         enum:
           - INVALID_SUBSCRIPTION
+          - SUBSCRIPTION_NOT_AUTHORIZED
       - type: string

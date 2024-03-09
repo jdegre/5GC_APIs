@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '1.2.0-alpha.4'
+  version: '1.2.0-alpha.5'
   title: 'Ngmlc_Location'
   description: |
     GMLC Location Service.  
@@ -8,7 +8,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.515 V18.3.0; 5G System; Gateway Mobile Location Services; Stage 3
+  description: 3GPP TS 29.515 V18.4.0; 5G System; Gateway Mobile Location Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.515/'
 
 servers:
@@ -49,7 +49,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocationData'
+                $ref: '#/components/schemas/LocationDataExt'
         '307':
           $ref: 'TS29571_CommonData.yaml#/components/responses/307'
         '308':
@@ -461,9 +461,29 @@ components:
         reportingInd:
           allOf:
             - $ref: '#/components/schemas/ReportingInd'
-          default: POSITIVE_SENSE
+          default: INSIDE_REPORTING
         integrityRequirements:
           $ref: '#/components/schemas/IntegrityRequirements'
+        upLocRepInfoAf:
+          $ref: '#/components/schemas/UpLocRepInfoAf'
+        requestedRangingSlResult:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/RangingSlResult'
+          minItems: 1
+        relatedUEs:
+          type: array
+          items:
+            $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/RelatedUE'
+          minItems: 1
+        mappedQoSEps:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/MappedLocationQoSEps'
+
+    LocationDataExt:
+      description: Extended Location Data for UEs
+      allOf:
+        - $ref: '#/components/schemas/LocationData'
+        - $ref: '#/components/schemas/AddLocationDatas'
 
 
 
@@ -520,6 +540,18 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/HighAccuracyGnssMetrics'
         losNlosMeasureInd:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LosNlosMeasureInd'
+        indoorOutdoorInd:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/IndoorOutdoorInd'
+        relatedApplicationlayerId:
+          type: string
+        rangeDirection:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/RangeDirection'
+        2dRelativeLocation:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/2DRelativeLocation'
+        3dRelativeLocation:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/3DRelativeLocation'
+        relativeVelocity:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
 
     CancelLocData:
       description: Contains the input parameters in CancelLocation service operation
@@ -642,6 +674,20 @@ components:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/HighAccuracyGnssMetrics'
         losNlosMeasureInd:
           $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/LosNlosMeasureInd'
+        upLocRepStatAf:
+          type: integer
+        indoorOutdoorInd:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/IndoorOutdoorInd'
+        relatedApplicationlayerId:
+          type: string
+        rangeDirection:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/RangeDirection'
+        2dRelativeLocation:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/2DRelativeLocation'
+        3dRelativeLocation:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/3DRelativeLocation'
+        relativeVelocity:
+          $ref: 'TS29572_Nlmf_Location.yaml#/components/schemas/VelocityEstimate'
 
 
     UePrivacyRequirements:
@@ -761,6 +807,28 @@ components:
         verticalProtectionLevel:
           $ref: '#/components/schemas/VerticalProtectionLevel'
 
+    UpLocRepInfoAf:
+      description: Information for the location reporting over user plane
+      type: object
+      properties:
+        upLocRepAfInd:
+          type: boolean
+          enum:
+            - true
+        upLocRepAddrAf:
+          $ref: 'TS29122_MonitoringEvent.yaml#/components/schemas/UpLocRepAddrAfRm'
+        upCumEvtRptCriteria:
+          $ref: '#/components/schemas/UpCumEvtRptCriteria'
+
+    UpCumEvtRptCriteria:
+      description: Criteria for sending cumulative events reports over control plane
+      type: object
+      properties:
+        evtRptTimeCriteria:
+          type: integer
+        evtRptCountCriteria:
+          type: integer
+
 
 #
 # SIMPLE TYPES
@@ -849,6 +917,7 @@ components:
             - UE_MOBILITY_FOR_DEFERRED_LOCATION
             - 5GC_MT_LR
             - DIRECT_REPORT_EVENT
+            - CUMULATIVE_EVENT_REPORT
         - type: string
     FailureCause:
       description: Positioning failure cause
@@ -873,10 +942,18 @@ components:
 
     ReportingInd:
       description: >
-        Indicates one of the mutually exclusive global settings
+        Indicates whether the UE is allowed to generate and send the event report inside or outside
+        the event report allowed(expected) area
+
       anyOf:
         - type: string
           enum:
-            - OPPOSITE_SENSE
-            - POSITIVE_SENSE
+            - INSIDE_REPORTING
+            - OUTSIDE_REPORTING
         - type: string
+
+    AddLocationDatas:
+      type: array
+      items:
+        $ref: '#/components/schemas/LocationData'
+      minItems: 1

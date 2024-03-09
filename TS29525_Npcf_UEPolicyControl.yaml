@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: 1.3.0-alpha.4
+  version: 1.3.0-alpha.5
   title: Npcf_UEPolicyControl
   description: |
     UE Policy Control Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.525 V18.3.0; 5G System; UE Policy Control Service.
+  description: 3GPP TS 29.525 V18.4.0; 5G System; UE Policy Control Service.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.525/'
 
 servers:
@@ -364,6 +364,8 @@ components:
           description: Combination of DNN and S-NSSAIs for which LBO information is requested. 
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        n2Pc5RsppPol:
+          $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N2InfoContent'
       required:
         - suppFeat
 
@@ -456,8 +458,9 @@ components:
             $ref: '#/components/schemas/UePolicyParameters'
           minProperties: 1
           description: >
-            Contains the service parameter used to guide the VPLMN-specific URSP.
-            The key of the map represents the AF request to guide VPLMN-specific URS rules.
+            Contains the service parameter used to guide the VPLMN-specific URSP and may contain
+            the subscription to VPLMN-specific URSP delivery outcome.
+            The key of the map represents the AF request to guide VPLMN-specific URSP rules.
             This attribute only applies in roaming and when the V-PCF is the NF service consumer.
         lboRoamInfo:
           type: array
@@ -469,6 +472,13 @@ components:
             This attribute only applies in roaming and when the AMF is the NF service consumer.
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        rangingSlCapab:
+          type: boolean
+          description: >
+            It indicates whether the PC5 Capability for Ranging/SL is supported by the UE or not.
+            "true": Indicates that the PC5 Capability for Ranging/SL is supported by the UE.
+            "false": Indicates that the PC5 Capability for Ranging/SL is not supported by the UE.
+            Default value when omitted is "false".
       required:
         - notificationUri
         - suppFeat
@@ -558,9 +568,39 @@ components:
             Contains information about the enforced URSP rule(s) in one or more PDU sessions.
             The key of the map is a character string that represents an integer value.
           minProperties: 1
+        vpsUePolGuidance:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UePolicyParameters'
+          minProperties: 1
+          description: >
+            Contains the service parameter used to guide the VPLMN-specific URSP and may contain
+            the subscription to VPLMN-specific URSP delivery outcome.
+            The key of the map represents the AF request to guide VPLMN-specific URSP rules.
+            This attribute only applies in roaming and when the V-PCF is the NF service consumer.
+        lboRoamInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/LboRoamingInformation'
+          minItems: 1
+          description: >
+            Contains LBO roaming information for DNN and S-NSSAI combination(s).
+            This attribute only applies in roaming and when the AMF is the NF service consumer.
+        accessTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
+        accessStatus:
+          $ref: '#/components/schemas/AccessStatus'
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
-
+        rangingSlCapab:
+          type: boolean
+          description: >
+            It indicates whether the PC5 Capability for Ranging/SL is supported by the UE or not.
+            "true": Indicates that the PC5 Capability for Ranging/SL is supported by the UE.
+            "false": Indicates that the PC5 Capability for Ranging/SL is not supported by the UE.
     PolicyUpdate:
       description: >
         Represents updated policies that the PCF provides in a notification or in the reply to an
@@ -598,6 +638,17 @@ components:
           type: boolean
           description: >
             Indication that the updated ANDSP/WLANSP has been successfully delivered to the UE.
+        delivReport:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UePolicyNotification'
+          minProperties: 1
+          description: >
+            Contains the delivery outcome of the VPLMN-specific URSP.
+            The key of the map represents the AF request of the corresponding subscription, i.e. its
+            value shall match the key that was previously provided by the V-PCF in the
+            vpsUePolGuidance attribute.
+            This attribute only applies in roaming and when the V-PCF is the NF service consumer.
         pduSessions:
           type: array
           items:
@@ -608,6 +659,8 @@ components:
           nullable: true
         suppFeat:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
+        n2Pc5RsppPol:
+          $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N2InfoContent'
       required:
         - resourceUri
 
@@ -632,7 +685,9 @@ components:
       type: object
       properties:
         cause:
-          $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N1N2MessageTransferCause'
+          $ref: '#/components/schemas/UePolicyTransferFailureCause'
+        retryAfter:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         ptis:
           type: array
           items:
@@ -686,7 +741,11 @@ components:
           minItems: 1
           description: >
             Contains LBO roaming information for DNN and S-NSSAI combination(s).
-
+        accessTypes:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/AccessType'
+          minItems: 1
     UePolicyParameters:
       description: >
         Contains the service parameters used to guide the VPLMN-specific URSP rule determination.
@@ -697,7 +756,16 @@ components:
           items:
             $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/UrspRuleRequest'
           minItems: 1
-          description: Contains the service parameter used to guide the URSP. 
+          description: >
+            Contains the service parameter used to guide the VPLMN-specific URSP.
+        deliveryEvents:
+          type: array
+          items:
+            $ref: 'TS29522_ServiceParameter.yaml#/components/schemas/Event'
+          minItems: 1
+          description: >
+            AF subscribed event(s) notifications related to AF provisioned guidance
+            for VPLMN-specific URSP rules.
 
     LboRoamingInformation:
       description: >
@@ -718,7 +786,7 @@ components:
 
     UrspEnforcementPduSession:
       description: >
-        Represents URSP enforcement information for a PDU session.
+        Represents URSP rule enforcement information for a PDU session.
       type: object
       required:
         - urspEnfInfo
@@ -737,6 +805,20 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/RatType'
         pduSessInfo: 
           $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/PduSessionInformation'
+
+    UePolicyNotification:
+      description: >
+        Contains the delivery outcome of VPLMN-specific URSP rules.
+      type: object
+      properties:
+        eventNotifs:
+          type: array
+          items:
+            $ref: 'TS29523_Npcf_EventExposure.yaml#/components/schemas/PcEventNotification'
+          minItems: 1
+          description: >
+            Represents the events to be reported according to the subscription to notifications
+            of VPLMN-specific URSP delivery outcome events.
 
     UePolicy:
       $ref: 'TS29571_CommonData.yaml#/components/schemas/Bytes'
@@ -764,6 +846,7 @@ components:
           - LBO_INFO_CH
           - FEAT_RENEG
           - URSP_ENF_INFO
+          - ACCESS_TYPE_CH
       - type: string
         description: >
           This string provides forward-compatibility with future
@@ -773,16 +856,17 @@ components:
         Represents the possible request triggers.  
         Possible values are:
         - LOC_CH: Location change (tracking area). The tracking area of the UE has changed.
-        - PRA_CH: Change of UE presence in PRA. The AMF reports the current presence status of the UE
-          in a Presence Reporting Area, and notifies that the UE enters/leaves the Presence Reporting
-          Area.
+        - PRA_CH: Change of UE presence in PRA. The AMF reports the current presence status
+          of the UE in a Presence Reporting Area, and notifies that the UE enters/leaves the 
+          Presence Reporting Area.
         - UE_POLICY: A MANAGE UE POLICY COMPLETE message or a MANAGE UE POLICY COMMAND REJECT
           message, as defined in Annex D.5 of 3GPP TS 24.501 or a "UE POLICY PROVISIONING REQUEST"
           message, as defined in clause 7.2.1.1 of 3GPP TS 24.587, has been received by the AMF
           and is being forwarded.
         - PLMN_CH: PLMN change. the serving PLMN of UE has changed.
         - CON_STATE_CH: Connectivity state change: the connectivity state of UE has changed.
-        - GROUP_ID_LIST_CHG: UE Internal Group Identifier(s) has changed. This policy control request
+        - GROUP_ID_LIST_CHG: UE Internal Group Identifier(s) has changed. This policy 
+          control request
           trigger does not require a subscription.
         - UE_CAP_CH: UE Capabilities change: the UE provided 5G ProSe capabilities have changed.
           This policy control request trigger does not require subscription.
@@ -797,8 +881,10 @@ components:
           in roaming scenarios when the NF service consumer is the AMF.
         - FEAT_RENEG: The NF service consumer notifies that the target AMF is requesting feature
           re-negotiation.
-        - URSP_ENF_INFO: The V-PCF has received URSP enforcement information for one or more URSP
+        - URSP_ENF_INFO: The V-PCF has received URSP rule enforcement information for one or more URSP
           rules. This trigger applies in roaming scenarios and to the V-PCF.
+        - ACCESS_TYPE_CH: Access Type change. The registered access type has changed, an access type
+          is added or an access type is removed.
 
     PolicyAssociationReleaseCause:
       anyOf:
@@ -906,3 +992,44 @@ components:
         Possible values are:
         - N3IWF: Non-3gpp Interworking Function.
         - TNGF: Trusted Non-3gpp Gateway Function.
+
+    AccessStatus:
+      anyOf:
+      - type: string
+        enum:
+          - ADDITION
+          - REMOVAL
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents whether the type of change is a replacement, addition or removal.  
+        Possible values are:
+        - ADDITION: The type of change is an addition.
+        - REMOVAL: The type of change is a removal.
+
+    N1N2MessTransferErrorReply:
+      anyOf:
+      - type: string
+        enum:
+          - UE_NOT_REACHABLE
+          - UNSPECIFIED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future
+          extensions to the enumeration but is not used to encode
+          content defined in the present version of this API.
+      description: |
+        Represents an N1N2 Message Transfer error.  
+        Possible values are:
+        - UE_NOT_REACHABLE: The UE is not reachable for paging.
+        - UNSPECIFIED: Unspecified error.
+
+#
+    UePolicyTransferFailureCause:
+      description: UE Policy Transfer Failure Cause.
+      anyOf:
+        - $ref: 'TS29518_Namf_Communication.yaml#/components/schemas/N1N2MessageTransferCause'
+        - $ref: '#/components/schemas/N1N2MessTransferErrorReply'

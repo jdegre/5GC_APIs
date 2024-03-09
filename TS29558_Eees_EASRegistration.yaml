@@ -6,11 +6,11 @@ info:
     API for EAS Registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.4
+  version: 1.1.0-alpha.5
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.3.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.4.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -356,6 +356,17 @@ components:
             $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ACRScenario'
           minItems: 1
           description: The ACR scenarios supported by the EAS for service continuity.
+        svcContSuppExt1:
+          type: array
+          items:
+            $ref: '#/components/schemas/EASBundleInfo'
+          minItems: 1
+          description: >
+            Represents the information related to the EAS ability to handle bundled EAS ACRs.
+            This attribute may be present only when the "svcContSupp" attribute is also present.
+            When this attribute is present, it indicates that the EAS (identified by the "easId"
+            attribute) is able to handle bundled EAS ACRs and contains the information of the EAS
+            bundle(s) for which the EAS is able to handle bundled EAS ACRs.
         transContSupp:
           $ref: '#/components/schemas/TransContSuppDetails'
         avlRep:
@@ -365,6 +376,13 @@ components:
           description: EAS status information.
         genCtxDur:
           $ref: 'TS29122_CommonData.yaml#/components/schemas/DurationSec'
+        easSyncSupp:
+          type: boolean
+          default: false
+          description: >
+            Set to true to indicate that content synchronization between EASs is supported.
+            Set to false to indicate that content synchronization between EASs is not supported.
+            The default value when this attribute is omitted is false.
       required:
         - easId
         - endPt
@@ -405,6 +423,8 @@ components:
       type: object
       description: Represents the EAS bundle information.
       properties:
+        bdlType:
+          $ref: '#/components/schemas/BdlType'
         bdlId:
           type: string
           description: Indicates a bundle ID.
@@ -413,15 +433,13 @@ components:
           items:
             type: string
           minItems: 1
-        bdlType:
-          $ref: '#/components/schemas/BdlType'
         easBdlReqs:
           $ref: '#/components/schemas/EASBdlReqs'
         mainEasId:
           type: string
       required:
         - bdlType
-      oneOf:
+      anyOf:
         - required: [bdlId]
         - required: [easIdsList]
 

@@ -2,14 +2,14 @@ openapi: 3.0.0
 
 info:
   title: Nnsacf_NSAC
-  version: 1.1.0-alpha.3
+  version: 1.1.0-alpha.4
   description: |
     Nnsacf_NSAC Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.536 V18.3.0; 5G System; Network Slice Admission Control Services; Stage 3.
+  description: 3GPP TS 29.536 V18.4.0; 5G System; Network Slice Admission Control Services; Stage 3.
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.536/
 
 servers:
@@ -174,7 +174,7 @@ paths:
         '504':
           $ref: 'TS29571_CommonData.yaml#/components/responses/504'
 
-  /slices/configs:
+  /slices/local-configs/update:
     post:
       summary: >
         Network Slice Admission Control update of the local maximum number of registered UEs and/or 
@@ -188,7 +188,7 @@ paths:
           - nnsacf-nsac
         - oAuth2ClientCredentials:
           - nnsacf-nsac
-          - nnsacf-nsac:ac-info-update
+          - nnsacf-nsac:local-configs-update
       requestBody:
         content:
           application/json:
@@ -285,7 +285,7 @@ components:
             nnsacf-nsac:slice-pdus: >
               Access to service operations applying to the collection of slice subject to NSAC for
               PDU sessions
-            nnsacf-nsac:ac-info-update: >
+            nnsacf-nsac:local-configs-update: >
               Access to the NSAC update of the local maximum number of registered UEs and/or 
               PDU sessions of the network slice at NSACF
 
@@ -309,9 +309,8 @@ components:
           $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/NFType'
         eacNotificationUri:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uri'
-# Data type of nsacServiceArea IE is FFS
-#        nsacServiceArea:
-#          type: FFS
+        nsacServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NsacSai'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -411,9 +410,8 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/NfInstanceId'
         pgwFqdn:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Fqdn'
-# Data type of nsacServiceArea IE is FFS
-#        nsacServiceArea:
-#          type: FFS
+        nsacServiceArea:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/NsacSai'
         supportedFeatures:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/SupportedFeatures'
       required:
@@ -471,7 +469,9 @@ components:
         maxNumUes:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         ueAdmissionThreshold:
-          $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+          type: integer
+          minimum: 0
+          maximum: 100
       required:
         - snssai
 

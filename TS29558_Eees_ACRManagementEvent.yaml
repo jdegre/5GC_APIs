@@ -6,11 +6,11 @@ info:
     API for EES ACR Management Event.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.4
+  version: 1.1.0-alpha.5
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.3.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.4.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -50,6 +50,12 @@ paths:
                     schema:
                       $ref: '#/components/schemas/AcrMgntEventsNotification'
               responses:
+                '200':
+                  description: OK (The notification is received successfully)
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/EasAckInformation'
                 '204':
                   description: No Content (successful notification)
                 '307':
@@ -480,9 +486,9 @@ components:
           type: boolean
           description: >
             Identifies whether EAS acknowledgement of UP path change event notifications is to be
-            expected. Set to "true" if the EAS acknowledgement is expected. Default value is
-            "false". This attribute may be provided only if the "event" attribute is set to
-            "UP_PATH_CHG".
+            expected. Set to "true" if the EAS acknowledgement is expected. Set to "false" if 
+            the EAS acknowledgement is not expected. Default value is "false" if ommited. 
+            This attribute may be provided only if the "event" attribute is set to "UP_PATH_CHG".
         easChars:
           type: array
           items:
@@ -499,6 +505,14 @@ components:
             When set to true, it indicates that service continuity planning is required.
             When set to false, it indicates that Service continuity planning is not required.
             The default value when this attribute is omitted is false.
+        easAckSvcCont:
+          type: boolean
+          description: >
+            Indicates that the EAS will provide an acknowledgement as a response to the notification
+            of ACR management notification related to service continuity planning. Set to "true" if
+            the EAS acknowledgement is expected. Default value is "false". This attribute may be
+            provided only if the "event" attribute is set to "ACR_MONITORING" and/or 
+            "ACR_FACILITATION".
       required:
         - event
 
@@ -560,6 +574,12 @@ components:
           items:
             $ref: '#/components/schemas/SelectedACRScenarios'
           minItems: 1
+        easInBdlInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/EasInBundleInfo'
+          minItems: 1
+          description: Represents the list of EAS in a bundle related information.
         servContPlanInd:
           type: boolean
           description: >
@@ -710,6 +730,31 @@ components:
         - acId
         - ueId
 
+    EasAckInformation:
+      type: object
+      description: Represents the EAS acknowledgement information.
+      properties:
+        resCode:
+          $ref: '#/components/schemas/ResultCode'
+      required:
+        - resCode
+
+    EasInBundleInfo:
+      type: object
+      description: >
+        Represents EAS in a bundle information.
+      properties:
+        easId:
+          type: string
+          description: Contains the identifier of the EAS that is within an EAS bundle.
+        dnais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
+        svcArea:
+          $ref: 'TS29558_Eecs_EESRegistration.yaml#/components/schemas/ServiceArea'
+
 #
 # ENUMERATIONS DATA TYPES
 #
@@ -722,6 +767,7 @@ components:
           - ACR_MONITORING
           - ACR_FACILITATION
           - ACT_START_STOP
+          - ACR_SELECTION
       - type: string
         description: >
           This string provides forward-compatibility with future extensions to the enumeration
@@ -729,10 +775,11 @@ components:
       description: |
         Represents the ACR Management event.  
         Possible values are:
-        - UP_PATH_CHG: User plane path change event.
-        - ACR_MONITORING: ACR monitoring event.
-        - ACR_FACILITATION: ACR facilitation event.
-        - ACT_START_STOP: ACT start/stop event.
+        - UP_PATH_CHG: Indicates that ACR Management Event is the User plane path change event.
+        - ACR_MONITORING: Indicates that ACR Management Event is the ACR monitoring event.
+        - ACR_FACILITATION: Indicates that ACR Management Event is the ACR facilitation event.
+        - ACT_START_STOP: Indicates that ACR Management Event is the ACT start/stop event.
+        - ACR_SELECTION: Indicates that ACR Management Event is the ACR selection event.
 
     AcrMgntEventFilter:
       anyOf:
@@ -800,4 +847,20 @@ components:
         Represents the availability status.  
         Possible values are:
         - AVAILABLE: Indicates availability.
-        - NOT_AVAILABLE: Indicates unavailability.
+        - NOT_AVAILABLE: Indicates unavailability. 
+
+    ResultCode:
+      anyOf:
+      - type: string
+        enum:
+          - ACCEPTED
+          - REJECTED
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
+      description: |
+        Represents the result code of ACT acceptance by EAS.  
+        Possible values are:
+        - ACCEPTED: Indicates acceptance of the ACT.
+        - REJECTED: Indicates rejection of the ACT.

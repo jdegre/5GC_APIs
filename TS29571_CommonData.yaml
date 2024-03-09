@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.5.0-alpha.4'
+  version: '1.5.0-alpha.5'
 
 
   title: 'Common Data Types'
@@ -11,7 +11,7 @@ info:
     All rights reserved.  
 
 externalDocs:
-  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.3.0
+  description: 3GPP TS 29.571 Common Data Types for Service Based Interfaces, version 18.4.0
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/'
 
 paths: {}
@@ -262,7 +262,9 @@ components:
       type: integer
       minimum: 0
       maximum: 65535
-      description: Integer where the allowed values correspond to the value range of an unsigned 16-bit integer.
+      description: >
+        Integer where the allowed values correspond to the value range of an
+        unsigned 16-bit integer.
 
     Uint16Rm:
       type: integer
@@ -1124,6 +1126,11 @@ components:
         layer ID parameter is same as the Application layer ID defined in clause 11.3.4 of 
         3GPP TS 24.554.
 
+    NsacSai:
+      type: string
+      description: >
+        String identifying the Network Slice Admission Control Service Area Identifier.
+
 
 #
 # ENUMERATED DATA TYPES
@@ -1486,13 +1493,14 @@ components:
       minimum: 0
       maximum: 16777215
       description: >
-        Relay Service Code to identify a connectivity service provided by the UE-to-Network relay.
+        Relay Service Code to identify a connectivity service provided by the UE-to-Network relay or
+        the UE-to-UE relay.
 
     5GPrukId:
       type: string
       description: >
-        A string carrying the CP-PRUK ID of the remote UE. The CP-PRUK ID is a string in NAI
-        format as specified in clause 28.7.11 of 3GPP TS 23.003.
+        A string carrying the CP-PRUK ID of the 5G ProSe Remote UE or the 5G ProSe End UE.
+        The CP-PRUK ID is a string in NAI format as specified in clause 28.7.11 of 3GPP TS 23.003.
       pattern: '^rid[0-9]{1,4}\.pid[0-9a-fA-F]+\@prose-cp\.5gc\.mnc[0-9]{2,3}\.mcc[0-9]{3}\.3gppnetwork\.org$'
 
     NsagId:
@@ -1511,6 +1519,12 @@ components:
       type: string
       description: >
         A string carrying the GEO Satellite ID.
+
+    OffloadIdentifier:
+      type: string
+      description: >
+        Offload identifier uniquely identifying a VPLMN offloading policy information instance
+      pattern: '^[0-9]{3}-[0-9]{2,3}-[A-Fa-f0-9]{8}(-v[0-9]{1,2}){0,1}$'
 
 #
 # ENUMERATED DATA TYPES
@@ -1555,6 +1569,18 @@ components:
             - NR_GEO
             - NR_OTHER_SAT
             - NR_REDCAP
+            - WB_E_UTRAN_LEO
+            - WB_E_UTRAN_MEO
+            - WB_E_UTRAN_GEO
+            - WB_E_UTRAN_OTHERSAT
+            - NB_IOT_LEO
+            - NB_IOT_MEO
+            - NB_IOT_GEO
+            - NB_IOT_OTHERSAT
+            - LTE_M_LEO
+            - LTE_M_MEO
+            - LTE_M_GEO
+            - LTE_M_OTHERSAT
         - type: string
       description: Indicates the radio access used.
 
@@ -2281,6 +2307,8 @@ components:
             to be used.
         globalGnbId:
           $ref: '#/components/schemas/GlobalRanNodeId'
+        ntnTaiInfo:
+          $ref: '#/components/schemas/NtnTaiInfo'
       required:
         - tai
         - ncgi
@@ -2833,9 +2861,14 @@ components:
           $ref: '#/components/schemas/AreaCode'
         areaCodeC:
           $ref: '#/components/schemas/AreaCode'
+        combGciAndHfcNIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/CombGciAndHfcNIds'
+          minItems: 1
       description: >
-        One and only one of the "globLineIds", "hfcNIds", "areaCodeB" and "areaCodeC" attributes
-        shall be included in a WirelineArea data structure
+        One and only one of the "globLineIds", "hfcNIds", "areaCodeB",d "areaCodeC" and 
+        combGciAndHfcNIds attributes        shall be included in a WirelineArea data structure
 
     WirelineServiceAreaRestriction:
       type: object
@@ -3595,13 +3628,26 @@ components:
         durationBufferedNotif:
           $ref: '#/components/schemas/DurationSec'
 
+    CombGciAndHfcNIds:
+      type: object
+      properties:
+        globalCableId:
+          $ref: '#/components/schemas/Gci'
+        hfcNId:
+          $ref: '#/components/schemas/HfcNId'
+
 
     VplmnOffloadingInfo:
       description: VPLMN Specific Offloading Information 
       type: object
       properties:
+        offloadIdentifier:
+          $ref: '#/components/schemas/OffloadIdentifier'
         vplmnId:
           $ref: '#/components/schemas/PlmnId'
+        allowedTraffic:
+          type: boolean
+          default: true
         ipv4AddressRanges:
           type: array
           items:
@@ -3612,7 +3658,7 @@ components:
           items:
             $ref: '#/components/schemas/Ipv4AddrMask'
           minItems: 1
-        Ipv6AddressRanges:
+        ipv6AddressRanges:
           type: array
           items:
             $ref: '#/components/schemas/Ipv6AddressRange'
@@ -3699,6 +3745,7 @@ components:
           $ref: '#/components/schemas/UeAuth'
 
     SliceUsageControlInfo:
+      description: The network slice usage control related information
       type: object
       required:
         - sNssai
@@ -3712,6 +3759,41 @@ components:
       anyOf:
         - required: [ deregInactTimer ]
         - required: [ sessInactTimer ]
+
+    SnssaiDnnItem:
+      description: Combination of S-NSSAIs and DNNs
+      type: object
+      properties:
+        snssaiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtSnssai'
+          minItems: 1
+        dnnList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dnn'
+          minItems: 1
+      anyOf:
+        - required: [ snssaiList ]
+        - required: [ dnnList ]
+
+
+    NtnTaiInfo:
+      type: object
+      required:
+        - plmnId
+        - tacList
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnIdNid'
+        tacList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tac'
+          minItems: 1
+        derivedTac:
+          $ref: '#/components/schemas/Tac'
 
 
 #
@@ -4210,6 +4292,37 @@ components:
         Possible values are:
         - "ALL_PDUS_NEEDED": All PDUs of the PDU Set are needed
         - "ALL_PDUS_NOT_NEEDED": All PDUs of the PDU Set are not needed
+
+    MediaTransportProto:
+      anyOf:
+        - type: string
+          enum:
+            - RTP
+            - SRTP
+        - type: string
+      description: >
+        The enumeration MediaTransportProto indicates the transport protocol used for a media flow.
+
+    RtpHeaderExtType:
+      anyOf:
+        - type: string
+          enum:
+            - PDU_SET_MARKING
+        - type: string
+      description: >
+        The enumeration indicates the type of Rtp Header Extension type 
+
+
+    RtpPayloadFormat:
+      anyOf:
+        - type: string
+          enum:
+            - H264
+            - H265
+        - type: string
+      description: >
+        The enumeration RtpPayloadFormat indicates the RTP Payload format 
+
 #
 #
 # STRUCTURED DATA TYPES
@@ -4346,6 +4459,46 @@ components:
       anyOf:
         - $ref: '#/components/schemas/PduSetQosPara'
         - $ref: '#/components/schemas/NullValue'
+
+
+    ProtocolDescription:
+      description: ProtocolDescription contains information to derive PDU set information.
+      type: object
+      properties:
+        transportProto:
+          $ref: '#/components/schemas/MediaTransportProto'
+        rtpHeaderExtInfo:
+          $ref: '#/components/schemas/RtpHeaderExtInfo'
+        rtpPayloadInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/RtpPayloadInfo'
+          minItems: 1
+
+    RtpHeaderExtInfo:
+      description: RTP Header Extension information
+      type: object
+      properties:
+        rtpHeaderExtType:
+          $ref: '#/components/schemas/RtpHeaderExtType'
+        rtpHeaderExtId:
+          type: integer
+          minimum: 1
+          maximum: 255
+
+    RtpPayloadInfo:
+      description: RtpPayloadInfo contains Rtp payload type and format.
+      type: object
+      properties:
+        rtpPayloadTypeList:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 127
+          minItems: 1
+        rtpPayloadFormat:
+          $ref: '#/components/schemas/RtpPayloadFormat'
 
 #
 # Data Types related to 5G Trace as defined in clause 5.6
@@ -5055,6 +5208,8 @@ components:
           minItems: 1
         containerForAppLayerMeasConfig:
           $ref: '#/components/schemas/Bytes'
+        mbsCommunicationServiceType:
+          $ref: '#/components/schemas/MbsServiceType'
 
     QmcAreaScope:
       description: >
@@ -5159,10 +5314,15 @@ components:
         Integer where the allowed values correspond to the value range of an unsigned 32-bit
         integer.
 
+    SmfChargingId:
+      description: String based Charging ID
+      type: string
+      pattern: '^(0|([1-9]{1}[0-9]{0,9}))\.smf-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$'
 
     ApplicationChargingId:
       type: string
-      description: Application provided charging identifier allowing correlation of charging information.
+      description: >
+        Application provided charging identifier allowing correlation of charging information.
 
     RatingGroup:
       $ref: '#/components/schemas/Uint32'
@@ -5263,6 +5423,9 @@ components:
 #
 
     AreaSessionId:
+      $ref: '#/components/schemas/Uint16'
+
+    AreaSessionPolicyId:
       $ref: '#/components/schemas/Uint16'
 
     MbsFsaId:
@@ -5443,6 +5606,12 @@ components:
           allOf:
             - $ref: '#/components/schemas/ExternalMbsServiceArea'
           writeOnly: true
+        redMbsServArea:
+          $ref: '#/components/schemas/MbsServiceArea'
+          readOnly: true
+        extRedMbsServArea:
+          $ref: '#/components/schemas/ExternalMbsServiceArea'
+          readOnly: true
         dnn:
           allOf:
             - $ref: '#/components/schemas/Dnn'
@@ -5481,6 +5650,8 @@ components:
       anyOf:
         - required: [ mbsSessionId ]
         - required: [ tmgiAllocReq ]
+      not:
+        required: [redMbsServArea, extRedMbsServArea]
 
 
     MbsSessionSubscription:
@@ -5570,10 +5741,13 @@ components:
 
 
     MbsSecurityContext:
+      description: MBS security context consisting of MSK/MTK(s) and associated IDs
       type: object
       properties:
         keyList:
-          description: A map (list of key-value pairs) where a (unique) valid JSON string serves as key of MbsSecurityContext
+          description: >
+            A map (list of key-value pairs) where a (unique) valid JSON string serves
+            as key of MbsSecurityContext
           type: object
           additionalProperties:
             $ref: '#/components/schemas/MbsKeyInfo'
@@ -5749,6 +5923,7 @@ components:
       anyOf:
         - type: string
           enum:
+          - SYNC_E
           - PTP
           - GNSS
           - ATOMIC_CLOCK
@@ -5911,6 +6086,9 @@ components:
           type: integer
           default: 256
           description: priority of data channel relative to other data channels
+        appBindingInfo:
+          type: string
+          description: application binding information of the Data Channel.
 
 
     ReplaceHttpUrl:
@@ -5924,6 +6102,23 @@ components:
           maximum: 65535
           default: 0
           description: Stream identifier for Data Channel
+
+    Endpoint:
+      description: Represents the IP endpoint.
+      type: object
+      required:
+        - ip
+        - transport
+        - portNumber
+      properties:
+        ip:
+          $ref: '#/components/schemas/IpAddr'
+        transport:
+          $ref: '#/components/schemas/TransportProtocol'
+        portNumber:
+          $ref: '#/components/schemas/Uinteger'
+
+
 
 #
 # HTTP responses
@@ -6022,7 +6217,7 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetails'
     '413':
-      description: Payload Too Large
+      description: Content Too Large
       content:
         application/problem+json:
           schema:

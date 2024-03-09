@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Common Type Definitions
-  version: 18.3.0
+  version: 18.5.0
   description: >-
     OAS 3.0.1 specification of common type definitions in the Generic NRM
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -19,6 +19,23 @@ components:
     DateTime:
       type: string
       format: date-time
+    FullTime:
+      type: string
+      description: format (e.g., full-time) is from RFC 3339
+      format: full-time
+    DateMonth:
+      type: string
+      format: date-month
+    DateMonthDay:
+      type: string
+      format: date-mday
+    DayInYear:
+      type: object
+      properties:
+        month:
+          $ref: '#/components/schemas/DateMonth'
+        monthDay:
+          $ref: '#/components/schemas/DateMonthDay'
     Latitude:
       type: number
       format: float
@@ -65,12 +82,21 @@ components:
       type: string
       pattern: '^[A-Fa-f0-9]{9}$'
     TimeWindow:
-      type: object
-      properties:
-        startTime:
-          $ref: '#/components/schemas/DateTime'
-        endTime:
-          $ref: '#/components/schemas/DateTime'
+      oneOf:  
+        - type: object
+          properties:
+            startTime:
+              $ref: '#/components/schemas/DateTime'
+            endTime:
+              $ref: '#/components/schemas/DateTime'
+        - type: object
+          properties:
+            startTime:
+              $ref: '#/components/schemas/DateTime'
+        - type: object
+          properties:
+            endTime:
+              $ref: '#/components/schemas/DateTime'
     GeoCoordinate:
       type: object
       properties:
@@ -149,6 +175,14 @@ components:
         - $ref: '#/components/schemas/Fqdn'
     Uri:
       type: string
+
+    TimeInterval:
+      type: object
+      properties:
+        intervalStart:
+          $ref: '#/components/schemas/FullTime'
+        intervalEnd:
+          $ref: '#/components/schemas/FullTime'
 
     AdministrativeState:
       type: string

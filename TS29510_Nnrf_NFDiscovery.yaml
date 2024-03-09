@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  version: '1.3.0-alpha.5'
+  version: '1.3.0-alpha.6'
   title: 'NRF NFDiscovery Service'
   description: |
     NRF NFDiscovery Service.  
@@ -9,7 +9,7 @@ info:
     All rights reserved.
 
 externalDocs:
-  description: 3GPP TS 29.510 V18.4.0; 5G System; Network Function Repository Services; Stage 3
+  description: 3GPP TS 29.510 V18.5.0; 5G System; Network Function Repository Services; Stage 3
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/'
 
 servers:
@@ -37,7 +37,7 @@ paths:
       parameters:
         - name: Accept-Encoding
           in: header
-          description: Accept-Encoding, described in IETF RFC 7231
+          description: Accept-Encoding, described in IETF RFC 9110
           schema:
             type: string
         - name: target-nf-type
@@ -139,6 +139,16 @@ paths:
                 type: array
                 items:
                   $ref: 'TS29571_CommonData.yaml#/components/schemas/Snssai'
+                minItems: 1
+        - name: additional-snssais
+          in: query
+          description: Additional Slices supported by the target NF (Service) instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'TS29571_CommonData.yaml#/components/schemas/ExtSnssai'
                 minItems: 1
         - name: requester-snssais
           in: query
@@ -440,7 +450,7 @@ paths:
                 $ref: 'TS29571_CommonData.yaml#/components/schemas/ComplexQuery'
         - name: max-payload-size
           in: query
-          description: Maximum payload size of the response expressed in kilo octets
+          description: Maximum content size of the response expressed in kilo octets
           required: false
           schema:
             type: integer
@@ -449,7 +459,7 @@ paths:
         - name: max-payload-size-ext
           in: query
           description: >
-            Extended query for maximum payload size of the response expressed in kilo octets
+            Extended query for maximum content size of the response expressed in kilo octets
           required: false
           schema:
             type: integer
@@ -513,7 +523,7 @@ paths:
           explode: false
         - name: If-None-Match
           in: header
-          description: Validator for conditional requests, as described in IETF RFC 7232, 3.2
+          description: Validator for conditional requests, as described in IETF RFC 9110, 13.1.2
           schema:
             type: string
         - name: target-snpn
@@ -1008,6 +1018,11 @@ paths:
             type: boolean
             enum:
              - true
+        - name: nsac-sai
+          in: query
+          description: NSAC Service Area Identifier
+          schema:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/NsacSai'
         - name: complete-profile
           in: query
           description: request to discover the complete profile of NF instances
@@ -1091,7 +1106,15 @@ paths:
                 $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/A2xCapability'
         - name: ml-model-storage-ind
           in: query
-          description: Indicating the support for ML model storage capability.
+          description: Indicating the support for ML model storage and retrieval capability.
+          schema:
+            type: boolean
+            enum:
+             - true
+        - name: data-storage-ind
+          in: query
+          description: >
+            Indicating the support for data and analytics storage and retrieval capability.
           schema:
             type: boolean
             enum:
@@ -1125,9 +1148,25 @@ paths:
             type: boolean
             enum:
              - true
-        - name: rangingSlPos-support-ind
+        - name: ranging-sl-pos-support-ind
           in: query
           description: PCF or LMF supports ranging and sidelink positioning Capability
+          schema:
+            type: boolean
+            enum:
+             - true
+        - name: preferred-up-positioning-ind
+          in: query
+          description: LMF supporting user plane positioning capability
+          schema:
+            type: boolean
+            enum:
+             - true
+        - name: complete-search-result
+          in: query
+          description: >
+            Indicates that all the NF profiles or NF Instance IDs matching the query parameters
+            are requested to be returned
           schema:
             type: boolean
             enum:
@@ -1157,15 +1196,16 @@ paths:
                 'searchId' parameter in the GET request to '/searches/{searchId}/complete'
           headers:
             Cache-Control:
-              description: Cache-Control containing max-age, described in IETF RFC 7234, 5.2
+              description: Cache-Control containing max-age, described in IETF RFC 9111, 5.2
               schema:
                 type: string
             ETag:
-              description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
+              description: >
+                Entity Tag containing a strong validator, described in IETF RFC 9110, 8.8.3
               schema:
                 type: string
             Content-Encoding:
-              description: Content-Encoding, described in IETF RFC 7231
+              description: Content-Encoding, described in IETF RFC 9110
               schema:
                 type: string
         '307':
@@ -1228,7 +1268,7 @@ paths:
         - $ref: '#/components/parameters/searchId'
         - name: Accept-Encoding
           in: header
-          description: Accept-Encoding, described in IETF RFC 7231
+          description: Accept-Encoding, described in IETF RFC 9110
           schema:
             type: string
       responses:
@@ -1268,7 +1308,7 @@ paths:
         - $ref: '#/components/parameters/searchId'
         - name: Accept-Encoding
           in: header
-          description: Accept-Encoding, described in IETF RFC 7231
+          description: Accept-Encoding, described in IETF RFC 9110
           schema:
             type: string
       responses:
@@ -1321,7 +1361,7 @@ paths:
             default: false
         - name: Accept-Encoding
           in: header
-          description: Accept-Encoding, described in IETF RFC 7231
+          description: Accept-Encoding, described in IETF RFC 9110
           schema:
             type: string
       responses:
@@ -1333,7 +1373,7 @@ paths:
                 $ref: '#/components/schemas/ScpDomainRoutingInformation'
           headers:
             Content-Encoding:
-              description: Content-Encoding, described in IETF RFC 7231
+              description: Content-Encoding, described in IETF RFC 9110
               schema:
                 type: string
         '307':
@@ -1387,12 +1427,12 @@ paths:
       parameters:
         - name: Content-Encoding
           in: header
-          description: Content-Encoding, described in IETF RFC 7231
+          description: Content-Encoding, described in IETF RFC 9110
           schema:
             type: string
         - name: Accept-Encoding
           in: header
-          description: Accept-Encoding, described in IETF RFC 7231
+          description: Accept-Encoding, described in IETF RFC 9110
           schema:
             type: string
       requestBody:
@@ -1417,11 +1457,11 @@ paths:
               schema:
                 type: string
             Accept-Encoding:
-              description: Accept-Encoding, described in IETF RFC 7694
+              description: Accept-Encoding, described in IETF RFC 9110
               schema:
                 type: string
             Content-Encoding:
-              description: Content-Encoding, described in IETF RFC 7231
+              description: Content-Encoding, described in IETF RFC 9110
               schema:
                 type: string
         '400':
@@ -1455,11 +1495,11 @@ paths:
               parameters:
                 - name: Content-Encoding
                   in: header
-                  description: Content-Encoding, described in IETF RFC 7231
+                  description: Content-Encoding, described in IETF RFC 9110
                   schema:
                     type: string
               requestBody:
-                description: Notification Payload
+                description: Notification content
                 content:
                   application/json:
                     schema:
@@ -1469,7 +1509,7 @@ paths:
                   description: Expected response to a successful callback processing
                   headers:
                     Accept-Encoding:
-                      description: Accept-Encoding, described in IETF RFC 7694
+                      description: Accept-Encoding, described in IETF RFC 9110
                       schema:
                         type: string
                 '400':
@@ -1579,15 +1619,16 @@ components:
             $ref: '#/components/schemas/StoredSearchResult'
       headers:
         Cache-Control:
-          description: Cache-Control containing max-age, described in IETF RFC 7234, 5.2
+          description: Cache-Control containing max-age, described in IETF RFC 9111, 5.2
           schema:
             type: string
         ETag:
-          description: Entity Tag containing a strong validator, described in IETF RFC 7232, 2.3
+          description: >
+            Entity Tag containing a strong validator, described in IETF RFC 9110, 8.8.3
           schema:
             type: string
         Content-Encoding:
-          description: Content-Encoding, described in IETF RFC 7231
+          description: Content-Encoding, described in IETF RFC 9110
           schema:
             type: string
 
@@ -1597,6 +1638,7 @@ components:
       description: Contains the list of NF Profiles returned in a Discovery response
       type: object
       required:
+        - validityPeriod
         - nfInstances
       properties:
         validityPeriod:
@@ -2117,8 +2159,11 @@ components:
           minItems: 1
         apiPrefix:
           type: string
-        callbackUriPrefix:
-          type: string
+        callbackUriPrefixList:
+          type: array
+          items:
+            $ref: 'TS29510_Nnrf_NFManagement.yaml#/components/schemas/CallbackUriPrefixItem'
+          minItems: 1
         defaultNotificationSubscriptions:
           type: array
           items:

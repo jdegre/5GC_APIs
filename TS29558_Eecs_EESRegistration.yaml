@@ -6,11 +6,11 @@ info:
     API for EES Registration.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: 1.1.0-alpha.4
+  version: 1.1.0-alpha.5
 
 externalDocs:
   description: >
-    3GPP TS 29.558 V18.3.0 Enabling Edge Applications;
+    3GPP TS 29.558 V18.4.0 Enabling Edge Applications;
     Application Programming Interface (API) specification; Stage 3
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.558/
 
@@ -316,6 +316,10 @@ components:
           minProperties: 1
           description: >
             The key used in this map for each entry is the EAS ID of the concerned EAS.
+            Within each EASBundleInfo encoded map entry of this attribute, the "mainEasId" attribute
+            shall not be present.
+        ednInfoSets:
+          $ref: '#/components/schemas/EDNInfo'
         easInstInfo:
           type: object
           additionalProperties:
@@ -342,11 +346,23 @@ components:
             $ref: '#/components/schemas/ACRScenario'
           minItems: 1
           description: The ACR scenarios supported by the EES for service continuity.
+        svcContSuppExt1:
+          type: array
+          items:
+            $ref: 'TS29558_Eees_EASRegistration.yaml#/components/schemas/EASBundleInfo'
+          minItems: 1
+          description: >
+            Represents the information related to the EES ability to handle bundled EAS ACRs.
+            This attribute may be present only when the "svcContSupp" attribute is also present.
+            When this attribute is present, it indicates that the EES (identified by the "eesId"
+            attribute) is able to handle bundled EAS ACRs and contains the information of the EAS
+            bundle(s) for which the EES is able to handle bundled EAS ACRs.
         eecRegConf:
           type: boolean
           description: >
             Set to true if the EEC is required to register to the EES to use edge service.
-            Set to false if the EEC is not required to register to use edge services.
+            Set to false if the EEC is not required to register to use edge services. Default
+            Value is false if omitted.
       required:
         - eesId
         - endPt
@@ -436,11 +452,37 @@ components:
       description: Represents the instantiation criteria for an EAS.
       properties:
         instantiationTime:
+          $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+        instWindows:
           type: array
           items:
-            $ref: 'TS29122_CommonData.yaml#/components/schemas/DateTime'
+            $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
           minItems: 1
-          description: A list of date time periods when the EAS is instiantiable.
+          description: A list time windows at which the EAS is instantiated.
+        scheds:
+          type: array
+          items:
+            $ref: 'TS29122_CpProvisioning.yaml#/components/schemas/ScheduledCommunicationTime'
+          minItems: 1
+          description: Represents the EAS instantiation schedule.
+      oneOf:
+        - required: [instantiationTime]
+        - required: [instWindows]
+        - required: [scheds]
+
+    EDNInfo:
+      type: object
+      description: Represents EDN related information.
+      properties:
+        dnn:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnn'
+        dnais:
+          type: array
+          items:
+            $ref: 'TS29571_CommonData.yaml#/components/schemas/Dnai'
+          minItems: 1
+      required:
+        - dnn
 
     ACRScenario:
       anyOf:

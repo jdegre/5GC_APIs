@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: 5GMS Common Data Types
-  version: 2.0.2
+  version: 3.0.0
   description: |
     5GMS Common Data Types
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
@@ -10,7 +10,7 @@ tags:
   - name: 5GMS Common Data Types
     description: '5G Media Streaming: Common Data Types'
 externalDocs:
-  description: 'TS 26.512 V17.6.0; 5G Media Streaming (5GMS); Protocols'
+  description: 'TS 26.512 V18.0.0; 5G Media Streaming (5GMS); Protocols'
   url: 'https://www.3gpp.org/ftp/Specs/archive/26_series/26.512/'
 paths: {}
 components:
@@ -26,6 +26,10 @@ components:
       minimum: 0.0
       maximum: 100.0
     #DurationSec is defined in TS29571_CommonData
+    Duration:
+      type: string
+      format: duration
+      description: 'String with format "duration" as defined by JSON Schema (referencing IETF RFC 3339, appendix A and, ultimately, ISO 8601).'
     #DateTime is defined in TS29571_CommonData
     #Uri is defined in TS29571_CommonData
     Url:
@@ -40,6 +44,9 @@ components:
       type: string
       format: uri
       description: 'Absolute Uniform Resource Locator, conforming with the "absolute-URI" production specified in IETF RFC 3986, section 4.3 in which the scheme part is "http" or "https". Note that the "query" suffix is permitted by this production but the "fragment" suffix is not.'
+    MediaDeliverySessionId:
+      type: string
+      description: 'A unique identifier for a media delivery session.'
 
     #####################################
     # Clause 6.4.3: Structured data types
@@ -192,6 +199,136 @@ components:
             $ref: 'TS29122_CommonData.yaml#/components/schemas/TimeWindow'
         appRequest:
           type: boolean
+
+    MediaStreamingSessionIdentification:
+      type: object
+      required:
+        - sessionId
+      properties:
+        sessionId:
+          $ref: '#/components/schemas/MediaDeliverySessionId'
+
+    MediaStreamingAccess:
+      type: object
+      description: Common properties of a single media access by the Media Stream Handler.
+      required:
+        - mediaStreamHandlerEndpointAddress
+        - applicationServerEndpointAddress
+        - requestMessage
+        - responseMessage
+        - processingLatency
+      properties:
+        mediaStreamHandlerEndpointAddress:
+          $ref: '#/components/schemas/EndpointAddress'
+        applicationServerEndpointAddress:
+          $ref: '#/components/schemas/EndpointAddress'
+        requestMessage:
+          type: object
+          required:
+            - method
+            - url
+            - protocolVersion
+            - size
+            - bodySize
+          properties:
+            method:
+              type: string
+            url:
+              $ref: '#/components/schemas/AbsoluteUrl'
+            protocolVersion:
+              type: string
+            range:
+              type: string
+            size:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+            bodySize:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+            contentType:
+              type: string
+            userAgent:
+              type: string
+            userIdentity:
+              type: string
+            referer:
+              $ref: '#/components/schemas/AbsoluteUrl'
+        cacheStatus:
+          $ref: '#/components/schemas/CacheStatus'
+        responseMessage:
+          type: object
+          required:
+            - responseCode
+            - size
+            - bodySize
+          properties:
+            responseCode:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+            size:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+            bodySize:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+            contentType:
+              type: string
+        processingLatency:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+        connectionMetrics:
+          type: object
+          required:
+            - meanNetworkRoundTripTime
+            - networkRoundTripTimeVariation
+            - congestionWindowSize
+          properties:
+            meanNetworkRoundTripTime:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+            networkRoundTripTimeVariation:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Float'
+            congestionWindowSize:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
+
+    NetworkAssistanceInvocation:
+      description: Common properties of a single Network Assistance invocation.
+      type: object
+      properties:
+        policyTemplateId:
+          $ref: '#/components/schemas/ResourceId'
+        serviceDataFlowDescriptions:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ServiceDataFlowDescription'
+        requestedQoS:
+          $ref: '#/components/schemas/UnidirectionalQoSSpecification'
+        # The network QoS parameters (if any) requested by the Media Session Handler.
+        recommendedQoS:
+          type: object
+          description: The network QoS parameters (if any) recommended to the Media Session Handler.
+          required:
+            - maximumBitRate
+            - minimumBitRate
+          properties:
+            maximumBitRate:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+            minimumBitRate:
+              $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+
+    UnidirectionalQoSSpecification:
+      type: object
+      description: A specification for network Quality of Service in either the downlink or uplink direction.
+      required:
+        - maximumRequestedBitRate
+        - minimumRequestedBitRate
+      properties:
+        maximumRequestedBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        minimumDesiredBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        minimumRequestedBitRate:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/BitRate'
+        desiredPacketLatency:
+          type: integer
+          minimum: 0
+        desiredPacketLossRate:
+          type: integer
+          minimum: 0
 
     #####################################
     # Clause 6.4.4: Enumerated data types

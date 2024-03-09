@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Ntsctsf_ASTI Service API
-  version: 1.1.0-alpha.2
+  version: 1.1.0-alpha.3
   description: |
     TSCTSF  Access Stratum time distribution configuration Service.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
@@ -10,7 +10,7 @@ info:
 
 externalDocs:
   description: >
-    3GPP TS 29.565 V18.1.0; 5G System; Time Sensitive Communication and
+    3GPP TS 29.565 V18.4.0; 5G System; Time Sensitive Communication and
     Time Synchronization Function Services; Stage 3.
   url: 'https://www.3gpp.org/ftp/Specs/archive/29_series/29.565/'
 
@@ -335,6 +335,10 @@ components:
           $ref: 'TS29571_CommonData.yaml#/components/schemas/Uinteger'
         tempValidity:
           $ref: 'TS29514_Npcf_PolicyAuthorization.yaml#/components/schemas/TemporalValidity'
+        clkQltDetLvl:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ClockQualityDetailLevel'
+        clkQltAcptCri:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/ClockQualityAcceptanceCriterion'
 
     StatusRequestData:
       description: >
@@ -402,13 +406,53 @@ components:
       properties:
         astiNotifId:
           type: string
-        stateOfAstiConfigs:
+        stateConfigs:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/AstiConfigStateNotification'
           minItems: 1
           description: >
             It is FFS the parameters of the AstiConfigEventNotification data type.
       required:
         - astiNotifId
-        - stateOfAstiConfigs
+        - stateConfigs
+
+    AstiConfigStateNotification:
+      description: >
+        Contains the report of a change in the 5G Access Stratum Time Distribution
+        parameters applied to a UE.
+      type: object
+      properties:
+        supi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Supi'
+        gpsi:
+          $ref: 'TS29571_CommonData.yaml#/components/schemas/Gpsi'
+        event:
+          $ref: '#/components/schemas/AstiEvent'
+      required:
+        - event
+      oneOf:
+        - required: [supi]
+        - required: [gpsi]
+#
+# ENUMERATIONS DATA TYPES
+#
+    AstiEvent:
+      anyOf:
+      - type: string
+        enum:
+          - ASTI_ENABLED
+          - ASTI_DISABLED
+          - CLOCK_QUAL_ACCEPTABLE
+          - CLOCK_QUAL_NON_ACCEPTABLE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration
+          and is not used to encode content defined in the present version of this API.
+      description: |
+        Represents an ASTI event to notify to the AF/NEF.  
+        Possible values are:
+        - ASTI_ENABLED: Access stratum time distribution via Uu reference point is activated.
+        - ASTI_DISABLED: Access stratum time distribution via Uu reference point is deactivated.
+        - CLOCK_QUAL_ACCEPTABLE: The UE meets the clock quality acceptance criteria.
+        - CLOCK_QUAL_NON_ACCEPTABLE: The UE does not meet the clock quality acceptance criteria.

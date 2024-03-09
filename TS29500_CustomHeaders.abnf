@@ -191,7 +191,6 @@ qdtext         = HTAB / SP / %x21 / %x23-5B / %x5D-7E / obs-text
 
 obs-text       = %x80-FF
 
-
 date1          = day-rfc9110 SP month-rfc9110 SP year-rfc9110 ; e.g., 02 Jun 1982
 
 day-rfc9110    = 2DIGIT
@@ -219,26 +218,24 @@ weight         = OWS ";" OWS "q=" qvalue
 
 qvalue         = ( "0" [ "." *3DIGIT ] ) / ( "1" [ "." *3"0" ] )
 
+credentials    = auth-scheme [ 1*SP ( token68
+               / [ ( "," / auth-param ) *( OWS "," [ OWS auth-param ] ) ] ) ]
 
-credentials = auth-scheme [ 1*SP ( token68
-            / [ ( "," / auth-param ) *( OWS "," [ OWS auth-param ] ) ] ) ]
+auth-scheme    = token
 
-auth-scheme = token
+auth-param     = token BWS "=" BWS ( token / quoted-string )
 
-auth-param  = token BWS "=" BWS ( token / quoted-string )
-
-token68     = 1*( ALPHA / DIGIT / "-" / "." / "_" / "~" / "+" / "/" ) *"="
+token68        = 1*( ALPHA / DIGIT / "-" / "." / "_" / "~" / "+" / "/" ) *"="
 
 
 
 ; ----------------------------------------
 ;   3GPP TS 29.500
 ;
-;   Version: 18.3.0 (September 2023)
+;   Version: 18.4.0 (December 2023)
 ;
 ;   (c) 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
 ; ----------------------------------------
-
 
 ;
 ; Header: 3gpp-Sbi-Message-Priority
@@ -376,17 +373,17 @@ olcMetric       = "Overload-Reduction-Metric:" RWS ( "100" / %x31-39 DIGIT / DIG
 
 olcScope        = nfProducerScope / nfConsumerScope / scpScope / seppScope
 
-nfProducerScope = (   ( "NF-Instance:" RWS nfinst ) 
-                    / ( "NF-Set:" RWS nfset ) 
-                    / ( "NF-Service-Instance:" RWS nfservinst [ ";" RWS "NF-Inst:" RWS nfinst ] )
-                    / ( "NF-Service-Set:" RWS nfserviceset )
+nfProducerScope = ( ( "NF-Instance:" RWS nfinst ) 
+                  / ( "NF-Set:" RWS nfset ) 
+                  / ( "NF-Service-Instance:" RWS nfservinst [ ";" RWS "NF-Inst:" RWS nfinst ] )
+                  / ( "NF-Service-Set:" RWS nfserviceset )
                   ) [ ";" RWS sNssaiList ";" RWS dnnList ]
 
 nfConsumerScope = ( "NFC-Instance:" RWS nfinst [ ";" RWS "Service-Name:" RWS servname ] )
-                / ( "NFC-Set:" RWS nfset [ ";" RWS "Service-Name:" RWS servname ])
+                / ( "NFC-Set:" RWS nfset [ ";" RWS "Service-Name:" RWS servname ] )
                 / ( "NFC-Service-Instance:" RWS nfservinst [";" RWS "NF-Inst:" RWS nfinst ] )
                 / ( "NFC-Service-Set:" RWS nfserviceset )
-                / ( "Callback-Uri:" RWS DQUOTE URI DQUOTE *( RWS "&" RWS DQUOTE URI DQUOTE ))
+                / ( "Callback-Uri:" RWS DQUOTE URI DQUOTE *( RWS "&" RWS DQUOTE URI DQUOTE ) )
 
 servname        = token
 
@@ -416,10 +413,10 @@ lcMetric          = "Load-Metric:" RWS ( "100" / %x31-39 DIGIT / DIGIT ) "%"
 
 lcScope           = lcNfProducerScope / scpScope / seppScope
 
-lcNfProducerScope = (   ( "NF-Instance:" RWS nfinst )
-                      / ( "NF-Set:" RWS nfset)
-                      / ( "NF-Service-Instance:" RWS nfservinst [ ";" RWS "NF-Inst:" RWS nfinst ] )
-                      / ( "NF-Service-Set:" RWS nfserviceset)
+lcNfProducerScope = ( ( "NF-Instance:" RWS nfinst )
+                    / ( "NF-Set:" RWS nfset )
+                    / ( "NF-Service-Instance:" RWS nfservinst [ ";" RWS "NF-Inst:" RWS nfinst ] )
+                    / ( "NF-Service-Set:" RWS nfserviceset )
                     ) [ ";" RWS sNssaiList ";" RWS dnnList ";" RWS relativeCapacity ]
 
 relativeCapacity  = "Relative-Capacity:" RWS ( "100" / 1*2DIGIT ) "%"
@@ -643,7 +640,7 @@ consumer-info-element    = ( supportedService ";" OWS supportedVersions
 
 supportedService         = "service=" servicename
 
-servicename              = 1*( "-" / %x61-7A )
+servicename              = 1*( "-" / %x30-39 / %x41-5A / "_" / %x61-7A )
 
 supportedVersions        = "apiversion=" "(" OWS
                            [ apimajorversion *( RWS apimajorversion ) OWS ] ")"
@@ -699,6 +696,7 @@ Sbi-Selection-Info-Header = "3gpp-Sbi-Selection-Info:" OWS
 
 selection-info-element    = ( "reselection=" reselectionvalue *( ";" OWS selection-criteria ) )
                           / ( selection-criteria *( ";" OWS selection-criteria ) )
+
 reselectionvalue          = "true" / "false"
 
 selection-criteria        = selection-action "=" token
@@ -760,4 +758,3 @@ req-param-value         = token
 Sbi-Retry-Info-Header = "3gpp-Sbi-Retry-Info:" OWS retriesindication OWS
 
 retriesindication     = "no-retries"
-

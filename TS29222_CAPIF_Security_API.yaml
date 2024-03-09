@@ -6,10 +6,10 @@ info:
     API for CAPIF security management.  
     © 2023, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).  
     All rights reserved.
-  version: "1.3.0-alpha.2"
+  version: "1.3.0-alpha.3"
 
 externalDocs:
-  description: 3GPP TS 29.222 V18.1.0 Common API Framework for 3GPP Northbound APIs
+  description: 3GPP TS 29.222 V18.4.0 Common API Framework for 3GPP Northbound APIs
   url: https://www.3gpp.org/ftp/Specs/archive/29_series/29.222/
 
 servers:
@@ -407,6 +407,11 @@ components:
         authorizationInfo:
           type: string
           description: Authorization related information
+        authorizationFlow:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationFlow'
+          minItems: 1
       required:
         - prefSecurityMethods
       oneOf:
@@ -446,9 +451,13 @@ components:
             - client_credentials
         client_id:
           type: string
+        resOwnerId:
+          type: string
         client_secret:
           type: string
         scope:
+          type: string
+        authCode:
           type: string
       required:
         - grant_type
@@ -481,6 +490,8 @@ components:
       properties:
         iss:
           type: string
+        resOwnerId:
+          type: string
         scope:
           type: string
         exp:
@@ -510,6 +521,15 @@ components:
       required:
         - error
 
+    AuthorizationCodeRsp:
+      type: object
+      description: Represents the authorization code response information.
+      properties:
+        authCode:
+          type: string
+      required:
+        - authCode
+
     Cause:
       anyOf:
       - type: string
@@ -529,3 +549,24 @@ components:
              usage of the service API
         - UNEXPECTED_REASON:
              The revocation of the authorization of the API invoker is due to unexpected reason.
+
+    AuthorizationFlow:
+      anyOf:
+      - type: string
+        enum:
+          - CLIENT_CREDENTIALS_FLOW
+          - AUTHORIZATION_CODE_FLOW
+          - AUTHORIZATION_CODE_FLOW_WITH_PKCE
+      - type: string
+        description: >
+          This string provides forward-compatibility with future extensions to the enumeration and
+          is not used to encode content defined in the present version of this API.
+      description: |
+        Indicates the supported authorization flow (e.g. client credentials flow, authorization code         flow, etc.) to the API invoker.  
+        Possible values are:
+        - CLIENT_CREDENTIALS_FLOW:
+             The supported authorization flow is client credentials flow.
+        - AUTHORIZATION_CODE_FLOW:
+             The supported authorization flow is authorization code flow.
+        - AUTHORIZATION_CODE_FLOW_WITH_PKCE:
+             The supported authorization flow is authorization code flow with PKCE.
