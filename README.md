@@ -437,6 +437,7 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 ## Network Resource Models (NRM)
 * [Generic NRM (TS 28.623)](https://jdegre.github.io/loader.html?yaml=TS28623_GenericNrm.yaml)
 * [Common NRM definitions (TS 28.623)](https://jdegre.github.io/loader.html?yaml=TS28623_ComDefs.yaml)
+* [Trace Control (TS 28.623)](https://jdegre.github.io/loader.html?yaml=TS28623_TraceControlNrm.yaml)
 * [NR NRM (TS 28.541)](https://jdegre.github.io/loader.html?yaml=TS28541_NrNrm.yaml)
 * [5GC NRM (TS 28.541)](https://jdegre.github.io/loader.html?yaml=TS28541_5GcNrm.yaml)
 * [Slice NRM (TS 28.541)](https://jdegre.github.io/loader.html?yaml=TS28541_SliceNrm.yaml)
@@ -445,6 +446,7 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 * [MDA Report NRM (TS 28.104)](https://jdegre.github.io/loader.html?yaml=TS28104_MdaReport.yaml)
 * [AI/ML NRM (TS 28.105)](https://jdegre.github.io/loader.html?yaml=TS28105_AiMlNrm.yaml)
 * [Intent NRM (TS 28.312)](https://jdegre.github.io/loader.html?yaml=TS28312_IntentNrm.yaml)
+* [Intent Expectations (TS 28.312)](https://jdegre.github.io/loader.html?yaml=TS28312_IntentExpectations.yaml)
 * [Edge NRM (TS 28.538)](https://jdegre.github.io/loader.html?yaml=TS28538_EdgeNrm.yaml)
 * [Self-configuration of RAN entities (TS 28.317)](https://jdegre.github.io/loader.html?yaml=TS28317_RanScNrm.yaml)
 
