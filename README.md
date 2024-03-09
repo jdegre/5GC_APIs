@@ -59,6 +59,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## MB (Multicast/Broadcast) User Services
 * [MBS Service User Announcement](https://jdegre.github.io/loader.html?yaml=TS26517_MBSUserServiceAnnouncement.yaml)
+* [MBS Object Manifest](https://jdegre.github.io/loader.html?yaml=TS26517_MBSObjectManifest.yaml)
 
 ## UDM (Unified Data Management)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SDM.yaml)
@@ -114,6 +115,10 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [NEF Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_EventExposure.yaml)
 * [Authentication](https://jdegre.github.io/loader.html?yaml=TS29256_Nnef_Authentication.yaml)
 * [EAS Deployment](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_EASDeployment.yaml)
+* [Traffic Influence Data](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_TrafficInfluenceData.yaml)
+* [ECS Address](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_ECSAddress.yaml)
+* [DNAI Mapping](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_DNAIMapping.yaml)
+* [UE ID](https://jdegre.github.io/loader.html?yaml=TS29591_Nnef_UEId.yaml)
 
 ## PCF (Policy Control Function)
 * [Policy Authorization](https://jdegre.github.io/loader.html?yaml=TS29514_Npcf_PolicyAuthorization.yaml)
@@ -125,6 +130,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [UE Policy Control](https://jdegre.github.io/loader.html?yaml=TS29525_Npcf_UEPolicyControl.yaml)
 * [Multicast/Broadcast Policy Control](https://jdegre.github.io/loader.html?yaml=TS29537_Npcf_MBSPolicyControl.yaml)
 * [Multicast/Broadcast Policy Authorization](https://jdegre.github.io/loader.html?yaml=TS29537_Npcf_MBSPolicyAuthorization.yaml)
+* [Planned Data Transfer with QoS (PDTQ) Policy Control](https://jdegre.github.io/loader.html?yaml=TS29543_Npcf_PDTQPolicyControl.yaml)
 
 ## BSF (Binding Support Function)
 * [Management](https://jdegre.github.io/loader.html?yaml=TS29521_Nbsf_Management.yaml)
@@ -134,6 +140,10 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [Analytics Info](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_AnalyticsInfo.yaml)
 * [Data Management](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_DataManagement.yaml)
 * [ML Model Provision](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_MLModelProvision.yaml)
+* [ML Model Training](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_MLModelTraining.yaml)
+* [ML Model Monitor](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_MLModelMonitor.yaml)
+* [Roaming Data](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_RoamingData.yaml)
+* [Roaming Analytics](https://jdegre.github.io/loader.html?yaml=TS29520_Nnwdaf_RoamingAnalytics.yaml)
 
 ## UPF (User-Plane Function)
 * [Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29564_Nupf_EventExposure.yaml)
@@ -204,6 +214,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## ADRF (Analytics Data Repository Function)
 * [Data Management](https://jdegre.github.io/loader.html?yaml=TS29575_Nadrf_DataManagement.yaml)
+* [ML Model Management](https://jdegre.github.io/loader.html?yaml=TS29575_Nadrf_MLModelManagement.yaml)
 
 ## MFAF (Messaging Framework Adaptor Function)
 * [3GPP DCCF Adaptor (3DA) Data Management](https://jdegre.github.io/loader.html?yaml=TS29576_Nmfaf_3daDataManagement.yaml)
@@ -229,9 +240,24 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## PKMF (ProSe Key Management Service)
 * [KeyRequest Service](https://jdegre.github.io/loader.html?yaml=TS29559_Npkmf_PKMFKeyRequest.yaml)
+* [Resolve Remote User Id](https://jdegre.github.io/loader.html?yaml=TS29559_Npkmf_UserId.yaml)
+* [Discovery](https://jdegre.github.io/loader.html?yaml=TS29559_Npkmf_Discovery.yaml)
+
+## SLPKMF (SideLink Positioning Key Management Service)
+* [KeyRequest Service](https://jdegre.github.io/loader.html?yaml=TS29586_Nslpkmf_SLPKMFKeyRequest.yaml)
+* [Discovery](https://jdegre.github.io/loader.html?yaml=TS29586_Nslpkmf_Discovery.yaml)
 
 ## PANF (ProSe Anchor Function)
 * [Prose Key Service](https://jdegre.github.io/loader.html?yaml=TS29553_Npanf_ProseKey.yaml)
+* [Resolve Remote User Id](https://jdegre.github.io/loader.html?yaml=TS29553_Npanf_ResolveRemoteUserId.yaml)
+
+## IMS AS (IP Multimedia Subsystem Application Server)
+* [Session Event Control](https://jdegre.github.io/loader.html?yaml=TS29175_Nimsas_SessionEventControl.yaml)
+* [Media Control](https://jdegre.github.io/loader.html?yaml=TS29175_Nimsas_MediaControl.yaml)
+
+## MF (Media Function)
+* [Media Resource Management Service](https://jdegre.github.io/loader.html?yaml=TS29176_Nmf_MRM.yaml)
+
 
 # Northbound and Application Layer APIs
 
@@ -294,6 +320,13 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [MBS User Data Ingest Session](https://jdegre.github.io/loader.html?yaml=TS29522_MBSUserDataIngestSession.yaml)
 * [Media Streaming Event Exposure](https://jdegre.github.io/loader.html?yaml=TS29522_MSEventExposure.yaml)
 * [MBS Group Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29522_MBSGroupMsgDelivery.yaml)
+* [DNAI Mapping](https://jdegre.github.io/loader.html?yaml=TS29522_DNAIMapping.yaml)
+* [PDTQ Policy Negotiation](https://jdegre.github.io/loader.html?yaml=TS29522_PDTQPolicyNegotiation.yaml)
+* [Member UE Selection Assistance](https://jdegre.github.io/loader.html?yaml=TS29522_MemberUESelectionAssistance.yaml)
+* [Group Parameters Provisioning](https://jdegre.github.io/loader.html?yaml=TS29522_GroupParametersProvisioning.yaml)
+* [Slice Parameters Provisioning](https://jdegre.github.io/loader.html?yaml=TS29522_SliceParamProvision.yaml)
+* [UE Address](https://jdegre.github.io/loader.html?yaml=TS29522_UEAddress.yaml)
+* [ECS Address](https://jdegre.github.io/loader.html?yaml=TS29522_ECSAddress.yaml)
 
 ## VAE (V2X Application Enabler)
 * [V2X Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_MessageDelivery.yaml)
@@ -305,6 +338,9 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [Session Oriented Service](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_SessionOrientedService.yaml)
 * [V2V Config Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2VConfigRequirement.yaml)
 * [PC5 Provisioning Requirement](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_PC5ProvisioningRequirement.yaml)
+* [Service And QoS Control Info](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_ServiceAndQoSControlInfo.yaml)
+* [VRU Zone Management](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_VRUZoneManagement.yaml)
+* [](https://jdegre.github.io/loader.html?yaml=TS29486_VAE_V2PApplicationRequirement.yaml)
 
 ## SEAL (Service Enabler Architecture Layer)
 * [Network Resource Adaptation](https://jdegre.github.io/loader.html?yaml=TS29549_SS_NetworkResourceAdaptation.yaml)
@@ -316,6 +352,15 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [Location Reporting](https://jdegre.github.io/loader.html?yaml=TS29549_SS_LocationReporting.yaml)
 * [Location Area Information Retrieval](https://jdegre.github.io/loader.html?yaml=TS29549_SS_LocationAreaInfoRetrieval.yaml)
 * [Key Information Retrieval](https://jdegre.github.io/loader.html?yaml=TS29549_SS_KeyInfoRetrieval.yaml)
+* [VAL Service Data Retrieval](https://jdegre.github.io/loader.html?yaml=TS29549_SS_VALServiceData.yaml)
+* [VAL Service Area Configuration](https://jdegre.github.io/loader.html?yaml=TS29549_SS_VALServiceAreaConfiguration.yaml)
+* [VAL service Parameter Provisioning](https://jdegre.github.io/loader.html?yaml=TS29549_SS_IdmParameterProvisioning.yaml)
+* [SEALDD Data Transmission](https://jdegre.github.io/loader.html?yaml=TS29549_SDD_Transmission.yaml)
+* [SEALDD Data Storage](https://jdegre.github.io/loader.html?yaml=TS29549_SDD_DataStorage.yaml)
+* [SEALDD Context Relocation](https://jdegre.github.io/loader.html?yaml=TS29549_SDD_DDContext.yaml)
+* [SEALDD Transmission Quality Measurement](https://jdegre.github.io/loader.html?yaml=TS29549_SDD_TransmissionQualityMeasurement.yaml)
+* [SEALDD Policy Configuration](https://jdegre.github.io/loader.html?yaml=TS29549_SDD_PolicyConfiguration.yaml)
+* [NSCE Server Policy Management](https://jdegre.github.io/loader.html?yaml=TS29435_NSCE_PolicyManagement.yaml)
 
 ## EDGEAPP (Enabling Edge Applications)
 * [EAS Registration](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_EASRegistration.yaml)
@@ -334,16 +379,27 @@ NOTE: These APIs are not part of the 5G Core Network; these APIs are exposed by 
 * [EAS Discovery](https://jdegre.github.io/loader.html?yaml=TS24558_Eees_EASDiscovery.yaml)
 * [EES ACR Events](https://jdegre.github.io/loader.html?yaml=TS24558_Eees_ACREvents.yaml)
 * [EES App Context Relocation](https://jdegre.github.io/loader.html?yaml=TS24558_Eees_AppContextRelocation.yaml)
+* [EES ACR Parameters Information](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_ACRParameterInformation.yaml)
+* [EES Common EAS Announcement](https://jdegre.github.io/loader.html?yaml=TS29558_Eees_CommonEASAnnouncement.yaml)
+* [CAS Selected EES](https://jdegre.github.io/loader.html?yaml=TS29558_Ecas_SelectedEES.yaml)
 
 ## UAS Application Enabler (UAE) Server
 * [C2 Operation Mode Management](https://jdegre.github.io/loader.html?yaml=TS29257_UAE_C2OperationModeManagement.yaml)
 * [Real-time UAV Status](https://jdegre.github.io/loader.html?yaml=TS29257_UAE_RealtimeUAVStatus.yaml)
+* [USS Change Management](https://jdegre.github.io/loader.html?yaml=TS29257_UAE_ChangeUSSManagement.yaml)
+* [DAA Support](https://jdegre.github.io/loader.html?yaml=TS29257_UAE_DAASupport.yaml)
 
 ## 5GMARCH (Enabling MSGin5G Service)
 * [AS Registration](https://jdegre.github.io/loader.html?yaml=TS29538_MSGS_ASRegistration.yaml)
 * [MSGin5G Server Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29538_MSGS_MSGDelivery.yaml)
 * [L3G Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29538_MSGG_L3GDelivery.yaml)
 * [N3G Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29538_MSGG_N3GDelivery.yaml)
+* [Broadcast Message Delivery](https://jdegre.github.io/loader.html?yaml=TS29538_MSGG_BGDelivery.yaml)
+
+## PINAPP (Personal IoT Network Application)
+* [PINServer PAS Registration](https://jdegre.github.io/loader.html?yaml=TS29583_PIN_ASRegistration.yaml)
+* [PINServer Service Switch Information](https://jdegre.github.io/loader.html?yaml=TS29583_PIN_ASServiceSwitch.yaml)
+* [PINServer Service Continuity Information](https://jdegre.github.io/loader.html?yaml=TS29583_PIN_ASServiceContinuity.yaml)
 
 # 5G Media Streaming (5GMS) TS 26.512
 Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
@@ -370,7 +426,11 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 * [Network Assistance](https://jdegre.github.io/loader.html?yaml=TS26512_M5_NetworkAssistance.yaml)
 
 ## Data Reporting
+* [5GMS Client (R2)](https://jdegre.github.io/loader.html?yaml=TS26512_R2_DataReporting.yaml)
 * [5GMS AS (R4)](https://jdegre.github.io/loader.html?yaml=TS26512_R4_DataReporting.yaml)
+
+## Event Exposure
+* [Data Collection AF (R5, R6)](https://jdegre.github.io/loader.html?yaml=TS26512_EventExposure.yaml)
 
 # 3GPP SA5 models and MnS OpenAPI definitions
 
@@ -386,12 +446,13 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 * [AI/ML NRM (TS 28.105)](jdegre.github.io/loader.html?yaml=TS28105_AiMlNrm.yaml)
 * [Intent NRM (TS 28.312)](jdegre.github.io/loader.html?yaml=TS28312_IntentNrm.yaml)
 * [Edge NRM (TS 28.538)](jdegre.github.io/loader.html?yaml=TS28538_EdgeNrm.yaml)
+* [Self-configuration of RAN entities (TS 28.317)](jdegre.github.io/loader.html?yaml=TS28317_RanScNrm.yaml)
 
 ## Management Services (MnS)
 * [Provisioning MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_ProvMnS.yaml)
 * [Fault Supervision MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_FaultMnS.yaml)
 * [Performance Measurement Job Control MnS (28.550)](https://jdegre.github.io/loader.html?yaml=TS28550_PerfMeasJobCtrlMnS.yaml)
-* [Performance Data File Reporting MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_FileDataReportingMnS.yaml)
+* [File Data Reporting MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_FileDataReportingMnS.yaml)
 * [Performance Threshold Monitoring MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_PerfMnS.yaml)
 * [Heartbeat Notifications(TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_HeartbeatNtf.yaml)
 * [Streaming Data Reporting MnS (TS 28.532)](https://jdegre.github.io/loader.html?yaml=TS28532_StreamingDataMnS.yaml)
