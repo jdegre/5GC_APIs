@@ -59,6 +59,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## MB (Multicast/Broadcast) User Services
 * [MBS Service User Announcement](https://jdegre.github.io/loader.html?yaml=TS26517_MBSUserServiceAnnouncement.yaml)
+* [MBS Object Manifest](https://jdegre.github.io/loader.html?yaml=TS26517_MBSObjectManifest.yaml)
 
 ## UDM (Unified Data Management)
 * [Subscriber Data Management](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SDM.yaml)
@@ -70,6 +71,7 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 * [MT](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_MT.yaml)
 * [Service-Specific Authorization](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_SSAU.yaml)
 * [RSDS (Report SM Delivery Status)](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_RSDS.yaml)
+* [UEID (UE Identifier)](https://jdegre.github.io/loader.html?yaml=TS29503_Nudm_UEID.yaml)
 
 ## UDR (Unified Data Repository)
 * [Data Repository](https://jdegre.github.io/loader.html?yaml=TS29504_Nudr_DR.yaml)
@@ -227,9 +229,12 @@ The links below will open the Swagger Editor (v3.6.23) and auto-load the OpenAPI
 
 ## PKMF (ProSe Key Management Service)
 * [KeyRequest Service](https://jdegre.github.io/loader.html?yaml=TS29559_Npkmf_PKMFKeyRequest.yaml)
+* [Resolve Remote User Id](https://jdegre.github.io/loader.html?yaml=TS29559_Npkmf_UserId.yaml)
+* [Discovery](https://jdegre.github.io/loader.html?yaml=TS29559_Npkmf_Discovery.yaml)
 
 ## PANF (ProSe Anchor Function)
 * [Prose Key Service](https://jdegre.github.io/loader.html?yaml=TS29553_Npanf_ProseKey.yaml)
+* [Resolve Remote User Id](https://jdegre.github.io/loader.html?yaml=TS29553_Npanf_ResolveRemoteUserId.yaml)
 
 # Northbound and Application Layer APIs
 
@@ -382,6 +387,7 @@ Note: The APIs at reference points M1 and M5 are exposed by the 5GMS AF.
 * [MDA Report NRM (TS 28.104)](jdegre.github.io/loader.html?yaml=TS28104_MdaReport.yaml)
 * [AI/ML NRM (TS 28.105)](jdegre.github.io/loader.html?yaml=TS28105_AiMlNrm.yaml)
 * [Intent NRM (TS 28.312)](jdegre.github.io/loader.html?yaml=TS28312_IntentNrm.yaml)
+* [Intent Expectations (TS 28.312)](jdegre.github.io/loader.html?yaml=TS28312_IntentExpectations.yaml)
 * [Edge NRM (TS 28.538)](jdegre.github.io/loader.html?yaml=TS28538_EdgeNrm.yaml)
 
 ## Management Services (MnS)
